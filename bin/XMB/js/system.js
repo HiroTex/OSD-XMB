@@ -26,7 +26,7 @@ Screen.setVSync(true);
 
 	Main DATA object used for storing all the main
 	data of the dashboard.
-	
+
 	Properties:
 		- DISCITEM: Boolean. Indicates if a Disctray Item is present on the dashboard.
 		- WIDESCREEN: Boolean. Indicates if the screen should be on a 16:9 aspect ratio.
@@ -78,7 +78,7 @@ Screen.setVSync(true);
 		- GAMESETS: Main Neutrino Global Settings.
 */
 
-const DATA = 
+const DATA =
 {
 	DISCITEM: false,
 	WIDESCREEN: false,
@@ -237,7 +237,7 @@ function readFileAsUtf8(filepath)
 
 /* Get the root of a path */
 
-function getRootName(path) 
+function getRootName(path)
 {
     const colonIndex = path.indexOf(":");
     if (colonIndex === -1) {
@@ -248,7 +248,7 @@ function getRootName(path)
 
 /*	Get the full path without the root	*/
 
-function getPathWithoutRoot(path) 
+function getPathWithoutRoot(path)
 {
     const colonIndex = path.indexOf(":");
     if (colonIndex === -1) {
@@ -260,7 +260,7 @@ function getPathWithoutRoot(path)
 /*	Get the directory name of a path.						*/
 /*	NOTE: Currently this works better than the one below	*/
 
-function getFolderNameFromPath(path) 
+function getFolderNameFromPath(path)
 {
     if (typeof path !== 'string' || !path.endsWith('/')) {
         console.log("ERORR: Path must be a string and end with a slash (/).");
@@ -278,7 +278,7 @@ function getFolderNameFromPath(path)
 /*	Get the directory name of a path simplified			*/
 /*	I keep this one just in case it might be useful		*/
 
-function getDirectoryName(path) 
+function getDirectoryName(path)
 {
 	// Regular expression to match the directory part
 	const match = path.match(/^(.*[\/:])/);
@@ -287,7 +287,7 @@ function getDirectoryName(path)
 
 /*	Converts a given integer into a byte formatted string	*/
 
-function formatFileSize(size) 
+function formatFileSize(size)
 {
   if (size < 0) return "Invalid size";
 
@@ -328,7 +328,7 @@ function getGameName(path)
 /*	Parses a Path to extract the Game Code in case of Old Format naming conventions	*/
 
 function getGameCodeFromOldFormatName(path)
-{ 	
+{
 	// Regular expression to match the "code" part
 	const match = path.match(/[A-Z]{4}[-_][0-9]{3}\.[0-9]{2}/);
 	return match ? match[0] : "";
@@ -337,7 +337,7 @@ function getGameCodeFromOldFormatName(path)
 /*	Searchs for a matching ICO file in the ART folder for a specified string	*/
 /*	Returns empty string if not found.											*/
 
-function findICO(baseFilename) 
+function findICO(baseFilename)
 {
 	const dirPath = `${System.boot_path}/ART/`;
 	const extensions = ["_ICO.png", "_ICO.jpg"];
@@ -359,7 +359,7 @@ function findICO(baseFilename)
 
 /*	Parses a filepath to get its extension if it has one	*/
 
-function getFileExtension(filePath) 
+function getFileExtension(filePath)
 {
 	if (typeof filePath !== 'string') return "";
 
@@ -374,7 +374,7 @@ function getFileExtension(filePath)
 
 /*	Parses a filepath to search if it matches any extension from a list of extensions	*/
 
-function isExtensionMatching(filePath, ...filterExtensions) 
+function isExtensionMatching(filePath, ...filterExtensions)
 {
 	if (!Array.isArray(filterExtensions) || filterExtensions.length === 0) {
 		console.log("At least one filter extension must be provided.");
@@ -390,40 +390,40 @@ function isExtensionMatching(filePath, ...filterExtensions)
 	);
 }
 
-/*	
+/*
 	For moving element animations
 	easeOutCubic will return an increasing value
-	easeInCubic will return a decreasing value	
+	easeInCubic will return a decreasing value
 */
 
-function easeOutCubic(t) 
+function easeOutCubic(t)
 {
     return 1 - Math.pow(1 - t, 3);
 }
 
-function easeInCubic(t) 
+function easeInCubic(t)
 {
     return Math.pow(t, 3);
 }
 
-/*	
-	To interpolate an integer from 'startValue' to 'endValue' 
-	using a 'progress' float that goes from 0.0 to 1.0	
+/*
+	To interpolate an integer from 'startValue' to 'endValue'
+	using a 'progress' float that goes from 0.0 to 1.0
 */
 
-function interpolateValue(startValue, endValue, progress) 
+function interpolateValue(startValue, endValue, progress)
 {
     if (progress < 0.0) progress = 0.0; // Clamp progress to 0.0
     if (progress > 1.0) progress = 1.0; // Clamp progress to 1.0
     return Math.round(startValue + (endValue - startValue) * progress);
 }
 
-/*	
-	To interpolate a color object into another one 
-	using a 'progress' float that goes from 0.0 to 1.0	
+/*
+	To interpolate a color object into another one
+	using a 'progress' float that goes from 0.0 to 1.0
 */
 
-function interpolateColorObj(color1, color2, t) 
+function interpolateColorObj(color1, color2, t)
 {
     return {
         r: Math.round(color1.r + (color2.r - color1.r) * t),
@@ -466,7 +466,7 @@ function processThreadCopy()
 {
 	const progress = System.getFileProgress();
 	const ready = ((progress.current === undefined) || (progress.current == progress.final))
-	
+
 	if ((!ready) && (progress.current != progress.final))
 	{
 		console.log(`Copy Thread Progress: ${progress.current.toString()} / ${progress.final.toString()}`);
@@ -479,7 +479,7 @@ function processThreadCopy()
 		console.log(`Copy File Dest: ${dest}`);
 		System.threadCopyFile(src, dest);
 	}
-	
+
 	return true;
 }
 
@@ -547,21 +547,21 @@ function IconSysDecodeTitle(strIn) {
 	Will return a Bool Array corresponding to each cheat on the 'cheats' array.
 	'game' variable can be specified to get a game's CHEATS.TXT.
 	'game' must be the game's title followed by a '/'.
-	
+
 */
 
 function getPOPSCheat(cheats, game = "")
 {
 	// Create an array to store whether each cheat is enabled
 	const enabledCheats = new Array(cheats.length).fill(false);
-	
+
 	const path = (System.boot_path.substring(0,4) === "host") ? `${System.boot_path}/POPS/${game}CHEATS.TXT` : `mass:/POPS/${game}CHEATS.TXT`;
 	if (std.exists(path))
 	{
 		let errObj = {};
 		const file = std.open(path, "r", errObj);
 		if (file === null) { console.log(`getPOPSCheat(): I/O Error - ${std.strerror(errObj.errno)}`); return enabledCheats; }
-		const content = file.readAsString(); 
+		const content = file.readAsString();
 		file.close();
 
 		const lines = content.split(/\r?\n/);    // Split the content into lines
@@ -581,12 +581,12 @@ function getPOPSCheat(cheats, game = "")
 	return enabledCheats;
 }
 
-/*	Info: 
+/*	Info:
 
 	Function to set cheats on the 'cheats' array to a CHEATS.TXT file.
 	'game' variable can be specified to set a game's CHEATS.TXT.
 	'game' must be the game's title followed by a '/'.
-	
+
 */
 
 function setPOPSCheat(cheats, game = "")
@@ -597,9 +597,9 @@ function setPOPSCheat(cheats, game = "")
 		let errObj = {};
 		const file = std.open(path, "r", errObj);
 		if (file === null) { console.log(`setPOPSCheat(): I/O ERROR - ${std.strerror(errObj.errno)}`); return; }
-		const content = file.readAsString(); 
+		const content = file.readAsString();
 		file.close();
-		
+
 		const lines = content.split(/\r?\n/);    // Split the content into lines
 		const resultLines = []; // To store the processed lines
 
@@ -640,16 +640,16 @@ function setPOPSCheat(cheats, game = "")
 		// Combine all lines into a single string
 		ftxtWrite(path, resultLines.join('\n'));
 	}
-	else 
-	{ 
+	else
+	{
 		let lines = [];
-		
+
 		for (let i = 0; i < cheats.length; i++)
 		{
 			if (cheats[i].enabled) { lines.push(`$${cheats[i].code}`); }
 		}
-		
-		if (lines.length > 0) {	ftxtWrite(path, lines.join('\n')); } 
+
+		if (lines.length > 0) {	ftxtWrite(path, lines.join('\n')); }
 	}
 }
 
@@ -661,7 +661,7 @@ function setPOPSCheat(cheats, game = "")
 
 	Function to set a new Context (Option) Menu
 	Object.
-	
+
 */
 
 function SetDashContext(CONTEXT, STATE)
@@ -672,12 +672,12 @@ function SetDashContext(CONTEXT, STATE)
 	DATA.DASH_STATE = STATE;
 	DASH_CTX[DATA.DASH_CURCTXLVL] = CONTEXT;
 	DASH_CTX[DATA.DASH_CURCTXLVL].Selected = CONTEXT.Default;
-	
+
 	if (DASH_CTX[DATA.DASH_CURCTXLVL].ItemCount < 8)
 	{
 		DATA.DASH_CURCTXITMLAST = DASH_CTX[DATA.DASH_CURCTXLVL].ItemCount;
 	}
-	
+
 	if (DASH_CTX[DATA.DASH_CURCTXLVL].Selected > 7)
 	{
 		if ((DASH_CTX[DATA.DASH_CURCTXLVL].Selected + 7) > DASH_CTX[DATA.DASH_CURCTXLVL].ItemCount)
@@ -691,7 +691,7 @@ function SetDashContext(CONTEXT, STATE)
 			DATA.DASH_CURCTXITMLAST = DATA.DASH_CURCTXITMFIRST + 8;
 		}
 	}
-	
+
 	if (DATA.DASH_CTX_TIMER) { Timer.destroy(DATA.DASH_CTX_TIMER); }
 	DATA.DASH_CTX_TIMER = Timer.new();
 	DATA.DASH_MOVE_FRAME = 0;
@@ -703,7 +703,7 @@ function SetDashContext(CONTEXT, STATE)
 function SelectItem()
 {
 	if (DATA.DASH_CURSUB < 0)
-	{	
+	{
 		switch(DASH_CAT[DATA.DASH_CURCAT].Options[DATA.DASH_CUROPT].Type)
 		{
 			case "ELF": DATA.DASH_STATE = "FADE_OUT"; DASH_SEL = DASH_CAT[DATA.DASH_CURCAT].Options[DATA.DASH_CUROPT]; break;

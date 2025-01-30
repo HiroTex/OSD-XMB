@@ -1,5 +1,5 @@
 # OSD-XMB
-This is a User Interface for the PS2 resembling the PS3/PSP XMB Style, 
+This is a User Interface for the PS2 resembling the PS3/PSP XMB Style,
 made on [Athena Env'](https://github.com/DanielSant0s/AthenaEnv) by DanielSant0s, and inspired by the [XtremeEliteBoot+](http://www.hwc.nat.cu/ps2-vault/hwc-projects/xebplus/)
 dashboard by Howling Wolf & Chelsea.
 
@@ -8,7 +8,7 @@ dashboard by Howling Wolf & Chelsea.
 - Plugin System where you can make your own plugins to show items on the
 	dashboard.
 	Default Plugins are:
-	- **User Category**: 
+	- **User Category**:
 		- Return to Browser: Goes to the OSDSYS Browser.
 		- Refresh Interface: Resets the OSDXMB Interface to update settings
 	- **Settings Category**.
@@ -53,7 +53,7 @@ dashboard by Howling Wolf & Chelsea.
 	You can set several POPS special settings the same way the PS2 per-game settings
 	are set, by using the Options Menu for each game.
 	More global options are set on the "Game Settings" section.
-	
+
 - **Execute ELFs**:
     - You can execute custom ELFs by the use of Plugins, or using the File Explorer.
 	The File Explorer will launch any ELF without arguments, but you can make custom
@@ -75,7 +75,7 @@ Based on: AthenaEnv by DanielSant0s.
 - nuno6573 (Portuguese)
 - PannaSalmone and Okeanos (Italian).
 - LOWbster (German).
-	
+
 <ins>Special thanks to</ins>:
 - krHACKen for his [POPStarter](https://bitbucket.org/ShaolinAssassin/popstarter-documentation-stuff/wiki/Home) project.
 - rickgaiser for his [neutrino](https://github.com/rickgaiser/neutrino) app.

@@ -8,7 +8,7 @@ export const Plugin = (() => { 	// DO NOT REMOVE, Encloses plugin on a local sco
 ///*				   		 CUSTOM STRINGS							  *///
 //////////////////////////////////////////////////////////////////////////
 
-const NAME_MAIN = 
+const NAME_MAIN =
 [
 	"Restart Interface",
 	"Restart Interface",
@@ -43,5 +43,5 @@ return Info;
 //////////////////////////////////////////////////////////////////////////
 ///*				   		   ENCLOSE END							  *///
 //////////////////////////////////////////////////////////////////////////
-	
+
 })(); // DO NOT REMOVE, Encloses plugin on a local scope //

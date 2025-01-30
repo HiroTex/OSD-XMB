@@ -17,7 +17,7 @@ function parseTitleCfg(path)
         // Parse the Title CFG file.
         let data = {};
         const file = std.open(`${path}title.cfg`, "r");
-		
+
 		while (!file.eof()) {
 			let line = file.getline();
 			if (line && line.includes('=')) { // Ensure the line is not empty and contains an '='
@@ -26,7 +26,7 @@ function parseTitleCfg(path)
 				data[key.trim()] = value.trim(); // Trim and store in the data object
 			}
 		}
-		
+
 		file.close();
 
         let AppName = "";
@@ -77,8 +77,8 @@ function parseTitleCfg(path)
 function TryAddMCApps(path)
 {
 	const dir = System.listDir(path);
-	
-	dir.forEach((item) => 
+
+	dir.forEach((item) =>
 	{
 		if ((item.dir) && (item.name !== ".") && (item.name !== "..") && (item.name.includes('_')))
 		{
@@ -92,7 +92,7 @@ function TryAddMCApps(path)
 }
 
 function GetMcOptions()
-{	
+{
 	TryAddMCApps("mc0:/");
 	TryAddMCApps("mc1:/");
 
@@ -106,7 +106,7 @@ function GetMcOptions()
 ///																	   ///
 /// 	Here is the main info that will be retrieved by the App.   	   ///
 //////////////////////////////////////////////////////////////////////////
-	
+
 const Info = {
 	Name: "Apps",
 	Description: "",
@@ -121,5 +121,5 @@ return Info;
 //////////////////////////////////////////////////////////////////////////
 ///*				   		   ENCLOSE END							  *///
 //////////////////////////////////////////////////////////////////////////
-	
+
 })(); // DO NOT REMOVE, Encloses plugin on a local scope //

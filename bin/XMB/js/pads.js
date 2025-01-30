@@ -84,8 +84,8 @@ function ClearPadEvents()
     */
 
 	// Reset the Object.
-	
-	PADEVENTS = 
+
+	PADEVENTS =
 	{
 		ACCEPT: false,
 		CANCEL: false,
@@ -135,56 +135,56 @@ function OpenSubMenu(obj, state)
 function SetPadEvents_Main()
 {
 	// Function to Move Left or Right and change Category.
-	
+
 	const DashMovementLR = function(direction)
 	{
 		playCursorSFX();
 		DATA.DASH_CURCAT = DATA.DASH_CURCAT + direction; // Update selected category.
-		
+
 		// Set the new selected item to the new Category's default, or -1 if no items are found there.
 		if (DASH_CAT[DATA.DASH_CURCAT].ItemCount < 1) { DATA.DASH_CUROPT = -1; }
 		else { DATA.DASH_CUROPT = DASH_CAT[DATA.DASH_CURCAT].Default; }
-		
+
 		// Set the new State and reset the Animation Frame.
-		DATA.DASH_STATE = (direction < 0) ? "MOVE_BACK" : "MOVE_FORWARD"; 
+		DATA.DASH_STATE = (direction < 0) ? "MOVE_BACK" : "MOVE_FORWARD";
 		DATA.DASH_MOVE_FRAME = 0;
 		optBoxA = 0; // Reset the Option Box visibility.
 	};
-	
+
 	// Function to Move Up or Down and change Item.
-	
+
 	const DashMovementUD = function(direction)
 	{
 		playCursorSFX();
 		DATA.DASH_CUROPT = DATA.DASH_CUROPT + direction; // Update the current selected item.
 		DASH_CAT[DATA.DASH_CURCAT].Default = DATA.DASH_CUROPT; // Update the default item of the current category.
-		
+
 		// Set the new State and reset the Animation Frame.
-		DATA.DASH_STATE = (direction < 0) ? "MOVE_UP" : "MOVE_DOWN"; 
-		DATA.DASH_MOVE_FRAME = 0; 
+		DATA.DASH_STATE = (direction < 0) ? "MOVE_UP" : "MOVE_DOWN";
+		DATA.DASH_MOVE_FRAME = 0;
 		optBoxA = 0; // Reset the Option Box visibility.
 	};
-	
+
 	// Enter Item Selected
 	let AcceptBtn = (DATA.BTNTYPE) ? Pads.CIRCLE : Pads.CROSS;
-	PADEVENTS.ACCEPT = () => 
-	{ 
+	PADEVENTS.ACCEPT = () =>
+	{
 		// Only execute if on a Idle state and there is a valid selected option.
 		if (((DATA.DASH_STATE == "IDLE") || DATA.DASH_MOVE_FRAME > 12) && (DATA.DASH_CUROPT > -1))
-		{ 
+		{
 			DATA.DASH_MOVE_FRAME = 0; // Reset the Animation Frame
 			playCursorSFX();
-			
+
 			// Enter to Selected Item if Parental Control is disabled or the option is Safe
 			// If not, ask for Parental Code.
-			
+
 			const SAFE = ((!DATA.PARENTAL) || (("Safe" in DASH_CAT[DATA.DASH_CURCAT].Options[DATA.DASH_CUROPT]) && (DASH_CAT[DATA.DASH_CURCAT].Options[DATA.DASH_CUROPT].Safe)))
 			if (SAFE) { SelectItem(); }
-			else 
+			else
 			{
 				DATA.DASH_STATE = "IDLE_MESSAGE_FADE_IN";
 				DATA.OVSTATE = "MESSAGE_IN";
-				DATA.MESSAGE_INFO = 
+				DATA.MESSAGE_INFO =
 				{
 					Icon: -1,
 					Title: "",
@@ -196,65 +196,65 @@ function SetPadEvents_Main()
 			}
 		}
 	};
-	
+
 	// Move Back
-	PADEVENTS.LEFT = () => 
-	{ 
+	PADEVENTS.LEFT = () =>
+	{
 		// Check if previous Category is valid ID and current State is IDLE, or Moving back or forward.
-		if ((DATA.DASH_CURCAT - 1) > -1 && (DATA.DASH_STATE == "IDLE" || (DATA.DASH_STATE == "MOVE_BACK" || DATA.DASH_STATE == "MOVE_FORWARD"))) 
-		{ 
+		if ((DATA.DASH_CURCAT - 1) > -1 && (DATA.DASH_STATE == "IDLE" || (DATA.DASH_STATE == "MOVE_BACK" || DATA.DASH_STATE == "MOVE_FORWARD")))
+		{
 			DashMovementLR(-1);
 		}
 	};
-	
+
 	// Move Forward
-	PADEVENTS.RIGHT = () => 
-	{ 
-		if ((DATA.DASH_CURCAT + 1) < 7 && (DATA.DASH_STATE == "IDLE" || (DATA.DASH_STATE == "MOVE_BACK" || DATA.DASH_STATE == "MOVE_FORWARD"))) 
-		{ 
+	PADEVENTS.RIGHT = () =>
+	{
+		if ((DATA.DASH_CURCAT + 1) < 7 && (DATA.DASH_STATE == "IDLE" || (DATA.DASH_STATE == "MOVE_BACK" || DATA.DASH_STATE == "MOVE_FORWARD")))
+		{
 			DashMovementLR(1);
 		}
 	};
-	
+
 	// Move Up
-	PADEVENTS.UP = () => 
-	{ 
+	PADEVENTS.UP = () =>
+	{
 		if (((DATA.DASH_CUROPT - 1) > -1) && (DATA.DASH_STATE == "IDLE" || (DATA.DASH_STATE != "MOVE_BACK" && DATA.DASH_STATE != "MOVE_FORWARD")))
-		{ 
+		{
 			DashMovementUD(-1);
 		}
 	};
-	
+
 	// Move Down
-	PADEVENTS.DOWN = () => 
-	{ 
-		if (((DATA.DASH_CUROPT + 1) < DASH_CAT[DATA.DASH_CURCAT].ItemCount) && (DATA.DASH_STATE == "IDLE" || (DATA.DASH_STATE != "MOVE_BACK" && DATA.DASH_STATE != "MOVE_FORWARD"))) 
-		{ 
-			DashMovementUD(1);	
+	PADEVENTS.DOWN = () =>
+	{
+		if (((DATA.DASH_CUROPT + 1) < DASH_CAT[DATA.DASH_CURCAT].ItemCount) && (DATA.DASH_STATE == "IDLE" || (DATA.DASH_STATE != "MOVE_BACK" && DATA.DASH_STATE != "MOVE_FORWARD")))
+		{
+			DashMovementUD(1);
 		}
 	};
-	
+
 	// Open Option Context Menu
-	PADEVENTS.TRIANGLE = () => 
+	PADEVENTS.TRIANGLE = () =>
 	{
 		OpenSubMenu(DASH_CAT[DATA.DASH_CURCAT].Options[DATA.DASH_CUROPT], "MENU_CONTEXT_IN");
 	};
-	
+
 }
 
 // Sets the Pad Events for Sub Menus.
 
 function SetPadEvents_Sub()
-{	
+{
 	// Function to go back to either previous sub menu or to main dashboard.
-	
+
 	const DashSubMoveBack = function()
 	{
 		// Only go back if on an IDLE state.
 		if ((DATA.DASH_STATE == "SUBMENU_IDLE") || (DATA.DASH_STATE == "NEW_SUBMENU_IDLE") || (DATA.DASH_MOVE_FRAME > 12))
 		{
 			playCancelSFX();
-			
+
 			// Update the current State to exit and reset the animation frame.
 			DATA.DASH_STATE = (DATA.DASH_CURSUB > 0) ? "NEW_SUBMENU_OUT" : "SUBMENU_OUT";
 			DATA.DASH_MOVE_FRAME = 0;
@@ -262,9 +262,9 @@ function SetPadEvents_Sub()
 			SetDashPadEvents(0); // Disable all inputs until IDLE state again to avoid issues.
 		}
 	};
-	
+
 	// Function to go up and down and select items.
-	
+
 	const DashSubMoveUD = function(direction)
 	{
 		playCursorSFX();
@@ -274,7 +274,7 @@ function SetPadEvents_Sub()
 		DATA.DASH_MOVE_FRAME = 0; // Reset the Animation Frame.
 		optBoxA = 0; // Reset the Option Box visibility.
 	};
-	
+
 	// Enter Selected Item.
 	let AcceptBtn = (DATA.BTNTYPE) ? Pads.CIRCLE : Pads.CROSS;
 	PADEVENTS.ACCEPT = () =>
@@ -284,25 +284,25 @@ function SetPadEvents_Sub()
 		{
 			DATA.DASH_MOVE_FRAME = 0; // Reset the Animation Frame.
 			playCursorSFX();
-			
-			// I could copy the Parental control behaviour here, 
+
+			// I could copy the Parental control behaviour here,
 			// but I think having it on the main dashboard is enough.
-			
-			SelectItem();  
+
+			SelectItem();
 		}
 	};
-	
+
 	// Set the Go Back Event to both Cancel button and Left Pad.
 	let CancelBtn = (DATA.BTNTYPE) ? Pads.CROSS : Pads.CIRCLE;
 	PADEVENTS.CANCEL = DashSubMoveBack;
 	PADEVENTS.LEFT = DashSubMoveBack;
-	
+
 	// Move Up and Down
 	PADEVENTS.UP = () => { if (((DATA.DASH_CURSUBOPT - 1) > -1)) { DashSubMoveUD(-1); } };
 	PADEVENTS.DOWN = () => { if (((DATA.DASH_CURSUBOPT + 1) < DASH_SUB[DATA.DASH_CURSUB].ItemCount)) { DashSubMoveUD(1); } };
-	
+
 	// Open Option Context Menu
-	PADEVENTS.TRIANGLE = () => 
+	PADEVENTS.TRIANGLE = () =>
 	{
 		OpenSubMenu(DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT], "SUBMENU_CONTEXT_IN");
 	};
@@ -314,28 +314,28 @@ function SetPadEvents_Context()
 {
 	// Go Back
 	let CancelBtn = (DATA.BTNTYPE) ? Pads.CROSS : Pads.CIRCLE;
-	PADEVENTS.CANCEL = () => 
-	{ 
+	PADEVENTS.CANCEL = () =>
+	{
 		if ((DATA.DASH_STATE == "SUBMENU_CONTEXT") || (DATA.DASH_STATE == "MENU_CONTEXT"))
 		{
 			playCancelSFX();
-			
+
 			if ("Cancel" in DASH_CTX[DATA.DASH_CURCTXLVL])
 			{
 				let _f = DASH_CTX[DATA.DASH_CURCTXLVL].Cancel;
 				_f(DATA, DASH_CTX[DATA.DASH_CURCTXLVL].Selected);
 			}
-			
+
 			DATA.DASH_STATE = (DATA.DASH_STATE == "MENU_CONTEXT") ? "MENU_CONTEXT_OUT" : "SUBMENU_CONTEXT_OUT";
 			DATA.DASH_MOVE_FRAME = 0;
 			SetDashPadEvents(0);
 		}
 	};
-	
+
 	// Select Option
 	let AcceptBtn = (DATA.BTNTYPE) ? Pads.CIRCLE : Pads.CROSS;
-	PADEVENTS.ACCEPT = () => 
-	{ 
+	PADEVENTS.ACCEPT = () =>
+	{
 		if ((DATA.DASH_STATE == "SUBMENU_CONTEXT") || (DATA.DASH_STATE == "MENU_CONTEXT"))
 		{
 			playCursorSFX();
@@ -348,14 +348,14 @@ function SetPadEvents_Context()
 				const result = DASH_CTX[DATA.DASH_CURCTXLVL].Confirm(DATA, DASH_CTX[DATA.DASH_CURCTXLVL].Selected);
 				if ((result !== undefined) && (result === false)) { return;	}
 			}
-			
+
 			DASH_CTX[DATA.DASH_CURCTXLVL].Default = DASH_CTX[DATA.DASH_CURCTXLVL].Selected;
 		}
 	};
-	
+
 	// Move Up
-	PADEVENTS.UP = () => 
-	{ 
+	PADEVENTS.UP = () =>
+	{
 		if ((DASH_CTX[DATA.DASH_CURCTXLVL].Selected - 1) > -1)
 		{
 			Timer.reset(DATA.DASH_CTX_TIMER);
@@ -370,10 +370,10 @@ function SetPadEvents_Context()
 			}
 		}
 	};
-	
+
 	// Move Down
-	PADEVENTS.DOWN = () => 
-	{ 
+	PADEVENTS.DOWN = () =>
+	{
 		if ((DASH_CTX[DATA.DASH_CURCTXLVL].Selected + 1) < DASH_CTX[DATA.DASH_CURCTXLVL].ItemCount)
 		{
 			Timer.reset(DATA.DASH_CTX_TIMER);
@@ -395,13 +395,13 @@ function SetPadEvents_Context()
 function SetPadEvents_Message()
 {
 	// Only add the options to go back or enter if the Message Info has them set to true.
-	
+
 	if (("BACK_BTN" in DATA.MESSAGE_INFO) && (DATA.MESSAGE_INFO.BACK_BTN))
 	{
 		// Go Back
 		let CancelBtn = (DATA.BTNTYPE) ? Pads.CROSS : Pads.CIRCLE;
-		PADEVENTS.CANCEL = () => 
-		{ 
+		PADEVENTS.CANCEL = () =>
+		{
 			if (DATA.OVSTATE == "MESSAGE_IDLE")
 			{
 				DATA.OVSTATE = "MESSAGE_OUT";
@@ -415,13 +415,13 @@ function SetPadEvents_Message()
 			}
 		};
 	}
-	
+
 	if (("ENTER_BTN" in DATA.MESSAGE_INFO) && (DATA.MESSAGE_INFO.ENTER_BTN))
 	{
 		// Select Option
 		let AcceptBtn = (DATA.BTNTYPE) ? Pads.CIRCLE : Pads.CROSS;
-		PADEVENTS.ACCEPT = () => 
-		{ 
+		PADEVENTS.ACCEPT = () =>
+		{
 			if (DATA.OVSTATE == "MESSAGE_IDLE")
 			{
 				console.log(`PADEVENT: Starting Message Confirm Function.`);
@@ -444,18 +444,18 @@ function SetPadEvents_Message()
 function SetPadEvents_Vmode()
 {
 	// Move Back
-	PADEVENTS.LEFT = () => 
-	{ 
+	PADEVENTS.LEFT = () =>
+	{
 		if (DATA.OVSTATE == "MESSAGE_IDLE")
 		{
 			DATA.MESSAGE_INFO.Selected--;
 			DATA.MESSAGE_INFO.Selected = (DATA.MESSAGE_INFO.Selected < 0) ? 0 : DATA.MESSAGE_INFO.Selected;
 		}
 	};
-	
+
 	// Move Forward
-	PADEVENTS.RIGHT = () => 
-	{ 
+	PADEVENTS.RIGHT = () =>
+	{
 		if (DATA.OVSTATE == "MESSAGE_IDLE")
 		{
 			DATA.MESSAGE_INFO.Selected++;
@@ -469,18 +469,18 @@ function SetPadEvents_Vmode()
 function SetPadEvents_Parental()
 {
 	// Move Back
-	PADEVENTS.LEFT = () => 
-	{ 
+	PADEVENTS.LEFT = () =>
+	{
 		if (DATA.OVSTATE == "MESSAGE_IDLE")
 		{
 			DATA.MESSAGE_INFO.Selected--;
 			DATA.MESSAGE_INFO.Selected = (DATA.MESSAGE_INFO.Selected < 0) ? 0 : DATA.MESSAGE_INFO.Selected;
 		}
 	};
-	
+
 	// Move Forward
-	PADEVENTS.RIGHT = () => 
-	{ 
+	PADEVENTS.RIGHT = () =>
+	{
 		if (DATA.OVSTATE == "MESSAGE_IDLE")
 		{
 			DATA.MESSAGE_INFO.Selected++;
@@ -489,18 +489,18 @@ function SetPadEvents_Parental()
 	};
 
 	// Move Down
-	PADEVENTS.DOWN = () => 
-	{ 
+	PADEVENTS.DOWN = () =>
+	{
 		if (DATA.OVSTATE == "MESSAGE_IDLE")
 		{
 			DATA.MESSAGE_INFO.TMPCODE[DATA.MESSAGE_INFO.Selected]--;
 			DATA.MESSAGE_INFO.TMPCODE[DATA.MESSAGE_INFO.Selected] = (DATA.MESSAGE_INFO.TMPCODE[DATA.MESSAGE_INFO.Selected] < 0) ? 9 : DATA.MESSAGE_INFO.TMPCODE[DATA.MESSAGE_INFO.Selected];
 		}
 	};
-	
+
 	// Move Up
-	PADEVENTS.UP = () => 
-	{ 
+	PADEVENTS.UP = () =>
+	{
 		if (DATA.OVSTATE == "MESSAGE_IDLE")
 		{
 			DATA.MESSAGE_INFO.TMPCODE[DATA.MESSAGE_INFO.Selected]++;
@@ -514,10 +514,10 @@ function SetPadEvents_Parental()
 function SetPadEvents_Information()
 {
 	// Move Back
-	PADEVENTS.LEFT = () => 
-	{ 
+	PADEVENTS.LEFT = () =>
+	{
 		if (DATA.OVSTATE !== "MESSAGE_IDLE") { return; }
-		
+
 		let obj = DATA.MESSAGE_INFO.Data[DATA.MESSAGE_INFO.Selected]
 		if (obj.Selectable)
 		{
@@ -525,12 +525,12 @@ function SetPadEvents_Information()
 			DATA.MESSAGE_INFO.Data[DATA.MESSAGE_INFO.Selected].Selected = (DATA.MESSAGE_INFO.Data[DATA.MESSAGE_INFO.Selected].Selected < 0) ? 0 : DATA.MESSAGE_INFO.Data[DATA.MESSAGE_INFO.Selected].Selected;
 		}
 	};
-	
+
 	// Move Forward
-	PADEVENTS.RIGHT = () => 
-	{ 
+	PADEVENTS.RIGHT = () =>
+	{
 		if (DATA.OVSTATE !== "MESSAGE_IDLE") { return; }
-		
+
 		let obj = DATA.MESSAGE_INFO.Data[DATA.MESSAGE_INFO.Selected]
 		if (obj.Selectable)
 		{
@@ -540,10 +540,10 @@ function SetPadEvents_Information()
 	};
 
 	// Move Down
-	PADEVENTS.DOWN = () => 
-	{ 
+	PADEVENTS.DOWN = () =>
+	{
 		if (DATA.OVSTATE !== "MESSAGE_IDLE") { return; }
-		
+
 		for (let i = DATA.MESSAGE_INFO.Selected + 1; i < DATA.MESSAGE_INFO.Data.length; i++)
 		{
 			if (DATA.MESSAGE_INFO.Data[i].Selectable)
@@ -553,12 +553,12 @@ function SetPadEvents_Information()
 			}
 		}
 	};
-	
+
 	// Move Up
-	PADEVENTS.UP = () => 
-	{ 
+	PADEVENTS.UP = () =>
+	{
 		if (DATA.OVSTATE !== "MESSAGE_IDLE") { return; }
-		
+
 		for (let i = DATA.MESSAGE_INFO.Selected - 1; i > -1; i--)
 		{
 			if (DATA.MESSAGE_INFO.Data[i].Selectable)

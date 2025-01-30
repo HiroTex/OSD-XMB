@@ -8,7 +8,7 @@ export const Plugin = (() => { 	// DO NOT REMOVE, Encloses plugin on a local sco
 ///*				   		 CUSTOM STRINGS							  *///
 //////////////////////////////////////////////////////////////////////////
 
-const NAME_MAIN = 
+const NAME_MAIN =
 [
 	"Theme Settings",
 	"Paramètres de thème",
@@ -19,7 +19,7 @@ const NAME_MAIN =
 	"Configurações de tema",
 ];
 
-const DESC_MAIN = 
+const DESC_MAIN =
 [
 	"Adjust settings related to the appearance of the XMB Screen.",
 	"Réglez les paramètres liés à l'apparence de l'écran XMB.",
@@ -30,84 +30,84 @@ const DESC_MAIN =
 	"Ajuste as configurações relacionadas à aparência da tela XMB.",
 ];
 
-const NAME_SET1 = 
+const NAME_SET1 =
 [
 	"Theme",
-	"Thème", 
-	"Tema", 
-	"Thema", 
-	"Tema", 
-	"Thema", 
-	"Tema", 
+	"Thème",
+	"Tema",
+	"Thema",
+	"Tema",
+	"Thema",
+	"Tema",
 ];
 
-const DESC_SET1 = 
+const DESC_SET1 =
 [
 	"Sets the interface style.",
-	"Définir le style de l'interface.", 
-	"Establecer el estilo de la interfaz.", 
-	"Den Schnittstellenstil festlegen.", 
-	"Seleziona lo stile dell'interfaccia.", 
-	"Stel de interface-stijl in.", 
-	"Definir o estilo da interface.", 
+	"Définir le style de l'interface.",
+	"Establecer el estilo de la interfaz.",
+	"Den Schnittstellenstil festlegen.",
+	"Seleziona lo stile dell'interfaccia.",
+	"Stel de interface-stijl in.",
+	"Definir o estilo da interface.",
 ];
 
-const NAME_SET2 = 
+const NAME_SET2 =
 [
 	"Color",
-	"Couleur", 
-	"Color", 
-	"Farbe", 
-	"Colore", 
-	"Kleur", 
-	"Cor", 
+	"Couleur",
+	"Color",
+	"Farbe",
+	"Colore",
+	"Kleur",
+	"Cor",
 ];
 
-const DESC_SET2 = 
+const DESC_SET2 =
 [
 	"Sets the background color.",
-	"Définir la couleur de fond.", 
-	"Establecer el color de fondo.", 
-	"Hintergrundfarbe festlegen.", 
-	"Seleziona il colore dello sfondo.", 
-	"Stel de achtergrondkleur in.", 
-	"Definir a cor de fundo.", 
+	"Définir la couleur de fond.",
+	"Establecer el color de fondo.",
+	"Hintergrundfarbe festlegen.",
+	"Seleziona il colore dello sfondo.",
+	"Stel de achtergrondkleur in.",
+	"Definir a cor de fundo.",
 ];
 
-const NAME_SET3 = 
+const NAME_SET3 =
 [
 	"Background",
-	"Arrière-plan", 
-	"Fondo", 
-	"Hintergrundbild", 
-	"Sfondo", 
-	"Achtergrond", 
-	"Fundo", 
+	"Arrière-plan",
+	"Fondo",
+	"Hintergrundbild",
+	"Sfondo",
+	"Achtergrond",
+	"Fundo",
 ];
 
-const DESC_SET3 = 
+const DESC_SET3 =
 [
 	"Set the interface background.",
-	"Définir l'arrière-plan de l'interface.", 
-	"Establecer el fondo de la interfaz.", 
-	"Den Hintergrund der Schnittstelle festlegen.", 
-	"Seleziona lo sfondo dell'interfaccia.", 
-	"Stel de achtergrond van de interface in.", 
-	"Definir o fundo da interface.", 
+	"Définir l'arrière-plan de l'interface.",
+	"Establecer el fondo de la interfaz.",
+	"Den Hintergrund der Schnittstelle festlegen.",
+	"Seleziona lo sfondo dell'interfaccia.",
+	"Stel de achtergrond van de interface in.",
+	"Definir o fundo da interface.",
 ];
 
-const NAME_SET4 = 
+const NAME_SET4 =
 [
 	"Waves",
-	"Waves", 
-	"Ondas", 
-	"Waves", 
-	"Waves", 
-	"Waves", 
-	"Waves", 
+	"Waves",
+	"Ondas",
+	"Waves",
+	"Waves",
+	"Waves",
+	"Waves",
 ];
 
-const DESC_SET4 = 
+const DESC_SET4 =
 [
 	"Set the Background Waves On or Off.",
 	"Set the Background Waves On or Off.",
@@ -115,10 +115,10 @@ const DESC_SET4 =
 	"Set the Background Waves On or Off.",
 	"Set the Background Waves On or Off.",
 	"Set the Background Waves On or Off.",
-	"Set the Background Waves On or Off.", 
+	"Set the Background Waves On or Off.",
 ];
 
-const thmSett_NoWpSet = 
+const thmSett_NoWpSet =
 [
 	"There is no wallpaper set. \nGo to [Photo], open an image, and then select [Set as Wallpaper] from the control panel to save the image.",
 	"Aucun fond d'écran défini. \nAllez dans [Photo], ouvrez une image, et sélectionnez [Définir comme fond d'écran].",
@@ -129,29 +129,29 @@ const thmSett_NoWpSet =
 	"Nenhum papel de parede definido. \nVá para [Foto], abra uma imagem e escolha [Definir como papel de parede]."
 ];
 
-const setting1 = 
+const setting1 =
 [
-	"Original", 
-	"Original", 
-	"Original", 
-	"Original", 
-	"Originale", 
-	"Origineel", 
+	"Original",
+	"Original",
+	"Original",
+	"Original",
+	"Originale",
+	"Origineel",
 	"Original",
 ];
 
-const setting2 = 
+const setting2 =
 [
-	"Wallpaper", 
-	"Fond d'écran", 
-	"Fondo de pantalla", 
-	"Hintergrundbild", 
-	"Sfondo personalizzato", 
-	"Achtergrondafbeelding", 
+	"Wallpaper",
+	"Fond d'écran",
+	"Fondo de pantalla",
+	"Hintergrundbild",
+	"Sfondo personalizzato",
+	"Achtergrondafbeelding",
 	"Fundo personalizado",
 ];
 
-const thmSett_Wait = 
+const thmSett_Wait =
 [
 	"Please wait...",
 	"Veuillez patienter...",
@@ -170,22 +170,22 @@ function GetThemeContextInfo()
 {
 	const CURTHEME = getFolderNameFromPath(DATA.THEME_PATH);
 	const listDir = System.listDir("/THM/");
-	
+
 	let defItem = 0;
 	let dir_options = [];
-	
+
 	dir_options.push
 	({
 		Name: "Original",
 		Icon: -1
 	});
-		
+
 	const sortedDirectories = listDir
     .filter((item) => item.name !== "." && item.name !== ".." && item.name !== "Original" && item.dir) // Exclude "." and ".." and keep only directories
     .sort((a, b) => a.name.localeCompare(b.name)); // Sort alphabetically by name
-	
+
 	// Loop through sortedDirectories and collect directories into the desired structure
-	sortedDirectories.forEach((item) => 
+	sortedDirectories.forEach((item) =>
 	{
 	const ico = (std.exists(`./THM/${item.name}/thmico.png`)) ? new Image(`./THM/${item.name}/thmico.png`, RAM, async_list) : -1;
 		dir_options.push
@@ -193,10 +193,10 @@ function GetThemeContextInfo()
 			Name: item.name,
 			Icon: ico,
 		});
-		
+
 		if (item.name == CURTHEME) { defItem = dir_options.length - 1; }
 	});
-	
+
 	return { Options: dir_options, Default: defItem, ItemCount: dir_options.length, };
 }
 
@@ -204,22 +204,22 @@ function GetThemeColorContextInfo()
 {
 	let dir_options = [];
 	dir_options.push({ Name: setting1, Icon: -1 });
-	
+
 	for (let i = 1; i < 14; i++)
 	{
 		dir_options.push({ Name: "", Icon: colr_icons[i - 1], });
 	}
-	
+
 	// Preview Changes Function
 	let _p = function(DATA, val)
 	{
 		let OSDATE = new Date();
 		DATA.BGTMP = val;
-		DATA.BGCOL = (val == 0) ? (OSDATE.getMonth() + 1) : val;		
+		DATA.BGCOL = (val == 0) ? (OSDATE.getMonth() + 1) : val;
 		DATA.BGSWITCH = true;
 		DATA.BGFRAME = 0;
 	}
-	
+
 	// Accept Changes Function
 	let _a = function(DATA, val)
 	{
@@ -233,7 +233,7 @@ function GetThemeColorContextInfo()
 		config["BgColor"] = val.toString();
 		DATA.CONFIG.Push("main.cfg", config);
 	}
-	
+
 	// Cancel Changes Function
 	let _c = function(DATA, val)
 	{
@@ -243,7 +243,7 @@ function GetThemeColorContextInfo()
 		DATA.BGSWITCH = true;
 		DATA.BGFRAME = 0;
 	}
-	
+
 	return { Options: dir_options, Default: DATA.BGVAL, ItemCount: dir_options.length, Preview: _p, Confirm: _a, Cancel: _c, };
 }
 
@@ -252,11 +252,11 @@ function GetThemeBackgroundContextInfo()
 	let dir_options = [];
 	dir_options.push({ Name: setting1, Icon: -1 });
 	dir_options.push({ Name: setting2, Icon: -1 });
-	
+
 	let _a = function(DATA, val)
 	{
 		console.log(`THMSET: Background Image Function.`);
-		
+
         if ((val == 1) && (!DATA.BGIMG)) {
 
             DATA.DISPLAYBG = false;
@@ -302,7 +302,7 @@ function GetThemeWaveContextInfo()
 	let dir_options = [];
 	dir_options.push({ Name: TXT_YES, Icon: -1 });
 	dir_options.push({ Name: TXT_NO, Icon: -1 });
-	
+
 	let _a = function(DATA, val)
 	{
 		DATA.BGWAVES = (val == 0);
@@ -310,14 +310,14 @@ function GetThemeWaveContextInfo()
 		config["waves"] = DATA.BGWAVES.toString();
 		DATA.CONFIG.Push("main.cfg", config);
 	}
-	
+
 	return { Options: dir_options, Default: ((DATA.BGWAVES) ? 0 : 1), ItemCount: dir_options.length, Confirm: _a, };
 }
 
 function getOptions()
 {
 	const opts = [];
-	
+
 	opts.push({
 		Name: NAME_SET1,
 		Description: DESC_SET1,
@@ -325,7 +325,7 @@ function getOptions()
 		Type: "CONTEXT",
 		Value: GetThemeContextInfo(),
 	});
-	
+
 	opts.push({
 		Name: NAME_SET2,
 		Description: DESC_SET2,
@@ -333,7 +333,7 @@ function getOptions()
 		Type: "CONTEXT",
 		Value: GetThemeColorContextInfo(),
 	});
-	
+
 	opts.push({
 		Name: NAME_SET3,
 		Description: DESC_SET3,
@@ -341,7 +341,7 @@ function getOptions()
 		Type: "CONTEXT",
 		Value: GetThemeBackgroundContextInfo(),
 	});
-	
+
 	opts.push({
 		Name: NAME_SET4,
 		Description: DESC_SET4,
@@ -349,7 +349,7 @@ function getOptions()
 		Type: "CONTEXT",
 		Value: GetThemeWaveContextInfo(),
 	});
-	
+
 	return { Options: opts, Default: 0, ItemCount: opts.length };
 }
 
@@ -358,12 +358,12 @@ function getOptions()
 ///																	   ///
 /// 	Here is the main info that will be retrieved by the App.   	   ///
 //////////////////////////////////////////////////////////////////////////
-	
+
 const Info = {
 	Name: NAME_MAIN,
 	Description: DESC_MAIN,
 	Icon: 9,
-	Category: 1, 
+	Category: 1,
 	Type: "SUBMENU",
 	Value: getOptions(),
 };
@@ -373,5 +373,5 @@ return Info;
 //////////////////////////////////////////////////////////////////////////
 ///*				   		   ENCLOSE END							  *///
 //////////////////////////////////////////////////////////////////////////
-	
+
 })(); // DO NOT REMOVE, Encloses plugin on a local scope //

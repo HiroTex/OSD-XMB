@@ -8,7 +8,7 @@ export const Plugin = (() => { 	// DO NOT REMOVE, Encloses plugin on a local sco
 ///*				   		 CUSTOM STRINGS							  *///
 //////////////////////////////////////////////////////////////////////////
 
-const NAME_MAIN = 
+const NAME_MAIN =
 [
 	"System settings",
 	"Paramètres système",
@@ -19,7 +19,7 @@ const NAME_MAIN =
 	"Definições de Sistema",
 ];
 
-const DESC_MAIN = 
+const DESC_MAIN =
 [
 	"Adjusts settings for this PS2 system.",
 	"Réglez les paramètres de ce système PS2.",
@@ -30,29 +30,29 @@ const DESC_MAIN =
 	"Ajuste as configurações deste sistema PS2.",
 ];
 
-const NAME_SET1 = 
+const NAME_SET1 =
 [
-	"Language", 
-	"Langue", 
-	"Idioma", 
-	"Sprache", 
-	"Lingua", 
-	"Taal", 
-	"Idioma", 
+	"Language",
+	"Langue",
+	"Idioma",
+	"Sprache",
+	"Lingua",
+	"Taal",
+	"Idioma",
 ];
 
-const DESC_SET1 = 
+const DESC_SET1 =
 [
-	"Set the system Language.", 
-	"Définir la langue du système", 
-	"Establecer el idioma del sistema.", 
-	"Systemsprache festlegen", 
+	"Set the system Language.",
+	"Définir la langue du système",
+	"Establecer el idioma del sistema.",
+	"Systemsprache festlegen",
 	"Seleziona la lingua del sistema",
-	"Stel de systeemtaal in", 
-	"Definir o idioma do sistema", 
+	"Stel de systeemtaal in",
+	"Definir o idioma do sistema",
 ];
 
-const NAME_SET2 = 
+const NAME_SET2 =
 [
 	"Confirmation Button",
 	"Bouton de confirmation",
@@ -63,7 +63,7 @@ const NAME_SET2 =
 	"Botão de Confirmação",
 ];
 
-const DESC_SET2 = 
+const DESC_SET2 =
 [
 	"Sets the confirmation button type.",
 	"Définit le type de bouton de confirmation",
@@ -74,7 +74,7 @@ const DESC_SET2 =
 	"Define o tipo de botão de confirmação.",
 ];
 
-const NAME_SET3 = 
+const NAME_SET3 =
 [
 	"System Information",
 	"System Information",
@@ -85,7 +85,7 @@ const NAME_SET3 =
 	"System Information",
 ];
 
-const TYPE_1 = 
+const TYPE_1 =
 [
 	"Occidental",
 	"Occidental",
@@ -96,7 +96,7 @@ const TYPE_1 =
 	"Ocidental",
 ];
 
-const TYPE_2 = 
+const TYPE_2 =
 [
 	"Asian",
 	"Asiatique",
@@ -107,7 +107,7 @@ const TYPE_2 =
 	"Asiático",
 ];
 
-const SYSINFO_BDATE = 
+const SYSINFO_BDATE =
 [
 	"Build Date",
 	"Build Date",
@@ -118,7 +118,7 @@ const SYSINFO_BDATE =
 	"Build Date",
 ];
 
-const SYSINFO_TYPE = 
+const SYSINFO_TYPE =
 [
 	"Console Type",
 	"Console Type",
@@ -129,7 +129,7 @@ const SYSINFO_TYPE =
 	"Console Type",
 ];
 
-const SYSINFO_TYPE_C = 
+const SYSINFO_TYPE_C =
 [
 	"Retail",
 	"Retail",
@@ -140,7 +140,7 @@ const SYSINFO_TYPE_C =
 	"Retail",
 ];
 
-const SYSINFO_TYPE_D = 
+const SYSINFO_TYPE_D =
 [
 	"Development Kit",
 	"Development Kit",
@@ -165,7 +165,7 @@ function getLanguagetContextInfo()
 	ctx_options.push({ Name: "Italiano", Icon: -1 });
 	ctx_options.push({ Name: "Nederlands", Icon: -1 });
 	ctx_options.push({ Name: "Português", Icon: -1 });
-	
+
 	// Accept Changes Function
 	let _a = function(DATA, val)
 	{
@@ -174,16 +174,16 @@ function getLanguagetContextInfo()
 		config["lang"] = val.toString();
 		DATA.CONFIG.Push("main.cfg", config);
 	}
-	
+
 	return { Options: ctx_options, Default: DATA.LANGUAGE, ItemCount: ctx_options.length, Confirm: _a};
 }
 
 function getButtonContextInfo()
 {
 	let ctx_options = [];
-	ctx_options.push({ Name: TYPE_1, Icon: -1 });	
+	ctx_options.push({ Name: TYPE_1, Icon: -1 });
 	ctx_options.push({ Name: TYPE_2, Icon: -1 });
-	
+
 	// Accept Changes Function
 	let _a = function(DATA, val)
 	{
@@ -192,7 +192,7 @@ function getButtonContextInfo()
 		config["btnType"] = val.toString();
 		DATA.CONFIG.Push("main.cfg", config);
 	}
-	
+
 	return { Options: ctx_options, Default: DATA.BTNTYPE, ItemCount: ctx_options.length, Confirm: _a};
 }
 
@@ -273,7 +273,7 @@ function showSysInfoMsg()
 
 	    sysInfo.push({
 		    Selectable: false,
-		    get Name() { 
+		    get Name() {
 			    return "Region";
 		    },
 		    get Description() {
@@ -283,7 +283,7 @@ function showSysInfoMsg()
 
 	    sysInfo.push({
 		    Selectable: false,
-		    get Name() { 
+		    get Name() {
 			    return SYSINFO_TYPE[DATA.LANGUAGE];
 		    },
 		    get Description() {
@@ -293,7 +293,7 @@ function showSysInfoMsg()
 
 	    sysInfo.push({
 		    Selectable: false,
-		    get Name() { 
+		    get Name() {
 			    return SYSINFO_BDATE[DATA.LANGUAGE];
 		    },
 		    get Description() {
@@ -303,7 +303,7 @@ function showSysInfoMsg()
 
 	    DATA.DASH_STATE = "IDLE_MESSAGE_FADE_IN";
 	    DATA.OVSTATE = "MESSAGE_IN";
-	    DATA.MESSAGE_INFO = 
+	    DATA.MESSAGE_INFO =
 	    {
 		    Icon: 8,
 		    Title: NAME_SET3,
@@ -319,7 +319,7 @@ function showSysInfoMsg()
 function getOptions()
 {
 	let options = [];
-	
+
 	options.push({
 		Name: NAME_SET1,
 		Description: DESC_SET1,
@@ -327,7 +327,7 @@ function getOptions()
 		Type: "CONTEXT",
 		Value: getLanguagetContextInfo(),
 	});
-	
+
 	options.push({
 		Name: NAME_SET2,
 		Description: DESC_SET2,
@@ -335,7 +335,7 @@ function getOptions()
 		Type: "CONTEXT",
 		Value: getButtonContextInfo(),
 	});
-	
+
 	options.push({
 		Name: NAME_SET3,
 		Description: "",
@@ -343,7 +343,7 @@ function getOptions()
 		Type: "CODE",
 		Value: showSysInfoMsg,
 	});
-	
+
 	return { Options: options, Default: 0, ItemCount: options.length };
 }
 
@@ -352,7 +352,7 @@ function getOptions()
 ///																	   ///
 /// 	Here is the main info that will be retrieved by the App.   	   ///
 //////////////////////////////////////////////////////////////////////////
-	
+
 const Info = {
 	Name: NAME_MAIN,
 	Description: DESC_MAIN,
@@ -367,5 +367,5 @@ return Info;
 //////////////////////////////////////////////////////////////////////////
 ///*				   		   ENCLOSE END							  *///
 //////////////////////////////////////////////////////////////////////////
-	
+
 })(); // DO NOT REMOVE, Encloses plugin on a local scope //

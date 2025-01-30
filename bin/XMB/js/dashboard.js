@@ -58,7 +58,7 @@ const glowArr = { Dir: 1, Value: 100, Min: 50, Max: 100, };
 let spining = 0.0;
 
 // Option Box Alpha
-let optBoxA = 0;  
+let optBoxA = 0;
 
 let processingAsyncList = false; 		// Set to true after all plugins were parsed.
 const async_list = new ImageList(); 	// Image List object to asynchronously load images.
@@ -69,7 +69,7 @@ const colr_icons = [];					// Image Array for the color icons on the Theme Setti
 
 // Image Names to search and load
 // from the current selected Theme.
-const dash_icons_names = 
+const dash_icons_names =
 [
 	"ic_cat_home.png",					// [00]
 	"ic_cat_settings.png",				// [01]
@@ -134,12 +134,12 @@ function getDashFrameEasedMovement(direction)
 		reverseEased = easeOutCubic(Math.min(DATA.DASH_MOVE_FRAME / 20, 1));
 		easedProgress = easeInCubic(Math.min((20 - DATA.DASH_MOVE_FRAME) / 20, 1));
 	}
-	
+
 	return { easedProgress, reverseEased };
 }
 
 /*	Info:
-	
+
 	Draws a dashboard icon to the screen with the settings given.
 		i: icon to draw.
 		w: width of the icon.
@@ -148,7 +148,7 @@ function getDashFrameEasedMovement(direction)
 		x: X Position on screen.
 		y: Y Position on screen.
 		r: Angle, default is 0.
-		
+
 */
 
 function drawDashIcon(i, w, h, a, x, y, r = 0.0)
@@ -186,13 +186,13 @@ function drawDashLoadIcon(w, h, a, x, y)
 function DrawDashElementIcon(Obj, size, x, y, a)
 {
 	if (ICOFULLA + a < 0) { a = -ICOFULLA; } else if (ICOFULLA + a > ICOFULLA) { a = 0; }
-	
+
 	if ("CustomIcon" in Obj)
 	{
 		if ((Obj.CustomIcon != -1) && (Obj.CustomIcon.ready()))
 		{
 			if (Obj.CustomIcon.filter !== LINEAR) { Obj.CustomIcon.filter = LINEAR; }
-			
+
 			if (ICOFULLA + a > 0)
 			{
 				const imgcolor = neutralizeOverlayWithAlpha();
@@ -223,7 +223,7 @@ function DrawDashElementText(obj, glow, nameInfo, descInfo = -1, cntxInfo = -1)
 		const clr = { r:255, g: 255, b: 255, a: TXTFULLA + nameInfo.a };
 		const pos = { x: nameInfo.x, y: nameInfo.y };
 		TxtPrint(name, clr, pos, "LEFT", font_m, glow);
-		
+
 		if ((cntxInfo !== -1) && ("Type" in obj) && (obj.Type == "CONTEXT") && ("Default" in obj.Value))
 		{
 			const defItem = obj.Value.Default;
@@ -236,7 +236,7 @@ function DrawDashElementText(obj, glow, nameInfo, descInfo = -1, cntxInfo = -1)
 			}
 		}
 	}
-	
+
 	if ((descInfo !== -1) && ((TXTFULLA + descInfo.a) > 0))
 	{
 		const desc = (Array.isArray(obj.Description)) ? obj.Description[DATA.LANGUAGE] : obj.Description;
@@ -251,12 +251,12 @@ function DrawDashElementText(obj, glow, nameInfo, descInfo = -1, cntxInfo = -1)
 function DrawOptionBox(direction = 1)
 {
 	let obj = DASH_CAT[DATA.DASH_CURCAT].Options[DATA.DASH_CUROPT];
-	
+
 	if (DATA.DASH_CURSUB > -1)
 	{
 		obj = DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT];
 	}
-	
+
 	if ((obj) && ("Option" in obj))
 	{
 		optBoxA = (optBoxA >= 420) ? 428 : (optBoxA + (12 * direction));
@@ -273,10 +273,10 @@ function DrawOptionBox(direction = 1)
 // Draws the Sub Menu Arrow Element.
 
 function DrawSubMenuArrow(aMod = 0, xMod = 0, yMod = 0)
-{	
+{
 	let a = glowArr.Value;
-	
-	if (aMod != 0) 
+
+	if (aMod != 0)
 	{
 		glowArr.Value = 100;
 		a = 100 + aMod;
@@ -284,12 +284,12 @@ function DrawSubMenuArrow(aMod = 0, xMod = 0, yMod = 0)
 		if (a < 0) { a = 0; }
 	}
 	else
-	{			
+	{
 		if (glowArr.Value == glowArr.Min) { glowArr.Dir = 1; }
 		else if (glowArr.Value == glowArr.Max) { glowArr.Dir = -1; }
 		glowArr.Value += glowArr.Dir;
 	}
-	
+
 	dash_arrow.width = 20;
 	dash_arrow.height = 20;
 	dash_arrow.color = Color.new(255,255,255,a);
@@ -325,24 +325,24 @@ function DrawInterfaceFade(frm, direction = 1)
 {
 	let easedProgress = easeOutCubic(Math.min(frm / 20, 1));
 	let reverseEased = easeInCubic(Math.min((20 - frm) / 20, 1));
-	
+
 	if (direction < 0)
 	{
 		reverseEased = easeOutCubic(Math.min(frm / 20, 1));
 		easedProgress = easeInCubic(Math.min((20 - frm) / 20, 1));
 	}
-	
+
 	const xMod = -10 * reverseEased;
 	const yMod = -10 * reverseEased;
 	const aMod = (direction > 0) ? (-ICOFULLA + (frm * 12)) : (-frm * 12);
 
 	// Draw Categories Fade
 	DrawSelectedCat(DATA.DASH_CURCAT, 0, xMod, yMod, aMod, aMod);
-	
-	if (DATA.DASH_CURCAT > 0) 
+
+	if (DATA.DASH_CURCAT > 0)
 	{
 		let xPosMod = 80;
-		
+
 		for (let i = (DATA.DASH_CURCAT - 1); i > -1; i--)
 		{
 			if (xPosMod < -60) { break; }
@@ -350,39 +350,39 @@ function DrawInterfaceFade(frm, direction = 1)
 			xPosMod += 80;
 		}
 	}
-	
+
 	const revX = (140 - 130) * reverseEased;
 	if (DATA.DASH_CURCAT < 7)
 	{
 		let xPosMod = 80;
-		
+
 		for (let i = DATA.DASH_CURCAT + 1; i < 7; i++)
 		{
 			if (xPosMod > 500) { break; }
 			DrawUnselectedCat(i, 166, xPosMod + revX, yMod, aMod);
 			xPosMod += 80;
 		}
-	}	
-	
+	}
+
 	// Draw Items Fade
-	
+
 	if (DASH_CAT[DATA.DASH_CURCAT].ItemCount < 1) { return; }
-	
+
 	DrawSelectedItem(DATA.DASH_CURCAT, DATA.DASH_CUROPT, 0, xMod, 0, aMod, aMod, xMod, 0, aMod);
-	
+
 	if (DASH_CAT[DATA.DASH_CURCAT].ItemCount < 2) { return; }
-	
+
 	let itemID = 0
-	for (let i = DATA.DASH_CUROPT - 1; i > -1; i--) 
+	for (let i = DATA.DASH_CUROPT - 1; i > -1; i--)
 	{
 		let yPos = (50 - (itemID * 50))
 		if (yPos < -100) { continue; }
 		DrawUnselectedItem(DATA.DASH_CURCAT, i, 155 + xMod, yPos + yMod, aMod, aMod)
 		itemID++;
 	}
-	
+
 	itemID = 0
-	for (let i = (DATA.DASH_CUROPT + 1); i < DASH_CAT[DATA.DASH_CURCAT].ItemCount; i++) 
+	for (let i = (DATA.DASH_CUROPT + 1); i < DASH_CAT[DATA.DASH_CURCAT].ItemCount; i++)
 	{
 		let yPos = (280 + (itemID * 50))
 		if (yPos > 500) { break; }
@@ -401,7 +401,7 @@ function DrawInterfaceFade(frm, direction = 1)
 // Draws the Interface selected Category Icon and Text.
 
 function DrawSelectedCat(cat = DATA.DASH_CURCAT, sizeMod = 0, xMod = 0, yMod = 0, aMod = 0, txtAmod = 0)
-{	
+{
 	DrawDashElementIcon(DASH_CAT[cat], 72 + sizeMod, 142 + xMod, 104 + yMod, aMod);
     const yPos = (Math.round((DATA.CANVAS.height - 328) / 2));
 	TxtPrint(DASH_CAT[cat].Name[DATA.LANGUAGE], { r:255, g: 255, b: 255, a: TXTFULLA + txtAmod }, { x: (-142 + xMod), y: -yPos }, "CENTER");
@@ -419,10 +419,10 @@ function DrawUnselectedCat(cat = DATA.DASH_CURCAT, basePos, xPosMod, yMod = 0, a
 function DrawUnselectedCats(aMod = 0, xMod = 0, yMod = 0)
 {
 	// Draw all the categories before the current selected one.
-	if (DATA.DASH_CURCAT > 0) 
+	if (DATA.DASH_CURCAT > 0)
 	{
 		let xPosMod = 80;
-		
+
 		for (let i = (DATA.DASH_CURCAT - 1); i > -1; i--)
 		{
 			if (xPosMod < -60) { break; } // DO NOT DRAW UNNECESARILLY OFF-SCREEN
@@ -430,12 +430,12 @@ function DrawUnselectedCats(aMod = 0, xMod = 0, yMod = 0)
 			xPosMod += 80;
 		}
 	}
-	
+
 	// Draw all the categories after the current selected one.
 	if (DATA.DASH_CURCAT < 7)
 	{
 		let xPosMod = 80;
-		
+
 		for (let i = DATA.DASH_CURCAT + 1; i < 7; i++)
 		{
 			if (xPosMod > 500) { break; } // DO NOT DRAW UNNECESARILLY OFF-SCREEN
@@ -459,26 +459,26 @@ function DrawMovingCats(direction)
 	const txtMod = (direction > 0) ? (-24 * DATA.DASH_MOVE_FRAME) : (-6 * (20 - DATA.DASH_MOVE_FRAME));
 	const cat = (direction > 0) ? DATA.DASH_CURCAT + 1 : DATA.DASH_CURCAT;
 	DrawSelectedCat(cat, sizeMod, xMod, yMod, 0, txtMod);
-	
+
 	const nextSizeMod = -reverseEased * (72 - 48);
 	const nextxMod = -reverseEased * (142 - 60);
 	const nextyMod = -reverseEased * (104 - 119);
 	const nexttxtMod =  (direction < 0) ? (-24 * DATA.DASH_MOVE_FRAME) : (-6 * (20 - DATA.DASH_MOVE_FRAME));
 	const nextcat = (direction > 0) ? DATA.DASH_CURCAT : DATA.DASH_CURCAT - 1;
-	
+
 	DrawSelectedCat(nextcat, nextSizeMod, nextxMod, nextyMod, 0, nexttxtMod);
 
 	// Draw Unselected Cats
-	
+
 	let prevLimit = (direction > 0) ? 0 : 1;
 	let nextLimit = (direction > 0) ? 6 : 7;
 	let prevCats = (direction > 0) ? DATA.DASH_CURCAT - 1 : DATA.DASH_CURCAT - 2;
 	let nextCats = (direction > 0) ? DATA.DASH_CURCAT + 2 : DATA.DASH_CURCAT + 1;
-	
-	if (DATA.DASH_CURCAT > prevLimit) 
+
+	if (DATA.DASH_CURCAT > prevLimit)
 	{
 		let xPosMod = 80 + 80 * reverseEased;
-		
+
 		for (let i = prevCats; i > -1; i--)
 		{
 			if (xPosMod < -60) { break; }
@@ -486,11 +486,11 @@ function DrawMovingCats(direction)
 			xPosMod += 80;
 		}
 	}
-	
+
 	if (DATA.DASH_CURCAT < nextLimit)
 	{
 		let xPosMod = 80 + 80 * easedProgress;
-		
+
 		for (let i = nextCats; i < 7; i++)
 		{
 			if (xPosMod > 500) { break; }
@@ -505,7 +505,7 @@ function DrawMovingCats(direction)
 function DrawSelectedItem(cat = DATA.DASH_CURCAT, opt = DATA.DASH_CUROPT, sizeMod = 0, xMod = 0, yMod = 0, aMod = 0, txtAmod = 0, txtXmod = 0, txtYmod = 0, descTxtAmod = 0)
 {
 	if ((DASH_CAT[cat].ItemCount < 1) || !DASH_CAT[cat].Options[opt]) { return; }
-	
+
 	const nameInfo = { x: 240 + txtXmod, y: 212 + txtYmod, a: txtAmod };
 	const descInfo = { x: 242 + txtXmod, y: 226 + txtYmod, a: descTxtAmod };
 	const glow = ((opt == DATA.DASH_CUROPT) && (txtAmod == 0));
@@ -527,18 +527,18 @@ function DrawUnselectedItem(cat = DATA.DASH_CURCAT, opt = DATA.DASH_CUROPT, xPos
 function DrawUnselectedItems(cat = DATA.DASH_CURCAT, opt = DATA.DASH_CUROPT, xMod = 0, yMod = 0, aMod = 0, txtAmod = 0)
 {
 	if (DASH_CAT[cat].ItemCount < 2) { return; }
-	
+
 	let itemID = 0
-	for (let i = opt - 1; i > -1; i--) 
+	for (let i = opt - 1; i > -1; i--)
 	{
 		let yPos = (50 - (itemID * 50))
 		if (yPos < -50) { continue; }
 		DrawUnselectedItem(cat, i, 155 + xMod, yPos + yMod, aMod, txtAmod)
 		itemID++;
 	}
-	
+
 	itemID = 0
-	for (let i = (opt + 1); i < DASH_CAT[cat].ItemCount; i++) 
+	for (let i = (opt + 1); i < DASH_CAT[cat].ItemCount; i++)
 	{
 		let yPos = (280 + (itemID * 50))
 		if (yPos > 500) { break; }
@@ -550,20 +550,20 @@ function DrawUnselectedItems(cat = DATA.DASH_CURCAT, opt = DATA.DASH_CUROPT, xMo
 // Draws all the unselected items while inside a Sub Menu.
 
 function DrawUnselectedItemsInsideSub(xModAbove = 0, xModBelow = 0, yModAbove = 0, yModBelow = 0, aMod = 0, txtAmod = 0)
-{	
+{
 	if (DASH_CAT[DATA.DASH_CURCAT].ItemCount < 2) { return; }
-	
+
 	let itemID = 0
-	for (let i = DATA.DASH_CUROPT - 1; i > -1; i--) 
+	for (let i = DATA.DASH_CUROPT - 1; i > -1; i--)
 	{
 		let yPos = (50 - (itemID * 50))
 		if (yPos < -100) { continue; }
 		DrawUnselectedItem(DATA.DASH_CURCAT, i, 155 + xModAbove, yPos + yModAbove, aMod, txtAmod)
 		itemID++;
 	}
-	
+
 	itemID = 0
-	for (let i = (DATA.DASH_CUROPT + 1); i < DASH_CAT[DATA.DASH_CURCAT].ItemCount; i++) 
+	for (let i = (DATA.DASH_CUROPT + 1); i < DASH_CAT[DATA.DASH_CURCAT].ItemCount; i++)
 	{
 		let yPos = (280 + (itemID * 50))
 		if (yPos > 500) { break; }
@@ -578,17 +578,17 @@ function DrawMovingOptsLR(direction)
 {
 	// Calculate easing progress
 	const { easedProgress, reverseEased } = getDashFrameEasedMovement(direction);
-	
+
 	// Interpolate values
-	const xMod = 90 * easedProgress; 
+	const xMod = 90 * easedProgress;
 	const txtMod = (direction > 0) ? (-12 * DATA.DASH_MOVE_FRAME) : (-6 * (20 - DATA.DASH_MOVE_FRAME));
 	const cat = (direction > 0) ? DATA.DASH_CURCAT + 1 : DATA.DASH_CURCAT;
 	DrawSelectedItem(cat, DASH_CAT[cat].Default, 0, xMod, 0, txtMod, txtMod, xMod, 0, txtMod);
-	
+
 	const nextxMod = -reverseEased * 90;
 	const nexttxtMod =  (direction < 0) ? (-12 * DATA.DASH_MOVE_FRAME) : (-6 * (20 - DATA.DASH_MOVE_FRAME));
 	const nextcat = (direction > 0) ? DATA.DASH_CURCAT : DATA.DASH_CURCAT - 1;
-	
+
 	DrawSelectedItem(nextcat, DASH_CAT[nextcat].Default, 0, nextxMod, 0, nexttxtMod, nexttxtMod, nextxMod, 0, nexttxtMod);
 	DrawUnselectedItems(cat, DASH_CAT[cat].Default, xMod, 0, txtMod, txtMod);
 	DrawUnselectedItems(nextcat, DASH_CAT[nextcat].Default, nextxMod, 0, nexttxtMod, nexttxtMod);
@@ -600,40 +600,40 @@ function DrawMovingOptsUD(direction)
 {
 	// Calculate easing progress
 	const { easedProgress, reverseEased } = getDashFrameEasedMovement(direction);
-	
+
 	// Interpolate values
 	const xMod = 15 * easedProgress;
-	const sizeMod = (48 - 78) * easedProgress; 
+	const sizeMod = (48 - 78) * easedProgress;
 	const icoyMod = 90 * easedProgress;
 	const yMod = 76 * easedProgress;
 	const txtMod = (direction > 0) ? (-12 * DATA.DASH_MOVE_FRAME) : (-3 * (20 - DATA.DASH_MOVE_FRAME));
 	const opt = (direction > 0) ? DATA.DASH_CUROPT + 1 : DATA.DASH_CUROPT;
 	DrawSelectedItem(DATA.DASH_CURCAT, opt, sizeMod, xMod, icoyMod, 0, 0, 0, yMod, txtMod);
-	
+
 	const nextxMod = reverseEased * 15;
 	const nextSizeMod = -reverseEased * (79 - 48);
 	const nexticoyMod = -reverseEased * 140;
 	const nextyMod = -reverseEased * 154;
 	const nexttxtMod = (direction < 0) ? (-12 * DATA.DASH_MOVE_FRAME) : (-3 * (20 - DATA.DASH_MOVE_FRAME));
 	const nextopt = (direction > 0) ? DATA.DASH_CUROPT : DATA.DASH_CUROPT - 1;
-	
+
 	DrawSelectedItem(DATA.DASH_CURCAT, nextopt, nextSizeMod, nextxMod, nexticoyMod, 0, 0, 0, nextyMod, nexttxtMod);
-	
+
 	if (DASH_CAT[DATA.DASH_CURCAT].ItemCount < 2) { return; }
-	
+
 	let prevItem = (direction > 0) ? DATA.DASH_CUROPT - 1 : DATA.DASH_CUROPT - 2;
 	let itemID = 0
-	for (let i = prevItem; i > -1; i--) 
+	for (let i = prevItem; i > -1; i--)
 	{
 		let yPos = (-itemID * 50)
 		if (yPos < -100) { continue; }
 		DrawUnselectedItem(DATA.DASH_CURCAT, i, 155, yPos + 50 * easedProgress)
 		itemID++;
 	}
-	
+
 	let nextItem = (direction > 0) ? DATA.DASH_CUROPT + 2 : DATA.DASH_CUROPT + 1;
 	itemID = 0
-	for (let i = nextItem; i < DASH_CAT[DATA.DASH_CURCAT].ItemCount; i++) 
+	for (let i = nextItem; i < DASH_CAT[DATA.DASH_CURCAT].ItemCount; i++)
 	{
 		let yPos = (280 + (itemID * 50))
 		if (yPos > 500) { break; }
@@ -650,26 +650,26 @@ function DrawInitialSubMenuFade(direction)
 	const { easedProgress, reverseEased } = getDashFrameEasedMovement(direction);
 
 	// Interpolate values
-	const xMod = (62 - 142) * easedProgress; 
+	const xMod = (62 - 142) * easedProgress;
 	const txtMod = (direction > 0) ? (-24 * DATA.DASH_MOVE_FRAME) : (-6 * (20 - DATA.DASH_MOVE_FRAME));
 	DrawSelectedCat(DATA.DASH_CURCAT, 0, xMod, 0, 0, txtMod);
-	
+
 	const unselCatsX = 18 * easedProgress;
 	const unselCatsY = 5 * easedProgress;
 	const unselCatsA = (direction > 0) ? (-4 * DATA.DASH_MOVE_FRAME) : (-4 * (20 - DATA.DASH_MOVE_FRAME));
 	DrawUnselectedCats(unselCatsA - 8, -unselCatsX, unselCatsY);
-	
+
 	const itmxMod = 80 * easedProgress;  // X moves from 140 to 246
 	const itmtxtMod = (direction > 0) ? (-12 * DATA.DASH_MOVE_FRAME) : (-6 * (20 - DATA.DASH_MOVE_FRAME));
 	DrawSelectedItem(DATA.DASH_CURCAT, DATA.DASH_CUROPT, 0, -itmxMod, 0, 0, itmtxtMod, -itmxMod, 0, itmtxtMod);
-	
+
 	const unitmx = -30 * easedProgress;
 	const unitmy = 8 * easedProgress;
 	DrawUnselectedItemsInsideSub(unitmx, unitmx, unitmy, -unitmy, unselCatsA - 8, itmtxtMod);
 	const arrXmod = 40 * reverseEased;
 	const arrAMod = (direction < 0) ? (-5 * DATA.DASH_MOVE_FRAME) : (-5 * (20 - DATA.DASH_MOVE_FRAME));
 	DrawSubMenuArrow(arrAMod, arrXmod);
-	
+
 	if (DATA.DASH_CURSUBOPT > -1)
 	{
 		const selItemX = 20 * -reverseEased;
@@ -679,17 +679,17 @@ function DrawInitialSubMenuFade(direction)
 
 		let yMod = 5 * reverseEased;
 		let itemID = 0;
-		for (let i = DATA.DASH_CURSUBOPT - 1; i > -1; i--) 
+		for (let i = DATA.DASH_CURSUBOPT - 1; i > -1; i--)
 		{
 			let yPos = (150 - (itemID * 50));
 			if (yPos < -100) { continue; }
 			DrawSubMenuUnselectedItem(0, i, 190 + selItemX, yPos + yMod, arrAMod, selitmtxtMod);
 			itemID++;
 		}
-		
+
 		yMod = 5 * -reverseEased;
 		itemID = 0;
-		for (let i = (DATA.DASH_CURSUBOPT + 1); i < DASH_SUB[0].ItemCount; i++) 
+		for (let i = (DATA.DASH_CURSUBOPT + 1); i < DASH_SUB[0].ItemCount; i++)
 		{
 			let yPos = (280 + (itemID * 50));
 			if (yPos > 500) { break; }
@@ -710,12 +710,12 @@ function DrawInitialSubMenuFade(direction)
 function DrawSubMenuSelectedItem(sub = DATA.DASH_CURSUB, opt = DATA.DASH_CURSUBOPT, sizeMod = 0, aMod = 0, xMod = 0, yMod = 0, txtAmod = 0, txtXmod = 0, txtYmod = 0, descTxtAmod = 0, contxtA = 0)
 {
 	if (DASH_SUB[sub].ItemCount < 1) { return; }
-	
+
 	const namePpts = { x: 263 + txtXmod, y: 215 + txtYmod, a: txtAmod };
 	const descPpts = { x: 265 + txtXmod, y: 229 + txtYmod, a: descTxtAmod };
 	const cntxPpts = { x: -35 + txtXmod, y: 215 + txtYmod, a: contxtA };
 	const glow = ((opt === DATA.DASH_CURSUBOPT) && (txtAmod === 0));
-	
+
 	DrawDashElementIcon(DASH_SUB[sub].Options[opt], 78 + sizeMod, 175 + xMod, 195 + yMod, aMod);
 	DrawDashElementText(DASH_SUB[sub].Options[opt], glow, namePpts, descPpts, cntxPpts);
 }
@@ -727,7 +727,7 @@ function DrawSubMenuUnselectedItem(sub, opt, xPos, yPos, aMod = 0, txtAmod = 0)
 	const namePpts = { x: xPos + 73, y: yPos + 6, a: txtAmod };
 	const descPpts = { x: xPos + 73, y: yPos + 12, a: -255 };
 	const cntxPpts = { x: xPos - 225, y: yPos + 6, a: txtAmod };
-	
+
 	DrawDashElementIcon(DASH_SUB[sub].Options[opt], 48, xPos, yPos, aMod);
 	DrawDashElementText(DASH_SUB[sub].Options[opt], false, namePpts, descPpts, cntxPpts);
 }
@@ -737,18 +737,18 @@ function DrawSubMenuUnselectedItem(sub, opt, xPos, yPos, aMod = 0, txtAmod = 0)
 function DrawSubMenuUnselectedItems(sub = DATA.DASH_CURSUB, opt = DATA.DASH_CURSUBOPT, xMod = 0, yModAbove = 0, yModBelow = 0, aMod = 0, txtAmod = 0)
 {
 	if (DASH_SUB[sub].ItemCount < 2) { return; }
-	
+
 	let itemID = 0
-	for (let i = opt - 1; i > -1; i--) 
+	for (let i = opt - 1; i > -1; i--)
 	{
 		let yPos = (150 - (itemID * 50))
 		if (yPos < -100) { continue; }
 		DrawSubMenuUnselectedItem(sub, i, 190 + xMod, yPos + yModAbove, aMod, txtAmod)
 		itemID++;
 	}
-	
+
 	itemID = 0
-	for (let i = (opt + 1); i < DASH_SUB[sub].ItemCount; i++) 
+	for (let i = (opt + 1); i < DASH_SUB[sub].ItemCount; i++)
 	{
 		let yPos = (280 + (itemID * 50))
 		if (yPos > 500) { break; }
@@ -763,7 +763,7 @@ function DrawSubMenuMovingOptionsUD(direction)
 {
 	// Calculate easing progress
 	const { easedProgress, reverseEased } = getDashFrameEasedMovement(direction);
-	
+
 	// Interpolate values
 	const xMod = 15 * easedProgress;
 	const sizeMod = (48 - 78) * easedProgress;
@@ -772,31 +772,31 @@ function DrawSubMenuMovingOptionsUD(direction)
 	const txtMod = (direction > 0) ? (-12 * DATA.DASH_MOVE_FRAME) : (-3 * (20 - DATA.DASH_MOVE_FRAME));
 	const opt = (direction > 0) ? DATA.DASH_CURSUBOPT + 1 : DATA.DASH_CURSUBOPT;
 	DrawSubMenuSelectedItem(DATA.DASH_CURSUB, opt, sizeMod, 0, xMod, icoyMod, 0, 0, yMod, txtMod);
-	
+
 	const nextxMod = reverseEased * 15;
 	const nextSizeMod = -reverseEased * (79 - 48);
 	const nexticoyMod = -reverseEased * 45;
 	const nextyMod = -reverseEased * 59;
 	const nexttxtMod = (direction < 0) ? (-12 * DATA.DASH_MOVE_FRAME) : (-3 * (20 - DATA.DASH_MOVE_FRAME));
 	const nextopt = (direction > 0) ? DATA.DASH_CURSUBOPT : DATA.DASH_CURSUBOPT - 1;
-	
+
 	DrawSubMenuSelectedItem(DATA.DASH_CURSUB, nextopt, nextSizeMod, 0, nextxMod, nexticoyMod, 0, 0, nextyMod, nexttxtMod);
-	
+
 	if (DASH_SUB[DATA.DASH_CURSUB].ItemCount < 2) { return; }
-	
+
 	let prevItem = (direction > 0) ? (DATA.DASH_CURSUBOPT - 1) : (DATA.DASH_CURSUBOPT - 2);
 	let itemID = 0
-	for (let i = prevItem; i > -1; i--) 
+	for (let i = prevItem; i > -1; i--)
 	{
 		let yPos = (100 - (itemID * 50))
 		if (yPos < -100) { continue; }
 		DrawSubMenuUnselectedItem(DATA.DASH_CURSUB, i, 190, yPos + 50 * easedProgress)
 		itemID++;
 	}
-	
+
 	let nextItem = (direction > 0) ? (DATA.DASH_CURSUBOPT + 2) : (DATA.DASH_CURSUBOPT + 1);
 	itemID = 0
-	for (let i = nextItem; i < DASH_SUB[DATA.DASH_CURSUB].ItemCount; i++) 
+	for (let i = nextItem; i < DASH_SUB[DATA.DASH_CURSUB].ItemCount; i++)
 	{
 		let yPos = (280 + (itemID * 50))
 		if (yPos > 500) { break; }
@@ -825,17 +825,17 @@ function DrawSubMenuContentFade(direction)
 // Draws the Sub Menu Side Content
 
 function DrawSubMenuContent(fadeIn = false, fadeOut = false)
-{	
+{
 	let aMod = 0;
 	if (fadeIn || fadeOut)
 	{
 		aMod = (fadeIn) ? ((20 - DATA.DASH_MOVE_FRAME) * -5) : (DATA.DASH_MOVE_FRAME * -5);
 	}
-	
+
 	if (DATA.DASH_CURSUB > 0)
 	{
-		
-		DrawSubMenuSelectedItem(DATA.DASH_PRVSUB, DASH_SUB[DATA.DASH_PRVSUB].Selected, 0, aMod, -115, 0, -128, 0, 0, -128); 
+
+		DrawSubMenuSelectedItem(DATA.DASH_PRVSUB, DASH_SUB[DATA.DASH_PRVSUB].Selected, 0, aMod, -115, 0, -128, 0, 0, -128);
 		DrawSubMenuUnselectedItems(DATA.DASH_PRVSUB, DASH_SUB[DATA.DASH_PRVSUB].Selected, -60, 8, -8, -90 + Math.round(aMod / 10), -128);
 	}
 	else
@@ -845,7 +845,7 @@ function DrawSubMenuContent(fadeIn = false, fadeOut = false)
 		DrawSelectedCat(DATA.DASH_CURCAT, 0, -80, 0, aMod, -128);
 		DrawUnselectedCats(-90 + Math.round(aMod / 10), -18, 5);
 	}
-	
+
 	DrawSubMenuArrow(aMod);
 }
 
@@ -858,7 +858,7 @@ function DrawSubMenuOptions(fadeIn = false, fadeOut = false)
 	{
 		aMod = (fadeIn) ? ((20 - DATA.DASH_MOVE_FRAME) * -5) : (DATA.DASH_MOVE_FRAME * -5);
 	}
-	
+
 	if (DATA.DASH_CURSUBOPT > -1)
 	{
 		DrawSubMenuSelectedItem(undefined, undefined, undefined, aMod, undefined, undefined, aMod, undefined, undefined, aMod, aMod);
@@ -876,7 +876,7 @@ function DrawNewSubMenuFade(direction)
 {
 	// Calculate easing progress
 	const { easedProgress, reverseEased } = getDashFrameEasedMovement(direction);
-	
+
 	// Fade Prev Arrow
 	let arrXmod = -130 * easedProgress;
 	let arrAMod = (direction > 0) ? (-5 * DATA.DASH_MOVE_FRAME) : (-5 * (20 - DATA.DASH_MOVE_FRAME));
@@ -885,18 +885,18 @@ function DrawNewSubMenuFade(direction)
 	// Fade Categories Items
 	if (DATA.DASH_CURSUB < 2)
 	{
-		const xMod = -130 * easedProgress; 
+		const xMod = -130 * easedProgress;
 		const fadeOutA = (direction > 0) ? (-6 * DATA.DASH_MOVE_FRAME) : (-6 * (20 - DATA.DASH_MOVE_FRAME));
 		DrawSelectedCat(DATA.DASH_CURCAT, 0, -80 + xMod, 0, fadeOutA, -128);
-	
+
 		const unselCatsX = 18 * easedProgress;
 		const unselCatsY = 5 * easedProgress;
 		const unselCatsA = (direction > 0) ? (-1 * DATA.DASH_MOVE_FRAME) : (-1 * (20 - DATA.DASH_MOVE_FRAME));
 		DrawUnselectedCats(-90 + unselCatsA, -18 - unselCatsX, 5 + unselCatsY)
-	
+
 		const itmxMod = -130 * easedProgress;
 		DrawSelectedItem(DATA.DASH_CURCAT, DATA.DASH_CUROPT, 0, -80 + itmxMod, 0, fadeOutA, -128, 0, 0, -128);
-		
+
 		const unitmx = -30 * easedProgress;
 		const unitmy = 8 * easedProgress
 		DrawUnselectedItemsInsideSub(-30 + unitmx, -30 + unitmx, 8 + unitmy, -8 - unitmy, -90 + unselCatsA, -128);
@@ -906,52 +906,52 @@ function DrawNewSubMenuFade(direction)
 		// Slide Prev Prev Item
 		const fadeOutA = (direction > 0) ? (-6 * DATA.DASH_MOVE_FRAME) : (-6 * (20 - DATA.DASH_MOVE_FRAME));
 		DrawSubMenuSelectedItem(DATA.DASH_PRVSUB - 1, DASH_SUB[DATA.DASH_PRVSUB - 1].Selected, 0, fadeOutA, -115 + arrXmod, 0, -128, 0, 0, -128, -128);
-		
+
 		// Fade Prev Prev Unselected Items
 		const prevprevsx = -60 + (-60 * easedProgress);
 		const prevprevsy = 8 + (8 * easedProgress)
 		const prevprevsA = (direction > 0) ? (-1 * DATA.DASH_MOVE_FRAME) : (-1 * (20 - DATA.DASH_MOVE_FRAME));
 		DrawSubMenuUnselectedItems(DATA.DASH_PRVSUB - 1, DASH_SUB[DATA.DASH_PRVSUB - 1].Selected, prevprevsx, prevprevsy, -prevprevsy, -90 + prevprevsA, -128);
 	}
-	
+
 	// Slide Prev Item
 	const prevXmod = -115 * easedProgress;
 	const previtmtxtMod = (direction > 0) ? (-12 * DATA.DASH_MOVE_FRAME) : (-6 * (20 - DATA.DASH_MOVE_FRAME));
 	DrawSubMenuSelectedItem(DATA.DASH_PRVSUB, DASH_SUB[DATA.DASH_PRVSUB].Selected, 0, 0, prevXmod, 0, previtmtxtMod, prevXmod, 0, previtmtxtMod, previtmtxtMod);
-	
+
 	// Fade Prev Unselected Items
 	const prevsx = -60 * easedProgress;
 	const prevsy = 8 * easedProgress
 	const prevsA = (direction > 0) ? (-4 * DATA.DASH_MOVE_FRAME) : (-4 * (20 - DATA.DASH_MOVE_FRAME));
 	DrawSubMenuUnselectedItems(DATA.DASH_PRVSUB, DASH_SUB[DATA.DASH_PRVSUB].Selected, prevsx, prevsy, -prevsy, prevsA - 8, previtmtxtMod);
-	
+
 	// Fade New Arrow
 	arrXmod = 40 * reverseEased;
 	arrAMod = (direction < 0) ? (-5 * DATA.DASH_MOVE_FRAME) : (-5 * (20 - DATA.DASH_MOVE_FRAME));
 	DrawSubMenuArrow(arrAMod, arrXmod);
-	
+
 	// Fade New Items
 	if (DATA.DASH_CURSUBOPT > -1)
 	{
 		const selItemX = 2 * -reverseEased
 		const selitmtxtMod = (direction < 0) ? (-12 * DATA.DASH_MOVE_FRAME) : (-6 * (20 - DATA.DASH_MOVE_FRAME));
 		DrawSubMenuSelectedItem(DATA.DASH_CURSUB, DATA.DASH_CURSUBOPT, 0, arrAMod, selItemX, 0, selitmtxtMod, selItemX, 0, selitmtxtMod, selitmtxtMod)
-		
+
 		if (DASH_SUB[DATA.DASH_CURSUB].ItemCount < 2) { return; }
-		
+
 		let yMod = 5 * reverseEased;
 		let itemID = 0
-		for (let i = DATA.DASH_CURSUBOPT - 1; i > -1; i--) 
+		for (let i = DATA.DASH_CURSUBOPT - 1; i > -1; i--)
 		{
 			let yPos = (150 - (itemID * 50))
 			if (yPos < -100) { continue; }
 			DrawSubMenuUnselectedItem(DATA.DASH_CURSUB, i, 190 + selItemX, yPos + yMod, arrAMod, selitmtxtMod)
 			itemID++;
 		}
-		
+
 		yMod = 5 * -reverseEased
 		itemID = 0
-		for (let i = (DATA.DASH_CURSUBOPT + 1); i < DASH_SUB[DATA.DASH_CURSUB].ItemCount; i++) 
+		for (let i = (DATA.DASH_CURSUBOPT + 1); i < DASH_SUB[DATA.DASH_CURSUB].ItemCount; i++)
 		{
 			let yPos = (280 + (itemID * 50))
 			if (yPos > 500) { break; }
@@ -975,7 +975,7 @@ function DrawContextMenuAnimation(direction, fadeFull = false)
 	const { easedProgress, reverseEased } = getDashFrameEasedMovement(direction);
 
 	// Interpolate values
-	
+
 	const selSize = 20 * easedProgress;
 	const selX = -10 * easedProgress;
 	const fadeOutA = (direction > 0) ? (-12 * DATA.DASH_MOVE_FRAME) : (-6 * (20 - DATA.DASH_MOVE_FRAME));
@@ -984,14 +984,14 @@ function DrawContextMenuAnimation(direction, fadeFull = false)
 	const txtMod = (direction > 0) ? (-24 * DATA.DASH_MOVE_FRAME) : (-6 * (20 - DATA.DASH_MOVE_FRAME));
 	const unitmy = 8 * easedProgress;
 	const uncaty = 4 * easedProgress;
-	
+
 	DrawSelectedCat(DATA.DASH_CURCAT, 0, 0, 0, 0, txtMod);
 	DrawUnselectedCats(semifadeIcoA, -unitmy, uncaty);
 	DrawSelectedItem(DATA.DASH_CURCAT, DATA.DASH_CUROPT, selSize, selX, selX, 0, semifadeA, selSize, 0, semifadeA);
 	DrawUnselectedItemsInsideSub(0, 0, -unitmy, unitmy, semifadeIcoA, txtMod);
-	
+
 	DrawOptionBox(direction * -1);
-	
+
 	const fadeIn = (direction < 0) ? (-12 * DATA.DASH_MOVE_FRAME) : (-6 * (20 - DATA.DASH_MOVE_FRAME));
 	DrawContextMenu(fadeIn, 60 * reverseEased);
 	DrawContextOptions(fadeIn, 60 * reverseEased);
@@ -1003,10 +1003,10 @@ function DrawContextSubMenuAnimation(direction, fadeFull = false)
 {
 	// Calculate easing progress
 	const { easedProgress, reverseEased } = getDashFrameEasedMovement(direction);
-	
+
 	if (DATA.DASH_CURSUB > 0)
 	{
-		DrawSubMenuSelectedItem(DATA.DASH_PRVSUB, DASH_SUB[DATA.DASH_PRVSUB].Selected, 0, 0, -115, 0, -128, 0, 0, -128); 
+		DrawSubMenuSelectedItem(DATA.DASH_PRVSUB, DASH_SUB[DATA.DASH_PRVSUB].Selected, 0, 0, -115, 0, -128, 0, 0, -128);
 		DrawSubMenuUnselectedItems(DATA.DASH_PRVSUB, DASH_SUB[DATA.DASH_PRVSUB].Selected, -60, 8, -8, -90, -128);
 	}
 	else
@@ -1016,19 +1016,19 @@ function DrawContextSubMenuAnimation(direction, fadeFull = false)
 		let modY2 = 5 * easedProgress;
 		let modA = (direction > 0) ? (Math.round(-DATA.DASH_MOVE_FRAME / 2)) : (Math.round(-(20 - DATA.DASH_MOVE_FRAME) / 2));
 		let fadeAfull = 0;
-		
+
 		if (fadeFull)
 		{
 			modA = -100;
 			fadeAfull = (direction < 0) ? (Math.round(-12 * DATA.DASH_MOVE_FRAME)) : (Math.round((20 - DATA.DASH_MOVE_FRAME) * -12));
 		}
-		
+
 		DrawSelectedItem(DATA.DASH_CURCAT, DATA.DASH_CUROPT, 0, -80 + modX, 0, fadeAfull, -128, 0, 0, -128);
 		DrawUnselectedItemsInsideSub(-30 + modX, -30 + modX, 8 + modY, -8 - modY, -90 + modA, -128);
 		DrawSelectedCat(DATA.DASH_CURCAT, 0, -80 + modX, 0, fadeAfull, -128);
 		DrawUnselectedCats(-90 + modA, -18 - modY, 5 + modY2);
 	}
-	
+
 	let aFade = 0;
 	let fadeOutA = (direction > 0) ? (-12 * DATA.DASH_MOVE_FRAME) : (-6 * (20 - DATA.DASH_MOVE_FRAME));
 	let semifadeA = (direction > 0) ? (-5 * DATA.DASH_MOVE_FRAME) : (-5 * (20 - DATA.DASH_MOVE_FRAME));
@@ -1036,7 +1036,7 @@ function DrawContextSubMenuAnimation(direction, fadeFull = false)
 	const selSize = 20 * easedProgress;
 	const selX = -10 * easedProgress;
 	const modArrowX = -20 * easedProgress;
-	
+
 	if (fadeFull)
 	{
 		aFade = (direction < 0) ? (Math.round(-12 * DATA.DASH_MOVE_FRAME)) : (Math.round((20 - DATA.DASH_MOVE_FRAME) * -12));
@@ -1044,11 +1044,11 @@ function DrawContextSubMenuAnimation(direction, fadeFull = false)
 		semifadeA = -100;
 		semifadeIcoA = -60;
 	}
-	
+
 	DrawSubMenuArrow(aFade, modArrowX);
 	DrawSubMenuSelectedItem(DATA.DASH_CURSUB, DATA.DASH_CURSUBOPT, selSize, aFade, selX, selX, semifadeA + aFade, selSize, 0, semifadeA + aFade, fadeOutA);
 	DrawSubMenuUnselectedItems(DATA.DASH_CURSUB, DATA.DASH_CURSUBOPT, 0, -10 * easedProgress, 10 * easedProgress, semifadeIcoA + aFade, fadeOutA);
-	
+
 	const fadeIn = (direction < 0) ? (-12 * DATA.DASH_MOVE_FRAME) : (-6 * (20 - DATA.DASH_MOVE_FRAME));
 	DrawContextMenu(fadeIn, 60 * reverseEased);
 	DrawContextOptions(fadeIn, 60 * reverseEased);
@@ -1060,7 +1060,7 @@ function DrawContextSubMenuContent()
 {
 	if (DATA.DASH_CURSUB > 0)
 	{
-		DrawSubMenuSelectedItem(DATA.DASH_PRVSUB, DASH_SUB[DATA.DASH_PRVSUB].Selected, 0, 0, -115, 0, -128, 0, 0, -128); 
+		DrawSubMenuSelectedItem(DATA.DASH_PRVSUB, DASH_SUB[DATA.DASH_PRVSUB].Selected, 0, 0, -115, 0, -128, 0, 0, -128);
 		DrawSubMenuUnselectedItems(DATA.DASH_PRVSUB, DASH_SUB[DATA.DASH_PRVSUB].Selected, -60, 8, -8, -90, -128);
 	}
 	else
@@ -1068,7 +1068,7 @@ function DrawContextSubMenuContent()
 		DrawSelectedItem(DATA.DASH_CURCAT, DATA.DASH_CUROPT, 0, -110, 0, 0, -128, 0, 0, -128);
 		DrawSelectedCat(DATA.DASH_CURCAT, 0, -110, 0, 0, -128);
 	}
-	
+
 	DrawSubMenuArrow(0, -20);
 	DrawSubMenuSelectedItem(DATA.DASH_CURSUB, DATA.DASH_CURSUBOPT, 20, 0, -10, -10, -105, 20, 0, -105, -128);
 	DrawSubMenuUnselectedItems(DATA.DASH_CURSUB, DATA.DASH_CURSUBOPT, 0, -10, 10, -60, -128);
@@ -1079,14 +1079,14 @@ function DrawContextSubMenuContent()
 function DrawContextOption(x, y, lvl = DATA.DASH_CURCTXLVL, opt = DASH_CTX[DATA.DASH_CURCTXLVL].Selected, a = 0)
 {
 	if ((lvl < 0) || (DASH_CTX[lvl].ItemCount < opt)) { return; }
-	
+
 	let xIcnMod = 0;
 	let currentSelected = false;
 	if ((opt == DASH_CTX[DATA.DASH_CURCTXLVL].Selected) && a == 0)
 	{
 		currentSelected = true;
 	}
-	
+
 	if ((DASH_CTX[lvl].Options[opt].Icon != -1) && (TXTFULLA + a > 0) && (DASH_CTX[lvl].Options[opt].Icon.ready()))
 	{
 		if (currentSelected)
@@ -1094,19 +1094,19 @@ function DrawContextOption(x, y, lvl = DATA.DASH_CURCTXLVL, opt = DASH_CTX[DATA.
 			dash_ctx_ico.color = Color.new(255,255,255, glowText.Value * 2);
 			dash_ctx_ico.draw(x - 8, y + 4);
 		}
-		
+
 		DASH_CTX[lvl].Options[opt].Icon.width = 16;
 		DASH_CTX[lvl].Options[opt].Icon.height = 16;
 		DASH_CTX[lvl].Options[opt].Icon.color = Color.new(190,190,190,TXTFULLA + a);
 		DASH_CTX[lvl].Options[opt].Icon.draw(x, y + 11);
 		xIcnMod += 20;
 	}
-	
+
 	if ((DASH_CTX[lvl].Options[opt].Name != "") && (TXTFULLA + a > 0))
 	{
 		let displayText = (Array.isArray(DASH_CTX[lvl].Options[opt].Name)) ? DASH_CTX[lvl].Options[opt].Name[DATA.LANGUAGE] : DASH_CTX[lvl].Options[opt].Name;
 		displayText = (displayText.length > 20) ? (displayText.substring(0, 20) + "...") : displayText;
-		
+
 		if (currentSelected)
 		{
 			if (DASH_CTX[lvl].Options[opt].Name.length > 20)
@@ -1115,7 +1115,7 @@ function DrawContextOption(x, y, lvl = DATA.DASH_CURCTXLVL, opt = DASH_CTX[DATA.
 				{
 					DATA.DASH_TXT_TIMER = Timer.new();
 				}
-			
+
 				let text = DASH_CTX[lvl].Options[opt].Name;
 				const endIndex = scrollIndex + 20;
 				if (scrollIndex === 0) {
@@ -1125,12 +1125,12 @@ function DrawContextOption(x, y, lvl = DATA.DASH_CURCTXLVL, opt = DASH_CTX[DATA.
 				} else {
 					displayText = ".." + text.substring(scrollIndex, endIndex) + "..";
 				}
-				
+
 				if (endIndex < DASH_CTX[lvl].Options[opt].Name.length)
 				{
 					let time = Math.round(Timer.getTime(DATA.DASH_TXT_TIMER) / 100000);
-					if (time > 1) 
-					{ 
+					if (time > 1)
+					{
 						scrollIndex++;
 						Timer.reset(DATA.DASH_TXT_TIMER);
 					}
@@ -1152,7 +1152,7 @@ function DrawContextOption(x, y, lvl = DATA.DASH_CURCTXLVL, opt = DASH_CTX[DATA.
 function DrawContextArrows(aMod = 0, xMod = 0)
 {
     let a = glowArr.Value;
-	
+
 	if (aMod != 0)
 	{
 		glowArr.Value = 100;
@@ -1161,7 +1161,7 @@ function DrawContextArrows(aMod = 0, xMod = 0)
 		if (a < 0) { a = 0; }
 	}
 	else
-	{			
+	{
 		if (glowArr.Value == glowArr.Min) { glowArr.Dir = 1; }
 		else if (glowArr.Value == glowArr.Max) { glowArr.Dir = -1; }
 		glowArr.Value += glowArr.Dir;
@@ -1172,7 +1172,7 @@ function DrawContextArrows(aMod = 0, xMod = 0)
 	dash_arrow.width = 16;
 	dash_arrow.height = 16;
 	dash_arrow.color = Color.new(255,255,255,a);
-	
+
 	// Draw Top Arrow
 	if (DATA.DASH_CURCTXITMFIRST > 0)
 	{
@@ -1180,7 +1180,7 @@ function DrawContextArrows(aMod = 0, xMod = 0)
 		dash_arrow.draw((DATA.CANVAS.width - (DATA.WIDESCREEN * 32) - 179) + xMod, 217);
 		dash_arrow.angle = 0.0f;
 	}
-	
+
 	// Draw Bottom Arrow
 	if (DATA.DASH_CURCTXITMLAST < DASH_CTX[DATA.DASH_CURCTXLVL].ItemCount)
 	{
@@ -1195,13 +1195,13 @@ function DrawContextArrows(aMod = 0, xMod = 0)
 function DrawContextOptions(aMod = 0, xMod = 0)
 {
 	let y = 215;
-	
+
 	for (let i = DATA.DASH_CURCTXITMFIRST; i < DATA.DASH_CURCTXITMLAST; i++)
 	{
 		DrawContextOption((DATA.CANVAS.width - (DATA.WIDESCREEN * 32) - 185) + xMod, y, DATA.DASH_CURCTXLVL, i, aMod);
 		y+=20;
 	}
-	
+
 	if ((DATA.DASH_CURCTXITMFIRST > 0) || (DATA.DASH_CURCTXITMLAST < DASH_CTX[DATA.DASH_CURCTXLVL].ItemCount))
     { DrawContextArrows(aMod, xMod); }
 }

@@ -8,7 +8,7 @@ export const Plugin = (() => { 	// DO NOT REMOVE, Encloses plugin on a local sco
 ///*				   		 CUSTOM STRINGS							  *///
 //////////////////////////////////////////////////////////////////////////
 
-const NAME_MAIN = 
+const NAME_MAIN =
 [
 	"Exit to Browser",
 	"Quitter vers le navigateur",
@@ -24,7 +24,7 @@ const NAME_MAIN =
 ///																	   ///
 /// 	Here is the main info that will be retrieved by the App.   	   ///
 //////////////////////////////////////////////////////////////////////////
-	
+
 const Info = {
 	Name: NAME_MAIN,
 	Description: "",
@@ -32,15 +32,15 @@ const Info = {
 	Category: 0,
 	Type: "CODE",
 	Value: (DATA) => // This will be executed as soon as the item is selected.
-	{ 
+	{
 		// Set the current Dashboard state to fade out, in order to go to
 		// the 'exit()' function.
-		
+
 		DATA.DASH_STATE = "FADE_OUT";
-		
+
 		// Set the Custom Function to be executed once the 'exit()' function finishes.
-		
-		DATA.CUSTOM_FUNCTION = function() 
+
+		DATA.CUSTOM_FUNCTION = function()
 		{
 			Draw.rect(0, 0, DATA.CANVAS.width, DATA.CANVAS.height, Color.new(0, 0, 0, 128));
 			System.exitToBrowser();
@@ -53,5 +53,5 @@ return Info;
 //////////////////////////////////////////////////////////////////////////
 ///*				   		   ENCLOSE END							  *///
 //////////////////////////////////////////////////////////////////////////
-	
+
 })(); // DO NOT REMOVE, Encloses plugin on a local scope //

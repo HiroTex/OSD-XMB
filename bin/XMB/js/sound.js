@@ -28,7 +28,7 @@ function SoundStopProcess()
 {
 	let audLength = ((currAudioDuration - 500) < 0) ? 0 : currAudioDuration - 500;
 	let audCurPos = Sound.getPosition(AudioPlaying);
-	
+
 	if (Sound.isPlaying() && (audLength <= audCurPos))
 	{
 		Sound.setPosition(AudioPlaying, 0);
@@ -39,11 +39,11 @@ function SoundStopProcess()
 /*	Manual WAV Length calculation value to avoid using 'getDuration' method  */
 /*	using the 'getDuration' method will make any sound crash when finishing. */
 
-function calculateWavValue(filePath) 
+function calculateWavValue(filePath)
 {
 	// Open the file
 	const file = std.open(filePath, "rb");
-	
+
 	// Helper to read 4 bytes as a 32-bit little-endian integer
     const readUInt32LE = (buffer) => {
       return (buffer[0]) |
@@ -63,9 +63,9 @@ function calculateWavValue(filePath)
 	file.seek(28, std.SEEK_SET);
     file.read(samplesPerSecondBuffer.buffer, 0, 4);   // Read 4 bytes starting at position 24
     const samplesPerSecond = readUInt32LE(samplesPerSecondBuffer);
-	
+
 	file.close();
-	
+
 	// Compute the result
 	return Math.round((dataSize / samplesPerSecond) * 1000);
 }
@@ -75,7 +75,7 @@ function calculateWavValue(filePath)
 function playSound(path)
 {
 	if (!path.endsWith(".wav")) { return; }
-	
+
 	Sound.pause(AudioPlaying);
 	currAudioDuration = calculateWavValue(path);
 	let audioToPlay = Sound.load(path);
@@ -83,7 +83,7 @@ function playSound(path)
 	Sound.repeat(false);
 	let audioPrevious = AudioPlaying;
 	AudioPlaying = audioToPlay;
-	
+
 	if (AudioPlaying != cursorSFX && AudioPlaying != cancelSFX)
 	{
 		Sound.free(audioPrevious);
@@ -93,7 +93,7 @@ function playSound(path)
 /*	Play the XMB's Cursor movement SFX  */
 
 function playCursorSFX()
-{	
+{
 	/*
 	if (AudioPlaying != cursorSFX && AudioPlaying != cancelSFX)
 	{
@@ -115,7 +115,7 @@ function playCursorSFX()
 /*	Play the XMB's Cancel SFX  */
 
 function playCancelSFX()
-{	
+{
 	/*
 	if (AudioPlaying != cancelSFX && AudioPlaying != cursorSFX)
 	{

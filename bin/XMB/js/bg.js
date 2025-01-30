@@ -48,7 +48,7 @@ const monthColors = {
 };
 
 // By Default, assign the User Interface color
-// to the current month. 
+// to the current month.
 // Date's Month paramenter is zero based.
 
 let OSDATE = new Date();
@@ -93,12 +93,12 @@ const Waves = (() => {
 			precomputedXWave[x] = x * waveLength;
 		}
 	}
-	
+
 	precomputeValues();
-	
+
 	let wave2ColorTop, wave2ColorBottom;
-	
-	function setThemeColor(themeColor) 
+
+	function setThemeColor(themeColor)
 	{
 		const r = Math.min(themeColor.r + 65, 255);
 		const g = Math.min(themeColor.g + 65, 255);
@@ -108,17 +108,17 @@ const Waves = (() => {
 		wave2ColorBottom = Color.new(r, g, b, 96);
 	}
 
-	function renderWaves() 
+	function renderWaves()
 	{
 		const width = Screen.getMode().width;
         const height = Screen.getMode().height;
-		
+
 		if (width !== screenWidth) { screenWidth = width; precomputeValues(); }
-		
+
 		const timeWave1 = time * wave1Speed;
 		const timeWave2 = time * wave2Speed;
-		
-		for (let x = 0; x <= screenWidth; x += step) 
+
+		for (let x = 0; x <= screenWidth; x += step)
 		{
 			const y1 = Math.sinf(precomputedXWave[x] + timeWave1) * wave1Amplitude;
 			const currentY1 = baseYStart + (y1 + 1);
@@ -131,7 +131,7 @@ const Waves = (() => {
 			Draw.rect(x, currentY2 - 1, step, 2, wave2ColorTop);
 			Draw.rect(x, currentY2, step, height, wave2ColorBottom);
 		}
-		
+
 		time++;
         if (time < 0) { time = 0; }
 	}
@@ -167,7 +167,7 @@ function DrawMessageTop(alpha)
 		dash_icons[DATA.MESSAGE_INFO.Icon].color = Color.new(255,255,255, alpha);
 		dash_icons[DATA.MESSAGE_INFO.Icon].draw(40 + (DATA.WIDESCREEN * 32), 55);
 	}
-	
+
 	if (("Title" in DATA.MESSAGE_INFO) && (DATA.MESSAGE_INFO.Title != ""))
 	{
 		let txt = (Array.isArray(DATA.MESSAGE_INFO.Title)) ? DATA.MESSAGE_INFO.Title[DATA.LANGUAGE] : DATA.MESSAGE_INFO.Title;
@@ -184,7 +184,7 @@ function DrawMessageBottom(alpha)
 		let backBtnString = (DATA.BTNTYPE) ? `X  ${TXT_MESSAGE_BACK[DATA.LANGUAGE]}` : `O  ${TXT_MESSAGE_BACK[DATA.LANGUAGE]}`;
 		TxtPrint(backBtnString, {r: textColor.r, g: textColor.g, b: textColor.b, a: alpha }, {x: 80 + (DATA.WIDESCREEN * 32), y:(DATA.CANVAS.height - 297) }, "CENTER");
 	}
-	
+
 	if (("ENTER_BTN" in DATA.MESSAGE_INFO) && (DATA.MESSAGE_INFO.ENTER_BTN))
 	{
 		let BtnString = (DATA.BTNTYPE) ? `O  ${TXT_MESSAGE_ENTER[DATA.LANGUAGE]}` : `X  ${TXT_MESSAGE_ENTER[DATA.LANGUAGE]}`;
@@ -227,7 +227,7 @@ function InitVModeMessageSettings()
 					case DTV_720p: def_val = 4; break;
 					case DTV_1080i: def_val = 5; break;
 				}
-				DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT].Value.Default = def_val;	
+				DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT].Value.Default = def_val;
 				DATA.CANVAS.mode = DATA.SCREEN_PREVMODE
 				Screen.setMode(DATA.CANVAS);
 				break;
@@ -245,7 +245,7 @@ function InitParentalSetMessageSettings()
 	DATA.MESSAGE_INFO.Selected = 0;
 	DATA.MESSAGE_INFO.TMPCODE = [ 0, 0, 0, 0 ];
     SetPadEvents_Parental();
-	
+
 	DATA.MESSAGE_INFO.Confirm = function()
 	{
 		DATA.PRNTCODE = DATA.MESSAGE_INFO.TMPCODE;
@@ -263,10 +263,10 @@ function InitParentalCheckMessageSettings()
 	DATA.MESSAGE_INFO.Selected = 0;
 	DATA.MESSAGE_INFO.TMPCODE = [ 0, 0, 0, 0 ];
     SetPadEvents_Parental();
-	
+
 	DATA.MESSAGE_INFO.Confirm = function()
 	{
-		if ((DATA.MESSAGE_INFO.TMPCODE[0] === DATA.PRNTCODE[0]) && (DATA.MESSAGE_INFO.TMPCODE[1] === DATA.PRNTCODE[1]) && (DATA.MESSAGE_INFO.TMPCODE[2] === DATA.PRNTCODE[2]) && (DATA.MESSAGE_INFO.TMPCODE[3] === DATA.PRNTCODE[3])) 
+		if ((DATA.MESSAGE_INFO.TMPCODE[0] === DATA.PRNTCODE[0]) && (DATA.MESSAGE_INFO.TMPCODE[1] === DATA.PRNTCODE[1]) && (DATA.MESSAGE_INFO.TMPCODE[2] === DATA.PRNTCODE[2]) && (DATA.MESSAGE_INFO.TMPCODE[3] === DATA.PRNTCODE[3]))
 		{
 			console.log("Parental Control Code Succeded");
 			DATA.PRNTSUCC = true;
@@ -280,7 +280,7 @@ function DrawParentalCodeMessage(txtColor, arrAlpha)
 {
 	let baseX = Math.round(DATA.CANVAS.width / 2) - 50 - (DATA.WIDESCREEN * 32);
 	let baseY = Math.round(DATA.CANVAS.height / 2) + 20;
-	
+
 	for (let i = 0; i < 4; i++)
 	{
 		let Chr = (i == DATA.MESSAGE_INFO.Selected) ? DATA.MESSAGE_INFO.TMPCODE[i].toString() : "*";
@@ -288,7 +288,7 @@ function DrawParentalCodeMessage(txtColor, arrAlpha)
 		let xmod = (i == DATA.MESSAGE_INFO.Selected) ? 2 : 0;
 		TxtPrint(Chr, txtColor, { x: baseX + (i * 30) + (DATA.WIDESCREEN * 32) - xmod, y: baseY + ymod}, "LEFT", undefined, (i == DATA.MESSAGE_INFO.Selected));
 	}
-	
+
 	dash_arrow.width = 16;
 	dash_arrow.height = 16;
 	dash_arrow.color = Color.new(255,255,255,arrAlpha);
@@ -298,18 +298,18 @@ function DrawParentalCodeMessage(txtColor, arrAlpha)
 	dash_arrow.angle = 0.5f;
 	dash_arrow.draw(baseX + (DATA.MESSAGE_INFO.Selected * 30) + 2 + (DATA.WIDESCREEN * 32), baseY + 31);
 	dash_arrow.angle = 0.0f;
-	
+
 	TxtPrint(DATA.MESSAGE_INFO.Processed, txtColor, { x: (DATA.WIDESCREEN * 32) + 12, y: -20}, "CENTER");
 }
 
-// Initializes a Generic 'Information' Screen Message Object. 
+// Initializes a Generic 'Information' Screen Message Object.
 
 function InitMessageInfoScreenSettings()
 {
 	DATA.MESSAGE_INFO.Processed = true;
 	DATA.MESSAGE_INFO.Selected = -1;
     SetPadEvents_Information();
-	
+
 	for (let i = 0; i < DATA.MESSAGE_INFO.Data.length; i++)
 	{
 		if (DATA.MESSAGE_INFO.Data[i].Selectable)
@@ -334,11 +334,11 @@ function DrawMessageInfoScreen(txtColor, arrAlpha)
 		{
 			glowEnabled = true;
 		}
-		
+
 		TxtPrint(`${DATA.MESSAGE_INFO.Data[i].Name}:`, txtColor, { x: nameX, y: baseY + (20 * i) }, "RIGHT", undefined);
 		TxtPrint(`${DATA.MESSAGE_INFO.Data[i].Description}`, txtColor, { x: descX + 25, y: baseY + (20 * i) }, "LEFT", undefined, glowEnabled);
 	}
-	
+
 	if (DATA.MESSAGE_INFO.Selected > -1)
 	{
 		const selectedTextWidth = DATA.MESSAGE_INFO.Data[DATA.MESSAGE_INFO.Selected].Description.length * 8; //font_s.getTextSize(DATA.MESSAGE_INFO.Data[DATA.MESSAGE_INFO.Selected].Description).width;
@@ -368,16 +368,16 @@ function DrawMessageFadeIn()
 	DrawMessageLines(DATA.DASH_MOVE_FRAME * 6);
 	DrawMessageTop(DATA.DASH_MOVE_FRAME * 6);
 	DrawMessageBottom(DATA.DASH_MOVE_FRAME * 6);
-	
+
 	switch(DATA.MESSAGE_INFO.Type)
 	{
 		case "TEXT":
-			if (!DATA.MESSAGE_INFO.Processed) 
-			{ 
+			if (!DATA.MESSAGE_INFO.Processed)
+			{
 				let txt = (Array.isArray(DATA.MESSAGE_INFO.Text)) ? DATA.MESSAGE_INFO.Text[DATA.LANGUAGE] : DATA.MESSAGE_INFO.Text;
 				DATA.MESSAGE_INFO.Processed = TextRender.ProcessText(txt);
 			}
-			
+
 			TxtPrint(DATA.MESSAGE_INFO.Processed, txtFadeColor, { x: (DATA.WIDESCREEN * 32), y: -10}, "CENTER");
 			break;
 		case "VMODE":
@@ -411,7 +411,7 @@ function DrawMessageIdle()
 	DrawMessageLines(128);
 	DrawMessageTop(128);
 	DrawMessageBottom(128);
-	
+
 	switch(DATA.MESSAGE_INFO.Type)
 	{
 		case "TEXT":
@@ -419,9 +419,9 @@ function DrawMessageIdle()
 			break;
 		case "VMODE":
 			if (DATA.MESSAGE_TIMER == null) { DATA.MESSAGE_TIMER = Timer.new(); }
-			
+
 			let time = Math.round(Timer.getTime(DATA.MESSAGE_TIMER) / 1000000);
-			
+
 			if (time > 10)
 			{
 				let def_val = 0;
@@ -434,7 +434,7 @@ function DrawMessageIdle()
 					case DTV_720p: def_val = 4; break;
 					case DTV_1080i: def_val = 5; break;
 				}
-				DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT].Value.Default = def_val;	
+				DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT].Value.Default = def_val;
 				DATA.CANVAS.mode = DATA.SCREEN_PREVMODE
 				Screen.setMode(DATA.CANVAS);
 				DATA.OVSTATE = "MESSAGE_OUT";
@@ -443,13 +443,13 @@ function DrawMessageIdle()
 				SetDashPadEvents(0);
 				break;
 			}
-			
+
 			TxtPrint(DATA.MESSAGE_INFO.Processed, textColor, { x: (DATA.WIDESCREEN * 32), y: -40}, "CENTER");
 			TxtPrint(`${TXT_VMODE_REMTIME[DATA.LANGUAGE]}`, textColor, { x: (DATA.WIDESCREEN * 32), y: 20}, "CENTER");
-			TxtPrint(`${(10 - time).toString()} ${TXT_VMODE_SEC[DATA.LANGUAGE]}`, textColor, { x: -5 + (DATA.WIDESCREEN * 32), y: 40}, "CENTER");					
+			TxtPrint(`${(10 - time).toString()} ${TXT_VMODE_SEC[DATA.LANGUAGE]}`, textColor, { x: -5 + (DATA.WIDESCREEN * 32), y: 40}, "CENTER");
 			TxtPrint(TXT_YES[DATA.LANGUAGE], textColor, {x: -40 + (DATA.WIDESCREEN * 32), y: 70 }, "CENTER", undefined, (DATA.MESSAGE_INFO.Selected == 0));
 			TxtPrint(TXT_NO[DATA.LANGUAGE], textColor, {x: 30 + (DATA.WIDESCREEN * 32), y: 70 }, "CENTER", undefined, (DATA.MESSAGE_INFO.Selected == 1));
-			
+
 			break;
 		case "PARENTAL_SET":
 			DrawParentalCodeMessage(textColor, 100);
@@ -473,8 +473,8 @@ function DrawMessageIdle()
 			TxtPrint(TXT_WAIT[DATA.LANGUAGE], textColor, { x: (DATA.WIDESCREEN * 32), y: -10}, "CENTER");
 			TxtPrint(`${DATA.MESSAGE_INFO.Done.toString()}/${DATA.MESSAGE_INFO.Count.toString()}`, textColor, { x: (DATA.WIDESCREEN * 32), y: 10}, "CENTER");
 			TxtPrint(`${progress.toString()}%`, textColor, { x: (DATA.WIDESCREEN * 32), y: 30}, "CENTER");
-			if ((DATA.MESSAGE_INFO.Done == DATA.MESSAGE_INFO.Count) && (progress === 100)) 
-			{ 
+			if ((DATA.MESSAGE_INFO.Done == DATA.MESSAGE_INFO.Count) && (progress === 100))
+			{
 				DATA.OVSTATE = "MESSAGE_OUT";
 				DATA.DASH_STATE = (DATA.DASH_STATE == "SUBMENU_MESSAGE_IDLE") ? "SUBMENU_MESSAGE_FADE_IN" : "IDLE_MESSAGE_FADE_OUT";
 				DATA.DASH_MOVE_FRAME = 0;
@@ -494,17 +494,17 @@ function DrawMessageFadeOut()
 	let txtFadeOutColor = { r:textColor.r, g: textColor.g, b: textColor.b, a: 128 - (DATA.DASH_MOVE_FRAME * 6) };
 	DATA.OVCOL = Color.new(prevtempColor.r, prevtempColor.g, prevtempColor.b, prevtempColor.a);
 	DrawMessageLines(128 - (DATA.DASH_MOVE_FRAME * 6));
-	
+
 	switch(DATA.MESSAGE_INFO.Type)
 	{
 		case "TEXT":
 			TxtPrint(DATA.MESSAGE_INFO.Processed, txtFadeOutColor, { x: (DATA.WIDESCREEN * 32), y: -10}, "CENTER");
 			break;
 		case "VMODE":
-			if (DATA.MESSAGE_TIMER != null) { Timer.destroy(DATA.MESSAGE_TIMER); DATA.MESSAGE_TIMER = null; }					
+			if (DATA.MESSAGE_TIMER != null) { Timer.destroy(DATA.MESSAGE_TIMER); DATA.MESSAGE_TIMER = null; }
 			break;
 	}
-	
+
 	if (DATA.DASH_MOVE_FRAME > 19) { DATA.OVSTATE = "IDLE" }
 }
 
@@ -514,7 +514,7 @@ function DrawMessageFadeOut()
 
 // This will parse the current time to get the automatic background brightness.
 
-function getDailyBrightness() 
+function getDailyBrightness()
 {
     const now = new Date();
     const hour = now.getHours();
@@ -540,7 +540,7 @@ function getDailyBrightness()
 // This will update the background brightness on each frame
 // to reflect changes based on daylight or user selected brightness.
 
-function updateBGBrightness() 
+function updateBGBrightness()
 {
 	if (DATA.BGSWITCH)
 	{
@@ -627,7 +627,7 @@ function drawBg()
 function drawOv()
 {
 	// Draw Date and Time
-	
+
 	if (DATA.CURRENT_STATE == 1)
 	{
 		switch(DATA.DASH_STATE)
@@ -636,23 +636,23 @@ function drawOv()
 			default: drawDate(); break;
 		}
 	}
-	
+
 	// Draw a partially visible theme color overlay to tint the whole interface.
 	// Fade In/Out screens also use this with a Full Black color.
 	Draw.rect((DATA.WIDESCREEN * 32),0,DATA.CANVAS.width - (DATA.WIDESCREEN * 64), DATA.CANVAS.height, DATA.OVCOL);
-	
+
 	// If a message screen should be displayed, this takes care of it.
-	
+
 	switch(DATA.OVSTATE)
 	{
 		case "MESSAGE_IN": DrawMessageFadeIn();	break;
 		case "MESSAGE_IDLE": DrawMessageIdle(); break;
 		case "MESSAGE_OUT": DrawMessageFadeOut(); break;
 	}
-	
+
 	// Draw Black bars at the sides of the screen if Widescreen mode is enabled.
 	// This is done because elements drawn at the edges will flicker or look weird.
-	
+
 	if (DATA.WIDESCREEN)
 	{
 		Draw.rect(0,0,32,DATA.CANVAS.height, Color.new(0,0,0,128));
@@ -666,27 +666,27 @@ function drawDate(icoAlphaMod = 0, boxAlphaMod = 0, textAlphaMod = 0)
 {
     // Helper function to pad single-digit numbers with leading zeros
     const padnum = (num) => num.toString().padStart(2, '0');
-	
+
 	if ((ICOFULLA + boxAlphaMod) > ICOFULLA) { boxAlphaMod = 0; }
 	if ((ICOFULLA + boxAlphaMod) < 0) { boxAlphaMod = -ICOFULLA; }
 	if ((ICOFULLA + icoAlphaMod) > ICOFULLA) { icoAlphaMod = 0; }
 	if ((ICOFULLA + icoAlphaMod) < 0) { icoAlphaMod = -ICOFULLA; }
-	
+
 	// Draw Start of Clock Outline
 	dash_clock_outline.width = 32;
 	dash_clock_outline.startx = 2;
-	dash_clock_outline.color = Color.new(255,255,255,ICOFULLA + boxAlphaMod); 
+	dash_clock_outline.color = Color.new(255,255,255,ICOFULLA + boxAlphaMod);
 	dash_clock_outline.draw(DATA.CANVAS.width - (DATA.WIDESCREEN * 32) - 158, 35);
-	
+
 	// Draw End of Clock Outline
 	dash_clock_outline.width = 180;
 	dash_clock_outline.startx = 32;
 	dash_clock_outline.color = Color.new(255,255,255,ICOFULLA + boxAlphaMod);
 	dash_clock_outline.draw(DATA.CANVAS.width - (DATA.WIDESCREEN * 32) - 128, 35);
-	
+
 	dash_clock.color = Color.new(255,255,255,ICOFULLA + icoAlphaMod);
 	dash_clock.draw(DATA.CANVAS.width - (DATA.WIDESCREEN * 32) - 25, 42);
-	
+
 	// Get current date and time
 	const currentDate = new Date();
 
@@ -699,7 +699,7 @@ function drawDate(icoAlphaMod = 0, boxAlphaMod = 0, textAlphaMod = 0)
 	const hours24 = currentDate.getHours();
 	const minutes = currentDate.getMinutes().toString();
 	//const seconds = currentDate.getSeconds();
-	
+
 	// Convert to 12-hour format
 	const hours12 = (hours24 % 12 || 12).toString(); // Adjust for midnight (0 => 12)
 	const amPm = hours24 >= 12 ? 'PM' : 'AM';
@@ -707,15 +707,15 @@ function drawDate(icoAlphaMod = 0, boxAlphaMod = 0, textAlphaMod = 0)
 	if ((modColor.a + textAlphaMod) > modColor.a) { textAlphaMod = 0; }
 	if ((modColor.a + textAlphaMod) < 0) { textAlphaMod = -modColor.a; }
 	modColor.a = modColor.a + textAlphaMod;
-	
+
 	let dateText = `${padnum(day)}/${padnum(month)}`;
 	let hourText = (DATA.HOUR_FORMAT) ? `${padnum(hours24)}:${padnum(minutes)}` : `${padnum(hours12)}:${padnum(minutes)} ${amPm}`;
-	
+
 	switch(DATA.DATE_FORMAT)
 	{
 		case 1: dateText = `${padnum(month)}/${padnum(day)}`; break;
 	}
-	
+
 	TxtPrint(`${dateText}  ${hourText}`, modColor, { x: DATA.CANVAS.width - (DATA.WIDESCREEN * 32) - 145, y:32 })
 }
 

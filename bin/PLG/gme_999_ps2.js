@@ -8,12 +8,12 @@ export const Plugin = (() => { 	// DO NOT REMOVE, Encloses plugin on a local sco
 ///*				   		 CUSTOM STRINGS							  *///
 //////////////////////////////////////////////////////////////////////////
 
-const NeutrinoSettingNames = 
+const NeutrinoSettingNames =
 [
-	"Virtual Memory Card 1", 
-	"Virtual Memory Card 2", 
-	"IOP: Fast reads", 
-	"IOP: Sync reads", 
+	"Virtual Memory Card 1",
+	"Virtual Memory Card 2",
+	"IOP: Fast reads",
+	"IOP: Sync reads",
 	"IOP: Emulate DVD-DL",
 	"IOP: Fix game buffer overrun",
 	"EE : Unhook syscalls"
@@ -32,7 +32,7 @@ let fsmodes = [ "exfat", "exfat", "exfat", "hdl", "bd" ];
 // For cases when the executable is placed directly at root.
 let basepath = `${System.boot_path}/`;
 
-if (basepath.endsWith("//")) 
+if (basepath.endsWith("//"))
 {
     basepath = basepath.slice(0, -1);
 }
@@ -45,25 +45,25 @@ function SaveLastPlayedAndGetExArgs()
 	if (DATA.GAMESETS.LOGO) { DASH_SEL.Value.Args.push('-logo'); }
 	if (DATA.GAMESETS.DBC) { DASH_SEL.Value.Args.push('-dbc'); }
 	const config = DATA.CONFIG.Get(`${DASH_SEL.Description}.cfg`);
-	
+
 	if (("gc" in config) && (config["gc"] !== "")) { DASH_SEL.Value.Args.push(`-gc=${config["gc"]}`); }
     if (("VMC0" in config) && (config["VMC0"] === "true")) { DASH_SEL.Value.Args.push(`-mc0=${basepath}VMC/${DASH_SEL.Description}_0.vmc`); }
     if (("VMC1" in config) && (config["VMC1"] === "true")) { DASH_SEL.Value.Args.push(`-mc1=${basepath}VMC/${DASH_SEL.Description}_1.vmc`); }
-	
+
 	// Save Last Played
 	const cfg = DATA.CONFIG.Get(cfgPath);
     cfg["lastPlayed"] = DASH_SEL.Name;
     DATA.CONFIG.Set(cfgPath, cfg);
 }
 
-function getISOGameCode(isoPath, isoSize) 
+function getISOGameCode(isoPath, isoSize)
 {
     const sectorSize = 2048; // Standard ISO sector size
     const RET = { success: false, code: "ERR" };
 
     // Open the file in read mode
     const file = std.open(isoPath, "r");
-    if (!file) 
+    if (!file)
 	{
         console.log(`Could not open file: ${isoPath}`);
         return RET;
@@ -74,7 +74,7 @@ function getISOGameCode(isoPath, isoSize)
 	const pvd = file.readAsString(sectorSize);
 
 	// Check for "CD001" magic string in PVD
-	if (!pvd || pvd.substring(1, 6) !== "CD001") 
+	if (!pvd || pvd.substring(1, 6) !== "CD001")
 	{
 		file.close();
 		logl(`${getGameName(isoPath)} Primary Volume Descriptor (CD001) not found.`);
@@ -85,10 +85,10 @@ function getISOGameCode(isoPath, isoSize)
 	// Extract the root directory offset and size
 	file.seek((16 * sectorSize) + 158, std.SEEK_SET);
 	const rootDirOffset = sectorSize * (file.getByte() | (file.getByte() << 8) | (file.getByte() << 16) | (file.getByte() << 24));
-	
+
 	file.seek(4, std.SEEK_CUR);
 	const rootDirSize = (file.getByte() | (file.getByte() << 8) | (file.getByte() << 16) | (file.getByte() << 24));
-	
+
 	// Read the root directory
 	if ((rootDirOffset > isoSize) || (rootDirSize > sectorSize))
 	{
@@ -97,12 +97,12 @@ function getISOGameCode(isoPath, isoSize)
 		console.log("ISO Read Error: Invalid Root Data");
 		return RET;
 	}
-	
+
 	file.seek(rootDirOffset, std.SEEK_SET);
 	const rootDir = file.readAsString(rootDirSize);
 	file.close();
-	
-	if ((!rootDir) || (rootDir.length === 0)) 
+
+	if ((!rootDir) || (rootDir.length === 0))
 	{
 		logl(`${getGameName(isoPath)} Root directory not found or is empty`);
 		console.log("Root directory not found or is empty");
@@ -115,7 +115,7 @@ function getISOGameCode(isoPath, isoSize)
 		RET.success = true;
 		RET.code = match[0];
 	}
-	
+
     return RET;
 }
 
@@ -125,20 +125,20 @@ function getGameSettings(code)
 	const config = DATA.CONFIG.Get(`${code}.cfg`);
 	if ("VMC0" in config) { settings[0] = (config["VMC0"] === "true"); }
 	if ("VMC1" in config) { settings[1] = (config["VMC1"] === "true"); }
-	if ("gc" in config) 
+	if ("gc" in config)
 	{
 		// Map gc values to bool array indexes
 		const charToIndexMap =  { '0': 2, '2': 3, '5': 4, '7': 5, '3': 6 };
-		
-		for (const c of config["gc"]) 
+
+		for (const c of config["gc"])
 		{
 			if (charToIndexMap.hasOwnProperty(c)) {
 				// Enable the corresponding boolean in the array
 				settings[charToIndexMap[c]] = true;
 			}
-		}	
+		}
 	}
-	
+
 	return settings;
 }
 
@@ -146,24 +146,24 @@ function getOptionContextInfo()
 {
 	let dir_options = [];
 	dir_options.push({ Name: TXT_INFO, Icon: -1 });
-	
+
 	let _a = function(DATA, val)
 	{
 		console.log("NEUTSETTS: Get Current Game Settings");
 		const gameData = [];
 		const currSett = getGameSettings(DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT].Description);
-		
+
 		console.log("NEUTSETTS: Set Game Title");
 		gameData.push({
 			Selectable: false,
-			get Name() { 
+			get Name() {
 				return TXT_TITLE[DATA.LANGUAGE];
 			},
 			get Description() {
 				return DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT].Name;
 			}
 		});
-		
+
 		console.log("NEUTSETTS: Set Neutrino Setting Options");
 		for (let i = 0; i < NeutrinoSettingNames.length; i++)
 		{
@@ -177,7 +177,7 @@ function getOptionContextInfo()
 				}
 			});
 		}
-		
+
 		console.log("NEUTSETTS: Set Confirm Function");
 		let saveGameSettings = function()
 		{
@@ -193,7 +193,7 @@ function getOptionContextInfo()
 			if (DATA.MESSAGE_INFO.Data[7].Selected === 1) { gcModes += "3"; }
 			config["gc"] = gcModes;
 			DATA.CONFIG.Push(`${DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT].Description}.cfg`, config);
-			
+
 			let setCopyMessage = false;
 			if (DATA.MESSAGE_INFO.Data[1].Selected === 1)
 			{
@@ -204,7 +204,7 @@ function getOptionContextInfo()
 					setCopyMessage = true;
 				}
 			}
-			
+
 			if (DATA.MESSAGE_INFO.Data[2].Selected === 1)
 			{
                 let VMCPath = `${basepath}VMC/${code}_1.vmc`;
@@ -214,12 +214,12 @@ function getOptionContextInfo()
 					setCopyMessage = true;
 				}
 			}
-			
+
 			if (setCopyMessage)
 			{
 				DATA.OVSTATE = "MESSAGE_IDLE";
 				DATA.DASH_STATE = "SUBMENU_MESSAGE_IDLE";
-				DATA.MESSAGE_INFO = 
+				DATA.MESSAGE_INFO =
 				{
 					Icon: -1,
 					Title: "",
@@ -229,7 +229,7 @@ function getOptionContextInfo()
 					ENTER_BTN: false,
 					Count: DATA.CPYQUEUE.length,
 					Done: 0,
-					get Progress() 
+					get Progress()
 					{
 						this.Done = this.Count - DATA.CPYQUEUE.length;
 						const progress = System.getFileProgress();
@@ -238,11 +238,11 @@ function getOptionContextInfo()
 				};
 			}
 		};
-		
+
 		console.log("NEUTSETTS: Set Message Screen Parameters");
 		DATA.DASH_STATE = "SUBMENU_CONTEXT_MESSAGE_FADE_OUT";
 		DATA.OVSTATE = "MESSAGE_IN";
-		DATA.MESSAGE_INFO = 
+		DATA.MESSAGE_INFO =
 		{
 			Icon: -1,
 			Title: "",
@@ -254,7 +254,7 @@ function getOptionContextInfo()
 			Confirm: saveGameSettings,
 		};
 	}
-	
+
 	return { Options: dir_options, Default: 0, ItemCount: dir_options.length, Confirm: _a, };
 }
 
@@ -266,27 +266,27 @@ function ParseDirectory(path, device, fs)
 
     const cfg = DATA.CONFIG.Get(cfgPath);
 
-	dir.forEach((item) => 
+	dir.forEach((item) =>
 	{
 		if ((!item.dir) && (item.name.toLowerCase().endsWith(".iso")))
 		{
 			// Get Game Item Info
 			let title = getGameName(item.name);
 			let type = "ELF";
-			
+
 			// Set Launch Settings
 			let args = [ `-cwd=${cwd}`, `-bsd=${device}`, `-bsdfs=${fs}`, `-dvd=${getRootName(path)}:${getPathWithoutRoot(path)}${item.name}`, `-mt=${getFolderNameFromPath(path).toLowerCase()}` ];
 			let value = { Path: elfPath, Args: args, Code: SaveLastPlayedAndGetExArgs };
-			
+
 			// Get Game Code
 			let gameCode = "";
-			
+
 			if (title in cfg) { gameCode = cfg[title]; }
 			else
 			{
 				gameCode = getGameCodeFromOldFormatName(item.name);
-				if (gameCode === "") 
-				{ 
+				if (gameCode === "")
+				{
 					let retval = getISOGameCode(`${path}${item.name}`, item.size);
 					if (retval.success)
 					{
@@ -301,24 +301,24 @@ function ParseDirectory(path, device, fs)
 					DATA.CONFIG.Push(cfgPath, cfg);
 				}
 			}
-			
+
 			// Add ART
 			let ico = (() => { return dash_icons[26]; });
 			const icoFile = findICO(gameCode);
 			if (icoFile !== "") { ico = new Image(icoFile, RAM, async_list); }
-			
-			gameList.push({ 
-				Name: title, 
-				Description: gameCode, 
-				Icon: -1, 
-				Type: type, 
+
+			gameList.push({
+				Name: title,
+				Description: gameCode,
+				Icon: -1,
+				Type: type,
 				Option: getOptionContextInfo(),
 				Value: value,
 				Art: { ICO: ico },
-				get CustomIcon() 
-				{ 
+				get CustomIcon()
+				{
 					if (typeof this.Art.ICO === "function") { return this.Art.ICO(); }
-					return this.Art.ICO; 
+					return this.Art.ICO;
 				}
 			});
 		}
@@ -341,14 +341,14 @@ function getGames()
             cwd = "mc1:/neutrino";
         }
     }
-	
+
 	let lastPlayed = 0;
     let scannedPaths = [];
 
 	for (let i = 0; i < devices.length; i++)
 	{
         // If ends with double slashes, trim.
-		if (roots[i].endsWith("//")) 
+		if (roots[i].endsWith("//"))
 		{
 			roots[i] = roots[i].slice(0, -1);
 		}
@@ -364,13 +364,13 @@ function getGames()
         {
 		    ParseDirectory(`${roots[i]}DVD/`, devices[i], fsmodes[i]);
         }
-        
+
         // Scan CD directory if it exists
         if (os.readdir(roots[i])[0].includes("CD"))
         {
 		    ParseDirectory(`${roots[i]}CD/`, devices[i], fsmodes[i]);
         }
-        
+
         // Add path to scanned Paths
         scannedPaths.push(roots[i]);
 	}
@@ -379,17 +379,17 @@ function getGames()
 
     const cfg = DATA.CONFIG.Get(cfgPath);
 
-	if ("lastPlayed" in cfg) 
-	{ 
+	if ("lastPlayed" in cfg)
+	{
 		const title = cfg["lastPlayed"];
 		const index = gameList.findIndex(item => item.Name === title);
-		if (index > -1) { lastPlayed = index; }	
+		if (index > -1) { lastPlayed = index; }
 	}
-	
+
 	return { Options: gameList, Default: lastPlayed, ItemCount: gameList.length };
 }
 
-function getDesc() 
+function getDesc()
 {
 	const titleString = gameList.length.toString();
 	const DESC_MAIN = new Array
@@ -402,7 +402,7 @@ function getDesc()
 		`${titleString} ${TXT_TITLES[5]}`,
 		`${titleString} ${TXT_TITLES[6]}`,
 	);
-	
+
 	return DESC_MAIN;
 }
 
@@ -411,7 +411,7 @@ function getDesc()
 ///																	   ///
 /// 	Here is the main info that will be retrieved by the App.   	   ///
 //////////////////////////////////////////////////////////////////////////
-	
+
 const Info = {
 	Name: "Playstation 2",
 	Icon: 18,
@@ -429,5 +429,5 @@ return Info;
 //////////////////////////////////////////////////////////////////////////
 ///*				   		   ENCLOSE END							  *///
 //////////////////////////////////////////////////////////////////////////
-	
+
 })(); // DO NOT REMOVE, Encloses plugin on a local scope //

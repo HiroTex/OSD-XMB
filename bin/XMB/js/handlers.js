@@ -6,9 +6,9 @@
 /// 				   		  										   ///
 //////////////////////////////////////////////////////////////////////////
 
-/* 
-	This is the main loop function that will 
-	draw everything on screen 
+/*
+	This is the main loop function that will
+	draw everything on screen
 */
 
 function dashboard()
@@ -22,7 +22,7 @@ function dashboard()
 			DrawSelectedCat();
 			DrawUnselectedCats();
 			DrawOptionBox();
-		
+
 			if (DATA.PRNTSUCC)
 			{
 				DATA.PRNTSUCC = false;
@@ -30,23 +30,23 @@ function dashboard()
 				SelectItem();
 			}
 			break;
-		case "MOVE_BACK": 
+		case "MOVE_BACK":
 			DrawMovingCats(1);
 			DrawMovingOptsLR(1);
 			DASH_UPDATE_FRAME("IDLE");
 			break;
-		case "MOVE_FORWARD": 
+		case "MOVE_FORWARD":
 			DrawMovingCats(-1);
 			DrawMovingOptsLR(-1);
 			DASH_UPDATE_FRAME("IDLE");
 			break;
-		case "MOVE_DOWN": 
+		case "MOVE_DOWN":
 			DrawMovingOptsUD(-1)
 			DrawSelectedCat();
 			DrawUnselectedCats();
 			DASH_UPDATE_FRAME("IDLE");
 			break;
-		case "MOVE_UP": 
+		case "MOVE_UP":
 			DrawMovingOptsUD(1)
 			DrawSelectedCat();
 			DrawUnselectedCats();
@@ -61,16 +61,16 @@ function dashboard()
 			{
 				DrawInterfaceFade(DATA.DASH_MOVE_FRAME, -1);
 			}
-			
-			DASH_UPDATE_FRAME("NULL"); 
-			
-			if (DATA.DASH_MOVE_FRAME == 20) 
-			{	
+
+			DASH_UPDATE_FRAME("NULL");
+
+			if (DATA.DASH_MOVE_FRAME == 20)
+			{
 				DATA.EXIT_STATE = 0;
 				DATA.CURRENT_STATE = 8;
 				DATA.FADE_FRAME = 0;
 			}
-			
+
 			break;
 		case "FADE_IN":
 			let NEXT_STATE_IN = "IDLE";
@@ -83,8 +83,8 @@ function dashboard()
 			{
 				DrawInterfaceFade(DATA.DASH_MOVE_FRAME);
 			}
-			
-			DASH_UPDATE_FRAME(NEXT_STATE_IN); 
+
+			DASH_UPDATE_FRAME(NEXT_STATE_IN);
 			break;
 		case "IDLE_MESSAGE_FADE_IN":
 			if (DATA.DASH_PADMODE != 0) { SetDashPadEvents(0); }
@@ -109,8 +109,8 @@ function dashboard()
 				DrawSelectedCat();
 				DrawUnselectedCats();
 			}
-			
-			DASH_UPDATE_FRAME(NEXT_IDLE_MESSAGE_STATE); 
+
+			DASH_UPDATE_FRAME(NEXT_IDLE_MESSAGE_STATE);
 			break;
 		case "IDLE_MESSAGE":
 			if (DATA.MESSAGE_INFO.BG)
@@ -120,14 +120,14 @@ function dashboard()
 				DrawSelectedCat();
 				DrawUnselectedCats();
 			}
-			
+
 			if (DATA.DASH_PADMODE != 4) { SetDashPadEvents(4); }
 			if (DATA.OVSTATE != "MESSAGE_IDLE") { DATA.OVSTATE = "MESSAGE_IDLE"; }
 			break;
 		case "IDLE_MESSAGE_FADE_OUT":
 			if (DATA.DASH_PADMODE != 0) { SetDashPadEvents(0); }
 			let NEXT_IDLE_MESSAGE_STATE_OUT = "IDLE";
-			
+
 			if (DATA.DASH_CURSUB > -1)
 			{
 				NEXT_IDLE_MESSAGE_STATE = "SUBMENU_IDLE";
@@ -145,7 +145,7 @@ function dashboard()
 				DrawSelectedCat();
 				DrawUnselectedCats();
 			}
-			
+
 			DASH_UPDATE_FRAME(NEXT_IDLE_MESSAGE_STATE_OUT);
 			break;
 		case "MENU_CONTEXT_IN":
@@ -166,8 +166,8 @@ function dashboard()
 		case "MENU_CONTEXT_OUT":
 			DrawContextMenuAnimation(-1);
 			DASH_UPDATE_FRAME("IDLE");
-			if (DATA.DASH_MOVE_FRAME > 19) 
-			{ 
+			if (DATA.DASH_MOVE_FRAME > 19)
+			{
                 delete DASH_CTX[DATA.DASH_CURCTXLVL];
 				DATA.DASH_CURCTXLVL--;
 				Timer.destroy(DATA.DASH_CTX_TIMER);
@@ -177,14 +177,14 @@ function dashboard()
 		case "SUBMENU_IN":
 			if (DATA.DASH_PADMODE != 0) { SetDashPadEvents(0); }
 			DrawInitialSubMenuFade(1);
-			DASH_UPDATE_FRAME("SUBMENU_IDLE"); 
+			DASH_UPDATE_FRAME("SUBMENU_IDLE");
 			break;
 		case "SUBMENU_IDLE":
 			if (DATA.DASH_PADMODE != 2) { SetDashPadEvents(2); }
 			DrawSubMenuContent();
 			DrawSubMenuOptions();
 			DrawOptionBox();
-		
+
 			if (DATA.PRNTSUCC)
 			{
 				DATA.PRNTSUCC = false;
@@ -195,21 +195,21 @@ function dashboard()
 		case "SUBMENU_MOVE_UP":
 			DrawSubMenuContent();
 			DrawSubMenuMovingOptionsUD(1);
-			let NEXT_STATE_UP = (DATA.DASH_CURSUB > 0) ? "NEW_SUBMENU_IDLE" : "SUBMENU_IDLE"; 
-			DASH_UPDATE_FRAME(NEXT_STATE_UP); 
+			let NEXT_STATE_UP = (DATA.DASH_CURSUB > 0) ? "NEW_SUBMENU_IDLE" : "SUBMENU_IDLE";
+			DASH_UPDATE_FRAME(NEXT_STATE_UP);
 			break;
 		case "SUBMENU_MOVE_DOWN":
 			DrawSubMenuContent();
 			DrawSubMenuMovingOptionsUD(-1);
-			let NEXT_STATE_DOWN = (DATA.DASH_CURSUB > 0) ? "NEW_SUBMENU_IDLE" : "SUBMENU_IDLE"; 
-			DASH_UPDATE_FRAME(NEXT_STATE_DOWN); 
+			let NEXT_STATE_DOWN = (DATA.DASH_CURSUB > 0) ? "NEW_SUBMENU_IDLE" : "SUBMENU_IDLE";
+			DASH_UPDATE_FRAME(NEXT_STATE_DOWN);
 			break;
 		case "SUBMENU_OUT":
 			if (DATA.DASH_PADMODE != 0) { SetDashPadEvents(0); }
 			DrawInitialSubMenuFade(-1);
-			DASH_UPDATE_FRAME("IDLE"); 
-			if (DATA.DASH_MOVE_FRAME > 19) 
-			{ 
+			DASH_UPDATE_FRAME("IDLE");
+			if (DATA.DASH_MOVE_FRAME > 19)
+			{
                 delete DASH_SUB[DATA.DASH_CURSUB];
 				DATA.DASH_PRVSUB--;
 				DATA.DASH_CURSUB--;
@@ -218,7 +218,7 @@ function dashboard()
 		case "NEW_SUBMENU_IN":
 			if (DATA.DASH_PADMODE != 0) { SetDashPadEvents(0); }
 			DrawNewSubMenuFade(1);
-			DASH_UPDATE_FRAME("NEW_SUBMENU_IDLE"); 
+			DASH_UPDATE_FRAME("NEW_SUBMENU_IDLE");
 			break;
 		case "NEW_SUBMENU_IDLE":
 			if (DATA.DASH_PADMODE != 2) { SetDashPadEvents(2); }
@@ -229,12 +229,12 @@ function dashboard()
 		case "NEW_SUBMENU_OUT":
 			if (DATA.DASH_PADMODE != 0) { SetDashPadEvents(0); }
 			DrawNewSubMenuFade(-1);
-			let NEXT_STATE_OUT = (DATA.DASH_CURSUB > 1) ? "NEW_SUBMENU_IDLE" : "SUBMENU_IDLE"; 
+			let NEXT_STATE_OUT = (DATA.DASH_CURSUB > 1) ? "NEW_SUBMENU_IDLE" : "SUBMENU_IDLE";
 			DASH_UPDATE_FRAME(NEXT_STATE_OUT);
-			if (DATA.DASH_MOVE_FRAME > 19) 
-			{ 
+			if (DATA.DASH_MOVE_FRAME > 19)
+			{
                 delete DASH_SUB[DATA.DASH_CURSUB];
-				DATA.DASH_CURSUBOPT = DASH_SUB[DATA.DASH_PRVSUB].Selected; 
+				DATA.DASH_CURSUBOPT = DASH_SUB[DATA.DASH_PRVSUB].Selected;
 				DATA.DASH_PRVSUB--;
 				DATA.DASH_CURSUB--;
 			};
@@ -255,9 +255,9 @@ function dashboard()
 		case "SUBMENU_CONTEXT_OUT":
 			if (DATA.DASH_PADMODE != 0) { SetDashPadEvents(0); }
 			DrawContextSubMenuAnimation(-1);
-			let NEXT_STATE_CONTEXT_OUT = (DATA.DASH_CURSUB > 1) ? "NEW_SUBMENU_IDLE" : "SUBMENU_IDLE"; 
+			let NEXT_STATE_CONTEXT_OUT = (DATA.DASH_CURSUB > 1) ? "NEW_SUBMENU_IDLE" : "SUBMENU_IDLE";
 			DASH_UPDATE_FRAME(NEXT_STATE_CONTEXT_OUT);
-			if (DATA.DASH_MOVE_FRAME > 19) 
+			if (DATA.DASH_MOVE_FRAME > 19)
 			{
                 delete DASH_CTX[DATA.DASH_CURCTXLVL];
 				DATA.DASH_CURCTXLVL--;
@@ -276,7 +276,7 @@ function dashboard()
 				DrawSubMenuContent();
 				DrawSubMenuOptions();
 			}
-			
+
 			if (DATA.DASH_PADMODE != 4) { SetDashPadEvents(4); }
 			if (DATA.OVSTATE != "MESSAGE_IDLE") { DATA.OVSTATE = "MESSAGE_IDLE"; }
 			break;
@@ -284,15 +284,15 @@ function dashboard()
 			DrawSubMenuContent(!DATA.MESSAGE_INFO.BG);
 			DrawSubMenuOptions(!DATA.MESSAGE_INFO.BG);
 			if (DATA.DASH_PADMODE != 0) { SetDashPadEvents(0); }
-			let NEXT_STATE_MESSAGE_IN = (DATA.DASH_CURSUB > 1) ? "NEW_SUBMENU_IDLE" : "SUBMENU_IDLE"; 
+			let NEXT_STATE_MESSAGE_IN = (DATA.DASH_CURSUB > 1) ? "NEW_SUBMENU_IDLE" : "SUBMENU_IDLE";
 			DASH_UPDATE_FRAME(NEXT_STATE_MESSAGE_IN);
 			break;
 	}
 }
 
-/* 	
-	This is the exit handler function which will 
-	handle the exit events (launch an Elf or execute code) 
+/*
+	This is the exit handler function which will
+	handle the exit events (launch an Elf or execute code)
 */
 
 function exit()
@@ -302,7 +302,7 @@ function exit()
 		case 0:	// Validate if App or functions can be executed, if not, show error screen message
 			if (DASH_SEL.Type == "CODE")
 			{
-				if (DASH_SEL.Value) 
+				if (DASH_SEL.Value)
 				{
 					DATA.EXIT_STATE = 1
 					DATA.OVSTATE = "EXIT";
@@ -313,7 +313,7 @@ function exit()
                     DATA.DASH_MOVE_FRAME = 0;
                     DATA.DASH_STATE = "IDLE_MESSAGE_FADE_IN";
 				    DATA.OVSTATE = "MESSAGE_IN";
-				    DATA.MESSAGE_INFO = 
+				    DATA.MESSAGE_INFO =
 				    {
 					    Icon: -1,
 					    Title: "",
@@ -342,7 +342,7 @@ function exit()
                     DATA.DASH_MOVE_FRAME = 0;
                     DATA.DASH_STATE = "IDLE_MESSAGE_FADE_IN";
 				    DATA.OVSTATE = "MESSAGE_IN";
-				    DATA.MESSAGE_INFO = 
+				    DATA.MESSAGE_INFO =
 				    {
 					    Icon: -1,
 					    Title: "",
@@ -364,7 +364,7 @@ function exit()
                 DATA.DASH_MOVE_FRAME = 0;
                 DATA.DASH_STATE = "IDLE_MESSAGE_FADE_IN";
 				DATA.OVSTATE = "MESSAGE_IN";
-				DATA.MESSAGE_INFO = 
+				DATA.MESSAGE_INFO =
 				{
 					Icon: -1,
 					Title: "",
@@ -393,34 +393,34 @@ function exit()
 			DATA.CURRENT_STATE = (DASH_SEL.Type == "ELF") ? 9 : 99;
 			break;
 	}
-	
+
 	DATA.FADE_FRAME += 2;
 }
 
-/* 
-	This will be executed after the exit function 
-	has finished and launch an ELF file 
+/*
+	This will be executed after the exit function
+	has finished and launch an ELF file
 */
 
 function launch()
 {
 	if ("Code" in DASH_SEL.Value) { DASH_SEL.Value.Code(); }
-	
+
 	console.log(`Launching ELF: ${DASH_SEL.Value.Path}`);
 	console.log(`   With Args: ${DASH_SEL.Value.Args}`);
-	
+
 	logl(`Launching ELF: ${DASH_SEL.Value.Path}`);
 	logl(`    With Args: ${DASH_SEL.Value.Args}`);
-		
+
 	System.loadELF(DASH_SEL.Value.Path, DASH_SEL.Value.Args);
 }
 
-/* 
-	You can reassign the function called here with 
-	a plugin to execute custom code after exiting the app. 
+/*
+	You can reassign the function called here with
+	a plugin to execute custom code after exiting the app.
 */
 
-function custom() 
-{ 
+function custom()
+{
 	DATA.CUSTOM_FUNCTION(); // Reassignable function
 }

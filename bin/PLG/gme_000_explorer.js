@@ -49,7 +49,7 @@ function ParseDirectory(path)
 {
 	const dir = System.listDir(path);
 	let dir_options = [];
-    
+
     // Separate directories and files
     const directories = dir.filter(item => item.name !== "." && item.name !== ".." && item.dir); // All directories
     const files = dir.filter(item => !item.dir); // All files
@@ -57,25 +57,25 @@ function ParseDirectory(path)
     // Sort directories and files alphabetically by name
     directories.sort((a, b) => a.name.localeCompare(b.name));
     files.sort((a, b) => a.name.localeCompare(b.name));
-	
-	directories.forEach((item) => 
+
+	directories.forEach((item) =>
 	{
-		dir_options.push({ 
-			Path: path, 
-			Name: item.name, 
-			Description: "", 
-			Icon: 18, 
-			Type: "SUBMENU", 
+		dir_options.push({
+			Path: path,
+			Name: item.name,
+			Description: "",
+			Icon: 18,
+			Type: "SUBMENU",
 			get Value() { return ParseDirectory(`${this.Path}${this.Name}/`); }
 		});
 	});
-	
-	files.forEach((item) => 
+
+	files.forEach((item) =>
 	{
 		let icon = 24; // default icon for files
 		let type = "";
 		let value = {};
-		
+
 		switch(getFileExtension(item.name).toLowerCase())
 		{
 			case "vcd": icon = 25; break;
@@ -84,24 +84,24 @@ function ParseDirectory(path)
 			case "png":
 			case "jpg":
 			case "bmp": icon = 2; break;
-			case "mp3": 
-			case "wav": 
+			case "mp3":
+			case "wav":
 			case "ogg": icon = 3; break;
 			case "mp4":
 			case "mkv":
 			case "avi": icon = 4; break;
 		}
-		
+
 		dir_options.push({ Name: item.name, Description: formatFileSize(item.size), Icon: icon, Type: type, Value: value, });
 	});
-	
+
 	return { Options: dir_options, Default:0, ItemCount: dir_options.length, };
 }
 
 function GetExplorerOptions()
 {
 	let options = [];
-	
+
 	options.push({
 		Name: WORK_DIR_NAME,
 		Description: "",
@@ -109,7 +109,7 @@ function GetExplorerOptions()
 		Type: "SUBMENU",
 		get Value() { return ParseDirectory(`${System.boot_path}/`); }
 	});
-	
+
 	options.push({
 		Name: MASS_DIR_NAME,
 		Description: "",
@@ -117,7 +117,7 @@ function GetExplorerOptions()
 		Type: "SUBMENU",
 		get Value() { return ParseDirectory("mass:/"); }
 	});
-	
+
 	return { Options: options, Default: 0, ItemCount: options.length, };
 }
 
@@ -141,5 +141,5 @@ return Info;
 //////////////////////////////////////////////////////////////////////////
 ///*				   		   ENCLOSE END							  *///
 //////////////////////////////////////////////////////////////////////////
-	
+
 })(); // DO NOT REMOVE, Encloses plugin on a local scope //

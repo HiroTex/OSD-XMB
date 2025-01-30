@@ -34,7 +34,7 @@ const BOOT_WARNING_ARRAY =
 	"EPILEPSIA FOTOSSENSÍVEL\nSE VOCÊ TEM HISTÓRICO DE EPILEPSIA OU CONVULSÕES, CONSULTE UM MÉDICO ANTES DE USAR. CERTOS PADRÕES PODEM DESENCADEAR CONVULSÕES SEM HISTÓRICO PRÉVIO. ANTES DE USAR ESTE PRODUTO, LEIA ATENTAMENTE O MANUAL DE INSTRUÇÕES.",
 ];
 
-const TXT_WAIT = 
+const TXT_WAIT =
 [
 	"Please wait...",
 	"Veuillez patienter...",
@@ -45,7 +45,7 @@ const TXT_WAIT =
 	"Aguarde..."
 ];
 
-const TXT_YES = 
+const TXT_YES =
 [
 	"Yes",
 	"Yes",
@@ -67,7 +67,7 @@ const TXT_NO =
 	"No",
 ];
 
-const TXT_INFO = 
+const TXT_INFO =
 [
 	"Information",
 	"Information",
@@ -78,7 +78,7 @@ const TXT_INFO =
 	"Information",
 ];
 
-const TXT_DELETE = 
+const TXT_DELETE =
 [
 	"Delete",
 	"Delete",
@@ -89,7 +89,7 @@ const TXT_DELETE =
 	"Delete",
 ];
 
-const MSG_SUBMENU_EMPTY = 
+const MSG_SUBMENU_EMPTY =
 [
 	"There are no elements.",
 	"There are no elements.",
@@ -100,7 +100,7 @@ const MSG_SUBMENU_EMPTY =
 	"There are no elements.",
 ];
 
-const TXT_MESSAGE_BACK = 
+const TXT_MESSAGE_BACK =
 [
 	"Back",
 	"Back",
@@ -122,7 +122,7 @@ const TXT_MESSAGE_ENTER =
 	"Accept",
 ];
 
-const TXT_VMODE_SEC = 
+const TXT_VMODE_SEC =
 [
 	"seconds",
 	"seconds",
@@ -133,7 +133,7 @@ const TXT_VMODE_SEC =
 	"seconds",
 ];
 
-const TXT_VMODE_REMTIME = 
+const TXT_VMODE_REMTIME =
 [
 	"Remaining time",
 	"Temps restant",
@@ -144,7 +144,7 @@ const TXT_VMODE_REMTIME =
 	"Tempo restante",
 ];
 
-const TXT_VMODE_MSG = 
+const TXT_VMODE_MSG =
 [
 	"Can you read this screen?\nSelect [Yes] if you can.\nIf you do not press any buttons, the system will automatically go back to the previous setting.\n \n \n \n \n",
 	"Pouvez-vous lire cet écran ?\nSélectionnez [Oui] si vous pouvez.\nSi vous n'appuyez sur aucun bouton, le système reviendra automatiquement au réglage précédent.\n \n \n \n \n",
@@ -166,7 +166,7 @@ const TXT_TITLE =
 	"Título",
 ];
 
-const TXT_TITLES = 
+const TXT_TITLES =
 [
 	"Titles",
 	"Titres",
@@ -177,7 +177,7 @@ const TXT_TITLES =
 	"Títulos",
 ];
 
-const TXT_OPTION = 
+const TXT_OPTION =
 [
 	"Options",
 	"Options",
@@ -188,7 +188,7 @@ const TXT_OPTION =
 	"Options",
 ];
 
-const TXT_ENTER_NEW_PASS = 
+const TXT_ENTER_NEW_PASS =
 [
 	"Enter your new password",
 	"Enter your new password",
@@ -199,7 +199,7 @@ const TXT_ENTER_NEW_PASS =
 	"Enter your new password",
 ];
 
-const TXT_ENTER_CUR_PASS = 
+const TXT_ENTER_CUR_PASS =
 [
 	"Enter your four-digir password",
 	"Enter your four-digir password",
@@ -303,18 +303,18 @@ const TextRender = {
 			let testLine = currentLine ? currentLine + ' ' + word : word;
 			let textWidth = this.currentFont.getTextSize(testLine).width;
 
-			if (textWidth > this.maxWidth) 
+			if (textWidth > this.maxWidth)
 			{
 				lines.push(currentLine);
 				currentLine = word;
-			} 
-			else 
+			}
+			else
 			{
 				currentLine = testLine;
 			}
 		});
 
-		if (currentLine.length > 0) 
+		if (currentLine.length > 0)
 		{
 			lines.push(currentLine);
 		}
@@ -324,20 +324,20 @@ const TextRender = {
 
 	// Calculate alignment position for text
 	CalculateAlignedPosition: function(lines, alignment) {
-		
+
 		if (alignment === "LEFT") { return; }
-		
+
 		let totalTextWidth = 0;
 		let totalTextHeight = 0;
 		let longestLine = "";
 		let lineSize = this.currentFont.scale * 32
 
-		lines.forEach((line) => 
+		lines.forEach((line) =>
 		{
 			if (line.length > longestLine.length) { longestLine = line; }
 			totalTextHeight += lineSize;
 		});
-		
+
 		totalTextWidth = this.currentFont.getTextSize(longestLine).width;
 
 		if (alignment === "CENTER") {
@@ -350,21 +350,21 @@ const TextRender = {
 	},
 
 	// Print method to render text, with shadow and alignment
-	Print: function(lines, alignment = "LEFT", outline = true) 
+	Print: function(lines, alignment = "LEFT", outline = true)
 	{
 		// If only one line, make an array of one item.
-		
+
 		if (typeof lines === 'string') { lines = [lines]; }
 
 		this.CalculateAlignedPosition(lines, alignment);
 
 		const opacity = Color.getA(this.textColor);
 		const shadowOpacity = Math.max(0, opacity - 32);
-		
-		lines.forEach((line, index) => 
+
+		lines.forEach((line, index) =>
 		{
 			const lineY = this.y + index * (this.currentFont.scale * 32);
-			
+
 			if ((outline) && (shadowOpacity > 0))
 			{
 				this.currentFont.color = Color.new(0, 0, 0, shadowOpacity);
@@ -390,7 +390,7 @@ TextRender.SetFont(font_s);
 		align: 	Text Alignment. Default is LEFT, but can be set to "CENTER" or "RIGHT".
 		font: 	Text Font to use, default is "small".
 		glow: 	Boolean to indicate if text should glow or not.
-*/ 
+*/
 
 function TxtPrint(txt, clr, pos, align = "LEFT", font = font_s, glow = false)
 {
@@ -400,7 +400,7 @@ function TxtPrint(txt, clr, pos, align = "LEFT", font = font_s, glow = false)
 		TextRender.SetTextColor(clr.r, clr.g, clr.b, clr.a);
 		TextRender.SetPosition(pos.x, pos.y);
 		TextRender.Print(txt, align);
-		
+
 		if (glow)
 		{
 			if (glowText.Value == glowText.Max) { glowText.Dir = -1; }

@@ -5,50 +5,50 @@
 ///			    customize settings and user preferences.			   ///
 /// 				   		  										   ///
 //////////////////////////////////////////////////////////////////////////
- 
+
 /*	Info:
-	
+
 	This is the main Configuration Object to
 	handle getting, setting, pushing or Processing
 	configurations.
-	
+
 	Get:		Get a Configuration Item from a file path or memory
 				if it has been already pushed.
-				
+
 	Set:		Write a Configuration Item directly to a file.
 				This should not be used directly and it is better to
 				let the Process function do it when exiting the app.
-				
-	Push:		Push a Configuration Item to a queue that will be 
+
+	Push:		Push a Configuration Item to a queue that will be
 				executed when the app is exiting.
-				
+
 	Process:	Processes all queued configuration items before
 				exiting the app.
 
 */
 
 DATA.CONFIG = {
-	
+
 	configPath: `${System.boot_path}/CFG/`,
 	queue: [],
-	
+
 	Get: function(path)
 	{
 		// Check if an item with the same path already exists in the queue list
 		const existingItem = this.queue.find(item => item.path === path);
-		
+
 		if (existingItem) { return existingItem.config; }
-		
+
 		path = `${this.configPath}${path}`;
-		
+
 		const hasfile = std.exists(path);
 		if (!hasfile) { return {}; } // Return Empty Table if not found
-		
+
 		// Read each line for config.
 		let config = {};
 
 		const file = std.open(path, "r");
-		
+
 		while (!file.eof()) {
 			let line = file.getline();
 			if (line && line.includes('=')) { // Ensure the line is not empty and contains an '='
@@ -57,12 +57,12 @@ DATA.CONFIG = {
 				config[key.trim()] = value.trim(); // Trim and store in the config object
 			}
 		}
-		
+
 		file.close();
-		
+
 		return config;
 	},
-	
+
 	Set: function(path, config)
 	{
 		path = `${this.configPath}${path}`;
@@ -79,32 +79,32 @@ DATA.CONFIG = {
 		    file.close();
         }
 	},
-	
-	Push: function (path, newConfig) 
+
+	Push: function (path, newConfig)
 	{
 		// Check if an item with the same path already exists
 		const existingItem = this.queue.find(item => item.path === path);
 
 		// Update the config of the existing item by merging
-		if (existingItem) 
+		if (existingItem)
 		{
 			// Merge existing config with the newConfig
-			existingItem.config = 
-			{ 
+			existingItem.config =
+			{
 				...existingItem.config, // Retain existing keys and values
 				...newConfig // Overwrite or add new keys from newConfig
 			};
-		} 
-		else 
+		}
+		else
 		{
 			// Add a new item to the queue
 			this.queue.push({ path, config: newConfig });
 		}
 	},
-	
+
 	Process: function()
 	{
-		while (this.queue.length > 0) 
+		while (this.queue.length > 0)
 		{
 			console.log(`Processing Queue Item: ${this.queue.length}`);
 			const { path, config } = this.queue.shift(); // Remove and get the first item in the queue
@@ -118,7 +118,7 @@ DATA.CONFIG = {
     },
 };
 
-if (`${System.boot_path}/`.endsWith("//")) 
+if (`${System.boot_path}/`.endsWith("//"))
 {
 	DATA.CONFIG.SetConfigPath(`${System.boot_path}CFG/`);
 }
@@ -130,24 +130,24 @@ function ParseMainCFG()
     const mainCFG = DATA.CONFIG.Get("main.cfg");
 
     // Get the user's preferred Video Mode.
-    if ("vmode" in mainCFG) 
-    { 
+    if ("vmode" in mainCFG)
+    {
 	    if (DATA.CANVAS.mode != vmodes[Number(mainCFG["vmode"])].Value)
 	    {
-		    DATA.CANVAS.mode = vmodes[Number(mainCFG["vmode"])].Value; 
-		    Screen.setMode(DATA.CANVAS); 
-		    DATA.SCREEN_PREVMODE = DATA.CANVAS.mode; 
+		    DATA.CANVAS.mode = vmodes[Number(mainCFG["vmode"])].Value;
+		    Screen.setMode(DATA.CANVAS);
+		    DATA.SCREEN_PREVMODE = DATA.CANVAS.mode;
 	    }
     }
 
     // Get the user's preferred Aspect Ratio.
-    if ("aspect" in mainCFG) 
-    { 
-	    DATA.WIDESCREEN = (mainCFG["aspect"].toLowerCase() === "true"); 
-	
-	    if (DATA.WIDESCREEN) 
+    if ("aspect" in mainCFG)
+    {
+	    DATA.WIDESCREEN = (mainCFG["aspect"].toLowerCase() === "true");
+
+	    if (DATA.WIDESCREEN)
 	    {
-		    DATA.CANVAS.width = 736; 
+		    DATA.CANVAS.width = 736;
 		    Screen.setMode(DATA.CANVAS);
 	    }
     }
@@ -173,7 +173,7 @@ function ParseMainCFG()
     {
 	    // If set to 0, use dynamic month based background color.
 	    // Else, use the custom background color.
-	
+
 	    DATA.BGVAL = Number(mainCFG["BgColor"]);
 	    DATA.BGTMP = DATA.BGVAL;
 	    DATA.BGCOL = (DATA.BGVAL == 0) ? DATA.BGCOL : DATA.BGVAL;

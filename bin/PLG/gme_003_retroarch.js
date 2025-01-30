@@ -12,11 +12,11 @@ function getELFPath()
 {
 	// Default to Path on APPS folder.
 	let elfPath = `${System.boot_path}/APPS/retroarch/raboot.elf`;
-	
+
 	// Scan all possible Open PS2 Loader Paths
-	
+
 	// PENDING //
-	
+
 	return { Path: elfPath, Args: [] }
 }
 
@@ -25,7 +25,7 @@ function getELFPath()
 ///																	   ///
 /// 	Here is the main info that will be retrieved by the App.   	   ///
 //////////////////////////////////////////////////////////////////////////
-	
+
 const Info = {
 	Name: "Retroarch",
 	Description: "",
@@ -44,5 +44,5 @@ return Info;
 //////////////////////////////////////////////////////////////////////////
 ///*				   		   ENCLOSE END							  *///
 //////////////////////////////////////////////////////////////////////////
-	
+
 })(); // DO NOT REMOVE, Encloses plugin on a local scope //
