@@ -42,7 +42,7 @@ function SaveLastPlayedAndGetExArgs()
     if (("VMC0" in config) && (config["VMC0"] === "true")) { DASH_SEL.Value.Args.push(`-mc0=${basepath}VMC/${DASH_SEL.Description}_0.vmc`); }
     if (("VMC1" in config) && (config["VMC1"] === "true")) { DASH_SEL.Value.Args.push(`-mc1=${basepath}VMC/${DASH_SEL.Description}_1.vmc`); }
 
-    if (DASH_SEL.Device !== "ATA") { DASH_SEL.Value.Args.push('-qb'); }
+    //if (DASH_SEL.Device !== "ATA") { DASH_SEL.Value.Args.push('-qb'); }
 
     // Save Last Played
     const cfg = DATA.CONFIG.Get(cfgPath);

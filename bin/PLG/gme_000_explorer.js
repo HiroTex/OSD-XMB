@@ -177,6 +177,7 @@ function GetExplorerOptions()
         get Value() { return ParseDirectory("mass:/"); }
     });
 
+    /*
     if (os.readdir("hdd0:")[0].length > 0)
     {
         options.push({
@@ -184,9 +185,10 @@ function GetExplorerOptions()
             Description: "",
             Icon: 29,
             Type: "SUBMENU",
-            get Value() { return getHDDPartitions(); }
+            get Value() { return ParseDirectory("hdd0:"); }
         });
     }
+    */
 
     for (let i = 0; i < 2; i++)
     {

@@ -115,7 +115,7 @@ const Info = {
 
 if (Info.Value.ItemCount < 1) { return {}; }
 
-return Info;
+return {};
 
 //////////////////////////////////////////////////////////////////////////
 ///*				   		   ENCLOSE END							  *///

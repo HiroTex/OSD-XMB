@@ -35,7 +35,7 @@ let gameList = [];
 let popsPaths = [];
 popsPaths.push(`mass:/POPS/`);              // Default Mass Support
 popsPaths.push(`${os.getcwd()[0]}/POPS/`);  // For host support
-popsPaths.push(`pfs1:/`);                    // For HDD support
+//popsPaths.push(`pfs1:/`);                    // For HDD support
 
 const cfgPath = "pops.cfg";
 const cfg = DATA.CONFIG.Get(cfgPath);
@@ -392,6 +392,7 @@ function generateELFs()
         }
     });
 
+    /*
     // Mount the POPSTARTER.ELF partition to copy the ELFs
     mountHDDPartition("__common");
 
@@ -410,6 +411,7 @@ function generateELFs()
             os.mkdir(`${basePath}${filename.substring(0, filename.length - 4)}`);
         }
     });
+    */
 }
 
 function getGames()

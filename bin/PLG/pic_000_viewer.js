@@ -142,6 +142,7 @@ function GetExplorerOptions() {
         get Value() { return ParseDirectory("mass:/"); }
     });
 
+    /*
     if (os.readdir("hdd0:")[0].length > 0)
     {
         options.push({
@@ -152,6 +153,7 @@ function GetExplorerOptions() {
             get Value() { return getHDDPartitions(); }
         });
     }
+    */
 
     for (let i = 0; i < 2; i++)
     {

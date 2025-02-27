@@ -6,6 +6,7 @@
 /// 				   		  										   ///
 //////////////////////////////////////////////////////////////////////////
 
+std.loadScript("./XMB/js/iop.js"); 		    // IOP Modules initialization.
 std.loadScript("./XMB/js/system.js"); 		// Main DATA Object and Generic Functions.
 std.loadScript("./XMB/js/config.js");		// Manage configuration files (.cfg).
 std.loadScript("./XMB/js/sound.js");		// Manage Audio playing.

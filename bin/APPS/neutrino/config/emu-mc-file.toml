@@ -1,7 +1,0 @@
-# Name of loaded config, to show to user
-name = "MC emulation using image file"
-
-# Modules to load
-[[module]]
-file = "mc_emu.irx"
-env = ["EE"]
