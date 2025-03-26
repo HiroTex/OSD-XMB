@@ -1,0 +1,12 @@
+{
+  "Name": "Open PS2 Loader",
+  "Description": "",
+  "Icon": 22,
+  "Category": 5,
+  "Type": "ELF",
+  "Value": {
+    "Path": "{cwd}/APPS/OPL/OPNPS2LD.ELF",
+    "Args": []
+  },
+  "CustomIcon": "{cwd}/APPS/OPL/ico.png"
+}

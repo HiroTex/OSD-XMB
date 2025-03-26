@@ -1,0 +1,106 @@
+<App Icon="10" Category="1" Type="SUBMENU">
+  <Name>
+    <String str="Date and Time Settings" />
+    <String str="Paramètres date et heure" />
+    <String str="Ajustes de Fecha y Hora" />
+    <String str="Datums- und Zeit-Einstellungen" />
+    <String str="Impostazioni di data e ora" />
+    <String str="Datum- en tijdinstellingen" />
+    <String str="Definições de Data e Hora" />
+  </Name>
+  <Description>
+    <String str="Adjust date and time settings." />
+    <String str="Réglez les paramètres de date et d'heure." />
+    <String str="Ajusta la configuración de fecha y hora." />
+    <String str="Datum- und Uhrzeiteinstellungen anpassen." />
+    <String str="Regola le impostazioni di data e ora." />
+    <String str="Pas de instellingen voor datum en tijd aan." />
+    <String str="Ajuste as configurações de data e hora." />
+  </Description>
+  <Option Type="CONTEXT" Icon="15">
+    <Name>
+      <String str="Date Format" />
+      <String str="Affichage de la date" />
+      <String str="Formato de la fecha" />
+      <String str="Datumsdarstellung" />
+      <String str="Formato della data" />
+      <String str="Datumweergave" />
+      <String str="Formato da Data" />
+    </Name>
+    <Description>
+      <String str="Set the order of display." />
+      <String str="Pour définir l'ordre d'affichage." />
+      <String str="Permite ajustar el orden de visualización." />
+      <String str="Stellen Sie die Reihenfolge der Anzeige." />
+      <String str="Seleziona l'ordine di visualizzazione." />
+      <String str="Set the order of display." />
+      <String str="Define a ordem de apresentação." />
+    </Description>
+    <Component Name="DD-MM-YYYY" Icon="-1"/>
+    <Component Name="MM-DD-YYYY" Icon="-1"/>
+    <Default Variable="DATA.DATE_FORMAT"/>
+    <Confirm>
+      <![CDATA[
+        function(DATA, val) {
+            DATA.DATE_FORMAT = val;
+            let config = DATA.CONFIG.Get("main.cfg");
+            config["dateFormat"] = val.toString();
+            DATA.CONFIG.Push("main.cfg", config);
+        }
+      ]]>
+    </Confirm>
+  </Option>
+  <Option Type="CONTEXT" Icon="15">
+    <Name>
+      <String str="Time Format" />
+      <String str="Affichage de l'heure" />
+      <String str="Formato de Hora" />
+      <String str="Zeitdarstellung" />
+      <String str="Formato dell'ora" />
+      <String str="Tijdweergave" />
+      <String str="Formato da Hora" />
+    </Name>
+    <Description>
+      <String str="Set the time display format." />
+      <String str="Pour choisir d'afficher l'heure." />
+      <String str="Establece el tipo de reloj de 12 o 24 horas." />
+      <String str="Setze das Zeitfomat." />
+      <String str="Seleziona il formato dell'ora." />
+      <String str="De tijdweergave op een 12- of 24-uursklok instellen." />
+      <String str="Define a apresentação da hora em relógio de 12 ou de 24 horas." />
+    </Description>
+    <Component Icon="-1">
+      <Name>
+        <String str="12-Hour" />
+        <String str="12 heures" />
+        <String str="12 horas" />
+        <String str="12 Stunden" />
+        <String str="12 ore" />
+        <String str="12 uur" />
+        <String str="12 horas" />
+      </Name>
+    </Component>
+    <Component Icon="-1">
+      <Name>
+        <String str="24-Hour" />
+        <String str="24 heures" />
+        <String str="24 horas" />
+        <String str="24 Stunden" />
+        <String str="24 ore" />
+        <String str="24 uur" />
+        <String str="24 horas" />
+      </Name>
+    </Component>
+    <Default Variable="DATA.HOUR_FORMAT"/>
+    <Confirm>
+      <![CDATA[
+        function(DATA, val) {
+            DATA.HOUR_FORMAT = val;
+            let config = DATA.CONFIG.Get("main.cfg");
+            config["hourFormat"] = val.toString();
+            DATA.CONFIG.Push("main.cfg", config);
+        }
+      ]]>
+    </Confirm>
+  </Option>
+</App>

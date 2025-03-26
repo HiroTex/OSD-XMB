@@ -1,0 +1,85 @@
+<Options>
+  <Option Type="CONTEXT" Icon="15">
+    <Name>
+      <String str="Language" />
+      <String str="Langue" />
+      <String str="Idioma" />
+      <String str="Sprache" />
+      <String str="Lingua" />
+      <String str="Taal" />
+      <String str="Idioma" />
+    </Name>
+    <Description>
+      <String str="Set the system Language." />
+      <String str="Définir la langue du système." />
+      <String str="Establecer el idioma del sistema." />
+      <String str="Systemsprache festlegen." />
+      <String str="Seleziona la lingua del sistema." />
+      <String str="Stel de systeemtaal in." />
+      <String str="Definir o idioma do sistema." />
+    </Description>
+    <Component Name="English" Icon="-1"/>
+    <Component Name="Français" Icon="-1"/>
+    <Component Name="Español" Icon="-1"/>
+    <Component Name="Deutsch" Icon="-1"/>
+    <Component Name="Italiano" Icon="-1"/>
+    <Component Name="Nederlands" Icon="-1"/>
+    <Component Name="Português" Icon="-1"/>
+    <Default Variable="DATA.LANGUAGE"/>
+    <Confirm>
+      <![CDATA[
+        function(DATA, val) {
+            DATA.LANGUAGE = val;
+            let config = DATA.CONFIG.Get("main.cfg");
+            config["lang"] = val.toString();
+            DATA.CONFIG.Push("main.cfg", config);
+        }
+      ]]>
+    </Confirm>
+  </Option>
+  <Option Type="CONTEXT" Icon="15">
+    <Name>
+      <String str="Confirmation Button" />
+      <String str="Bouton de confirmation" />
+      <String str="Botón de confirmación" />
+      <String str="Bestätigungstaste" />
+      <String str="Pulsante di conferma" />
+      <String str="Bevestigingsknop" />
+      <String str="Botão de Confirmação" />
+    </Name>
+    <Description>
+      <String str="Sets the confirmation button type." />
+      <String str="Définit le type de bouton de confirmation." />
+      <String str="Establece el tipo de botón de confirmación." />
+      <String str="Legt den Typ der Bestätigungstaste." />
+      <String str="Imposta il tipo di pulsante di conferma." />
+      <String str="Stelt het type bevestigingsknop." />
+      <String str="Define o tipo de botão de confirmação." />
+    </Description>
+    <Component Name="X" Icon="-1"/>
+    <Component Name="O" Icon="-1"/>
+    <Default Variable="DATA.BTNTYPE"/>
+    <Confirm>
+      <![CDATA[
+        function(DATA, val) {
+            DATA.BTNTYPE = val;
+            let config = DATA.CONFIG.Get("main.cfg");
+            config["btnType"] = val.toString();
+            DATA.CONFIG.Push("main.cfg", config);
+        }
+      ]]>
+    </Confirm>
+  </Option>
+  <Option Type="CODE" Icon="15">
+    <Name>
+      <String str="System Information" />
+      <String str="Informations système" />
+      <String str="Información del Sistema" />
+      <String str="Systeminformationen" />
+      <String str="Informazioni sul sistema" />
+      <String str="Systeeminformatie" />
+      <String str="Informação do Sistema" />
+    </Name>
+    <Code filepath="./PLG/xSettings/xSysInfoDialog.js" />
+  </Option>
+</Options>

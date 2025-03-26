@@ -1,28 +1,3 @@
-//////////////////////////////////////////////////////////////////////////
-///*				   		 ENCLOSE START							  *///
-//////////////////////////////////////////////////////////////////////////
-
-export const Plugin = (() => { 	// DO NOT REMOVE, Encloses plugin on a local scope //
-
-//////////////////////////////////////////////////////////////////////////
-///*				   		 CUSTOM STRINGS							  *///
-//////////////////////////////////////////////////////////////////////////
-
-const NAME_MAIN = 		// Displayed name on the Main Interface
-[
-    "File Explorer",
-    "Explorateur de fichiers",
-    "Explorador de Archivos",
-    "Datei-Explorer",
-    "Esplora file",
-    "Bestandsverkenner",
-    "Explorador de arquivos",
-];
-
-//////////////////////////////////////////////////////////////////////////
-///*				   		CUSTOM FUNCTIONS						  *///
-//////////////////////////////////////////////////////////////////////////
-
 function ParseDirectory(path)
 {
     const dir = System.listDir(path);
@@ -55,7 +30,7 @@ function ParseDirectory(path)
         let type = "";
         let value = {};
 
-        switch(getFileExtension(item.name).toLowerCase())
+        switch (getFileExtension(item.name).toLowerCase())
         {
             case "vcd": customIcon = true; icon = 25; break;
             case "iso": customIcon = true; icon = 26; break;
@@ -90,7 +65,7 @@ function ParseDirectory(path)
         }
     });
 
-    return { Options: dir_options, Default:0, ItemCount: dir_options.length, };
+    return { Options: dir_options, Default: 0, ItemCount: dir_options.length, };
 }
 
 function getHDDPartitions()
@@ -157,105 +132,79 @@ function getHDDPartitions()
     return { Options: dir_options, Default: 0, ItemCount: dir_options.length, };
 }
 
-function GetExplorerOptions()
-{
-    let options = [];
+let options = [];
 
-    options.push({
-        Name: WORK_DIR_NAME,
-        Description: "",
-        Icon: 18,
-        Type: "SUBMENU",
-        get Value() { return ParseDirectory(`${os.getcwd()[0]}/`); }
-    });
-
-    if (os.readdir("hdd0:")[0].length > 0)
-    {
-        options.push({
-            Name: HDD_DIR_NAME,
-            Description: "",
-            Icon: 29,
-            Type: "SUBMENU",
-            get Value() { return getHDDPartitions(); }
-        });
-    }
-
-    for (let i = 0; i < 2; i++)
-    {
-        const hasContent = os.readdir(`mc${i.toString()}:/`)[0].length > 0;
-        if (!hasContent) continue;
-
-        options.push({
-            Name: `Memory Card ${(i + 1).toString()}`,
-            Description: "",
-            Icon: 16 + i,
-            Type: "SUBMENU",
-            get Value()
-            {
-                return ParseDirectory(`mc${i.toString()}:/`);
-            }
-        });
-    }
-
-    for (let i = 0; i < 10; i++)
-    {
-        const dirContent = os.readdir(`mass${i.toString()}:/`);
-        const hasContent = dirContent.length > 0 && dirContent[0].length > 0;
-        if (!hasContent) break;
-        let desc = System.getbdminfo(`mass${i.toString()}:/`);
-        desc = (desc) ?  `${desc.driverName.toUpperCase()} ${desc.deviceNumber}` : "";
-
-        options.push({
-            get Name() { return `${MASS_DIR_NAME[DATA.LANGUAGE]} ${(i + 1).toString()}`; },
-            Description: desc,
-            Icon: 21,
-            Type: "SUBMENU",
-            get Value()
-            {
-                return ParseDirectory(`mass${i.toString()}:/`);
-            }
-        });
-    }
-
-    for (let i = 0; i < 2; i++)
-    {
-        const hasContent = os.readdir(`mmce${i.toString()}:/`)[0].length > 0;
-        if (!hasContent) continue;
-
-        options.push({
-            Name: `MMCE ${(i + 1).toString()}`,
-            Description: "",
-            Icon: 21,
-            Type: "SUBMENU",
-            get Value()
-            {
-                return ParseDirectory(`mmce${i.toString()}:/`);
-            }
-        });
-    }
-
-    return { Options: options, Default: 0, ItemCount: options.length, };
-}
-
-//////////////////////////////////////////////////////////////////////////
-///*				   		MAIN PLUGIN DATA						  *///
-///																	   ///
-/// 	Here is the main info that will be retrieved by the App.   	   ///
-//////////////////////////////////////////////////////////////////////////
-
-const Info = {
-    Name: NAME_MAIN,
+options.push({
+    Name: XMBLANG.WORK_DIR_NAME,
     Description: "",
     Icon: 18,
-    Category: 5,
     Type: "SUBMENU",
-    Value: GetExplorerOptions(),
-};
+    get Value() { return ParseDirectory(`${os.getcwd()[0]}/`); }
+});
 
-return Info;
+if (os.readdir("hdd0:")[0].length > 0)
+{
+    options.push({
+        Name: XMBLANG.HDD_DIR_NAME,
+        Description: "",
+        Icon: 29,
+        Type: "SUBMENU",
+        get Value() { return getHDDPartitions(); }
+    });
+}
 
-//////////////////////////////////////////////////////////////////////////
-///*				   		   ENCLOSE END							  *///
-//////////////////////////////////////////////////////////////////////////
+for (let i = 0; i < 2; i++)
+{
+    const hasContent = os.readdir(`mc${i.toString()}:/`)[0].length > 0;
+    if (!hasContent) continue;
 
-})(); // DO NOT REMOVE, Encloses plugin on a local scope //
+    options.push({
+        Name: `Memory Card ${(i + 1).toString()}`,
+        Description: "",
+        Icon: 16 + i,
+        Type: "SUBMENU",
+        get Value()
+        {
+            return ParseDirectory(`mc${i.toString()}:/`);
+        }
+    });
+}
+
+for (let i = 0; i < 10; i++)
+{
+    const dirContent = os.readdir(`mass${i.toString()}:/`);
+    const hasContent = dirContent.length > 0 && dirContent[0].length > 0;
+    if (!hasContent) break;
+    let desc = System.getbdminfo(`mass${i.toString()}:/`);
+    desc = (desc) ? `${desc.driverName.toUpperCase()} ${desc.deviceNumber}` : "";
+
+    options.push({
+        get Name() { return `${XMBLANG.MASS_DIR_NAME[DATA.LANGUAGE]} ${(i + 1).toString()}`; },
+        Description: desc,
+        Icon: 21,
+        Type: "SUBMENU",
+        get Value()
+        {
+            return ParseDirectory(`mass${i.toString()}:/`);
+        }
+    });
+}
+
+for (let i = 0; i < 2; i++)
+{
+    const hasContent = os.readdir(`mmce${i.toString()}:/`)[0].length > 0;
+    if (!hasContent) continue;
+
+    options.push({
+        Name: `MMCE ${(i + 1).toString()}`,
+        Description: "",
+        Icon: 21,
+        Type: "SUBMENU",
+        get Value()
+        {
+            return ParseDirectory(`mmce${i.toString()}:/`);
+        }
+    });
+}
+
+return options;

@@ -1,28 +1,3 @@
-//////////////////////////////////////////////////////////////////////////
-///*				   		 ENCLOSE START							  *///
-//////////////////////////////////////////////////////////////////////////
-
-export const Plugin = (() => { 	// DO NOT REMOVE, Encloses plugin on a local scope //
-
-//////////////////////////////////////////////////////////////////////////
-///*				   		 CUSTOM STRINGS							  *///
-//////////////////////////////////////////////////////////////////////////
-
-const NAME_MAIN = 		// Displayed name on the Main Interface
-[
-    "Memory Card Utility",
-    "Utilitaire de Memory Card",
-    "Herramienta de Memory Card",
-    "Memory Card-Dienstprogramm",
-    "Utilità della Memory Card",
-    "Diensten voor Memory Card",
-    "Utilitário do Memory Card",
-];
-
-//////////////////////////////////////////////////////////////////////////
-///*				   		CUSTOM FUNCTIONS						  *///
-//////////////////////////////////////////////////////////////////////////
-
 function parseIconSysTitle(path, name)
 {
     let RET = name;
@@ -46,7 +21,8 @@ function parseIconSysTitle(path, name)
     {
         for (let i = 0; i < code.length; i++)
         {
-            if (magic[i] !== code.charCodeAt(i)) {
+            if (magic[i] !== code.charCodeAt(i))
+            {
                 match = false;
                 break;
             }
@@ -120,38 +96,12 @@ function TryAddMC(slot)
     return {};
 }
 
-function GetMcOptions()
-{
-    let options = [];
+let options = [];
 
-    const obj0 = TryAddMC(0);
-    const obj1 = TryAddMC(1);
+const obj0 = TryAddMC(0);
+const obj1 = TryAddMC(1);
 
-    if ("Name" in obj0) { options.push(obj0); }
-    if ("Name" in obj1) { options.push(obj1); }
+if ("Name" in obj0) { options.push(obj0); }
+if ("Name" in obj1) { options.push(obj1); }
 
-    return { Options: options, Default: 0, ItemCount: options.length, };
-}
-
-//////////////////////////////////////////////////////////////////////////
-///*				   		MAIN PLUGIN DATA						  *///
-///																	   ///
-/// 	Here is the main info that will be retrieved by the App.   	   ///
-//////////////////////////////////////////////////////////////////////////
-
-const Info = {
-    Name: NAME_MAIN,
-    Description: "",
-    Icon: 13,
-    Category: 5,
-    Type: "SUBMENU",
-    Value: GetMcOptions(),
-};
-
-return Info;
-
-//////////////////////////////////////////////////////////////////////////
-///*				   		   ENCLOSE END							  *///
-//////////////////////////////////////////////////////////////////////////
-
-})(); // DO NOT REMOVE, Encloses plugin on a local scope //
+return options;

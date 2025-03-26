@@ -184,14 +184,14 @@ function DrawMessageBottom(alpha)
 {
     if (("BACK_BTN" in DATA.MESSAGE_INFO) && (DATA.MESSAGE_INFO.BACK_BTN))
     {
-        let backBtnString = (DATA.BTNTYPE) ? `X  ${TXT_MESSAGE_BACK[DATA.LANGUAGE]}` : `O  ${TXT_MESSAGE_BACK[DATA.LANGUAGE]}`;
-        TxtPrint(backBtnString, {r: textColor.r, g: textColor.g, b: textColor.b, a: alpha }, {x: 80 + (DATA.WIDESCREEN * 32), y:(DATA.CANVAS.height - 297) }, "CENTER");
+        let backBtnString = (DATA.BTNTYPE) ? `X  ${XMBLANG.BACK[DATA.LANGUAGE]}` : `O  ${XMBLANG.BACK[DATA.LANGUAGE]}`;
+        TxtPrint(backBtnString, { r: textColor.r, g: textColor.g, b: textColor.b, a: alpha }, { x: 80 + (DATA.WIDESCREEN * 32), y: (DATA.CANVAS.height - 297) }, "CENTER");
     }
 
     if (("ENTER_BTN" in DATA.MESSAGE_INFO) && (DATA.MESSAGE_INFO.ENTER_BTN))
     {
-        let BtnString = (DATA.BTNTYPE) ? `O  ${TXT_MESSAGE_ENTER[DATA.LANGUAGE]}` : `X  ${TXT_MESSAGE_ENTER[DATA.LANGUAGE]}`;
-        TxtPrint(BtnString, {r: textColor.r, g: textColor.g, b: textColor.b, a: alpha }, {x: -70 + (DATA.WIDESCREEN * 32), y:(DATA.CANVAS.height - 297) }, "CENTER");
+        let BtnString = (DATA.BTNTYPE) ? `O  ${XMBLANG.ENTER[DATA.LANGUAGE]}` : `X  ${XMBLANG.ENTER[DATA.LANGUAGE]}`;
+        TxtPrint(BtnString, { r: textColor.r, g: textColor.g, b: textColor.b, a: alpha }, { x: -70 + (DATA.WIDESCREEN * 32), y: (DATA.CANVAS.height - 297) }, "CENTER");
     }
 }
 
@@ -199,7 +199,7 @@ function DrawMessageBottom(alpha)
 
 function InitVModeMessageSettings()
 {
-    DATA.MESSAGE_INFO.Processed = TextRender.ProcessText(TXT_VMODE_MSG[DATA.LANGUAGE]);
+    DATA.MESSAGE_INFO.Processed = TextRender.ProcessText(XMBLANG.VMODE_MSG[DATA.LANGUAGE]);
     DATA.MESSAGE_INFO.Selected = 1;
     DATA.MESSAGE_INFO.Confirm = function()
     {
@@ -212,9 +212,6 @@ function InitVModeMessageSettings()
                     case NTSC: config["vmode"] = "0"; break;
                     case PAL: config["vmode"] = "1"; break;
                     case DTV_480p: config["vmode"] = "2"; break;
-                    case DTV_576p: config["vmode"] = "3"; break;
-                    case DTV_720p: config["vmode"] = "4"; break;
-                    case DTV_1080i: config["vmode"] = "5"; break;
                 }
                 DATA.CONFIG.Push("main.cfg", config);
                 DATA.SCREEN_PREVMODE = DATA.CANVAS.mode;
@@ -226,13 +223,15 @@ function InitVModeMessageSettings()
                     case NTSC: def_val = 0; break;
                     case PAL: def_val = 1; break;
                     case DTV_480p: def_val = 2; break;
-                    case DTV_576p: def_val = 3; break;
-                    case DTV_720p: def_val = 4; break;
-                    case DTV_1080i: def_val = 5; break;
                 }
                 DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT].Value.Default = def_val;
-                DATA.CANVAS.mode = DATA.SCREEN_PREVMODE
+                DATA.CANVAS.mode = DATA.SCREEN_PREVMODE;
+
+                setScreenHeight();
+                setScreenWidth();
+                setScreeniMode();
                 Screen.setMode(DATA.CANVAS);
+                TextRender.SetScreenDimensions();
                 break;
         }
     }
@@ -244,7 +243,7 @@ function InitVModeMessageSettings()
 
 function InitParentalSetMessageSettings()
 {
-    DATA.MESSAGE_INFO.Processed = TXT_ENTER_NEW_PASS[DATA.LANGUAGE];
+    DATA.MESSAGE_INFO.Processed = XMBLANG.PASS_NEW_MSG[DATA.LANGUAGE];
     DATA.MESSAGE_INFO.Selected = 0;
     DATA.MESSAGE_INFO.TMPCODE = [ 0, 0, 0, 0 ];
     SetPadEvents_Parental();
@@ -262,7 +261,7 @@ function InitParentalSetMessageSettings()
 
 function InitParentalCheckMessageSettings()
 {
-    DATA.MESSAGE_INFO.Processed = TXT_ENTER_CUR_PASS[DATA.LANGUAGE];
+    DATA.MESSAGE_INFO.Processed = XMBLANG.PASS_CUR_MSG[DATA.LANGUAGE];
     DATA.MESSAGE_INFO.Selected = 0;
     DATA.MESSAGE_INFO.TMPCODE = [ 0, 0, 0, 0 ];
     SetPadEvents_Parental();
@@ -363,7 +362,7 @@ function DrawMessageInfoScreen(txtColor, arrAlpha)
 function DrawProgressFadeInText()
 {
     const txtFadeColor = { r: textColor.r, g: textColor.g, b: textColor.b, a: 128 - (DATA.DASH_MOVE_FRAME * -6) };
-    TxtPrint(TXT_WAIT[DATA.LANGUAGE], txtFadeColor, { x: (DATA.WIDESCREEN * 32), y: -10 }, "CENTER");
+    TxtPrint(XMBLANG.WAIT[DATA.LANGUAGE], txtFadeColor, { x: (DATA.WIDESCREEN * 32), y: -10 }, "CENTER");
     TxtPrint(`1/${DATA.MESSAGE_INFO.Count}`, txtFadeColor, { x: (DATA.WIDESCREEN * 32), y: 10 }, "CENTER");
     TxtPrint("0%", txtFadeColor, { x: (DATA.WIDESCREEN * 32), y: 30 }, "CENTER");
 }
@@ -402,10 +401,10 @@ function DrawMessageFadeIn()
         case "VMODE":
             if (!DATA.MESSAGE_INFO.Processed) { InitVModeMessageSettings();	}
             TxtPrint(DATA.MESSAGE_INFO.Processed, txtFadeColor, { x: (DATA.WIDESCREEN * 32), y: -40}, "CENTER");
-            TxtPrint(`${TXT_VMODE_REMTIME[DATA.LANGUAGE]}`, txtFadeColor, { x: (DATA.WIDESCREEN * 32), y: 20}, "CENTER");
-            TxtPrint(`25 ${TXT_VMODE_SEC[DATA.LANGUAGE]}`, txtFadeColor, { x: -5 + (DATA.WIDESCREEN * 32), y: 40}, "CENTER");
-            TxtPrint(`${TXT_YES[DATA.LANGUAGE]}`, txtFadeColor, { x: -40 + (DATA.WIDESCREEN * 32), y: 70}, "CENTER");
-            TxtPrint(`${TXT_NO[DATA.LANGUAGE]}`, txtFadeColor, { x: 30 + (DATA.WIDESCREEN * 32), y: 70}, "CENTER");
+            TxtPrint(`${XMBLANG.REMTIME[DATA.LANGUAGE]}`, txtFadeColor, { x: (DATA.WIDESCREEN * 32), y: 20}, "CENTER");
+            TxtPrint(`25 ${XMBLANG.SECONDS[DATA.LANGUAGE]}`, txtFadeColor, { x: -5 + (DATA.WIDESCREEN * 32), y: 40}, "CENTER");
+            TxtPrint(`${XMBLANG.YES[DATA.LANGUAGE]}`, txtFadeColor, { x: -40 + (DATA.WIDESCREEN * 32), y: 70}, "CENTER");
+            TxtPrint(`${XMBLANG.NO[DATA.LANGUAGE]}`, txtFadeColor, { x: 30 + (DATA.WIDESCREEN * 32), y: 70}, "CENTER");
             break;
         case "PARENTAL_SET":
             if (!DATA.MESSAGE_INFO.Processed) { InitParentalSetMessageSettings(); }
@@ -458,18 +457,21 @@ function DrawMessageIdle()
             if (time > 25)
             {
                 let def_val = 0;
-                switch(DATA.SCREEN_PREVMODE)
+                switch (DATA.SCREEN_PREVMODE)
                 {
                     case NTSC: def_val = 0; break;
                     case PAL: def_val = 1; break;
                     case DTV_480p: def_val = 2; break;
-                    case DTV_576p: def_val = 3; break;
-                    case DTV_720p: def_val = 4; break;
-                    case DTV_1080i: def_val = 5; break;
                 }
                 DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT].Value.Default = def_val;
-                DATA.CANVAS.mode = DATA.SCREEN_PREVMODE
+                DATA.CANVAS.mode = DATA.SCREEN_PREVMODE;
+
+                setScreenHeight();
+                setScreenWidth();
+                setScreeniMode();
                 Screen.setMode(DATA.CANVAS);
+                TextRender.SetScreenDimensions();
+
                 DATA.OVSTATE = "MESSAGE_OUT";
                 DATA.DASH_STATE = (DATA.DASH_STATE == "SUBMENU_MESSAGE_IDLE") ? "SUBMENU_MESSAGE_FADE_IN" : "IDLE";
                 DATA.DASH_MOVE_FRAME = 0;
@@ -478,10 +480,10 @@ function DrawMessageIdle()
             }
 
             TxtPrint(DATA.MESSAGE_INFO.Processed, textColor, { x: (DATA.WIDESCREEN * 32), y: -40}, "CENTER");
-            TxtPrint(`${TXT_VMODE_REMTIME[DATA.LANGUAGE]}`, textColor, { x: (DATA.WIDESCREEN * 32), y: 20}, "CENTER");
-            TxtPrint(`${(25 - time).toString()} ${TXT_VMODE_SEC[DATA.LANGUAGE]}`, textColor, { x: -5 + (DATA.WIDESCREEN * 32), y: 40}, "CENTER");
-            TxtPrint(TXT_YES[DATA.LANGUAGE], textColor, {x: -40 + (DATA.WIDESCREEN * 32), y: 70 }, "CENTER", undefined, (DATA.MESSAGE_INFO.Selected == 0));
-            TxtPrint(TXT_NO[DATA.LANGUAGE], textColor, {x: 30 + (DATA.WIDESCREEN * 32), y: 70 }, "CENTER", undefined, (DATA.MESSAGE_INFO.Selected == 1));
+            TxtPrint(`${XMBLANG.REMTIME[DATA.LANGUAGE]}`, textColor, { x: (DATA.WIDESCREEN * 32), y: 20}, "CENTER");
+            TxtPrint(`${(25 - time).toString()} ${XMBLANG.SECONDS[DATA.LANGUAGE]}`, textColor, { x: -5 + (DATA.WIDESCREEN * 32), y: 40}, "CENTER");
+            TxtPrint(XMBLANG.YES[DATA.LANGUAGE], textColor, {x: -40 + (DATA.WIDESCREEN * 32), y: 70 }, "CENTER", undefined, (DATA.MESSAGE_INFO.Selected == 0));
+            TxtPrint(XMBLANG.NO[DATA.LANGUAGE], textColor, {x: 30 + (DATA.WIDESCREEN * 32), y: 70 }, "CENTER", undefined, (DATA.MESSAGE_INFO.Selected == 1));
 
             break;
         case "PARENTAL_SET":
@@ -499,7 +501,7 @@ function DrawMessageIdle()
             break;
         case "PROGRESS":
             const progress = DATA.MESSAGE_INFO.Progress;
-            TxtPrint(TXT_WAIT[DATA.LANGUAGE], textColor, { x: (DATA.WIDESCREEN * 32), y: -10}, "CENTER");
+            TxtPrint(XMBLANG.WAIT[DATA.LANGUAGE], textColor, { x: (DATA.WIDESCREEN * 32), y: -10}, "CENTER");
             TxtPrint(`${DATA.MESSAGE_INFO.Done.toString()}/${DATA.MESSAGE_INFO.Count.toString()}`, textColor, { x: (DATA.WIDESCREEN * 32), y: 10}, "CENTER");
             TxtPrint(`${progress.toString()}%`, textColor, { x: (DATA.WIDESCREEN * 32), y: 30}, "CENTER");
             if ((DATA.MESSAGE_INFO.Done == DATA.MESSAGE_INFO.Count) && (progress === 100))
@@ -628,9 +630,11 @@ function drawBg()
 
         // Then overlay the background Texture.
         bg.width = DATA.CANVAS.width;
+        bg.height = DATA.CANVAS.height;
         bg.draw(0, 0);
 
         // Finally, set the background brightness with the gradient texture.
+        bg_daily.height = DATA.CANVAS.height;
         bg_daily.width = DATA.CANVAS.width;
         bg_daily.color = Color.new(190, 190, 190, DATA.BGBRIGHTNESS);
         bg_daily.draw(0, 0);

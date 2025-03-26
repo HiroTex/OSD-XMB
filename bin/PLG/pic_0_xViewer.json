@@ -1,0 +1,16 @@
+{
+    "Name": [
+        "Image Viewer",
+        "Visionneuse d'images",
+        "Visualizador de Imágenes",
+        "Bildbetrachter",
+        "Visualizzatore di immagini",
+        "Afbeeldingviewer",
+        "Visualizador de imagens"
+    ],
+    "Description": "",
+    "Icon": 18,
+    "Category": 2,
+    "Type": "SUBMENU",
+    "Value": "./PLG/xPicView/scr.js"
+}

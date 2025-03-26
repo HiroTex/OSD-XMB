@@ -1,0 +1,142 @@
+<Options>
+  <Option Type="CODE" Icon="15">
+    <Name>
+      <String str="Settings and Connection Status List" />
+      <String str="Liste des paramètres et de l'état de la connexion" />
+      <String str="Ajustes y lista de estado de conexión" />
+      <String str="Liste der Einstellungen und des Verbindungsstatus" />
+      <String str="Elenco delle impostazioni e dello stato di connessione" />
+      <String str="Instellingen en verbindingsstatus" />
+      <String str="Lista de Definições e Estado das Ligações" />
+    </Name>
+    <Description>
+      <String str="View current network settings." />
+      <String str="Pour afficher les paramètres réseau actuels." />
+      <String str="Puede visualizar los ajustes de red actuales." />
+      <String str="Sie können die aktuellen Netzwerk-Einstellungen." />
+      <String str="È possibile visualizzare le impostazioni di rete correnti." />
+      <String str="De huidige netwerkinstellingen en de status van de internetverbinding weergeven." />
+      <String str="Visualize as definições de rede e o estado das ligações actuais." />
+    </Description>
+    <Code>
+      <![CDATA[
+        function () {
+          const INFO_1 =
+          [
+              "Internet Connection",
+              "Connexion Internet",
+              "Conexión a Internet",
+              "Internetverbindung",
+              "Connessione Internet",
+              "Internetverbinding",
+              "Ligação à Internet",
+          ];
+
+          function addItem(list, name, value)
+          {
+              list.push({ Selectable: false, Name: name, Description: value });
+              return list
+          }
+
+          // Place all the Data extracted into the object
+          const conf = Network.getConfig();
+          let enabled = (DATA.NET) ? XMBLANG.ENABLED : XMBLANG.DISABLED;
+          let ip = (DATA.NET) ? conf.ip.toString() : " - ";
+          let mask = (DATA.NET) ? conf.netmask.toString() : " - ";
+          let dns = (DATA.NET) ? conf.dns.toString() : " - ";
+          let gateway = (DATA.NET) ? conf.gateway.toString() : " - ";
+
+          let netInfo = [];
+          netInfo = addItem(netInfo, INFO_1[DATA.LANGUAGE], enabled[DATA.LANGUAGE]);
+          netInfo = addItem(netInfo, "IP", ip);
+          netInfo = addItem(netInfo, "Subnet Mask", mask);
+          netInfo = addItem(netInfo, "DNS", dns);
+          netInfo = addItem(netInfo, "Gateway", gateway);
+
+          DATA.DASH_STATE = "IDLE_MESSAGE_FADE_IN";
+          DATA.OVSTATE = "MESSAGE_IN";
+          DATA.MESSAGE_INFO =
+          {
+              Icon: 28,
+              Title: DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT].Name,
+              BG: false,
+              Type: "INFO",
+              Data: netInfo,
+              BACK_BTN: true,
+              ENTER_BTN: false,
+          };
+        }
+      ]]>
+    </Code>
+  </Option>
+  <Option Type="CONTEXT" Icon="15">
+    <Name>
+      <String str="Internet Connection" />
+      <String str="Connexion Internet" />
+      <String str="Conexión a Internet" />
+      <String str="Internetverbindung" />
+      <String str="Connessione Internet" />
+      <String str="Internetverbinding" />
+      <String str="Ligação à Internet" />
+    </Name>
+    <Description>
+      <String str="Enable or disable the system's connection to the Internet." />
+      <String str="Pour activer ou désactiver connexion du système à Internet." />
+      <String str="Puede activar o desactivar la conexión del sistema a Internet." />
+      <String str="Sie können die Verbindung des Systems zum Internet aktivieren oder deaktivieren." />
+      <String str="È possibile abilitare o disabilitare la connessione a Internet del sistema." />
+      <String str="De internetverbinding van het systeem in- of uitschakelen." />
+      <String str="Active ou desactive a ligação do sistema à Internet." />
+    </Description>
+    <Component Name="{DISABLED}" Icon="-1" />
+    <Component Name="{ENABLED}" Icon="-1" />
+    <Default Variable="Number(DATA.NET)"/>
+    <Confirm>
+      <![CDATA[
+        function(DATA, val) {
+          if ((!DATA.NET) && (val === 1))
+            {
+                DATA.DASH_STATE = "SUBMENU_CONTEXT_MESSAGE_FADE_OUT";
+                DATA.OVSTATE = "MESSAGE_IN";
+                DATA.MESSAGE_INFO =
+                {
+                    Icon: 28,
+                    Title: DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT].Name,
+                    BG: false,
+                    Type: "TEXT",
+                    Text: XMBLANG.NET.INIT_MSG,
+                    BACK_BTN: false,
+                    ENTER_BTN: false,
+                    BgFunction: () =>
+                    {
+                        NetInit();
+
+                        const msg = (DATA.NET) ? XMBLANG.NET.INIT_COMPLETE_MSG : XMBLANG.NET.ERR_1;
+                        DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT].Value.Default = (DATA.NET) ? 1 : 0;
+
+                        NetCfgSave();
+                        SetDashPadEvents(0);
+                        DATA.DASH_MOVE_FRAME = 0;
+                        DATA.MESSAGE_INFO =
+                        {
+                            Icon: 28,
+                            Title: DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT].Name,
+                            BG: false,
+                            Type: "TEXT_TO_TEXT",
+                            Text: msg,
+                            BACK_BTN: true,
+                            ENTER_BTN: false,
+                        };
+                    },
+                };
+            }
+            else if ((DATA.NET) && (val === 0))
+            {
+                NetExit();
+                NetCfgSave();
+            }
+        }
+      ]]>
+    </Confirm>
+  </Option>
+</Options>

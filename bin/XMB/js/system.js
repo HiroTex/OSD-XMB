@@ -17,11 +17,6 @@ vmodes.push({Name: "DTV 576p", Value: DTV_576p });
 vmodes.push({Name: "DTV 720p", Value: DTV_720p });
 vmodes.push({Name: "DTV 1080i", Value: DTV_1080i });
 
-// Set Screen Parameters.
-
-Screen.setFrameCounter(true);
-Screen.setVSync(true);
-
 /*	Info:
 
     Main DATA object used for storing all the main
@@ -143,6 +138,12 @@ const DATA =
 ///*				   			 FUNCTIONS							  *///
 //////////////////////////////////////////////////////////////////////////
 
+function execScript(filepath)
+{
+    const code = std.loadFile(filepath);
+    return std.evalScript(`(() => { ${code} })()`);
+}
+
 /**
  * Write all text on 'txt' to 'path' file
  * @param {String} path The path to write the text file.
@@ -172,6 +173,7 @@ function ftxtWrite(path, txt)
 
 function logl(line)
 {
+    console.log(line);
     let basepath = `${os.getcwd()[0]}/`;
     if (`${os.getcwd()[0]}/`.endsWith("//"))
     {
@@ -182,155 +184,15 @@ function logl(line)
 
     if (file)
     {
-        file.puts(`${line}\n`); // Write to file
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        const milliseconds = String(now.getMilliseconds()).padStart(3, '0');
+        file.puts(`[ ${hours}:${minutes}:${seconds}:${milliseconds} ] ${line}\n`); // Write to file
         file.flush();
         file.close();
     }
-}
-
-function getSystemDataPath()
-{
-    const tmp = std.open("rom0:ROMVER", "r");
-    const ROMVER = tmp.readAsString();
-    tmp.close();
-
-    switch (ROMVER[4])
-    {
-        case 'C': return "BCDATA-SYSTEM";
-        case 'E': return "BEDATA-SYSTEM";
-        case 'X':
-        case 'H':
-        case 'A': return "BADATA-SYSTEM";
-        case 'T':
-        case 'J': return "BIDATA-SYSTEM";
-    }
-}
-
-function getCurrentDOSDate()
-{
-    const now = new Date();
-    const year = now.getFullYear() - 1980; // DOS date starts at 1980
-    const month = now.getMonth() + 1; // JS months are 0-based
-    const day = now.getDate();
-    return (year << 9) | (month << 5) | day;
-}
-
-function getMcHistory()
-{
-    const file = os.open(`mc0:/${getSystemDataPath()}/history`, os.O_RDONLY);
-    if (file < 0)
-    {
-        console.log(`ERROR: Could not open history file`);
-        return [];
-    }
-
-    const objects = [];
-    const entrySize = 0x16;
-    const buffer = new Uint8Array(entrySize);
-
-    while (os.read(file, buffer.buffer, 0, entrySize) === entrySize)
-    {
-        const name = String.fromCharCode(...buffer.subarray(0, 0x10)).replace(/\x00+$/, '');
-        const playCount = buffer[0x10];
-        const bitmask = buffer[0x11];
-        const bitshift = buffer[0x12];
-        const dosDate = (buffer[0x14] | (buffer[0x15] << 8)); // Little-endian
-
-        objects.push({ name, playCount, bitmask, bitshift, dosDate });
-    }
-
-    os.close(file);
-    return objects;
-}
-
-function setMcHistory(entries)
-{
-    const systemDataPath = getSystemDataPath();
-    if (!os.readdir("mc0:/")[0].includes("systemDataPath")) { os.mkdir(`mc0:/${systemDataPath}`); }
-
-    const file = os.open(`mc0:/${systemDataPath}/history`, os.O_WRONLY | os.O_CREAT);
-    if (file < 0)
-    {
-        console.log(`ERROR: Could not create history file on mc0:/${systemDataPath}`);
-        return false;
-    }
-
-    const entrySize = 0x16;
-    const buffer = new Uint8Array(entrySize);
-
-    for (const obj of entries)
-    {
-        buffer.fill(0);
-        for (let i = 0; i < obj.name.length; i++)
-        {
-            buffer[i] = obj.name.charCodeAt(i);
-        }
-        buffer[0x10] = obj.playCount;
-        buffer[0x11] = obj.bitmask;
-        buffer[0x12] = obj.bitshift;
-        buffer[0x13] = 0x00; // Padding zero
-        buffer[0x14] = obj.dosDate & 0xFF;
-        buffer[0x15] = (obj.dosDate >> 8) & 0xFF;
-
-        os.write(file, buffer.buffer, 0, entrySize);
-    }
-
-    os.close(file);
-    return true;
-}
-
-function setHistoryEntry(name)
-{
-    const objects = getMcHistory();
-    const currentDate = getCurrentDOSDate();
-    let found = false;
-    let emptySlot = false;
-
-    for (const obj of objects)
-    {
-        if (obj.name === name)
-        {
-            // If name exists, update play count and date
-            obj.playCount = Math.min(obj.playCount + 1, 0x3F);
-            obj.dosDate = currentDate;
-            found = true;
-            break;
-        } else if (!emptySlot && obj.name === "")
-        {
-            // Store the first empty slot found
-            emptySlot = obj;
-        }
-    }
-
-    if (!found)
-    {
-        if (emptySlot)
-        {
-            // Reuse an empty slot
-            emptySlot.name = name;
-            emptySlot.playCount = 0x01;
-            emptySlot.bitmask = 0x01;
-            emptySlot.bitshift = 0x00;
-            emptySlot.dosDate = currentDate;
-        }
-        else if (objects.length < 21)
-        {
-            // Append a new entry if the list is not full
-            objects.push({
-                name: name,
-                playCount: 0x01,
-                bitmask: 0x01,
-                bitshift: 0x00,
-                dosDate: currentDate
-            });
-        }
-        else
-        {
-            console.log("ERROR: No space left to add a new entry.");
-        }
-    }
-
-    return setMcHistory(objects);
 }
 
 /**
@@ -467,6 +329,290 @@ function getCWDPartition(partition)
     return "";
 }
 
+//////////////////////////////////////////////////////////////////////////
+///*				   			   XML  							  *///
+//////////////////////////////////////////////////////////////////////////
+
+function xmlParseAttributes(attributesString)
+{
+    const attributes = {};
+    let i = 0, len = attributesString.length;
+
+    while (i < len)
+    {
+        // Skip leading whitespace
+        while (i < len && attributesString.charCodeAt(i) <= 32) i++;
+
+        // Break early if end of string after whitespace
+        if (i >= len) { break; }
+
+        // Find attribute name start
+        let nameStart = i;
+        while (i < len && attributesString.charCodeAt(i) !== 61) i++; // '='
+
+        // Extract name (avoid multiple slice/trim calls)
+        const nameEnd = i;
+        while (nameEnd > nameStart && attributesString.charCodeAt(nameEnd - 1) <= 32) i--;
+        const name = attributesString.slice(nameStart, nameEnd);
+
+        // Skip '="'
+        i += 2;
+
+        // Find attribute value
+        let valueStart = i;
+        while (i < len && attributesString.charCodeAt(i) !== 34) i++; // '"'
+
+        attributes[name] = attributesString.slice(valueStart, i);
+
+        // Move past closing quote
+        i++;
+    }
+
+    return attributes;
+}
+function xmlParseElement(xmlData)
+{
+    // Trim for performance-critical operations
+    xmlData = xmlData.trim();
+
+    // Quick self-closing tag check using direct string methods
+    if (xmlData.charCodeAt(xmlData.length - 2) === 47)
+    { // '/'
+        const spaceIndex = xmlData.indexOf(' ');
+        return {
+            tagName: xmlData.slice(1, spaceIndex > -1 ? spaceIndex : -2),
+            attributes: spaceIndex > -1 ? xmlParseAttributes(xmlData.slice(spaceIndex + 1, -2)) : {},
+            children: []
+        };
+    }
+
+    // Find tag boundaries using indexOf for speed
+    const openTagEnd = xmlData.indexOf('>');
+    const closeTagStart = xmlData.lastIndexOf('</');
+
+    if (openTagEnd === -1 || closeTagStart === -1) return null;
+
+    // Parse first tag
+    const firstTag = xmlData.slice(1, openTagEnd);
+    const spaceIndex = firstTag.indexOf(' ');
+
+    const element = {
+        tagName: spaceIndex > -1 ? firstTag.slice(0, spaceIndex) : firstTag,
+        attributes: spaceIndex > -1 ? xmlParseAttributes(firstTag.slice(spaceIndex + 1)) : {},
+        children: []
+    };
+
+    let body = xmlData.slice(openTagEnd + 1, closeTagStart).trim();
+
+    const cdataStart = body.indexOf("<![CDATA[");
+    if (cdataStart === 0)
+    {
+        const cdataEnd = body.indexOf("]]>", cdataStart);
+        cdataEnd !== -1 && (element.cdata = body.slice(cdataStart + 9, cdataEnd));
+        return element;
+    }
+
+    const childRegex = /<(\w+)([^>]*)\s*\/>|<(\w+)([^>]*)>([\s\S]*?)<\/\3>/g;
+    let childMatch;
+
+    while ((childMatch = childRegex.exec(body)) !== null)
+    {
+        const fullChildXML = childMatch[0];
+        const child = xmlParseElement(fullChildXML);
+        if (child)
+        {
+            element.children.push(child);
+        }
+    }
+
+    return element;
+}
+function xmlGetLangObj(match)
+{
+    const keys = match[1].split('.'); // Split by dot to access nested properties
+    let value = XMBLANG;
+
+    for (const key of keys)
+    {
+        if (value && typeof value === 'object' && key in value)
+        {
+            value = value[key]; // Traverse the object
+        }
+        else
+        {
+            return ""; // Return null if any key is missing
+        }
+    }
+
+    return value; // Return the found object (string array)
+}
+function xmlGetLocalizedString(element, attributeName)
+{
+    const tag = element.children.find(child => child.tagName === attributeName);
+    if (tag)
+    {
+        return tag.children.map(child => child.attributes.str);
+    }
+    if (attributeName in element.attributes)
+    {
+        const match = element.attributes[attributeName].match(/^\{(.+)\}$/);
+        if (match) { return xmlGetLangObj(match); }
+        return element.attributes[attributeName];
+    }
+
+    return "";
+}
+function xmlParseIcon(element)
+{
+    const match = element.match(/^\{(.+)\}$/);
+    if (match) { return std.evalScript(match[1]); }
+    return parseInt(element);
+}
+function xmlParseElfTag(element)
+{
+    // Parse the ELF-specific Value tag
+    const Value = {};
+
+    const valueTag = element.children.find(child => child.tagName === "Value");
+    if (valueTag)
+    {
+        Value.Path = valueTag.attributes.Path;
+        Value.Args = ((valueTag.attributes.Args === undefined) || (valueTag.attributes.Args === "")) ? [] : valueTag.attributes.Args.split(",").map(arg => arg.trim());
+    }
+
+    return Value;
+}
+function xmlParseCodeTag(element)
+{
+    const codeTag = element.children.find(child => child.tagName === "Code");
+    if (codeTag)
+    {
+        if ("filepath" in codeTag.attributes) { return codeTag.attributes.filepath; }
+        else if ("cdata" in codeTag) { return std.evalScript(`(${codeTag.cdata})`); }
+    }
+
+    // No code tag found, return empty function
+    return `()`;
+}
+function xmlParseSubMenu(element)
+{
+    const submenu = {};
+    submenu.Options = [];
+
+    element.children.forEach((option) =>
+    {
+        if (option.tagName === "Option")
+        {
+            if ("filepath" in option.attributes)
+            {
+                const optionObj = option.attributes.filepath;
+                submenu.Options.push(optionObj);
+                return;
+            }
+
+            const optionObj = {
+                Name: xmlGetLocalizedString(option, "Name"),
+                Description: xmlGetLocalizedString(option, "Description"),
+                Type: option.attributes.Type,
+                Icon: parseInt(option.attributes.Icon)
+            };
+
+            if (option.attributes.Type === "SUBMENU") { optionObj.Value = xmlParseSubMenu(option); }
+            else if (option.attributes.Type === "CONTEXT")
+            {
+                optionObj.Value = {};
+                optionObj.Value.Options = [];
+                let defaultGetter = false;
+
+                option.children.forEach((child) =>
+                {
+                    if (child.tagName === "Component")
+                    {
+                        optionObj.Value.Options.push({
+                            Name: xmlGetLocalizedString(child, "Name"),
+                            Icon: xmlParseIcon(child.attributes.Icon)
+                        });
+                    } else if (child.tagName === "Default")
+                    {
+                        if ("Variable" in child.attributes)
+                        {
+                            const variableName = child.attributes.Variable;
+                            defaultGetter = () => std.evalScript(variableName);
+                        } else if ("cdata" in child)
+                        {
+                            optionObj.Value.Default = std.evalScript(`(() => { ${child.cdata} })()`);
+                        }
+                    } else if ("cdata" in child)
+                    {
+                        optionObj.Value[child.tagName] = std.evalScript(`(${child.cdata})`);
+                    }
+                });
+
+                optionObj.Value.ItemCount = optionObj.Value.Options.length;
+                if (defaultGetter)
+                {
+                    // Define Default as a getter function
+                    Object.defineProperty(optionObj.Value, "Default", {
+                        get: () => defaultGetter(),
+                        enumerable: true
+                    });
+                }
+            }
+            else if (option.attributes.Type === "CODE") { optionObj.Value = xmlParseCodeTag(option); }
+            else if (option.attributes.Type === "ELF") { optionObj.Value = xmlParseElfTag(option); }
+
+            submenu.Options.push(optionObj);
+        }
+    });
+
+    submenu.ItemCount = submenu.Options.length;
+    submenu.Default = 0;
+    return submenu;
+}
+function parseXmlPlugin(xmlString)
+{
+    const parsedData = xmlParseElement(xmlString);
+
+    if (parsedData.tagName !== "App") { return {}; }
+
+    const plugin = {
+        Name: xmlGetLocalizedString(parsedData, "Name"),
+        Description: xmlGetLocalizedString(parsedData, "Description"),
+        Icon: parseInt(parsedData.attributes.Icon),
+        Category: parseInt(parsedData.attributes.Category),
+        Type: parsedData.attributes.Type
+    };
+
+    if (plugin.Type === "SUBMENU")
+    {
+        const optionsTag = parsedData.children.find(child => child.tagName === "Options");
+        if (optionsTag)
+        {
+            plugin.Value = optionsTag.attributes.filepath;
+            if (("required" in optionsTag.attributes) && (optionsTag.attributes.required === "true"))
+            {
+                plugin.Value = {};
+                plugin.Value.Options = execScript(optionsTag.attributes.filepath);
+                plugin.Value.ItemCount = plugin.Value.Options.length;
+                plugin.Value.Default = 0;
+                if (plugin.Value.ItemCount < 1) { return {}; }
+            }
+        }
+        else { plugin.Value = xmlParseSubMenu(parsedData); }
+    }
+    else if (plugin.Type === "ELF") { plugin.Value = xmlParseElfTag(parsedData); }
+    else if (plugin.Type === "CODE") { plugin.Value = xmlParseCodeTag(parsedData); }
+
+    // Check for CustomIcon and add it if present
+    const customIconTag = parsedData.children.find(child => child.tagName === "CustomIcon");
+    if (customIconTag) { plugin.CustomIcon = customIconTag.attributes.Path; }
+
+    return plugin;
+}
+
+//////////////////////////////////////////////////////////////////////////
+///*				   			  FILES  							  *///
+//////////////////////////////////////////////////////////////////////////
 /* Decode a byte array into a UTF-8 string */
 
 function utf8Decode(byteArray) {
@@ -652,8 +798,42 @@ function getGameCodeFromOldFormatName(path)
     return match ? match[0] : "";
 }
 
-/*	Searchs for an Image file either in PNG or JPG Format following a name pattern.	*/
+/*	Parses a filepath to get its extension if it has one	*/
 
+function getFileExtension(filePath)
+{
+    if (typeof filePath !== 'string') return "";
+
+    // Extract extension after the last dot, if any
+    const lastDotIndex = filePath.lastIndexOf('.');
+    if (lastDotIndex === -1 || lastDotIndex === filePath.length - 1)
+    {
+        return ""; // No extension found or dot is at the end
+    }
+
+    return filePath.substring(lastDotIndex + 1);
+}
+
+/*	Parses a filepath to search if it matches any extension from a list of extensions	*/
+
+function isExtensionMatching(filePath, ...filterExtensions)
+{
+    if (!Array.isArray(filterExtensions) || filterExtensions.length === 0)
+    {
+        console.log("At least one filter extension must be provided.");
+        return false;
+    }
+
+    const fileExtension = getFileExtension(filePath);
+
+    // Compare the extracted extension with any of the filters (case-insensitive)
+    return filterExtensions.some(filter =>
+        typeof filter === 'string' &&
+        fileExtension?.toLowerCase() === filter.toLowerCase()
+    );
+}
+
+/*	Searchs for an Image file either in PNG or JPG Format following a name pattern.	*/
 function findArt(baseFilename, suffix)
 {
     let baseDir = `${os.getcwd()[0]}/`;
@@ -700,116 +880,11 @@ function findBG(baseFilename)
     return findArt(baseFilename, "BG");
 }
 
-/*	Parses a filepath to get its extension if it has one	*/
-
-function getFileExtension(filePath)
-{
-    if (typeof filePath !== 'string') return "";
-
-    // Extract extension after the last dot, if any
-    const lastDotIndex = filePath.lastIndexOf('.');
-    if (lastDotIndex === -1 || lastDotIndex === filePath.length - 1) {
-        return ""; // No extension found or dot is at the end
-    }
-
-    return filePath.substring(lastDotIndex + 1);
-}
-
-/*	Parses a filepath to search if it matches any extension from a list of extensions	*/
-
-function isExtensionMatching(filePath, ...filterExtensions)
-{
-    if (!Array.isArray(filterExtensions) || filterExtensions.length === 0) {
-        console.log("At least one filter extension must be provided.");
-        return false;
-    }
-
-    const fileExtension = getFileExtension(filePath);
-
-    // Compare the extracted extension with any of the filters (case-insensitive)
-    return filterExtensions.some(filter =>
-        typeof filter === 'string' &&
-        fileExtension?.toLowerCase() === filter.toLowerCase()
-    );
-}
-
-function setScreenWidth()
-{
-    DATA.CANVAS.width = (DATA.WIDESCREEN) ? 704 : 640;
-    Screen.setMode(DATA.CANVAS);
-}
-
-/*
-    For moving element animations
-    easeOutCubic will return an increasing value
-    easeInCubic will return a decreasing value
-*/
-
-function easeOutCubic(t)
-{
-    return 1 - Math.pow(1 - t, 3);
-}
-
-function easeInCubic(t)
-{
-    return Math.pow(t, 3);
-}
-
-/*
-    To interpolate an integer from 'startValue' to 'endValue'
-    using a 'progress' float that goes from 0.0 to 1.0
-*/
-
-function interpolateValue(startValue, endValue, progress)
-{
-    if (progress < 0.0) progress = 0.0; // Clamp progress to 0.0
-    if (progress > 1.0) progress = 1.0; // Clamp progress to 1.0
-    return Math.round(startValue + (endValue - startValue) * progress);
-}
-
-/*
-    To interpolate a color object into another one
-    using a 'progress' float that goes from 0.0 to 1.0
-*/
-
-function interpolateColorObj(color1, color2, t)
-{
-    return {
-        r: Math.round(color1.r + (color2.r - color1.r) * t),
-        g: Math.round(color1.g + (color2.g - color1.g) * t),
-        b: Math.round(color1.b + (color2.b - color1.b) * t),
-        a: Math.round(color1.a + (color2.a - color1.a) * t),
-    };
-}
-
-// Neutralizes the overlay tint color.
-// Used in case a custom loaded image needs to display in full color.
-
-function neutralizeOverlayWithAlpha()
-{
-    if (DATA.OVALPHA === 0) { return { r: 128, g: 128, b: 128 }; }
-
-    const ovA = 0.15625f;
-    const OvR = Color.getR(DATA.OVCOL);
-    const OvG = Color.getG(DATA.OVCOL);
-    const OvB = Color.getB(DATA.OVCOL);
-
-    const neutralizedColor = {
-        r: Math.round(128 - (ovA * (OvR - 256))),
-        g: Math.round(128 - (ovA * (OvG - 256))),
-        b: Math.round(128 - (ovA * (OvB - 256))),
-    };
-
-    // Clamp the values to stay within the valid RGBA range (0-255)
-    neutralizedColor.r = Math.max(0, Math.min(255, neutralizedColor.r));
-    neutralizedColor.g = Math.max(0, Math.min(255, neutralizedColor.g));
-    neutralizedColor.b = Math.max(0, Math.min(255, neutralizedColor.b));
-
-    return neutralizedColor;
-}
+//////////////////////////////////////////////////////////////////////////
+///*				   			 THREADED 							  *///
+//////////////////////////////////////////////////////////////////////////
 
 /*	Set a new Copy Item to the thread copy queue	*/
-
 function threadCopyPush(_src, _dest)
 {
     DATA.CPYQUEUE.push({ src: _src, dest: _dest });
@@ -892,6 +967,158 @@ function IconSysDecodeTitle(strIn) {
 }
 
 //////////////////////////////////////////////////////////////////////////
+///*				   			 HISTORY							  *///
+//////////////////////////////////////////////////////////////////////////
+
+// Functions to manage the history file on the memory card
+
+function getSystemDataPath()
+{
+    const tmp = std.open("rom0:ROMVER", "r");
+    const ROMVER = tmp.readAsString();
+    tmp.close();
+
+    switch (ROMVER[4])
+    {
+        case 'C': return "BCDATA-SYSTEM";
+        case 'E': return "BEDATA-SYSTEM";
+        case 'X':
+        case 'H':
+        case 'A': return "BADATA-SYSTEM";
+        case 'T':
+        case 'J': return "BIDATA-SYSTEM";
+    }
+}
+
+function getCurrentDOSDate()
+{
+    const now = new Date();
+    const year = now.getFullYear() - 1980; // DOS date starts at 1980
+    const month = now.getMonth() + 1; // JS months are 0-based
+    const day = now.getDate();
+    return (year << 9) | (month << 5) | day;
+}
+
+function getMcHistory()
+{
+    const file = os.open(`mc0:/${getSystemDataPath()}/history`, os.O_RDONLY);
+    if (file < 0)
+    {
+        console.log(`ERROR: Could not open history file`);
+        return [];
+    }
+
+    const objects = [];
+    const entrySize = 0x16;
+    const buffer = new Uint8Array(entrySize);
+
+    while (os.read(file, buffer.buffer, 0, entrySize) === entrySize)
+    {
+        const name = String.fromCharCode(...buffer.subarray(0, 0x10)).replace(/\x00+$/, '');
+        const playCount = buffer[0x10];
+        const bitmask = buffer[0x11];
+        const bitshift = buffer[0x12];
+        const dosDate = (buffer[0x14] | (buffer[0x15] << 8)); // Little-endian
+
+        objects.push({ name, playCount, bitmask, bitshift, dosDate });
+    }
+
+    os.close(file);
+    return objects;
+}
+
+function setMcHistory(entries)
+{
+    const systemDataPath = getSystemDataPath();
+    if (!os.readdir("mc0:/")[0].includes("systemDataPath")) { os.mkdir(`mc0:/${systemDataPath}`); }
+
+    const file = os.open(`mc0:/${systemDataPath}/history`, os.O_WRONLY | os.O_CREAT);
+    if (file < 0)
+    {
+        console.log(`ERROR: Could not create history file on mc0:/${systemDataPath}`);
+        return false;
+    }
+
+    const entrySize = 0x16;
+    const buffer = new Uint8Array(entrySize);
+
+    for (const obj of entries)
+    {
+        buffer.fill(0);
+        for (let i = 0; i < obj.name.length; i++)
+        {
+            buffer[i] = obj.name.charCodeAt(i);
+        }
+        buffer[0x10] = obj.playCount;
+        buffer[0x11] = obj.bitmask;
+        buffer[0x12] = obj.bitshift;
+        buffer[0x13] = 0x00; // Padding zero
+        buffer[0x14] = obj.dosDate & 0xFF;
+        buffer[0x15] = (obj.dosDate >> 8) & 0xFF;
+
+        os.write(file, buffer.buffer, 0, entrySize);
+    }
+
+    os.close(file);
+    return true;
+}
+
+function setHistoryEntry(name)
+{
+    const objects = getMcHistory();
+    const currentDate = getCurrentDOSDate();
+    let found = false;
+    let emptySlot = false;
+
+    for (const obj of objects)
+    {
+        if (obj.name === name)
+        {
+            // If name exists, update play count and date
+            obj.playCount = Math.min(obj.playCount + 1, 0x3F);
+            obj.dosDate = currentDate;
+            found = true;
+            break;
+        } else if (!emptySlot && obj.name === "")
+        {
+            // Store the first empty slot found
+            emptySlot = obj;
+        }
+    }
+
+    if (!found)
+    {
+        if (emptySlot)
+        {
+            // Reuse an empty slot
+            emptySlot.name = name;
+            emptySlot.playCount = 0x01;
+            emptySlot.bitmask = 0x01;
+            emptySlot.bitshift = 0x00;
+            emptySlot.dosDate = currentDate;
+        }
+        else if (objects.length < 21)
+        {
+            // Append a new entry if the list is not full
+            objects.push({
+                name: name,
+                playCount: 0x01,
+                bitmask: 0x01,
+                bitshift: 0x00,
+                dosDate: currentDate
+            });
+        }
+        else
+        {
+            console.log("ERROR: No space left to add a new entry.");
+        }
+    }
+
+    return setMcHistory(objects);
+}
+
+
+//////////////////////////////////////////////////////////////////////////
 ///*				   			   POPS								  *///
 //////////////////////////////////////////////////////////////////////////
 
@@ -907,6 +1134,8 @@ function IconSysDecodeTitle(strIn) {
 
 function getPOPSCheat(cheats, game = "", device = "mass")
 {
+    console.log("getPOPSCheat(): game: " + game);
+    console.log("getPOPSCheat(): device: " + device);
     // Create an array to store whether each cheat is enabled
     const enabledCheats = new Array(cheats.length).fill(false);
     let path = "";
@@ -930,6 +1159,7 @@ function getPOPSCheat(cheats, game = "", device = "mass")
     const dirFiles = os.readdir(path)[0];
     if (dirFiles.includes("CHEATS.TXT"))
     {
+        console.log("getPOPSCheat(): CHEATS.TXT Found.");
         let errObj = {};
         const file = std.open(`${path}CHEATS.TXT`, "r", errObj);
         if (file === null) { console.log(`getPOPSCheat(): I/O Error - ${std.strerror(errObj.errno)}`); return enabledCheats; }
@@ -949,6 +1179,8 @@ function getPOPSCheat(cheats, game = "", device = "mass")
                 }
             }
         }
+
+        console.log("getPOPSCheat(): Finished reading Cheats.");
     }
 
     return enabledCheats;
@@ -1055,15 +1287,73 @@ function setPOPSCheat(cheats, game = "", device = "mass")
 }
 
 //////////////////////////////////////////////////////////////////////////
-///*				   			 DASHBOARD							  *///
+///*				   			  SCREEN 							  *///
 //////////////////////////////////////////////////////////////////////////
 
-/* Info:
+// Screen Video Mode Handlers
 
-    Function to set a new Context (Option) Menu
-    Object.
+function setScreenWidth()
+{
+    DATA.CANVAS.width = (DATA.WIDESCREEN) ? 704 : 640;
+}
+function setScreenHeight()
+{
+    switch (DATA.CANVAS.mode)
+    {
+        case NTSC:
+        case DTV_480p: DATA.CANVAS.height = 448; break;
+        case PAL: DATA.CANVAS.height = 512; break;
+    }
+}
+function setScreeniMode()
+{
+    switch (DATA.CANVAS.mode)
+    {
+        case NTSC:
+        case PAL: DATA.CANVAS.interlace = INTERLACED; break;
+        case DTV_480p: DATA.CANVAS.interlace = PROGRESSIVE; break;
+    }
+}
 
-*/
+//////////////////////////////////////////////////////////////////////////
+///*				   			DASHBOARD							  *///
+//////////////////////////////////////////////////////////////////////////
+
+function ValidateCodeObj(obj)
+{
+    DASH_SEL = obj;
+    if (typeof obj.Value === "string") { execScript(obj.Value); }
+    else { obj.Value(); }
+}
+function ValidateSubMenuObj(obj)
+{
+    if (typeof obj.Value === "string")
+    {
+        logl(`Parsing Sub Menu: ${Array.isArray(obj.Name) ? obj.Name[0] : obj.Name}`);
+        switch (getFileExtension(obj.Value))
+        {
+            case "xml":
+                const data = std.loadFile(DASH_CAT[DATA.DASH_CURCAT].Options[DATA.DASH_CUROPT].Value);
+                if (data) { obj.Value = xmlParseSubMenu(xmlParseElement(data)); }
+                else { obj.Value = { Options: {}, ItemCount: 0, Default: 0 }; }
+                break;
+            case "js":
+                const options = execScript(obj.Value);
+                if (Array.isArray(options))
+                {
+                    obj.Value = {};
+                    obj.Value.Options = options;
+                    obj.Value.ItemCount = options.length;
+                    obj.Value.Default = 0;
+                }
+                else { obj.Value = { Options: {}, ItemCount: 0, Default: 0 }; }
+                break;
+        }
+        logl(`Parsing Sub Menu Completed: ${Array.isArray(obj.Name) ? obj.Name[0] : obj.Name}`);
+    }
+}
+
+/* Function to set a new Context (Option) Menu Object. */
 
 function SetDashContext(CONTEXT, STATE)
 {
@@ -1108,8 +1398,11 @@ function SelectItem()
         switch(DASH_CAT[DATA.DASH_CURCAT].Options[DATA.DASH_CUROPT].Type)
         {
             case "ELF": DATA.DASH_STATE = "FADE_OUT"; DASH_SEL = DASH_CAT[DATA.DASH_CURCAT].Options[DATA.DASH_CUROPT]; break;
-            case "CODE": DASH_SEL = DASH_CAT[DATA.DASH_CURCAT].Options[DATA.DASH_CUROPT]; DASH_CAT[DATA.DASH_CURCAT].Options[DATA.DASH_CUROPT].Value(DATA); break;
+            case "CODE": ValidateCodeObj(DASH_CAT[DATA.DASH_CURCAT].Options[DATA.DASH_CUROPT]); break;
+            case "CONTEXT": SetDashContext(DASH_CAT[DATA.DASH_CURCAT].Options[DATA.DASH_CUROPT].Value, "MENU_CONTEXT_IN"); break;
             case "SUBMENU":
+                ValidateSubMenuObj(DASH_CAT[DATA.DASH_CURCAT].Options[DATA.DASH_CUROPT]);
+
                 optBoxA = 0;                    // Reset the Option Box visibility.
                 DATA.BGTMPIMG = false;          // Reset the Temporary Background Image.
                 DATA.BGIMGTMPSTATE = 0;         // Reset the Temporary Background Image State.
@@ -1119,19 +1412,26 @@ function SelectItem()
                 DASH_SUB[DATA.DASH_CURSUB] = DASH_CAT[DATA.DASH_CURCAT].Options[DATA.DASH_CUROPT].Value;
                 DASH_SUB[DATA.DASH_CURSUB].Selected = DATA.DASH_CURSUBOPT;
                 DATA.DASH_CURSUBOPT = (DASH_CAT[DATA.DASH_CURCAT].Options[DATA.DASH_CUROPT].Value.ItemCount < 1) ? -1 : DASH_CAT[DATA.DASH_CURCAT].Options[DATA.DASH_CUROPT].Value.Default;
-                break;
-            case "CONTEXT":
-                SetDashContext(DASH_CAT[DATA.DASH_CURCAT].Options[DATA.DASH_CUROPT].Value, "MENU_CONTEXT_IN");
+
+                for (let i = 0; i < DASH_CAT[DATA.DASH_CURCAT].Options[DATA.DASH_CUROPT].Value.ItemCount; i++)
+                {
+                    if (typeof DASH_SUB[DATA.DASH_CURSUB].Options[i] === "string")
+                    {
+                        DASH_SUB[DATA.DASH_CURSUB].Options[i] = execScript(DASH_SUB[DATA.DASH_CURSUB].Options[i]);
+                    }
+                }
                 break;
         }
     }
     else
     {
-        switch(DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT].Type)
+        switch (DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT].Type)
         {
             case "ELF": DATA.DASH_STATE = "FADE_OUT"; DASH_SEL = DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT]; break;
-            case "CODE": DASH_SEL = DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT]; DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT].Value(DATA); break;
+            case "CODE": ValidateCodeObj(DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT]); break;
+            case "CONTEXT": SetDashContext(DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT].Value, "SUBMENU_CONTEXT_IN"); break;
             case "SUBMENU":
+                ValidateSubMenuObj(DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT]);
                 optBoxA = 0;                    // Reset the Option Box visibility.
                 DATA.BGTMPIMG = false;          // Reset the Temporary Background Image.
                 DATA.BGIMGTMPSTATE = 0;         // Reset the Temporary Background Image State.
@@ -1141,18 +1441,103 @@ function SelectItem()
                 DATA.DASH_CURSUBOPT = (DASH_SUB[DATA.DASH_CURSUB + 1].ItemCount < 1) ? -1 : 0;
                 DATA.DASH_PRVSUB++;
                 DATA.DASH_CURSUB++;
-                break;
-            case "CONTEXT":
-                SetDashContext(DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT].Value, "SUBMENU_CONTEXT_IN");
+
+                for (let i = 0; i < DASH_SUB[DATA.DASH_CURSUB].ItemCount; i++)
+                {
+                    if (typeof DASH_SUB[DATA.DASH_CURSUB].Options[i] === "string")
+                    {
+                        DASH_SUB[DATA.DASH_CURSUB].Options[i] = execScript(DASH_SUB[DATA.DASH_CURSUB].Options[i]);
+                    }
+                }
                 break;
         }
     }
 }
 
 //////////////////////////////////////////////////////////////////////////
+///*				   			 OTHER 							  *///
+//////////////////////////////////////////////////////////////////////////
+
+/*
+    For moving element animations
+    easeOutCubic will return an increasing value
+    easeInCubic will return a decreasing value
+*/
+
+function easeOutCubic(t)
+{
+    return 1 - Math.pow(1 - t, 3);
+}
+
+function easeInCubic(t)
+{
+    return Math.pow(t, 3);
+}
+
+/*
+    To interpolate an integer from 'startValue' to 'endValue'
+    using a 'progress' float that goes from 0.0 to 1.0
+*/
+
+function interpolateValue(startValue, endValue, progress)
+{
+    if (progress < 0.0) progress = 0.0; // Clamp progress to 0.0
+    if (progress > 1.0) progress = 1.0; // Clamp progress to 1.0
+    return Math.round(startValue + (endValue - startValue) * progress);
+}
+
+/*
+    To interpolate a color object into another one
+    using a 'progress' float that goes from 0.0 to 1.0
+*/
+
+function interpolateColorObj(color1, color2, t)
+{
+    return {
+        r: Math.round(color1.r + (color2.r - color1.r) * t),
+        g: Math.round(color1.g + (color2.g - color1.g) * t),
+        b: Math.round(color1.b + (color2.b - color1.b) * t),
+        a: Math.round(color1.a + (color2.a - color1.a) * t),
+    };
+}
+
+// Neutralizes the overlay tint color.
+// Used in case a custom loaded image needs to display in full color.
+
+function neutralizeOverlayWithAlpha()
+{
+    if (DATA.OVALPHA === 0) { return { r: 128, g: 128, b: 128 }; }
+
+    const ovA = 0.15625f;
+    const OvR = Color.getR(DATA.OVCOL);
+    const OvG = Color.getG(DATA.OVCOL);
+    const OvB = Color.getB(DATA.OVCOL);
+
+    const neutralizedColor = {
+        r: Math.round(128 - (ovA * (OvR - 256))),
+        g: Math.round(128 - (ovA * (OvG - 256))),
+        b: Math.round(128 - (ovA * (OvB - 256))),
+    };
+
+    // Clamp the values to stay within the valid RGBA range (0-255)
+    neutralizedColor.r = Math.max(0, Math.min(255, neutralizedColor.r));
+    neutralizedColor.g = Math.max(0, Math.min(255, neutralizedColor.g));
+    neutralizedColor.b = Math.max(0, Math.min(255, neutralizedColor.b));
+
+    return neutralizedColor;
+}
+
+//////////////////////////////////////////////////////////////////////////
 ///*				   			 	CODE							  *///
 //////////////////////////////////////////////////////////////////////////
 
+// Set Screen Parameters.
+
+Screen.setFrameCounter(true);
+Screen.setVSync(true);
+DATA.CANVAS.double_buffering = true;
+DATA.CANVAS.zbuffering = false;
+Screen.setMode(DATA.CANVAS);
 DATA.SCREEN_PREVMODE = DATA.CANVAS.mode; 		// Store current Canvas mode for backup.
 ftxtWrite(`${os.getcwd()[0]}/log.txt`, ""); 	// Initializes the log.txt file.
 console.log("INIT: SYSTEM INIT COMPLETE");

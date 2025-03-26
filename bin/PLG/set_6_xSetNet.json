@@ -1,0 +1,24 @@
+{
+  "Name": [
+    "Network Settings",
+    "Paramètres réseau",
+    "Ajustes de red",
+    "Netzwerk-Einstellungen",
+    "Impostazioni di rete",
+    "Netwerkinstellingen",
+    "Definições de Rede"
+  ],
+  "Description": [
+    "Adjusts settings for the internet connection.",
+    "Adjusts settings for the internet connection.",
+    "Ajusta la configuración de la conexión a Internet.",
+    "Adjusts settings for the internet connection.",
+    "Adjusts settings for the internet connection.",
+    "Adjusts settings for the internet connection.",
+    "Adjusts settings for the internet connection."
+  ],
+  "Icon": 28,
+  "Category": 1,
+  "Type": "SUBMENU",
+  "Value": "./PLG/xSettings/xNetOpts.xml"
+}

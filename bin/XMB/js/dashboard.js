@@ -32,7 +32,6 @@ dash_arrow.optimize();
 
 let dash_context = new Image(`./XMB/dash/dash_context.png`);
 dash_context.optimize();
-dash_context.height = DATA.CANVAS.height;
 dash_context.width = 275;
 
 let dash_ctx_ico = new Image(`./XMB/color/ctx.png`);
@@ -313,12 +312,12 @@ function DrawOptionBox(direction = 1)
         const col = neutralizeOverlayWithAlpha();
         optBoxA = (optBoxA >= 420) ? 428 : (optBoxA + (12 * direction));
         const alpha = ((optBoxA - 300) > 0) ? (optBoxA - 300) : 0;
-        dash_opt_box.width = 80 + ((TXT_OPTION[DATA.LANGUAGE].length + 6) / 2);
+        dash_opt_box.width = 80 + ((XMBLANG.OPTIONS[DATA.LANGUAGE].length + 6) / 2);
         dash_opt_box.color = Color.new(col.r, col.g, col.b, alpha);
         dash_opt_box.draw(DATA.CANVAS.width - 100, DATA.CANVAS.height - 70);
         dash_opt_triangle.color = Color.new(col.r, col.g, col.b, alpha);
         dash_opt_triangle.draw(DATA.CANVAS.width - 93, DATA.CANVAS.height - 34);
-        TxtPrint(TXT_OPTION[DATA.LANGUAGE], { r: 255, g: 255, b: 255, a: alpha }, { x: DATA.CANVAS.width - 73, y: DATA.CANVAS.height - 47 }, "LEFT", font_ss);
+        TxtPrint(XMBLANG.OPTIONS[DATA.LANGUAGE], { r: 255, g: 255, b: 255, a: alpha }, { x: DATA.CANVAS.width - 73, y: DATA.CANVAS.height - 47 }, "LEFT", font_ss);
     }
 }
 
@@ -355,7 +354,7 @@ function DrawMsg_SubMenuEmpty(a = 0, x = 0, y = 0)
     if ((TXTFULLA + a) > TXTFULLA) { a = 0; } else if ((TXTFULLA + a) < 0) { a = -TXTFULLA; }
     if ((TXTFULLA + a) > 0)
     {
-        TxtPrint(MSG_SUBMENU_EMPTY[DATA.LANGUAGE], { r:192, g:192, b:192, a: TXTFULLA + a }, { x: 263 + x, y: 214 + y }, "LEFT", font_ss);
+        TxtPrint(XMBLANG.MSG_SUBMENU_EMPTY[DATA.LANGUAGE], { r:192, g:192, b:192, a: TXTFULLA + a }, { x: 263 + x, y: 214 + y }, "LEFT", font_ss);
     }
 }
 
@@ -366,6 +365,7 @@ function DrawContextMenu(a = 0, x = 0, y = 0)
     if (90 + a > 90) { a = 0; } else if (90 + a < 0) { a = -90; }
     if (90 + a > 0)
     {
+        dash_context.height = DATA.CANVAS.height;
         dash_context.color = Color.new(CTXTINT.r, CTXTINT.g, CTXTINT.b, 90 + a);
         dash_context.draw((DATA.CANVAS.width - 205) + x, y);
     }

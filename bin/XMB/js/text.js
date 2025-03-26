@@ -10,271 +10,18 @@
 ///*				   	   LOCALIZATION STRINGS						  *///
 //////////////////////////////////////////////////////////////////////////
 
+const XMBLANG = JSON.parse(std.loadFile("./XMB/lang/lang.json"));
+
 // Category Names, one for each category on the 7 different languages.
 
 const CAT_NAMES = [];
-CAT_NAMES.push([ "User", "Utilisateur", "Usuario", "Benutzer", "Utente", "Gebruiker", "Usuário" ]);
-CAT_NAMES.push([ "Settings", "Paramètres", "Opciones", "Optionen", "Opzioni", "Opties", "Opções" ]);
-CAT_NAMES.push([ "Photo", "Photo", "Foto", "Foto", "Foto", "Foto", "Fotografia" ]);
-CAT_NAMES.push([ "Music", "Musique", "Música", "Musik", "Musica", "Muziek", "Música" ]);
-CAT_NAMES.push([ "Video", "Video", "Video", "Video", "Video", "Video", "Video" ]);
-CAT_NAMES.push([ "Game", "Jeu", "Juego", "Spiel", "Giochi", "Spel", "Jogo" ]);
-CAT_NAMES.push([ "Network", "Réseau", "Red", "Netzwerk", "Rete", "Netwerk", "Rede" ]);
-
-// The Boot Epilepsy Warning Text.
-
-const BOOT_WARNING_ARRAY =
-[
-    "PHOTOSENSITIVE EPILEPSY\nIF YOU HAVE A HISTORY OF EPILEPSY OR SEIZURES, CONSULT A DOCTOR\nBEFORE USE. CERTAIN PATTERNS MAY TRIGGER SEIZURES WITH NO PRIOR HISTORY. BEFORE USING THIS PRODUCT, CAREFULLY READ THE INSTRUCTION MANUAL.",
-    "ÉPILEPSIE PHOTOSENSIBLE\nSI VOUS AVEZ DES ANTÉCÉDENTS D'ÉPILEPSIE OU DE CRISES, CONSULTEZ UN MÉDECIN AVANT UTILISATION. CERTAINS MOTIFS PEUVENT DÉCLENCHER DES CRISES SANS ANTÉCÉDENTS. AVANT D'UTILISER CE PRODUIT, LISEZ ATTENTIVEMENT LE MANUEL D'INSTRUCTIONS.",
-    "EPILEPSIA FOTOSENSIBLE\nSI TIENE ANTECEDENTES DE EPILEPSIA O CONVULSIONES, CONSULTE A UN MÉDICO ANTES DE USARLO. CIERTOS PATRONES PUEDEN PROVOCAR CONVULSIONES SIN ANTECEDENTES PREVIOS. ANTES DE USAR ESTE PRODUCTO, LEA CUIDADOSAMENTE EL MANUAL DE INSTRUCCIONES.",
-    "FOTOSENSITIVE EPILEPSIE\nWENN SIE EINE VORGESCHICHTE MIT EPILEPSIE ODER KRAMPFANFÄLLEN HABEN, KONSULTIEREN SIE VOR DER VERWENDUNG EINEN ARZT. BESTIMMTE MUSTER KÖNNEN ANFÄLLE AUSLÖSEN, AUCH OHNE FRÜHERE VORGESCHICHTE. LESEN SIE VOR DER VERWENDUNG DIE BEDIENUNGSANLEITUNG SORGFÄLTIG DURCH.",
-    "EPILESSIA FOTOSENSIBILE\nSE SI SOFFRE DI CRISI EPILETTICHE O DI DISTURBI ASSOCIATI, CONSULTARE UN MEDICO PRIMA DELL'USO. ALCUNI EFFETTI POSSONO CAUSARE CRISI EPILETTICHE ANCHE IN ASSENZA DI EPISODI PREGRESSI. PRIMA DI UTILIZZARE IL PRODOTTO, LEGGERE ATTENTAMENTE IL MANUALE DI ISTRUZIONI.",
-    "FOTOSENSITIEVE EPILEPSIE\nALS U EEN GESCHIEDENIS HEEFT VAN EPILEPSIE OF AANVALLEN, RAADPLEEG DAN EEN ARTS VOORDAT U HET PRODUCT GEBRUIKT. BEPAALDE PATRONEN KUNNEN AANVALLEN VEROORZAKEN ZONDER EERDERE VOORGESCHIEDENIS. LEES VOORDAT U DIT PRODUCT GEBRUIKT ZORGVULDIG DE HANDLEIDING.",
-    "EPILEPSIA FOTOSSENSÍVEL\nSE VOCÊ TEM HISTÓRICO DE EPILEPSIA OU CONVULSÕES, CONSULTE UM MÉDICO ANTES DE USAR. CERTOS PADRÕES PODEM DESENCADEAR CONVULSÕES SEM HISTÓRICO PRÉVIO. ANTES DE USAR ESTE PRODUTO, LEIA ATENTAMENTE O MANUAL DE INSTRUÇÕES.",
-];
-
-const TXT_WAIT =
-[
-    "Please wait...",
-    "Veuillez patienter...",
-    "Por favor espere...",
-    "Bitte warten...",
-    "Attendere prego...",
-    "Even geduld...",
-    "Aguarde..."
-];
-
-const TXT_YES =
-[
-    "Yes",
-    "Oui",
-    "Sí",
-    "Ja",
-    "Sì",
-    "Ja",
-    "Sim",
-];
-
-const TXT_NO =
-[
-    "No",
-    "Non",
-    "No",
-    "Nein",
-    "No",
-    "Nee",
-    "Não"
-];
-
-const TXT_ENABLED =
-[
-    "Enabled",
-    "Activé",
-    "Habilitado",
-    "Aktiviert",
-    "Abilitato",
-    "Ingeschakeld",
-    "Ativado",
-]
-
-const TXT_DISABLED =
-[
-    "Disabled",
-    "Désactivé",
-    "Deshabilitado",
-    "Deaktiviert",
-    "Disabilitato",
-    "Uitgeschakeld",
-    "Desativado",
-]
-
-const TXT_INFO =
-[
-    "Information",
-    "Information",
-    "Información",
-    "Information",
-    "Informazioni",
-    "Informatie",
-    "Informação"
-];
-
-const TXT_DELETE =
-[
-    "Delete",
-    "Supprimer",
-    "Eliminar",
-    "Löschen",
-    "Elimina",
-    "Verwijderen",
-    "Eliminar",
-];
-
-const MSG_SUBMENU_EMPTY =
-[
-    "There are no elements.",
-    "Il n'y a pas d'éléments.",
-    "No hay elementos.",
-    "Es gibt keine Elemente.",
-    "Non ci sono elementi.",
-    "Er zijn geen elementen.",
-    "Não há elementos.",
-];
-
-const TXT_MESSAGE_BACK =
-[
-    "Back",
-    "Retour",
-    "Volver",
-    "Zurück",
-    "Indietro",
-    "Terug",
-    "Voltar"
-];
-
-const TXT_MESSAGE_ENTER =
-[
-    "Accept",
-    "Valider",
-    "Aceptar",
-    "Akzeptieren",
-    "Accetta",
-    "Accepteren",
-    "Aceitar"
-];
-
-const TXT_VMODE_SEC =
-[
-    "seconds",
-    "seconds",
-    "segundos",
-    "sekunden",
-    "secondi",
-    "seconds",
-    "seconds",
-];
-
-const TXT_VMODE_REMTIME =
-[
-    "Remaining time",
-    "Temps restant",
-    "Tiempo restante",
-    "Verbleibende Zeit",
-    "Tempo rimanente",
-    "Resterende tijd",
-    "Tempo restante",
-];
-
-const TXT_VMODE_MSG =
-[
-    "Can you read this screen?\nSelect [Yes] if you can.\nIf you do not press any buttons, the system will automatically go back to the previous setting.\n \n \n \n \n",
-    "Pouvez-vous lire cet écran ?\nSélectionnez [Oui] si vous pouvez.\nSi vous n'appuyez sur aucun bouton, le système reviendra automatiquement au réglage précédent.\n \n \n \n \n",
-    "¿Puede leer esta pantalla?\nSelecciona [Si] si la respuesta es afirmativa.\nSi no pulsa ningun botón, el sistema regresará a la configuracion anterior automaticamente.\n \n \n \n \n",
-    "Kannst Du das hier lesen?\nWähle [Ja], wenn dem so ist.\nWenn du keine Tasten drückst, wechselt das System automatisch zur vorherigen Einstellung.\n \n \n \n \n",
-    "Questo testo è visibile?\nSeleziona [Si] per mantenere l'impostazione altrimenti il sistema tornerà automaticamente all'impostazione precedente.\n \n \n \n \n",
-    "Kun je dit scherm lezen?\nSelecteer [Ja] als je dat kunt.\nAls je geen knoppen indrukt, gaat het systeem automatisch terug naar de vorige instelling.\n \n \n \n \n",
-    "Você consegue ler esta tela?\nSelecione [Sim] se puder.\nSe você não pressionar nenhum botão, o sistema voltará automaticamente à configuração anterior.\n \n \n \n \n",
-];
-
-const TXT_TITLE =
-[
-    "Title",
-    "Titre",
-    "Titulo",
-    "Titel",
-    "Titoli",
-    "Titel",
-    "Titulo",
-];
-
-const TXT_TITLES =
-[
-    "Titles",
-    "Titres",
-    "Títulos",
-    "Titel",
-    "Titoli",
-    "Titels",
-    "Títulos",
-];
-
-const TXT_OPTION =
-[
-    "Options",
-    "Options",
-    "Opciones",
-    "Options",
-    "Opzioni",
-    "Options",
-    "Options",
-];
-
-const TXT_ENTER_NEW_PASS =
-[
-    "Enter your new password",
-    "Enter your new password",
-    "Ingrese su nueva contraseña",
-    "Enter your new password",
-    "Enter your new password",
-    "Enter your new password",
-    "Enter your new password",
-];
-
-const TXT_ENTER_CUR_PASS =
-[
-    "Enter your four-digir password",
-    "Enter your four-digir password",
-    "Ingrese su contraseña de cuatro digitos",
-    "Enter your four-digir password",
-    "Enter your four-digir password",
-    "Enter your four-digir password",
-    "Enter your four-digir password",
-];
-
-const WORK_DIR_NAME = 	// Item 1 Name
-[
-    "Main Directory",
-    "Répertoire principal",
-    "Directorio principal",
-    "Hauptverzeichnis",
-    "Directory principale",
-    "Hoofdmap",
-    "Diretório principal",
-];
-
-const MASS_DIR_NAME = 	// Item 2 Name
-[
-    "USB Drive",
-    "Périphérique USB",
-    "Dispositivo USB",
-    "USB-Gerät",
-    "Dispositivo USB",
-    "USB-apparaat",
-    "Dispositivo USB",
-];
-
-const HDD_DIR_NAME = 	// Item 3 Name
-[
-    "Internal Hard Disk Drive",
-    "Disque Dur Interne",
-    "Disco Duro Interno",
-    "Interne Festplatte",
-    "Disco Rigido Interno",
-    "Internal Hard Disk Drive",
-    "Disco Rígido Interno",
-];
-
-const TXT_DEVICE = 	// Item 3 Name
-[
-    "Device",
-    "Device",
-    "Dispositivo",
-    "Device",
-    "Device",
-    "Device",
-    "Device",
-];
+CAT_NAMES.push(XMBLANG.CATEGORY.USER);
+CAT_NAMES.push(XMBLANG.CATEGORY.SETTINGS);
+CAT_NAMES.push(XMBLANG.CATEGORY.PHOTO);
+CAT_NAMES.push(XMBLANG.CATEGORY.MUSIC);
+CAT_NAMES.push(XMBLANG.CATEGORY.VIDEO);
+CAT_NAMES.push(XMBLANG.CATEGORY.GAME);
+CAT_NAMES.push(XMBLANG.CATEGORY.NETWORK);
 
 //////////////////////////////////////////////////////////////////////////
 ///*				   	   		PARAMETERS							  *///
@@ -294,7 +41,6 @@ const glowText = { Dir: 1, Value: 1, Min: 0, Max: 64, };
 //////////////////////////////////////////////////////////////////////////
 
 // Init Font System
-
 let font_m = false;
 let font_s = false;
 let font_ss = false;
@@ -355,6 +101,7 @@ const TextRender = {
     // Function to get screen width and height from Screen.getMode()
     SetScreenDimensions: function() {
         const canvas = Screen.getMode();  // Assuming it returns an object with width and height properties
+        this.maxWidth = 512;
         this.screenWidth = 640;
         this.screenHeight = canvas.height;
     },
@@ -364,9 +111,10 @@ const TextRender = {
         let lines = typeof text === 'string' ? text.split('\n') : text;
         let finalLines = [];
 
-        lines.forEach((line) => {
-          let splitLines = this.WrapTextByPixelWidth(line);
-          finalLines.push(...splitLines);
+        lines.forEach((line) =>
+        {
+            let splitLines = (this.currentFont.getTextSize(line).width < this.maxWidth) ? [ line ] : this.WrapTextByPixelWidth(line);
+            finalLines.push(...splitLines);
         });
 
         return finalLines;
@@ -374,28 +122,44 @@ const TextRender = {
 
     // Wrap text based on pixel width (line wrapping)
     WrapTextByPixelWidth: function(line) {
-        let words = line.split(' ');
         let lines = [];
+        let words = line.split(' ');
         let currentLine = '';
+        let currentWidth = 0;
 
-        words.forEach((word) => {
-            let testLine = currentLine ? currentLine + ' ' + word : word;
-            let textWidth = this.currentFont.getTextSize(testLine).width;
+        // Precompute word widths to avoid repeated calls
+        let wordWidths = words.map(word => this.currentFont.getTextSize(word).width);
+        let spaceWidth = this.currentFont.getTextSize(' ').width;
 
-            if (textWidth > this.maxWidth)
-            {
-                lines.push(currentLine);
-                currentLine = word;
-            }
-            else
-            {
-                currentLine = testLine;
-            }
-        });
-
-        if (currentLine.length > 0)
+        let i = 0;
+        while (i < words.length)
         {
+            let start = i;
+            let end = words.length;
+            let bestFitIndex = start;
+
+            // Binary search for the longest segment that fits within maxWidth
+            while (start < end)
+            {
+                let mid = Math.floor((start + end) / 2);
+                let testWidth = wordWidths.slice(i, mid + 1).reduce((sum, w) => sum + w, 0) + (mid - i) * spaceWidth;
+
+                if (testWidth <= this.maxWidth)
+                {
+                    bestFitIndex = mid;
+                    start = mid + 1;
+                } else
+                {
+                    end = mid;
+                }
+            }
+
+            // Form the best-fitting line
+            currentLine = words.slice(i, bestFitIndex + 1).join(' ');
             lines.push(currentLine);
+
+            // Move to the next set of words
+            i = bestFitIndex + 1;
         }
 
         return lines;
@@ -456,9 +220,6 @@ const TextRender = {
     }
 };
 
-// Set Text Renderer Initial Parameters
-TextRender.SetScreenDimensions();
-
 /*	Info:
 
     Main Function to render Text on Screen with several options.
@@ -491,16 +252,13 @@ function TxtPrint(txt, clr, pos, align = "LEFT", font = font_s, glow = false)
     }
 }
 
-// Pre-Process Epilepsy Warning Text for fast rendering on screen
-let BOOT_WARNING_TEXT = false;
-
 // Function exclusively made to render the Boot Warning Text at Boot.
 function DisplayBootWarningText(alpha)
 {
     if (BOOT_WARNING_TEXT === false)
     {
         TextRender.SetFont(font_s);
-        BOOT_WARNING_TEXT = TextRender.ProcessText(BOOT_WARNING_ARRAY[DATA.LANGUAGE]);
+        BOOT_WARNING_TEXT = TextRender.ProcessText(XMBLANG.BOOT_WARNING[DATA.LANGUAGE]);
     }
 
     TxtPrint(BOOT_WARNING_TEXT, { r: 255, g: 255, b: 255, a: alpha }, { x: 10 + (DATA.WIDESCREEN * 32), y: -20 }, "CENTER");
@@ -510,7 +268,10 @@ function DisplayBootWarningText(alpha)
 function PrintDebugInfo()
 {
     let mem = System.getMemoryStats();
-    TxtPrint(`${Screen.getFPS(360)}  FPS - RAM USAGE: ${Math.floor(mem.used / 1024)}KB / ${Math.floor(DATA.EE_INFO.RAMSize / 1024)}KB`, textColor, { x:20 + (DATA.WIDESCREEN * 32), y: DATA.CANVAS.height - 40 }, "LEFT", font_ss);
+    TxtPrint(`${Screen.getFPS(360)}  FPS - RAM USAGE: ${Math.floor(mem.used / 1024)}KB / ${Math.floor(DATA.EE_INFO.RAMSize / 1024)}KB - W: ${DATA.CANVAS.width} H: ${DATA.CANVAS.height} - FREE VRAM: ${Screen.getFreeVRAM()} KB`, textColor, { x:20 + (DATA.WIDESCREEN * 32), y: DATA.CANVAS.height - 40 }, "LEFT", font_ss);
 }
 
+// Set Text Renderer Initial Parameters
+TextRender.SetScreenDimensions();
+let BOOT_WARNING_TEXT = false;
 console.log("INIT: TEXT INIT COMPLETE");

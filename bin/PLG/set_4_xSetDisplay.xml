@@ -1,0 +1,21 @@
+<App Icon="11" Category="1" Type="SUBMENU">
+  <Name>
+    <String str="Display Settings" />
+    <String str="Paramètres affichage" />
+    <String str="Ajustes de Pantalla" />
+    <String str="Anzeige-Einstellungen" />
+    <String str="Impostazioni di visualizzazione" />
+    <String str="Beeldscherminstellingen" />
+    <String str="Definições de Apresentação" />
+  </Name>
+  <Description>
+    <String str="Adjusts settings for video output." />
+    <String str="Réglez les paramètres de sortie vidéo." />
+    <String str="Ajusta la configuración de salida de vídeo." />
+    <String str="Einstellungen für die Videoausgabe anpassen." />
+    <String str="Regola le impostazioni dell'uscita video." />
+    <String str="Pas de instellingen voor video-uitvoer aan." />
+    <String str="Ajuste as configurações de saída de vídeo." />
+  </Description>
+  <Options filepath="./PLG/xSettings/xDisplayOpts.xml"/>
+</App>

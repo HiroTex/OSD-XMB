@@ -1,0 +1,12 @@
+{
+  "Name": "Retroarch",
+  "Description": "",
+  "Icon": 22,
+  "Category": 5,
+  "Type": "ELF",
+  "Value": {
+    "Path": "{cwd}/APPS/retroarch/raboot.elf",
+    "Args": []
+  },
+  "CustomIcon": "{cwd}/APPS/retroarch/ico.png"
+}

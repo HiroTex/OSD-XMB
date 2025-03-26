@@ -1,0 +1,93 @@
+<Options>
+  <Option Type="CONTEXT" Icon="15">
+    <Name>
+      <String str="Video Output Mode" />
+      <String str="Paramètres de sortie vidéo" />
+      <String str="Modo de Salida de Video" />
+      <String str="Anzeigemodus" />
+      <String str="Impostazioni video" />
+      <String str="Instellingen video-uitvoer" />
+      <String str="Definições de Saída de Vídeo" />
+    </Name>
+    <Description>
+      <String str="Set the video output display mode." />
+      <String str="Définir le mode d'affichage de sortie vidéo." />
+      <String str="Ajusta el modo de salida de video." />
+      <String str="Setze den Anzeigemodus." />
+      <String str="Seleziona la modalità dell'uscita video." />
+      <String str="Stel de video-uitvoermodus in." />
+      <String str="Definir o modo de exibição de saída de vídeo." />
+    </Description>
+    <Component Name="NTSC" Icon="-1"/>
+    <Component Name="PAL" Icon="-1"/>
+    <Component Name="DTV 480p" Icon="-1"/>
+    <Default>
+      <![CDATA[
+        switch(DATA.CANVAS.mode)
+        {
+            case NTSC: return 0; break;
+            case PAL: return 1; break;
+            case DTV_480p: return 2; break;
+        }
+      ]]>
+    </Default>
+    <Confirm>
+      <![CDATA[
+        function(DATA, val) {
+            if (DATA.CANVAS.mode != vmodes[val].Value)
+            {
+                DATA.CANVAS.mode = vmodes[val].Value;
+                Screen.setMode(DATA.CANVAS);
+                DATA.DASH_STATE = "SUBMENU_CONTEXT_MESSAGE_FADE_OUT";
+                DATA.OVSTATE = "MESSAGE_IN";
+                DATA.MESSAGE_INFO =
+                {
+                    Icon: 11,
+                    Title: DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT].Name,
+                    BG: false,
+                    Type: "VMODE",
+                    BACK_BTN: false,
+                    ENTER_BTN: true,
+                };
+            }
+        }
+      ]]>
+    </Confirm>
+  </Option>
+  <Option Type="CONTEXT" Icon="15">
+    <Name>
+      <String str="TV Type" />
+      <String str="Type de TV" />
+      <String str="Tipo de TV" />
+      <String str="Typ des TV" />
+      <String str="Tipo di TV" />
+      <String str="TV-type" />
+      <String str="Tipo de TV" />
+    </Name>
+    <Description>
+      <String str="Select the type of TV in use." />
+      <String str="Sélectionnez le type de TV utilisé." />
+      <String str="Selecciona el tipo de TV en uso." />
+      <String str="Wähle den Typ des genutzten TV." />
+      <String str="Seleziona il tipo di TV utilizzata." />
+      <String str="Selecteer het type TV dat wordt gebruikt." />
+      <String str="Seleccione o tipo de TV utilizada." />
+    </Description>
+    <Component Name="4:3" Icon="-1"/>
+    <Component Name="16:9" Icon="-1"/>
+    <Default Variable="Number(DATA.WIDESCREEN)"/>
+    <Confirm>
+      <![CDATA[
+        function(DATA, val) {
+            DATA.WIDESCREEN = (val == 1);
+            setScreenWidth();
+            Screen.setMode(DATA.CANVAS);
+
+            let config = DATA.CONFIG.Get("main.cfg");
+            config["aspect"] = DATA.WIDESCREEN.toString();
+            DATA.CONFIG.Push("main.cfg", config);
+        }
+      ]]>
+    </Confirm>
+  </Option>
+</Options>

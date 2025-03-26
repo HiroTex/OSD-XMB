@@ -460,9 +460,6 @@ function launch()
         if (cwdpart != "") { DASH_SEL.Value.Path = `hdd0:${cwdpart}:${DASH_SEL.Value.Path}`; }
     }
 
-    console.log(`Launching ELF: ${DASH_SEL.Value.Path}`);
-    console.log(`   With Args: ${DASH_SEL.Value.Args}`);
-
     logl(`Launching ELF: ${DASH_SEL.Value.Path}`);
     logl(`    With Args: ${DASH_SEL.Value.Args}`);
 

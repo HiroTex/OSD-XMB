@@ -1,0 +1,3 @@
+<App Name="Apps" Icon="18" Category="5" Type="SUBMENU">
+  <Options filepath="./PLG/xGame/app_scan.js" required="true" />
+</App>

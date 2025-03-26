@@ -30,7 +30,10 @@ console.log("INIT: ALL FINISHED");
 //////////////////////////////////////////////////////////////////////////
 
 let plgCount = 0; // Processed Plugins.
-const pluginFiles = System.listDir("/PLG/").map(file => file.name).filter(str => str.endsWith(".js")).sort((a, b) => a.localeCompare(b));
+const pluginFiles = System.listDir("/PLG/")
+    .map(file => file.name)
+    .filter(str => str.endsWith(".js") || str.endsWith(".json") || str.endsWith(".xml"))
+    .sort((a, b) => a.localeCompare(b));
 
 /*  Info:
 
@@ -59,6 +62,60 @@ function validatePlugin(plg)
   );
 }
 
+function AddNewPlugin(Plugin)
+{
+    if (!validatePlugin(Plugin)) { console.log("Invalid Plugin"); return false; }
+
+    // Resolve {cwd} placeholder dynamically
+    if (Plugin.Type === "ELF") { Plugin.Value.Path = Plugin.Value.Path.replace("{cwd}", os.getcwd()[0]); }
+
+    if ("CustomIcon" in Plugin)
+    {
+        Plugin.CustomIcon = new Image(Plugin.CustomIcon.replace("{cwd}", os.getcwd()[0]), RAM, async_list);
+    }
+
+    const item = DASH_CAT[Plugin.Category].ItemCount;
+    DASH_CAT[Plugin.Category].Options[item] = Plugin;
+    DASH_CAT[Plugin.Category].ItemCount++;
+    return true;
+}
+
+function loadXmlPlugin(pluginFile)
+{
+    const plg = std.loadFile(`./PLG/${pluginFile}`);
+    if (plg)
+    {
+        const Plugin = parseXmlPlugin(plg);
+        if (AddNewPlugin(Plugin)) { logl(`Loaded Plugin: ${pluginFile}`); }
+    }
+}
+
+function loadJsonPlugin(pluginFile)
+{
+    const plg = std.loadFile(`./PLG/${pluginFile}`);
+
+    if (plg)
+    {
+        const Plugin = JSON.parse(plg);
+        if (AddNewPlugin(Plugin)) { logl(`Loaded Plugin: ${pluginFile}`); }
+    }
+}
+
+function loadJsPlugin(pluginFile)
+{
+    import(`./PLG/${pluginFile}`).then((plg) =>
+    {
+        if (plg)
+        {
+            const { Plugin } = plg;
+            if (AddNewPlugin(Plugin)) { logl(`Loaded Plugin: ${pluginFile}`); }
+        }
+    }).catch((error) =>
+    {
+        console.log(`Failed to load module: ${pluginFile}, error = ${error}`);
+    });
+}
+
 /*	Info:
 
     Main Plugin Initialization Logic.
@@ -76,26 +133,14 @@ function InitializePluginTable()
     if (plgCount < pluginFiles.length)
     {
         const pluginFile = pluginFiles[plgCount];
-        console.log(`Parsing Plugin: ${pluginFile}`);
+        logl(`Parsing Plugin: ${pluginFile}`);
 
-        import(`./PLG/${pluginFile}`).then((plg) =>
+        switch (getFileExtension(pluginFile))
         {
-            if (plg)
-            {
-                const { Plugin } = plg;
-
-                if (validatePlugin(Plugin))
-                {
-                    const item = DASH_CAT[Plugin.Category].ItemCount;
-                    DASH_CAT[Plugin.Category].Options[item] = Plugin;
-
-                    DASH_CAT[Plugin.Category].ItemCount++;
-                    console.log(`Loaded Plugin: ${pluginFile}`);
-                }
-            }
-        }).catch((error) => {
-            console.log(`Failed to load module: ${pluginFile}, error = ${error}`);
-        });
+            case "xml": loadXmlPlugin(pluginFile); break;
+            case "json": loadJsonPlugin(pluginFile); break;
+            case "js": loadJsPlugin(pluginFile); break;
+        }
 
         plgCount++;
     }
@@ -308,7 +353,7 @@ function main()
             break;
     }
 
-    //PrintDebugInfo(); 		// Prints FPS and current RAM usage at the bottom of the screen.
+    PrintDebugInfo(); 		// Prints FPS and current RAM usage at the bottom of the screen.
     SoundStopProcess(); 	// If not present, after sound finishes playing the app freezes.
     processThreadCopy();	// This will process a thread Copy operation if it has been queued.
 

@@ -48,7 +48,7 @@ function SaveLastPlayed()
     DATA.CONFIG.Set(cfgPath, cfg);
 }
 
-function getGameSettings(path)
+function getGameSettings(path, dev)
 {
     const cheats = [
         "COMPATIBILITY_0x01",
@@ -72,16 +72,7 @@ function getGameSettings(path)
         "NOVMC1",
     ];
 
-    let statuses = getPOPSCheat(cheats, path);
-
-    if (os.getcwd()[0].substring(0, 4) === "host")
-    {
-        statuses = getPOPSCheat(cheats, path, "host");
-    }
-    else if (os.getcwd()[0].substring(0, 4) === "pfs:")
-    {
-        statuses = getPOPSCheat(cheats, path, "hdd");
-    }
+    let statuses = getPOPSCheat(cheats, path, dev);
 
     const settings = [ 0, 0, 0, 0, 0, 0, 0, 0 ];
     settings[0] = (statuses[0]) ? 1 : 0;
@@ -106,37 +97,25 @@ function getGameSettings(path)
     return settings;
 }
 
-function getOptionContextInfo(path, dev)
+function getOptionContextInfo()
 {
-    const getPreviousPath = p => p.replace(/[^\/]+\/?$/, '') || './';
-    const title = getFolderNameFromPath(path);
-
-    if ((!os.readdir(path)[0].includes(title)) && (path.substring(0, 4) !== "pfs1"))
-    {
-        os.mkdir(path);
-    }
-
     let dir_options = [];
-    dir_options.push({ Name: TXT_INFO, Icon: -1, Title: title, Device: dev });
+    dir_options.push({ Name: XMBLANG.INFO, Icon: -1 });
 
-    let _a = function(DATA, val)
+    let _a = function (DATA, val)
     {
-        console.log("POPS: Get Current Game Settings");
         const gameData = [];
-        const currSett = getGameSettings(`${DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT].Option.Options[0].Title}/`);
+        const currSett = getGameSettings(`${DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT].Name}/`, DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT].Device);
 
-        console.log("POPS: Set Game Title");
         gameData.push({
             Selectable: false,
             get Name() {
-                return TXT_TITLE[DATA.LANGUAGE];
+                return XMBLANG.TITLE[DATA.LANGUAGE];
             },
             get Description() {
                 return DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT].Name;
             }
         });
-
-        console.log("POPS: Set Pops Setting Options");
 
         // Compatibility Modes
         gameData.push({
@@ -145,7 +124,7 @@ function getOptionContextInfo(path, dev)
             Selected: currSett[0],
             Count: 8,
             get Description() {
-                return (this.Selected === 0) ? TXT_NO[DATA.LANGUAGE] : this.Selected.toString();
+                return (this.Selected === 0) ? XMBLANG.NO[DATA.LANGUAGE] : this.Selected.toString();
             }
         });
 
@@ -156,7 +135,7 @@ function getOptionContextInfo(path, dev)
             Selected: currSett[1],
             Count: 2,
             get Description() {
-                return ((this.Selected === 0) ? TXT_NO[DATA.LANGUAGE] : TXT_YES[DATA.LANGUAGE]);
+                return ((this.Selected === 0) ? XMBLANG.NO[DATA.LANGUAGE] : XMBLANG.YES[DATA.LANGUAGE]);
             }
         });
 
@@ -167,7 +146,7 @@ function getOptionContextInfo(path, dev)
             Selected: currSett[2],
             Count: 2,
             get Description() {
-                return ((this.Selected === 0) ? TXT_NO[DATA.LANGUAGE] : TXT_YES[DATA.LANGUAGE]);
+                return ((this.Selected === 0) ? XMBLANG.NO[DATA.LANGUAGE] : XMBLANG.YES[DATA.LANGUAGE]);
             }
         });
 
@@ -178,7 +157,7 @@ function getOptionContextInfo(path, dev)
             Selected: currSett[3],
             Count: 2,
             get Description() {
-                return ((this.Selected === 0) ? TXT_NO[DATA.LANGUAGE] : TXT_YES[DATA.LANGUAGE]);
+                return ((this.Selected === 0) ? XMBLANG.NO[DATA.LANGUAGE] : XMBLANG.YES[DATA.LANGUAGE]);
             }
         });
 
@@ -226,7 +205,6 @@ function getOptionContextInfo(path, dev)
             }
         });
 
-        console.log("POPS: Set Confirm Function");
         let saveGameSettings = function()
         {
             let cheats = [];
@@ -249,15 +227,13 @@ function getOptionContextInfo(path, dev)
             cheats.push({ code: "D2LS_ALT", enabled: (DATA.MESSAGE_INFO.Data[7].Selected === 2)});
             cheats.push({ code: "NOVMC0", enabled: (DATA.MESSAGE_INFO.Data[8].Selected === 1)});
             cheats.push({ code: "NOVMC1", enabled: (DATA.MESSAGE_INFO.Data[8].Selected === 2) });
-            console.log(`POPS: Game Title = ${DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT].Option.Options[0].Title}/`)
 
-            const titlepath = `${DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT].Option.Options[0].Title}/`;
-            const device = DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT].Option.Options[0].Device;
+            const titlepath = `${DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT].Name}/`;
+            const device = DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT].Device;
 
             setPOPSCheat(cheats, titlepath, device);
         };
 
-        console.log("POPSETTS: Set Message Screen Parameters");
         DATA.DASH_STATE = "SUBMENU_CONTEXT_MESSAGE_FADE_OUT";
         DATA.OVSTATE = "MESSAGE_IN";
         DATA.MESSAGE_INFO =
@@ -313,8 +289,6 @@ function getVCDGameID(path)
 
 function PopsParseDirectory(path)
 {
-    console.log("Parsing POPS dir: " + path);
-
     let dir = System.listDir(path);
 
     dir.forEach((item) =>
@@ -360,7 +334,8 @@ function PopsParseDirectory(path)
                 Icon: -1,
                 Type: type,
                 Value: value,
-                Option: getOptionContextInfo(`${basePath}${item.name.substring(0, item.name.length - 4)}/`, device),
+                Device: device,
+                Option: getOptionContextInfo(),
                 Art: { ICO: ico },
                 get CustomIcon()
                 {
@@ -368,6 +343,13 @@ function PopsParseDirectory(path)
                     return this.Art.ICO;
                 }
             });
+
+            const gamepath = `${basePath}${item.name.substring(0, item.name.length - 4)}/`;
+            title = getFolderNameFromPath(gamepath);
+            if ((!os.readdir(path)[0].includes(title)) && (path.substring(0, 4) !== "pfs1"))
+            {
+                os.mkdir(path);
+            }
 
             // Add ART
             const bgFile = findBG(gameCode);
@@ -464,9 +446,9 @@ function getGames()
             const dirFiles = os.readdir(`${commpart}:/POPS/`)[0];
 
             // Check if required files are present
-            if (!dirFiles.includes("POPS.ELF")) { console.log("POPSHDD: Missing POPS.ELF file."); continue; }
-            if (!dirFiles.includes("IOPRP252.IMG")) { console.log("POPSHDD: Missing IOPRP252.IMG file."); continue; }
-            if (!dirFiles.includes("POPSTARTER.ELF")) { console.log("POPSHDD: Missing POPSTARTER.ELF file."); continue; }
+            if (!dirFiles.includes("POPS.ELF")) { logl("POPSHDD: Missing POPS.ELF file."); continue; }
+            if (!dirFiles.includes("IOPRP252.IMG")) { logl("POPSHDD: Missing IOPRP252.IMG file."); continue; }
+            if (!dirFiles.includes("POPSTARTER.ELF")) { logl("POPSHDD: Missing POPSTARTER.ELF file."); continue; }
 
             popsPaths[i] = `${mountHDDPartition("__.POPS") }:/`;
         }
@@ -501,13 +483,13 @@ function getDesc()
     const titleString = gameList.length.toString();
     const DESC_MAIN = new Array
     (
-        `${titleString} ${TXT_TITLES[0]}`,
-        `${titleString} ${TXT_TITLES[1]}`,
-        `${titleString} ${TXT_TITLES[2]}`,
-        `${titleString} ${TXT_TITLES[3]}`,
-        `${titleString} ${TXT_TITLES[4]}`,
-        `${titleString} ${TXT_TITLES[5]}`,
-        `${titleString} ${TXT_TITLES[6]}`,
+        `${titleString} ${XMBLANG.TITLES[0]}`,
+        `${titleString} ${XMBLANG.TITLES[1]}`,
+        `${titleString} ${XMBLANG.TITLES[2]}`,
+        `${titleString} ${XMBLANG.TITLES[3]}`,
+        `${titleString} ${XMBLANG.TITLES[4]}`,
+        `${titleString} ${XMBLANG.TITLES[5]}`,
+        `${titleString} ${XMBLANG.TITLES[6]}`,
     );
 
     return DESC_MAIN;

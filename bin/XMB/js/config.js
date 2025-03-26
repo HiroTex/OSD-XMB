@@ -149,8 +149,11 @@ function ParseMainCFG()
         if (DATA.CANVAS.mode != vmodes[Number(mainCFG["vmode"])].Value)
         {
             DATA.CANVAS.mode = vmodes[Number(mainCFG["vmode"])].Value;
+            setScreenHeight();
+            setScreenWidth();
+            setScreeniMode();
             Screen.setMode(DATA.CANVAS);
-            DATA.SCREEN_PREVMODE = DATA.CANVAS.mode;
+            TextRender.SetScreenDimensions();
         }
     }
 
@@ -159,6 +162,8 @@ function ParseMainCFG()
     {
         DATA.WIDESCREEN = (mainCFG["aspect"].toLowerCase() === "true");
         setScreenWidth();
+        Screen.setMode(DATA.CANVAS);
+        TextRender.SetScreenDimensions();
     }
 
     // Get the user's preferred Parental Settings.
@@ -183,7 +188,9 @@ function ParseMainCFG()
         DATA.BGVAL = Number(mainCFG["BgColor"]);
         DATA.BGTMP = DATA.BGVAL;
         DATA.BGCOL = (DATA.BGVAL == 0) ? DATA.BGCOL : DATA.BGVAL;
-        DATA.BGSWITCH = true;
+        currentBgColor = monthColors[DATA.BGCOL];
+        Waves.setThemeColor(currentBgColor);
+        themeColor = Color.new(currentBgColor.r, currentBgColor.g, currentBgColor.b, currentBgColor.a);
     }
 
     // Set Background Waves
@@ -218,6 +225,12 @@ function ParseMainCFG()
 
         if (mainCFG["Theme"] !== "Original") { DATA.OVALPHA = 0; }
     }
+
+    const neutconfig = DATA.CONFIG.Get("neutrino.cfg");
+
+    if ("logo" in neutconfig) { DATA.GAMESETS.LOGO = (neutconfig["logo"] === "true"); }
+    if ("dbc" in neutconfig) { DATA.GAMESETS.DBC = (neutconfig["dbc"] === "true"); }
+    if ("gsm" in neutconfig) { DATA.GAMESETS.GSM = (neutconfig["gsm"] === "true"); }
 }
 
 console.log("INIT: CONFIG INIT COMPLETE");

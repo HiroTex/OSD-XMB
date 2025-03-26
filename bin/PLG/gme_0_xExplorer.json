@@ -1,0 +1,16 @@
+{
+  "Name": [
+    "File Explorer",
+    "Explorateur de fichiers",
+    "Explorador de Archivos",
+    "Datei-Explorer",
+    "Esplora file",
+    "Bestandsverkenner",
+    "Explorador de arquivos"
+  ],
+  "Description": "",
+  "Icon": 18,
+  "Category": 5,
+  "Type": "SUBMENU",
+  "Value": "./PLG/xExplorer/scr.js"
+}

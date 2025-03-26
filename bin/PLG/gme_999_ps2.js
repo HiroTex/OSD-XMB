@@ -75,7 +75,7 @@ function getGameSettings(code)
 function getOptionContextInfo()
 {
     let dir_options = [];
-    dir_options.push({ Name: TXT_INFO, Icon: -1 });
+    dir_options.push({ Name: XMBLANG.INFO, Icon: -1 });
 
     let _a = function(DATA, val)
     {
@@ -85,7 +85,7 @@ function getOptionContextInfo()
         gameData.push({
             Selectable: false,
             get Name() {
-                return TXT_TITLE[DATA.LANGUAGE];
+                return XMBLANG.TITLE[DATA.LANGUAGE];
             },
             get Description() {
                 return DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT].Name;
@@ -96,7 +96,7 @@ function getOptionContextInfo()
             Selectable: false,
             get Name()
             {
-                return TXT_DEVICE[DATA.LANGUAGE];
+                return XMBLANG.DEVICE[DATA.LANGUAGE];
             },
             get Description()
             {
@@ -112,7 +112,7 @@ function getOptionContextInfo()
                 Selected: (currSett[i]) ? 1 : 0,
                 Count: 2,
                 get Description() {
-                    return ((this.Selected === 0) ? TXT_NO[DATA.LANGUAGE] : TXT_YES[DATA.LANGUAGE]);
+                    return ((this.Selected === 0) ? XMBLANG.NO[DATA.LANGUAGE] : XMBLANG.YES[DATA.LANGUAGE]);
                 }
             });
         }
@@ -216,7 +216,6 @@ function getISOGameCode(isoPath, isoSize)
     {
         file.close();
         logl(`${getGameName(isoPath)} Primary Volume Descriptor (CD001) not found.`);
-        console.log("Primary Volume Descriptor (CD001) not found");
         return RET;
     }
 
@@ -232,7 +231,6 @@ function getISOGameCode(isoPath, isoSize)
     {
         file.close();
         logl(`${getGameName(isoPath)} ISO Read Error: Invalid Root Data.`);
-        console.log("ISO Read Error: Invalid Root Data");
         return RET;
     }
 
@@ -243,7 +241,6 @@ function getISOGameCode(isoPath, isoSize)
     if ((!rootDir) || (rootDir.length === 0))
     {
         logl(`${getGameName(isoPath)} Root directory not found or is empty`);
-        console.log("Root directory not found or is empty");
         return RET;
     }
 
@@ -490,13 +487,13 @@ function getDesc()
     const titleString = gameList.length.toString();
     const DESC_MAIN =
     [
-        `${titleString} ${TXT_TITLES[0]}`,
-        `${titleString} ${TXT_TITLES[1]}`,
-        `${titleString} ${TXT_TITLES[2]}`,
-        `${titleString} ${TXT_TITLES[3]}`,
-        `${titleString} ${TXT_TITLES[4]}`,
-        `${titleString} ${TXT_TITLES[5]}`,
-        `${titleString} ${TXT_TITLES[6]}`
+        `${titleString} ${XMBLANG.TITLES[0]}`,
+        `${titleString} ${XMBLANG.TITLES[1]}`,
+        `${titleString} ${XMBLANG.TITLES[2]}`,
+        `${titleString} ${XMBLANG.TITLES[3]}`,
+        `${titleString} ${XMBLANG.TITLES[4]}`,
+        `${titleString} ${XMBLANG.TITLES[5]}`,
+        `${titleString} ${XMBLANG.TITLES[6]}`
     ];
 
     return DESC_MAIN;

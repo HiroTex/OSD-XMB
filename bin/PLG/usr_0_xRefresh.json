@@ -1,0 +1,19 @@
+{
+  "Name": [
+    "Restart Interface",
+    "Interface de red�marrage",
+    "Reiniciar Interfaz",
+    "Neustartschnittstelle",
+    "Riavvia interfaccia",
+    "Interface opnieuw opstarten",
+    "Reiniciar Interface"
+  ],
+  "Description": "",
+  "Icon": 20,
+  "Category": 0,
+  "Type": "ELF",
+  "Value": {
+    "Path": "{cwd}/OSDXMB.ELF",
+    "Args": ["main.js"]
+  }
+}

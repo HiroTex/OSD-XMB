@@ -1,0 +1,54 @@
+<Options>
+  <Option Type="CODE" Icon="15">
+    <Name>
+      <String str="Change Password" />
+      <String str="Changer le mot de passe" />
+      <String str="Cambiar contraseña" />
+      <String str="Passwort ändern" />
+      <String str="Modifica la password" />
+      <String str="Wachtwoord wijzigen" />
+      <String str="Mudar a palavra-passe" />
+    </Name>
+    <Code>
+      <![CDATA[
+        function () {
+            DATA.DASH_STATE = "IDLE_MESSAGE_FADE_IN";
+            DATA.OVSTATE = "MESSAGE_IN";
+            DATA.MESSAGE_INFO =
+            {
+                Icon: 12,
+                Title: DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT].Name,
+                BG: false,
+                Type: "PARENTAL_SET",
+                BACK_BTN: true,
+                ENTER_BTN: true,
+            };
+        }
+      ]]>
+    </Code>
+  </Option>
+  <Option Type="CONTEXT" Icon="15">
+    <Name>
+      <String str="Parental Control" />
+      <String str="Contrôle parental" />
+      <String str="Control paterno" />
+      <String str="Kindersicherung" />
+      <String str="Filtro contenuti" />
+      <String str="Ouderlijk toezicht" />
+      <String str="Controlo parental" />
+    </Name>
+    <Component Name="{NO}" Icon="-1"/>
+    <Component Name="{YES}" Icon="-1"/>
+    <Default Variable="Number(DATA.PARENTAL)"/>
+    <Confirm>
+      <![CDATA[
+        function(DATA, val) {
+            DATA.PARENTAL = (val == 1);
+            let config = DATA.CONFIG.Get("main.cfg");
+            config["parental"] = DATA.PARENTAL.toString();
+            DATA.CONFIG.Push("main.cfg", config);
+        }
+      ]]>
+    </Confirm>
+  </Option>
+</Options>
