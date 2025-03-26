@@ -1334,8 +1334,8 @@ function ExecutePreviewFunc()
         if (Timer.isPlaying(DATA.DASH_CTX_TIMER))
         {
             Timer.pause(DATA.DASH_CTX_TIMER);
-            let _f = DASH_CTX[DATA.DASH_CURCTXLVL].Preview;
-            _f(DATA, DASH_CTX[DATA.DASH_CURCTXLVL].Selected);
+            const fun = DASH_CTX[DATA.DASH_CURCTXLVL].Preview;
+            fun(DATA, DASH_CTX[DATA.DASH_CURCTXLVL].Selected);
         }
     }
 }

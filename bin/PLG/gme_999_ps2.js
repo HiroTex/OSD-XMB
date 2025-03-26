@@ -431,12 +431,13 @@ function getGames()
 
     const bootDev = (os.getcwd()[0].substring(0, 3) === "pfs") ? "ata" : "usb";
     const devices = [`${bootDev}`, "usb", "mx4sio", "ata", "udpbd", "mmce"];
-    const roots = [`${os.getcwd()[0]}/`, "mass:/", "mx4sio:/", "hdd0:", "bdfs:/", "mmce:/"];
+    const roots = [basepath, "mass", "mx4sio:/", "hdd0:", "bdfs:/", "mmce:/"];
     const fsmodes = ["exfat", "exfat", "exfat", "hdl", "bd", "exfat"];
     const scannedPaths = [];
 
     for (let i = 0; i < devices.length; i++)
     {
+        console.log("PS2getGames(): Parsing = " + roots[i]);
         // If ends with double slashes, trim.
         if (roots[i].endsWith("//")) { roots[i] = roots[i].slice(0, -1); }
 
@@ -462,7 +463,10 @@ function getGames()
             // Scan all possible mass devices
             for (let j = 0; j < 10; j++)
             {
-                scanGameFolders(`mass${j.toString()}:/`, devices[i], fsmodes[i]);
+                const masspath = `mass${j.toString()}:/`;
+                if ((scannedPaths.length > 0) && (scannedPaths.includes(masspath))) { continue; }
+                scanGameFolders(masspath, devices[i], fsmodes[i]);
+                scannedPaths.push(masspath);
             }
         }
         else
