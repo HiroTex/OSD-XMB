@@ -90,6 +90,8 @@ const DATA =
     BTNTYPE: 0,
     DATE_FORMAT: 0,
     HOUR_FORMAT: 1,
+    TIME_ZONE: 0,
+    TIMEZONEVAL: 20,
     ASSETS_PATH: "XMB/",
     THEME_PATH: "THM/Original/",
     CUSTOMBG_PATH: "",
@@ -137,6 +139,22 @@ const DATA =
 //////////////////////////////////////////////////////////////////////////
 ///*				   			 FUNCTIONS							  *///
 //////////////////////////////////////////////////////////////////////////
+function getDateInGMTOffset(gmtOffset)
+{
+    // Ensure the input is a Date object
+    const date = new Date();
+
+    // Subtract 15 hours from the input date
+    const adjustedDate = new Date(date.getTime() - (12 * 60 * 60 * 1000));
+
+    // Calculate the target time by adjusting for GMT offset
+    const targetTime = new Date(adjustedDate.getTime());
+
+    // Apply GMT offset
+    targetTime.setTime(adjustedDate.getTime() + (gmtOffset * 60 * 60 * 1000));
+
+    return targetTime;
+}
 
 function execScript(filepath)
 {
@@ -184,7 +202,7 @@ function logl(line)
 
     if (file)
     {
-        const now = new Date();
+        const now = getDateInGMTOffset(DATA.TIME_ZONE);
         const hours = String(now.getHours()).padStart(2, '0');
         const minutes = String(now.getMinutes()).padStart(2, '0');
         const seconds = String(now.getSeconds()).padStart(2, '0');
@@ -528,10 +546,20 @@ function xmlParseSubMenu(element)
                 {
                     if (child.tagName === "Component")
                     {
-                        optionObj.Value.Options.push({
-                            Name: xmlGetLocalizedString(child, "Name"),
-                            Icon: xmlParseIcon(child.attributes.Icon)
-                        });
+                        const component = {};
+                        component.Name = xmlGetLocalizedString(child, "Name");
+                        component.Icon = xmlParseIcon(child.attributes.Icon);
+
+                        // Iterate over all attributes and add them as properties of the component object
+                        for (const [name, value] of Object.entries(child.attributes))
+                        {
+                            // Skip the Name and Icon attributes since they're already handled
+                            if (name !== "Name" && name !== "Icon")
+                            {
+                                component[name] = value;
+                            }
+                        }
+                        optionObj.Value.Options.push(component);
                     } else if (child.tagName === "Default")
                     {
                         if ("Variable" in child.attributes)
@@ -679,6 +707,7 @@ function readFileAsUtf8(filepath)
     }
     else
     {
+        os.close(file);
         return `Invalid File Length for ${filepath} : ${flen.toString()}`;
     }
 }
@@ -1134,8 +1163,6 @@ function setHistoryEntry(name)
 
 function getPOPSCheat(cheats, game = "", device = "mass")
 {
-    console.log("getPOPSCheat(): game: " + game);
-    console.log("getPOPSCheat(): device: " + device);
     // Create an array to store whether each cheat is enabled
     const enabledCheats = new Array(cheats.length).fill(false);
     let path = "";
@@ -1159,7 +1186,6 @@ function getPOPSCheat(cheats, game = "", device = "mass")
     const dirFiles = os.readdir(path)[0];
     if (dirFiles.includes("CHEATS.TXT"))
     {
-        console.log("getPOPSCheat(): CHEATS.TXT Found.");
         let errObj = {};
         const file = std.open(`${path}CHEATS.TXT`, "r", errObj);
         if (file === null) { console.log(`getPOPSCheat(): I/O Error - ${std.strerror(errObj.errno)}`); return enabledCheats; }
@@ -1179,8 +1205,6 @@ function getPOPSCheat(cheats, game = "", device = "mass")
                 }
             }
         }
-
-        console.log("getPOPSCheat(): Finished reading Cheats.");
     }
 
     return enabledCheats;

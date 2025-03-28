@@ -177,6 +177,8 @@ function ParseMainCFG()
     // Get the user's preferred Date and Hour Formats.
     if ("dateFormat" in mainCFG) { DATA.DATE_FORMAT = Number(mainCFG["dateFormat"]); }
     if ("hourFormat" in mainCFG) { DATA.HOUR_FORMAT = Number(mainCFG["hourFormat"]); }
+    if ("timezone" in mainCFG) { DATA.TIME_ZONE = Number(mainCFG["timezone"]); }
+    if ("timezoneVal" in mainCFG) { DATA.TIMEZONEVAL = Number(mainCFG["timezoneVal"]); }
 
     // Set the user preferred Background Color.
 

@@ -725,7 +725,7 @@ function drawDate(icoAlphaMod = 0, boxAlphaMod = 0, textAlphaMod = 0)
     dash_clock.draw(DATA.CANVAS.width - 25, 42);
 
     // Get current date and time
-    const currentDate = new Date();
+    const currentDate = getDateInGMTOffset(DATA.TIME_ZONE);
 
     // Extract date components
     //const year = currentDate.getFullYear();

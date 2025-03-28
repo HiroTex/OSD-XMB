@@ -29,6 +29,7 @@ console.log("INIT: ALL FINISHED");
 /// 				   		  										   ///
 //////////////////////////////////////////////////////////////////////////
 
+let plgLoading = false;
 let plgCount = 0; // Processed Plugins.
 const pluginFiles = System.listDir("/PLG/")
     .map(file => file.name)
@@ -64,7 +65,7 @@ function validatePlugin(plg)
 
 function AddNewPlugin(Plugin)
 {
-    if (!validatePlugin(Plugin)) { console.log("Invalid Plugin"); return false; }
+    if (!validatePlugin(Plugin)) { return false; }
 
     // Resolve {cwd} placeholder dynamically
     if (Plugin.Type === "ELF") { Plugin.Value.Path = Plugin.Value.Path.replace("{cwd}", os.getcwd()[0]); }
@@ -86,7 +87,7 @@ function loadXmlPlugin(pluginFile)
     if (plg)
     {
         const Plugin = parseXmlPlugin(plg);
-        if (AddNewPlugin(Plugin)) { logl(`Loaded Plugin: ${pluginFile}`); }
+        AddNewPlugin(Plugin);
     }
 }
 
@@ -97,7 +98,7 @@ function loadJsonPlugin(pluginFile)
     if (plg)
     {
         const Plugin = JSON.parse(plg);
-        if (AddNewPlugin(Plugin)) { logl(`Loaded Plugin: ${pluginFile}`); }
+        AddNewPlugin(Plugin);
     }
 }
 
@@ -108,7 +109,7 @@ function loadJsPlugin(pluginFile)
         if (plg)
         {
             const { Plugin } = plg;
-            if (AddNewPlugin(Plugin)) { logl(`Loaded Plugin: ${pluginFile}`); }
+            AddNewPlugin(Plugin);
         }
     }).catch((error) =>
     {
@@ -130,10 +131,9 @@ function loadJsPlugin(pluginFile)
 
 function InitializePluginTable()
 {
-    if (plgCount < pluginFiles.length)
+    while (plgCount < pluginFiles.length)
     {
         const pluginFile = pluginFiles[plgCount];
-        logl(`Parsing Plugin: ${pluginFile}`);
 
         switch (getFileExtension(pluginFile))
         {
@@ -144,17 +144,10 @@ function InitializePluginTable()
 
         plgCount++;
     }
-    else
-    {
-        // After processing all Plugins, load all queued images.
-        if (!processingAsyncList)
-        {
-            async_list.process();
-            processingAsyncList = true;
-        }
 
-        return;
-    }
+    // After processing all Plugins, load all queued images.
+    async_list.process();
+    processingAsyncList = true;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -235,7 +228,6 @@ function InitDashboard()
 function boot()
 {
     InitializeIconTable();		// Set Image Filters and optimizations to Dashboard images once loaded.
-    InitializePluginTable();	// Initialize Plugins.
 
     switch(DATA.BOOT_STATE)
     {
@@ -279,7 +271,7 @@ function boot()
         case 6: // DISPLAY WARNING TEXT
             Draw.rect(0, 0, DATA.CANVAS.width, DATA.CANVAS.height, Color.new(0, 0, 0, 64));
             DisplayBootWarningText(128);
-            if ((DATA.FADE_FRAME > 256))
+            if ((DATA.FADE_FRAME > 256) && (processingAsyncList))
             { DATA.FADE_FRAME = 0; DATA.BOOT_STATE++; }
             break;
         case 7: // FADE OUT WARNING TEXT
@@ -353,7 +345,7 @@ function main()
             break;
     }
 
-    PrintDebugInfo(); 		// Prints FPS and current RAM usage at the bottom of the screen.
+    //PrintDebugInfo(); 		// Prints FPS and current RAM usage at the bottom of the screen.
     SoundStopProcess(); 	// If not present, after sound finishes playing the app freezes.
     processThreadCopy();	// This will process a thread Copy operation if it has been queued.
 
@@ -361,4 +353,5 @@ function main()
 }
 
 InitDashboard();
+InitializePluginTable();
 Screen.display(main);

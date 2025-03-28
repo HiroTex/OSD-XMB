@@ -437,7 +437,6 @@ function getGames()
 
     for (let i = 0; i < devices.length; i++)
     {
-        console.log("PS2getGames(): Parsing = " + roots[i]);
         // If ends with double slashes, trim.
         if (roots[i].endsWith("//")) { roots[i] = roots[i].slice(0, -1); }
 
@@ -458,7 +457,7 @@ function getGames()
             scanGameFolders(`mmce0:/`, devices[i], fsmodes[i]);
             scanGameFolders(`mmce1:/`, devices[i], fsmodes[i]);
         }
-        else if (roots[i] === "mass:/")
+        else if (roots[i] === "mass")
         {
             // Scan all possible mass devices
             for (let j = 0; j < 10; j++)

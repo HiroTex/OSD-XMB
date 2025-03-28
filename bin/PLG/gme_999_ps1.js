@@ -34,9 +34,10 @@ const TXT_VMCMODE = [ "Default", "Slot 2 Only", "Slot 1 Only" ];
 let gameList = [];
 let popsPaths = [];
 let commpart = "pfs1";
-popsPaths.push(`mass:/POPS/`);              // Default Mass Support
-popsPaths.push(`${os.getcwd()[0]}/POPS/`);  // For host support
-popsPaths.push(`hdd`);                    // For HDD support
+let cwdpath = (os.getcwd()[0].endsWith('/')) ? `${os.getcwd()[0]}POPS/` : `${os.getcwd()[0]}/POPS/`;
+popsPaths.push(`mass0:/POPS/`); // Default Mass Support
+popsPaths.push(cwdpath);        // For host support
+popsPaths.push(`hdd`);          // For HDD support
 
 const cfgPath = "pops.cfg";
 const cfg = DATA.CONFIG.Get(cfgPath);
@@ -428,6 +429,7 @@ function getGames()
 
     for (let i = 0; i < popsPaths.length; i++)
     {
+        console.log("PS1GAMES: Scanning " + popsPaths[i]);
         // Skip already scanned paths.
         if ((scannedPaths.length > 0) && (scannedPaths.includes(popsPaths[i]))) { continue; }
 
