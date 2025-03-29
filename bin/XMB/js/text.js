@@ -10,7 +10,25 @@
 ///*				   	   LOCALIZATION STRINGS						  *///
 //////////////////////////////////////////////////////////////////////////
 
-const XMBLANG = JSON.parse(std.loadFile("./XMB/lang/lang.json"));
+const langPath = "./XMB/lang/";
+const XMBLANG = {};
+
+const files = os.readdir(langPath)[0];
+for (const file of files)
+{
+    if (file.endsWith(".json"))
+    {
+        const filePath = langPath + file;
+        try
+        {
+            const data = JSON.parse(std.loadFile(filePath));
+            Object.assign(XMBLANG, data); // Merge into XMBLANG
+        } catch (e)
+        {
+            logl(`Error loading ${file}: ${e.message}\n`);
+        }
+    }
+}
 
 // Category Names, one for each category on the 7 different languages.
 

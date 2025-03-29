@@ -1,0 +1,31 @@
+{
+  "NET": {
+    "INIT_MSG": [
+      "Trying to connect, please wait...",
+      "Tentative de connexion, veuillez patienter...",
+      "Intentando conectar, por favor espere...",
+      "Versuch der Verbindung, bitte warten...",
+      "Tentativo di connessione, attendere prego...",
+      "Bezig met verbinden, even geduld a.u.b...",
+      "A tentar conectar, por favor aguarde..."
+    ],
+    "INIT_COMPLETE_MSG": [
+      "Connection successful.",
+      "Connexion réussie.",
+      "Conexión exitosa.",
+      "Verbindung erfolgreich.",
+      "Connessione riuscita.",
+      "Verbinding geslaagd.",
+      "Conexão bem-sucedida."
+    ],
+    "ERR_1": [
+      "Could not initialize Network.\nPlease check your connection and restart the console.",
+      "Impossible d'initialiser le réseau.\nVeuillez vérifier votre connexion et redémarrer la console.",
+      "No se pudo inicializar la red.\nCompruebe su conexión y reinicie la consola.",
+      "Netzwerk konnte nicht initialisiert werden.\nBitte überprüfen Sie Ihre Verbindung und starten Sie die Konsole neu.",
+      "Impossibile inizializzare la rete.\nControlla la tua connessione e riavvia la console.",
+      "Kan netwerk niet initialiseren.\nControleer uw verbinding en start de console opnieuw op.",
+      "Não foi possível inicializar a Rede.\nVerifique a sua ligação e reinicie a consola."
+    ]
+  }
+}

@@ -1,18 +1,7 @@
-const TXT_SETASBG =
-    [
-        "Set as Wallpaper",
-        "Définir comme fond d'écran",
-        "Establecer como fondo",
-        "Als Hintergrundbild festlegen",
-        "Imposta come sfondo",
-        "Instellen als achtergrond",
-        "Definir como papel de parede",
-    ];
-
 function getOptionContextInfo(fullpath)
 {
     let dir_options = [];
-    dir_options.push({ Name: TXT_SETASBG, Icon: -1 });
+    dir_options.push({ Name: XMBLANG.SETASBG, Icon: -1 });
 
     let _a = function (DATA, val)
     {

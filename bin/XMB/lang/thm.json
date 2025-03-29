@@ -1,0 +1,20 @@
+{
+  "NOWPP_MSG": [
+    "There is no wallpaper set. \nGo to [Photo], open an image, and then select [Set as Wallpaper] from the control panel to save the image.",
+    "Aucun fond d'écran défini. \nAllez dans [Photo], ouvrez une image, et sélectionnez [Définir comme fond d'écran].",
+    "No hay fondo de pantalla. \nVe a [Foto], abre una imagen y selecciona [Establecer como fondo].",
+    "Kein Hintergrundbild gesetzt. \nNavigiere zu [Foto], öffne ein Bild und wähle [Als Hintergrundbild festlegen].",
+    "Nessuno sfondo impostato. \nVai in [Foto], apri un'immagine e seleziona [Imposta come sfondo].",
+    "Geen achtergrond ingesteld. \nGa naar [Foto], open een afbeelding en kies [Instellen als achtergrond].",
+    "Nenhum papel de parede definido. \nVá para [Foto], abra uma imagem e escolha [Definir como papel de parede]."
+  ],
+  "SETASBG": [
+    "Set as Wallpaper",
+    "Définir comme fond d'écran",
+    "Establecer como fondo",
+    "Als Hintergrundbild festlegen",
+    "Imposta come sfondo",
+    "Instellen als achtergrond",
+    "Definir como papel de parede"
+  ]
+}
