@@ -576,7 +576,6 @@ function xmlParseSubMenu(element)
                     }
                 });
 
-                optionObj.Value.ItemCount = optionObj.Value.Options.length;
                 if (defaultGetter)
                 {
                     // Define Default as a getter function
@@ -593,7 +592,6 @@ function xmlParseSubMenu(element)
         }
     });
 
-    submenu.ItemCount = submenu.Options.length;
     submenu.Default = 0;
     return submenu;
 }
@@ -621,9 +619,8 @@ function parseXmlPlugin(xmlString)
             {
                 plugin.Value = {};
                 plugin.Value.Options = execScript(optionsTag.attributes.filepath);
-                plugin.Value.ItemCount = plugin.Value.Options.length;
                 plugin.Value.Default = 0;
-                if (plugin.Value.ItemCount < 1) { return {}; }
+                if (plugin.Value.Options.length < 1) { return {}; }
             }
         }
         else { plugin.Value = xmlParseSubMenu(parsedData); }
@@ -1359,7 +1356,7 @@ function ValidateSubMenuObj(obj)
             case "xml":
                 const data = std.loadFile(DASH_CAT[DATA.DASH_CURCAT].Options[DATA.DASH_CUROPT].Value);
                 if (data) { obj.Value = xmlParseSubMenu(xmlParseElement(data)); }
-                else { obj.Value = { Options: {}, ItemCount: 0, Default: 0 }; }
+                else { obj.Value = { Options: {}, Default: 0 }; }
                 break;
             case "js":
                 const options = execScript(obj.Value);
@@ -1367,10 +1364,9 @@ function ValidateSubMenuObj(obj)
                 {
                     obj.Value = {};
                     obj.Value.Options = options;
-                    obj.Value.ItemCount = options.length;
                     obj.Value.Default = 0;
                 }
-                else { obj.Value = { Options: {}, ItemCount: 0, Default: 0 }; }
+                else { obj.Value = { Options: {}, Default: 0 }; }
                 break;
         }
         logl(`Parsing Sub Menu Completed: ${Array.isArray(obj.Name) ? obj.Name[0] : obj.Name}`);
@@ -1388,16 +1384,16 @@ function SetDashContext(CONTEXT, STATE)
     DASH_CTX[DATA.DASH_CURCTXLVL] = CONTEXT;
     DASH_CTX[DATA.DASH_CURCTXLVL].Selected = CONTEXT.Default;
 
-    if (DASH_CTX[DATA.DASH_CURCTXLVL].ItemCount < 8)
+    if (DASH_CTX[DATA.DASH_CURCTXLVL].Options.length < 8)
     {
-        DATA.DASH_CURCTXITMLAST = DASH_CTX[DATA.DASH_CURCTXLVL].ItemCount;
+        DATA.DASH_CURCTXITMLAST = DASH_CTX[DATA.DASH_CURCTXLVL].Options.length;
     }
 
     if (DASH_CTX[DATA.DASH_CURCTXLVL].Selected > 7)
     {
-        if ((DASH_CTX[DATA.DASH_CURCTXLVL].Selected + 7) > DASH_CTX[DATA.DASH_CURCTXLVL].ItemCount)
+        if ((DASH_CTX[DATA.DASH_CURCTXLVL].Selected + 7) > DASH_CTX[DATA.DASH_CURCTXLVL].Options.length)
         {
-            DATA.DASH_CURCTXITMLAST = DASH_CTX[DATA.DASH_CURCTXLVL].ItemCount;
+            DATA.DASH_CURCTXITMLAST = DASH_CTX[DATA.DASH_CURCTXLVL].Options.length;
             DATA.DASH_CURCTXITMFIRST = DATA.DASH_CURCTXITMLAST - 8;
         }
         else
@@ -1435,9 +1431,9 @@ function SelectItem()
                 DATA.DASH_STATE = "SUBMENU_IN";
                 DASH_SUB[DATA.DASH_CURSUB] = DASH_CAT[DATA.DASH_CURCAT].Options[DATA.DASH_CUROPT].Value;
                 DASH_SUB[DATA.DASH_CURSUB].Selected = DATA.DASH_CURSUBOPT;
-                DATA.DASH_CURSUBOPT = (DASH_CAT[DATA.DASH_CURCAT].Options[DATA.DASH_CUROPT].Value.ItemCount < 1) ? -1 : DASH_CAT[DATA.DASH_CURCAT].Options[DATA.DASH_CUROPT].Value.Default;
+                DATA.DASH_CURSUBOPT = (DASH_SUB[DATA.DASH_CURSUB].Options.length < 1) ? -1 : DASH_CAT[DATA.DASH_CURCAT].Options[DATA.DASH_CUROPT].Value.Default;
 
-                for (let i = 0; i < DASH_CAT[DATA.DASH_CURCAT].Options[DATA.DASH_CUROPT].Value.ItemCount; i++)
+                for (let i = 0; i < DASH_SUB[DATA.DASH_CURSUB].Options.length; i++)
                 {
                     if (typeof DASH_SUB[DATA.DASH_CURSUB].Options[i] === "string")
                     {
@@ -1462,11 +1458,11 @@ function SelectItem()
                 DATA.DASH_STATE = "NEW_SUBMENU_IN";
                 DASH_SUB[DATA.DASH_CURSUB].Selected = DATA.DASH_CURSUBOPT;
                 DASH_SUB[DATA.DASH_CURSUB + 1] = DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT].Value;
-                DATA.DASH_CURSUBOPT = (DASH_SUB[DATA.DASH_CURSUB + 1].ItemCount < 1) ? -1 : 0;
+                DATA.DASH_CURSUBOPT = (DASH_SUB[DATA.DASH_CURSUB + 1].Options.length < 1) ? -1 : 0;
                 DATA.DASH_PRVSUB++;
                 DATA.DASH_CURSUB++;
 
-                for (let i = 0; i < DASH_SUB[DATA.DASH_CURSUB].ItemCount; i++)
+                for (let i = 0; i < DASH_SUB[DATA.DASH_CURSUB].Options.length; i++)
                 {
                     if (typeof DASH_SUB[DATA.DASH_CURSUB].Options[i] === "string")
                     {

@@ -72,7 +72,7 @@ function ReadMCDir(slot)
 
     directories.sort((a, b) => a.Name.localeCompare(b.Name));
 
-    return { Options: directories, Default: 0, ItemCount: directories.length };
+    return { Options: directories, Default: 0 };
 }
 
 function TryAddMC(slot)

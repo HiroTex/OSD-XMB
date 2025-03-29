@@ -75,9 +75,8 @@ function AddNewPlugin(Plugin)
         Plugin.CustomIcon = new Image(Plugin.CustomIcon.replace("{cwd}", os.getcwd()[0]), RAM, async_list);
     }
 
-    const item = DASH_CAT[Plugin.Category].ItemCount;
+    const item = DASH_CAT[Plugin.Category].Options.length;
     DASH_CAT[Plugin.Category].Options[item] = Plugin;
-    DASH_CAT[Plugin.Category].ItemCount++;
     return true;
 }
 
@@ -134,6 +133,7 @@ function InitializePluginTable()
     while (plgCount < pluginFiles.length)
     {
         const pluginFile = pluginFiles[plgCount];
+        console.log(`Plugin Init: ${pluginFile}`)
 
         switch (getFileExtension(pluginFile))
         {
@@ -141,6 +141,7 @@ function InitializePluginTable()
             case "json": loadJsonPlugin(pluginFile); break;
             case "js": loadJsPlugin(pluginFile); break;
         }
+        console.log(`Plugin Finished: ${pluginFile}`)
 
         plgCount++;
     }
@@ -192,8 +193,7 @@ function InitDashboard()
         DASH_CAT[ITEM] = {
             Icon: i,
             Name: CAT_NAMES[i],
-            Options: {}, // Create a nested table for options
-            ItemCount: 0, // Total Options in Table
+            Options: [], // Create a nested table for options
             Default: 0 // Selected Item Memory
         };
     }

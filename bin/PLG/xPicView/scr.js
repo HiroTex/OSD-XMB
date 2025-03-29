@@ -27,7 +27,7 @@ function getOptionContextInfo(fullpath)
         DATA.CONFIG.Push("main.cfg", config);
     };
 
-    return { Options: dir_options, Default: 0, ItemCount: dir_options.length, Confirm: _a, FullPath: fullpath };
+    return { Options: dir_options, Default: 0, Confirm: _a, FullPath: fullpath };
 }
 
 function ParseDirectory(path)
@@ -75,7 +75,7 @@ function ParseDirectory(path)
         }
     });
 
-    return { Options: dir_options, Default: 0, ItemCount: dir_options.length, };
+    return { Options: dir_options, Default: 0 };
 }
 
 function getHDDPartitions()
@@ -99,7 +99,7 @@ function getHDDPartitions()
         });
     });
 
-    return { Options: dir_options, Default: 0, ItemCount: dir_options.length, };
+    return { Options: dir_options, Default: 0 };
 }
 
 let options = [];

@@ -490,7 +490,7 @@ function SelectDiscDashItem()
     {
         DATA.DASH_MOVE_FRAME = 0;
         DATA.DASH_STATE = "MOVE_DOWN";
-        DATA.DASH_CUROPT = DASH_CAT[5].ItemCount - 1;
+        DATA.DASH_CUROPT = DASH_CAT[5].Options.length - 1;
     }
 }
 
@@ -560,7 +560,7 @@ function InitPS2DiscDashItem(discType)
     }
 
     // Set new Item in Dashboard
-    DASH_CAT[5].Options[DASH_CAT[5].ItemCount] =
+    DASH_CAT[5].Options[DASH_CAT[5].Options.length] =
     {
         Disctray: true,
         Name: name,
@@ -575,8 +575,6 @@ function InitPS2DiscDashItem(discType)
             return this.Art.ICO;
         }
     };
-
-    DASH_CAT[5].ItemCount++;
 
     SelectDiscDashItem();
 }
@@ -640,7 +638,7 @@ function InitPS1DiscDashItem(discType)
     if ("Title" in gmecfg) { name = gmecfg["Title"]; }
 
     // Set new Item in Dashboard
-    DASH_CAT[5].Options[DASH_CAT[5].ItemCount] =
+    DASH_CAT[5].Options[DASH_CAT[5].Options.length] =
     {
         Disctray: true,
         Name: name,
@@ -655,8 +653,6 @@ function InitPS1DiscDashItem(discType)
             return this.Art.ICO;
         }
     };
-
-    DASH_CAT[5].ItemCount++;
 
     SelectDiscDashItem();
 }
@@ -679,13 +675,12 @@ function ProcessDiscTray()
         {
             if (DASH_CAT[5].Options[key].hasOwnProperty("Disctray"))
             {
-                if ((DATA.DASH_CURCAT == 5) && (DATA.DASH_CUROPT === (DASH_CAT[5].ItemCount - 1)))
+                if ((DATA.DASH_CURCAT == 5) && (DATA.DASH_CUROPT === (DASH_CAT[5].Options.length - 1)))
                 {
                     DATA.DASH_MOVE_FRAME = 0;
                     DATA.DASH_STATE = "MOVE_UP";
                     DATA.DASH_CUROPT--;
                 }
-                DASH_CAT[5].ItemCount--;
                 delete DASH_CAT[5].Options[key]; // Remove the item from the table
                 break; // Stop after removing the first match
             }

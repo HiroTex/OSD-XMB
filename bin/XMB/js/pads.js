@@ -142,7 +142,7 @@ function SetPadEvents_Main()
         DATA.DASH_CURCAT = DATA.DASH_CURCAT + direction; // Update selected category.
 
         // Set the new selected item to the new Category's default, or -1 if no items are found there.
-        if (DASH_CAT[DATA.DASH_CURCAT].ItemCount < 1) { DATA.DASH_CUROPT = -1; }
+        if (DASH_CAT[DATA.DASH_CURCAT].Options.length < 1) { DATA.DASH_CUROPT = -1; }
         else { DATA.DASH_CUROPT = DASH_CAT[DATA.DASH_CURCAT].Default; }
 
         // Set the new State and reset the Animation Frame.
@@ -232,7 +232,7 @@ function SetPadEvents_Main()
     // Move Down
     PADEVENTS.DOWN = () =>
     {
-        if (((DATA.DASH_CUROPT + 1) < DASH_CAT[DATA.DASH_CURCAT].ItemCount) && (DATA.DASH_STATE == "IDLE" || (DATA.DASH_STATE != "MOVE_BACK" && DATA.DASH_STATE != "MOVE_FORWARD")))
+        if (((DATA.DASH_CUROPT + 1) < DASH_CAT[DATA.DASH_CURCAT].Options.length) && (DATA.DASH_STATE == "IDLE" || (DATA.DASH_STATE != "MOVE_BACK" && DATA.DASH_STATE != "MOVE_FORWARD")))
         {
             DashMovementUD(1);
         }
@@ -307,7 +307,7 @@ function SetPadEvents_Sub()
 
     // Move Up and Down
     PADEVENTS.UP = () => { if (((DATA.DASH_CURSUBOPT - 1) > -1)) { DashSubMoveUD(-1); } };
-    PADEVENTS.DOWN = () => { if (((DATA.DASH_CURSUBOPT + 1) < DASH_SUB[DATA.DASH_CURSUB].ItemCount)) { DashSubMoveUD(1); } };
+    PADEVENTS.DOWN = () => { if (((DATA.DASH_CURSUBOPT + 1) < DASH_SUB[DATA.DASH_CURSUB].Options.length)) { DashSubMoveUD(1); } };
 
     // Open Option Context Menu
     PADEVENTS.TRIANGLE = () =>
@@ -383,7 +383,7 @@ function SetPadEvents_Context()
     // Move Down
     PADEVENTS.DOWN = () =>
     {
-        if ((DASH_CTX[DATA.DASH_CURCTXLVL].Selected + 1) < DASH_CTX[DATA.DASH_CURCTXLVL].ItemCount)
+        if ((DASH_CTX[DATA.DASH_CURCTXLVL].Selected + 1) < DASH_CTX[DATA.DASH_CURCTXLVL].Options.length)
         {
             DASH_CTX_PRWIMG = false;
             Timer.reset(DATA.DASH_CTX_TIMER);

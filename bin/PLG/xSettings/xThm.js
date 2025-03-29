@@ -158,7 +158,7 @@ function GetThemeContextInfo()
         DATA.CONFIG.Push("main.cfg", config);
     };
 
-    return { Options: dir_options, Default: defItem, ItemCount: dir_options.length, Confirm: _a };
+    return { Options: dir_options, Default: defItem, Confirm: _a };
 }
 
 return {

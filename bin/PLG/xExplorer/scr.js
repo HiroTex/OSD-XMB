@@ -1,3 +1,39 @@
+function getOptionContextInfo()
+{
+    let dir_options = [];
+    dir_options.push({ Name: XMBLANG.DELETE, Icon: -1 });
+
+    let _a = function (DATA, val)
+    {
+        DATA.DASH_STATE = "SUBMENU_CONTEXT_MESSAGE_FADE_OUT";
+        DATA.OVSTATE = "MESSAGE_IN";
+        DATA.MESSAGE_INFO =
+        {
+            Icon: -1,
+            Title: "",
+            BG: false,
+            Type: "TEXT",
+            Text: XMBLANG.WAIT,
+            BACK_BTN: false,
+            ENTER_BTN: false,
+            BgFunction: () =>
+            {
+                const path = DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT].FullPath;
+                (path.endsWith('/')) ? System.removeDirectory(path) : os.remove(path);
+                DASH_SUB[DATA.DASH_CURSUB].Options.splice(DATA.DASH_CURSUBOPT, 1);
+                if (DASH_SUB[DATA.DASH_CURSUB].Options.length < 1) { DATA.DASH_CURSUBOPT = -1; }
+
+                DATA.OVSTATE = "MESSAGE_OUT";
+                DATA.DASH_STATE = "SUBMENU_MESSAGE_FADE_IN";
+                DATA.DASH_MOVE_FRAME = 0;
+                SetDashPadEvents(0);
+            },
+        };
+    };
+
+    return { Options: dir_options, Default: 0, Confirm: _a };
+}
+
 function ParseDirectory(path)
 {
     const dir = System.listDir(path);
@@ -19,6 +55,8 @@ function ParseDirectory(path)
             Description: "",
             Icon: 18,
             Type: "SUBMENU",
+            FullPath: `${path}${item.name}/`,
+            Option: getOptionContextInfo(),
             get Value() { return ParseDirectory(`${this.Path}${this.Name}/`); }
         });
     });
@@ -51,7 +89,9 @@ function ParseDirectory(path)
             Description: formatFileSize(item.size),
             Icon: icon,
             Type: type,
-            Value: value
+            Value: value,
+            FullPath: `${path}${item.name}`,
+            Option: getOptionContextInfo(),
         });
 
         if (customIcon)
@@ -65,7 +105,7 @@ function ParseDirectory(path)
         }
     });
 
-    return { Options: dir_options, Default: 0, ItemCount: dir_options.length, };
+    return { Options: dir_options, Default: 0 };
 }
 
 function getHDDPartitions()
@@ -129,7 +169,7 @@ function getHDDPartitions()
         }
     });
 
-    return { Options: dir_options, Default: 0, ItemCount: dir_options.length, };
+    return { Options: dir_options, Default: 0 };
 }
 
 let options = [];

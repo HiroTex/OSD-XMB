@@ -250,7 +250,7 @@ function getOptionContextInfo()
         };
     }
 
-    return { Options: dir_options, Default: 0, ItemCount: dir_options.length, Confirm: _a, };
+    return { Options: dir_options, Default: 0, Confirm: _a, };
 }
 
 function getVCDGameID(path)
@@ -477,7 +477,7 @@ function getGames()
     generateELFs();
     generateVMCs();
 
-    return { Options: gameList, Default: lastPlayed, ItemCount: gameList.length };
+    return { Options: gameList, Default: lastPlayed };
 }
 
 function getDesc()
@@ -513,7 +513,7 @@ const Info = {
     Safe: true // It can be accesed without asking for parental control code.
 };
 
-if (Info.Value.ItemCount < 1) { return {}; }
+if (Info.Value.Options.length < 1) { return {}; }
 
 return Info;
 

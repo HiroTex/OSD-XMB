@@ -191,7 +191,7 @@ function getOptionContextInfo()
         };
     }
 
-    return { Options: dir_options, Default: 0, ItemCount: dir_options.length, Confirm: _a, };
+    return { Options: dir_options, Default: 0, Confirm: _a, };
 }
 
 function getISOGameCode(isoPath, isoSize)
@@ -427,7 +427,7 @@ function scanGameFolders(path, dev, fs)
 function getGames()
 {
     // Update the Current Working Directory if necessary, return empty list if not possible.
-    if (!updateCWD()) { return { Options: {}, Default: 0, ItemCount: 0 }; }
+    if (!updateCWD()) { return { Options: {}, Default: 0 }; }
 
     const bootDev = (os.getcwd()[0].substring(0, 3) === "pfs") ? "ata" : "usb";
     const devices = [`${bootDev}`, "usb", "mx4sio", "ata", "udpbd", "mmce"];
@@ -480,7 +480,7 @@ function getGames()
     // If more than 1 item in list, sort by alphabetical order.
     if (gameList.length > 1) { gameList.sort((a, b) => a.Name.localeCompare(b.Name)); }
 
-    return { Options: gameList, Default: getLastPlayed(), ItemCount: gameList.length };
+    return { Options: gameList, Default: getLastPlayed() };
 }
 
 // Get Title Count Description
@@ -520,7 +520,7 @@ const Info = {
     Safe: true,
 };
 
-if (Info.Value.ItemCount < 1) { return {}; }
+if (Info.Value.Options.length < 1) { return {}; }
 
 return Info;
 
