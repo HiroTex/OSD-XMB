@@ -22,13 +22,7 @@ function dashboard()
             DrawSelectedCat();
             DrawUnselectedCats();
             DrawOptionBox();
-
-            if (DATA.PRNTSUCC)
-            {
-                DATA.PRNTSUCC = false;
-                DATA.DASH_MOVE_FRAME = 0;
-                SelectItem();
-            }
+            CheckParental();
             break;
         case "MOVE_BACK":
             DrawMovingCats(1);
@@ -189,13 +183,7 @@ function dashboard()
             DrawSubMenuContent();
             DrawSubMenuOptions();
             DrawOptionBox();
-
-            if (DATA.PRNTSUCC)
-            {
-                DATA.PRNTSUCC = false;
-                DATA.DASH_MOVE_FRAME = 0;
-                SelectItem();
-            }
+            CheckParental();
             break;
         case "SUBMENU_MOVE_UP":
             DrawSubMenuContent();
@@ -341,7 +329,7 @@ function exit()
                         BACK_BTN: true,
                         ENTER_BTN: false,
                     };
-                    console.log("exit: Option Function Code is empty.");
+                    xmblog("exit: Option Function Code is empty.");
                     DATA.CURRENT_STATE = 1;
                 }
             }
@@ -373,7 +361,7 @@ function exit()
                             BACK_BTN: true,
                             ENTER_BTN: false,
                         };
-                        console.log("exit: Partition not defined for ELF.");
+                        xmblog("exit: Partition not defined for ELF.");
                         DATA.CURRENT_STATE = 1;
                     }
                 }
@@ -401,7 +389,7 @@ function exit()
                         ENTER_BTN: false,
                     };
 
-                    console.log("exit: ELF File not found.");
+                    xmblog("exit: ELF File not found.");
                     DATA.CURRENT_STATE = 1;
                 }
             }
@@ -423,7 +411,7 @@ function exit()
                     ENTER_BTN: false,
                 };
 
-                console.log("exit: Unknown Object Type.");
+                xmblog("exit: Unknown Object Type.");
                 DATA.CURRENT_STATE = 1;
             }
             break;
@@ -475,7 +463,6 @@ function custom()
 {
     DATA.CUSTOM_FUNCTION(); // Reassignable function
 }
-
 
 /*
     Info:
@@ -681,7 +668,7 @@ function ProcessDiscTray()
                     DATA.DASH_STATE = "MOVE_UP";
                     DATA.DASH_CUROPT--;
                 }
-                delete DASH_CAT[5].Options[key]; // Remove the item from the table
+                DASH_CAT[5].Options.splice(key, 1); // Remove the item from the table
                 break; // Stop after removing the first match
             }
         }

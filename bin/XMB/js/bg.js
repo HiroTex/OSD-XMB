@@ -270,7 +270,7 @@ function InitParentalCheckMessageSettings()
     {
         if ((DATA.MESSAGE_INFO.TMPCODE[0] === DATA.PRNTCODE[0]) && (DATA.MESSAGE_INFO.TMPCODE[1] === DATA.PRNTCODE[1]) && (DATA.MESSAGE_INFO.TMPCODE[2] === DATA.PRNTCODE[2]) && (DATA.MESSAGE_INFO.TMPCODE[3] === DATA.PRNTCODE[3]))
         {
-            console.log("Parental Control Code Succeded");
+            xmblog("Parental Control Code Succeded");
             DATA.PRNTSUCC = true;
         }
     };
@@ -756,4 +756,4 @@ function drawDate(icoAlphaMod = 0, boxAlphaMod = 0, textAlphaMod = 0)
     TxtPrint(`${dateText}  ${hourText}`, modColor, { x: DATA.CANVAS.width - 152, y:32 })
 }
 
-console.log("INIT: BACKGROUND GRAPHICS INIT COMPLETE");
+xmblog("INIT: BACKGROUND GRAPHICS INIT COMPLETE");

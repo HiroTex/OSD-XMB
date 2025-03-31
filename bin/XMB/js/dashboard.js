@@ -115,6 +115,85 @@ let ICOSELCOL = { r: 128, g: 128, b: 128 };
 let TXTSELCOL = { r: 255, g: 255, b: 255 };
 let CTXTINT = { r: 128, g: 128, b: 128 };
 
+class TemporalImageCache
+{
+    constructor(limit = 15)
+    {
+        this.limit = limit;
+        this.images = Array.from({ length: limit }, (_, id) => ({ ID: id, Path: "", Img: false }));
+        this.currentID = 0;
+        this.asyncImgList = new ImageList();
+        this.pendingRequests = [];
+        this.processing = false;
+    }
+
+    isProcessing()
+    {
+        return this.processing;
+    }
+
+    load(path)
+    {
+        // Check if the image is already loaded
+        let existing = this.images.find(img => img.Path === path);
+        if (existing) return existing.Img;
+
+        if (this.processing)
+        {
+            // Queue request if processing is active
+            if (!this.pendingRequests.includes(path)) {
+                this.pendingRequests.push(path);
+            }
+            return false;
+        }
+
+        // Replace the oldest image
+        let slot = this.images[this.currentID];
+        slot.Path = path;
+        slot.Img = new Image(path, RAM, this.asyncImgList);
+
+        // Update ID tracker
+        this.currentID = (this.currentID + 1) % this.limit;
+
+        return slot.Img;
+    }
+
+    process()
+    {
+        if (this.processing)
+        {
+            // Check if all images in the current batch are ready
+            let allReady = true;
+            this.images.forEach(img =>
+            {
+                if ((img.Img) && (!img.Img.ready()))
+                {
+                    allReady = false;
+                }
+            });
+
+            if (!allReady) return;
+
+            // Reset processing state and create a new async list
+            this.processing = false;
+
+            // Move pending requests to main array
+            while (this.pendingRequests.length > 0)
+            {
+                let path = this.pendingRequests.shift();
+                this.load(path);
+            }
+        } // Only call process() if there are images that are not ready
+        else if (!this.processing && this.images.some(img => img.Img && !img.Img.ready()))
+        {
+            this.processing = true;
+            this.asyncImgList.process();
+        }
+    }
+}
+
+const imgCache = new TemporalImageCache();
+
 //////////////////////////////////////////////////////////////////////////
 ///*				   		    FUNCTIONS							  *///
 //////////////////////////////////////////////////////////////////////////
@@ -162,11 +241,38 @@ function drawDashIcon(i, w, h, a, x, y, r = 0.0, tint)
 {
     if ((i > -1) && (a > 0))
     {
-        dash_icons[i].width = w;
-        dash_icons[i].height = h;
-        dash_icons[i].color = Color.new(tint.r, tint.g, tint.b, a);
-        dash_icons[i].angle = r;
-        dash_icons[i].draw(x, y);
+        if (dash_icons[i].ready())
+        {
+            dash_icons[i].width = w;
+            dash_icons[i].height = h;
+            dash_icons[i].color = Color.new(tint.r, tint.g, tint.b, a);
+            dash_icons[i].angle = r;
+            dash_icons[i].draw(x, y);
+        }
+        else
+        {
+            drawDashLoadIcon(w, h, a, x, y);
+        }
+    }
+}
+
+function drawCustomIcon(img, size, x, y, a)
+{
+    if (img.ready())
+    {
+        if (img.filter !== LINEAR) { img.filter = LINEAR; }
+        if (ICOFULLA + a > 0)
+        {
+            const imgcolor = neutralizeOverlayWithAlpha();
+            img.width = size;
+            img.height = size;
+            img.color = Color.new(imgcolor.r, imgcolor.g, imgcolor.b, 128 + a);
+            img.draw(x, y);
+        }
+    }
+    else
+    {
+        drawDashLoadIcon(size, size, ICOFULLA + a, x, y);
     }
 }
 
@@ -196,28 +302,15 @@ function DrawDashElementIcon(Obj, size, x, y, a, tint = ICOTINT)
 
     if ("CustomIcon" in Obj)
     {
-        if ((Obj.CustomIcon != -1) && (Obj.CustomIcon.ready()))
+        if (typeof Obj.CustomIcon !== "string") { drawCustomIcon(Obj.CustomIcon, size, x, y, a); }
+        else if (typeof Obj.CustomIcon === "string")
         {
-            if (Obj.CustomIcon.filter !== LINEAR) { Obj.CustomIcon.filter = LINEAR; }
-
-            if (ICOFULLA + a > 0)
-            {
-                const imgcolor = neutralizeOverlayWithAlpha();
-                Obj.CustomIcon.width = size;
-                Obj.CustomIcon.height = size;
-                Obj.CustomIcon.color = Color.new(imgcolor.r, imgcolor.g, imgcolor.b, 128 + a);
-                Obj.CustomIcon.draw(x, y);
-            }
-        }
-        else
-        {
-            drawDashLoadIcon(size, size, ICOFULLA + a, x, y);
+            const img = imgCache.load(Obj.CustomIcon);
+            if (img) { drawCustomIcon(img, size, x, y, a); }
+            else { drawDashLoadIcon(size, size, ICOFULLA + a, x, y); }
         }
     }
-    else
-    {
-        drawDashIcon(Obj.Icon, size, size, ICOFULLA + a, x, y, undefined, tint);
-    }
+    else { drawDashIcon(Obj.Icon, size, size, ICOFULLA + a, x, y, undefined, tint); }
 }
 
 // Draws the Focus Icon overlay
@@ -238,13 +331,13 @@ function DrawFocusIcon(x, y, a, s)
 
 function DrawDashElementBackground(Obj, draw)
 {
-    if (("CustomBG" in Obj) && (Obj.CustomBG != "") && (draw))
+    if (("CustomBG" in Obj) && (Obj.CustomBG != "") && (draw) && (!imgCache.isProcessing()))
     {
         const col = neutralizeOverlayWithAlpha();
 
         if (DATA.BGIMGTMPSTATE === 15)
         {
-            console.log("Loading Custom Background Image: " + Obj.CustomBG);
+            xmblog("Loading Custom Background Image: " + Obj.CustomBG);
             DATA.BGIMGTMP = new Image(Obj.CustomBG);
             DATA.BGIMGTMP.optimize();
             DATA.BGIMGTMP.filter = LINEAR;
@@ -370,6 +463,10 @@ function DrawContextMenu(a = 0, x = 0, y = 0)
         dash_context.draw((DATA.CANVAS.width - 205) + x, y);
     }
 }
+
+//////////////////////////////////////////////////////////////////////////
+///*				   		        TOP 							  *///
+//////////////////////////////////////////////////////////////////////////
 
 // Draws an Interface Fade animation (In or out defined by the direction param).
 
@@ -586,18 +683,18 @@ function DrawUnselectedItems(cat = DATA.DASH_CURCAT, opt = DATA.DASH_CUROPT, xMo
     let itemID = 0
     for (let i = opt - 1; i > -1; i--)
     {
-        let yPos = (50 - (itemID * 50))
+        let yPos = (50 - (itemID * 50));
         if (yPos < -50) { continue; }
-        DrawUnselectedItem(cat, i, 155 + xMod, yPos + yMod, aMod, txtAmod)
+        DrawUnselectedItem(cat, i, 155 + xMod, yPos + yMod, aMod, txtAmod);
         itemID++;
     }
 
     itemID = 0;
     for (let i = (opt + 1); i < DASH_CAT[cat].Options.length; i++)
     {
-        let yPos = (280 + (itemID * 50))
-        if (yPos > 500) { break; }
-        DrawUnselectedItem(cat, i, 155 + xMod, yPos + yMod, aMod, txtAmod)
+        let yPos = (280 + (itemID * 50)) + yMod;
+        if (yPos > (DATA.CANVAS.height + 20)) { break; }
+        DrawUnselectedItem(cat, i, 155 + xMod, yPos, aMod, txtAmod);
         itemID++;
     }
 }
@@ -696,6 +793,10 @@ function DrawMovingOptsUD(direction)
         itemID++;
     }
 }
+
+//////////////////////////////////////////////////////////////////////////
+///*				   		        SUB 							  *///
+//////////////////////////////////////////////////////////////////////////
 
 // Draws an animation for entering/exiting the first level of a sub menu.
 
@@ -799,18 +900,18 @@ function DrawSubMenuUnselectedItems(sub = DATA.DASH_CURSUB, opt = DATA.DASH_CURS
     let itemID = 0
     for (let i = opt - 1; i > -1; i--)
     {
-        let yPos = (150 - (itemID * 50))
-        if (yPos < -100) { continue; }
-        DrawSubMenuUnselectedItem(sub, i, 190 + xMod, yPos + yModAbove, aMod, txtAmod)
+        let yPos = (150 - (itemID * 50)) + yModAbove;
+        if (yPos < -50) { continue; }
+        DrawSubMenuUnselectedItem(sub, i, 190 + xMod, yPos, aMod, txtAmod);
         itemID++;
     }
 
     itemID = 0;
     for (let i = (opt + 1); i < DASH_SUB[sub].Options.length; i++)
     {
-        let yPos = (280 + (itemID * 50))
-        if (yPos > 500) { break; }
-        DrawSubMenuUnselectedItem(sub, i, 190 + xMod, yPos + yModBelow, aMod, txtAmod)
+        let yPos = (280 + (itemID * 50)) + yModBelow;
+        if (yPos > (DATA.CANVAS.height + 20)) { break; }
+        DrawSubMenuUnselectedItem(sub, i, 190 + xMod, yPos, aMod, txtAmod);
         itemID++;
     }
 }
@@ -844,11 +945,13 @@ function DrawSubMenuMovingOptionsUD(direction)
 
     let prevItem = (direction > 0) ? (DATA.DASH_CURSUBOPT - 1) : (DATA.DASH_CURSUBOPT - 2);
     let itemID = 0
+    let unselyMod = 50 * easedProgress;
+
     for (let i = prevItem; i > -1; i--)
     {
-        let yPos = (100 - (itemID * 50))
-        if (yPos < -100) { continue; }
-        DrawSubMenuUnselectedItem(DATA.DASH_CURSUB, i, 190, yPos + 50 * easedProgress)
+        let yPos = (100 - (itemID * 50)) + unselyMod;
+        if (yPos < -50) { continue; }
+        DrawSubMenuUnselectedItem(DATA.DASH_CURSUB, i, 190, yPos);
         itemID++;
     }
 
@@ -856,9 +959,9 @@ function DrawSubMenuMovingOptionsUD(direction)
     itemID = 0;
     for (let i = nextItem; i < DASH_SUB[DATA.DASH_CURSUB].Options.length; i++)
     {
-        let yPos = (280 + (itemID * 50))
-        if (yPos > 500) { break; }
-        DrawSubMenuUnselectedItem(DATA.DASH_CURSUB, i, 190, yPos + 50 * easedProgress)
+        let yPos = (280 + (itemID * 50)) + unselyMod;
+        if (yPos > (DATA.CANVAS.height + 20)) { break; }
+        DrawSubMenuUnselectedItem(DATA.DASH_CURSUB, i, 190, yPos);
         itemID++;
     }
 }
@@ -892,16 +995,15 @@ function DrawSubMenuContent(fadeIn = false, fadeOut = false)
 
     if (DATA.DASH_CURSUB > 0)
     {
-
-        DrawSubMenuSelectedItem(DATA.DASH_PRVSUB, DASH_SUB[DATA.DASH_PRVSUB].Selected, 0, aMod, -115, 0, -128, 0, 0, -128);
         DrawSubMenuUnselectedItems(DATA.DASH_PRVSUB, DASH_SUB[DATA.DASH_PRVSUB].Selected, -60, 8, -8, -90 + Math.round(aMod / 10), -128);
+        DrawDashElementIcon(DASH_SUB[DATA.DASH_PRVSUB].Options[DASH_SUB[DATA.DASH_PRVSUB].Selected], 78, 60, 195, aMod);
     }
     else
     {
-        DrawSelectedItem(DATA.DASH_CURCAT, DATA.DASH_CUROPT, 0, -80, 0, aMod, -128, 0, 0, -128);
         DrawUnselectedItemsInsideSub(-30, -30, 8, -8, -90 + Math.round(aMod / 10), -128);
-        DrawSelectedCat(DATA.DASH_CURCAT, 0, -80, 0, aMod, -128);
         DrawUnselectedCats(-90 + Math.round(aMod / 10), -18, 5);
+        DrawDashElementIcon(DASH_CAT[DATA.DASH_CURCAT].Options[DATA.DASH_CUROPT], 78, 60, 190, aMod);
+        DrawDashElementIcon(DASH_CAT[DATA.DASH_CURCAT], 72, 62, 104, aMod, ICOSELCOL);
     }
 
     DrawSubMenuArrow(aMod);
@@ -943,21 +1045,22 @@ function DrawNewSubMenuFade(direction)
     // Fade Categories Items
     if (DATA.DASH_CURSUB < 2)
     {
-        const xMod = -130 * easedProgress;
-        const fadeOutA = (direction > 0) ? (-6 * DATA.DASH_MOVE_FRAME) : (-6 * (20 - DATA.DASH_MOVE_FRAME));
-        DrawSelectedCat(DATA.DASH_CURCAT, 0, -80 + xMod, 0, fadeOutA, -128);
 
         const unselCatsX = 18 * easedProgress;
         const unselCatsY = 5 * easedProgress;
         const unselCatsA = (direction > 0) ? (-1 * DATA.DASH_MOVE_FRAME) : (-1 * (20 - DATA.DASH_MOVE_FRAME));
         DrawUnselectedCats(-90 + unselCatsA, -18 - unselCatsX, 5 + unselCatsY)
 
-        const itmxMod = -130 * easedProgress;
-        DrawSelectedItem(DATA.DASH_CURCAT, DATA.DASH_CUROPT, 0, -80 + itmxMod, 0, fadeOutA, -128, 0, 0, -128);
-
         const unitmx = -30 * easedProgress;
         const unitmy = 8 * easedProgress
         DrawUnselectedItemsInsideSub(-30 + unitmx, -30 + unitmx, 8 + unitmy, -8 - unitmy, -90 + unselCatsA, -128);
+
+        const xMod = -130 * easedProgress;
+        const fadeOutA = (direction > 0) ? (-6 * DATA.DASH_MOVE_FRAME) : (-6 * (20 - DATA.DASH_MOVE_FRAME));
+        DrawDashElementIcon(DASH_CAT[DATA.DASH_CURCAT], 72, 62 + xMod, 104, fadeOutA, ICOSELCOL);
+
+        const itmxMod = -130 * easedProgress;
+        DrawDashElementIcon(DASH_CAT[DATA.DASH_CURCAT].Options[DATA.DASH_CUROPT], 78, 60 + itmxMod, 190, fadeOutA);
     }
     else
     {
@@ -1024,6 +1127,10 @@ function DrawNewSubMenuFade(direction)
         DrawMsg_SubMenuEmpty(selitmtxtMod, selItemX);
     }
 }
+
+//////////////////////////////////////////////////////////////////////////
+///*				   		     CONTEXT 							  *///
+//////////////////////////////////////////////////////////////////////////
 
 // Draws a entering/exiting Context (Option) Menu animation on the main interface.
 
@@ -1340,4 +1447,4 @@ function ExecutePreviewFunc()
     }
 }
 
-console.log("INIT: MAIN GRAPHICS INIT COMPLETE");
+xmblog("INIT: MAIN GRAPHICS INIT COMPLETE");

@@ -398,18 +398,14 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
-/POPS
-/DVD
-/CD
-/bin/POPS
-/bin/DVD
-/bin/CD
-/bin/CFG/neutrino.cfg
-/bin/CFG/pops.cfg
-/bin/CFG/main.CFG
-bin/CFG/main.CFG
+POPS/
+DVD/
+CD/
+bin/CFG/neutrino.cfg
+bin/CFG/pops.cfg
+bin/CFG/main.cfg
 bin/*.elf
-bin/log.txt
+bin/**/log.txt
 !bin/OSDXMB.ELF
 # exclude hidden macos files
 .*

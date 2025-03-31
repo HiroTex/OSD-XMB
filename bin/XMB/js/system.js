@@ -6,6 +6,11 @@
 /// 				   		  										   ///
 //////////////////////////////////////////////////////////////////////////
 
+// Main Debugging Log Function
+
+const DBGMODE = true; // Set to true to enable debug logs.
+function xmblog(txt) { if (DBGMODE) { console.log(txt); } }
+
 // The 6 possible video modes that Athena can set.
 // Used by the "Video Settings" plugin.
 
@@ -168,10 +173,10 @@ function execScript(filepath)
  * @param {String} txt The text to write to the file.
  */
 
-function ftxtWrite(path, txt)
+function ftxtWrite(path, txt, mode = "w+")
 {
     let errObj = {};
-    const file = std.open(path, "w+", errObj);
+    const file = std.open(path, mode, errObj);
     if (file)
     {
         file.puts(txt);
@@ -180,7 +185,7 @@ function ftxtWrite(path, txt)
     }
     else
     {
-        console.log(`IO ERROR: ${std.strerror(errObj.errno)}`);
+        xmblog(`IO ERROR: ${std.strerror(errObj.errno)}`);
     }
 }
 
@@ -191,26 +196,16 @@ function ftxtWrite(path, txt)
 
 function logl(line)
 {
+    // Log Line to Virtual Console.
     console.log(line);
-    let basepath = `${os.getcwd()[0]}/`;
-    if (`${os.getcwd()[0]}/`.endsWith("//"))
-    {
-        basepath = `${os.getcwd()[0]}`
-    }
 
-    const file = std.open(`${basepath}log.txt`, "a+");
-
-    if (file)
-    {
-        const now = getDateInGMTOffset(DATA.TIME_ZONE);
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        const seconds = String(now.getSeconds()).padStart(2, '0');
-        const milliseconds = String(now.getMilliseconds()).padStart(3, '0');
-        file.puts(`[ ${hours}:${minutes}:${seconds}:${milliseconds} ] ${line}\n`); // Write to file
-        file.flush();
-        file.close();
-    }
+    // Write line to log file with timestamp.
+    const now = getDateInGMTOffset(DATA.TIME_ZONE);
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    const milliseconds = String(now.getMilliseconds()).padStart(3, '0');
+    ftxtWrite("./XMB/log.txt", `[ ${hours}:${minutes}:${seconds}:${milliseconds} ] ${line}\n`, "a+"); // Write to file
 }
 
 /**
@@ -305,19 +300,19 @@ function mountHDDPartition(partition)
     }
     catch (e)
     {
-        console.log(`Failed Mounting Partition: ${e}`);
+        xmblog(`Failed Mounting Partition: ${e}`);
         if (e != "InternalError: fileXioMount failed with error code -16")
         {
-            console.log("Error does not match, return pfs1");
+            xmblog("Error does not match, return pfs1");
             return "pfs1";
         }
 
-        console.log("Return pfs0");
+        xmblog("Return pfs0");
         return "pfs0";
     }
 
 
-    console.log("Return pfs1");
+    xmblog("Return pfs1");
     return "pfs1";
 }
 
@@ -329,16 +324,16 @@ function getCWDPartition(partition)
 
     if (os.getcwd()[0].substring(0, 3) !== "pfs") { return ""; }
 
-    console.log("Get CWD HDD Partition");
+    xmblog("Get CWD HDD Partition");
     const partitions = System.listDir("hdd0:").filter(item => item.name !== "." && item.name !== ".." && item.dir);
     for (let i = 0; i < partitions.length; i++)
     {
         const item = partitions[i];
-        console.log("Mounting Partition: " + item.name);
+        xmblog("Mounting Partition: " + item.name);
         const part = mountHDDPartition(item.name);
         if (part === "pfs0")
         {
-            console.log("Partition Found: " + item.name);
+            xmblog("Partition Found: " + item.name);
             return item.name;
         }
     }
@@ -737,7 +732,7 @@ function getPathWithoutRoot(path)
 function getFolderNameFromPath(path)
 {
     if (typeof path !== 'string' || !path.endsWith('/')) {
-        console.log("ERORR: Path must be a string and end with a slash (/).");
+        xmblog("ERORR: Path must be a string and end with a slash (/).");
         return "";
     }
 
@@ -846,7 +841,7 @@ function isExtensionMatching(filePath, ...filterExtensions)
 {
     if (!Array.isArray(filterExtensions) || filterExtensions.length === 0)
     {
-        console.log("At least one filter extension must be provided.");
+        xmblog("At least one filter extension must be provided.");
         return false;
     }
 
@@ -859,16 +854,8 @@ function isExtensionMatching(filePath, ...filterExtensions)
     );
 }
 
-/*	Searchs for an Image file either in PNG or JPG Format following a name pattern.	*/
-function findArt(baseFilename, suffix)
+function scanArtFolder(baseDir, baseFilename, suffix)
 {
-    let baseDir = `${os.getcwd()[0]}/`;
-
-    if (baseDir.endsWith("//"))
-    {
-        baseDir = baseDir.substring(0, baseDir.length - 1);
-    }
-
     const dirPath = `${baseDir}ART/`;
     const extensions = [`_${suffix.toUpperCase()}.png`, `_${suffix.toUpperCase()}.jpg`];
     const dirFiles = os.readdir(dirPath)[0];
@@ -887,7 +874,29 @@ function findArt(baseFilename, suffix)
         }
     }
 
-    return ""; // Return empty string if no matching file is found
+    return "";
+}
+
+/*	Searchs for an Image file either in PNG or JPG Format following a name pattern.	*/
+function findArt(baseFilename, suffix)
+{
+    let baseDir = `${os.getcwd()[0]}/`;
+
+    if (baseDir.endsWith("//")) { baseDir = baseDir.substring(0, baseDir.length - 1); }
+
+    let art = scanArtFolder(baseDir, baseFilename, suffix);
+
+    if (art === "")
+    {
+        // Scan all mass root devices
+        for (let i = 0; i < 10; i++)
+        {
+            art = scanArtFolder(`mass${i.toString()}:/`, baseFilename, suffix);
+            if (art !== "") { break; }
+        }
+    }
+
+    return art; // Return empty string if no matching file is found
 }
 
 /*	Searchs for a matching ICO file in the ART folder for a specified string	*/
@@ -925,14 +934,14 @@ function processThreadCopy()
 
     if ((!ready) && (progress.current != progress.final))
     {
-        console.log(`Copy Thread Progress: ${progress.current.toString()} / ${progress.final.toString()}`);
+        xmblog(`Copy Thread Progress: ${progress.current.toString()} / ${progress.final.toString()}`);
         return false;
     }
     else if ((ready) && (DATA.CPYQUEUE.length > 0))
     {
         const { src, dest } = DATA.CPYQUEUE.shift();
-        console.log(`Copy File Src: ${src}`);
-        console.log(`Copy File Dest: ${dest}`);
+        xmblog(`Copy File Src: ${src}`);
+        xmblog(`Copy File Dest: ${dest}`);
         System.threadCopyFile(src, dest);
     }
 
@@ -1030,7 +1039,7 @@ function getMcHistory()
     const file = os.open(`mc0:/${getSystemDataPath()}/history`, os.O_RDONLY);
     if (file < 0)
     {
-        console.log(`ERROR: Could not open history file`);
+        xmblog(`ERROR: Could not open history file`);
         return [];
     }
 
@@ -1061,7 +1070,7 @@ function setMcHistory(entries)
     const file = os.open(`mc0:/${systemDataPath}/history`, os.O_WRONLY | os.O_CREAT);
     if (file < 0)
     {
-        console.log(`ERROR: Could not create history file on mc0:/${systemDataPath}`);
+        xmblog(`ERROR: Could not create history file on mc0:/${systemDataPath}`);
         return false;
     }
 
@@ -1136,7 +1145,7 @@ function setHistoryEntry(name)
         }
         else
         {
-            console.log("ERROR: No space left to add a new entry.");
+            xmblog("ERROR: No space left to add a new entry.");
         }
     }
 
@@ -1185,7 +1194,7 @@ function getPOPSCheat(cheats, game = "", device = "mass")
     {
         let errObj = {};
         const file = std.open(`${path}CHEATS.TXT`, "r", errObj);
-        if (file === null) { console.log(`getPOPSCheat(): I/O Error - ${std.strerror(errObj.errno)}`); return enabledCheats; }
+        if (file === null) { xmblog(`getPOPSCheat(): I/O Error - ${std.strerror(errObj.errno)}`); return enabledCheats; }
         const content = file.readAsString();
         file.close();
 
@@ -1242,7 +1251,7 @@ function setPOPSCheat(cheats, game = "", device = "mass")
     {
         let errObj = {};
         const file = std.open(`${path}CHEATS.TXT`, "r", errObj);
-        if (file === null) { console.log(`setPOPSCheat(): I/O ERROR - ${std.strerror(errObj.errno)}`); return; }
+        if (file === null) { xmblog(`setPOPSCheat(): I/O ERROR - ${std.strerror(errObj.errno)}`); return; }
         const content = file.readAsString();
         file.close();
 
@@ -1409,6 +1418,16 @@ function SetDashContext(CONTEXT, STATE)
     SetDashPadEvents(0);
 }
 
+function CheckParental()
+{
+    if (DATA.PRNTSUCC)
+    {
+        DATA.PRNTSUCC = false;
+        DATA.DASH_MOVE_FRAME = 0;
+        SelectItem();
+    }
+}
+
 /*	Main Handler to Select Items on the Dashboard.	*/
 
 function SelectItem()
@@ -1553,11 +1572,11 @@ function neutralizeOverlayWithAlpha()
 
 // Set Screen Parameters.
 
-Screen.setFrameCounter(true);
-Screen.setVSync(true);
 DATA.CANVAS.double_buffering = true;
 DATA.CANVAS.zbuffering = false;
 Screen.setMode(DATA.CANVAS);
+Screen.setVSync(true);
+if (DBGMODE) { Screen.setFrameCounter(true); }
 DATA.SCREEN_PREVMODE = DATA.CANVAS.mode; 		// Store current Canvas mode for backup.
-ftxtWrite(`${os.getcwd()[0]}/log.txt`, ""); 	// Initializes the log.txt file.
-console.log("INIT: SYSTEM INIT COMPLETE");
+ftxtWrite("./XMB/log.txt", ""); 	            // Initializes the log.txt file.
+xmblog("INIT: SYSTEM INIT COMPLETE");

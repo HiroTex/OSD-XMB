@@ -203,7 +203,7 @@ function getISOGameCode(isoPath, isoSize)
     const file = std.open(isoPath, "r");
     if (!file)
     {
-        console.log(`Could not open file: ${isoPath}`);
+        xmblog(`Could not open file: ${isoPath}`);
         return RET;
     }
 
@@ -341,7 +341,7 @@ function ParseDirectory(path, device, fs)
         // Add ART
         let ico = (() => { return dash_icons[26]; });
         const icoFile = findICO(gameCode);
-        if (icoFile !== "") { ico = new Image(icoFile, RAM, async_list); }
+        if (icoFile !== "") { ico = icoFile; }
 
         gameList.push({
             Name: title,

@@ -18,7 +18,7 @@ std.loadScript("./XMB/js/handlers.js");		// Main Handler functions.
 
 ParseMainCFG();
 
-console.log("INIT: ALL FINISHED");
+xmblog("INIT: ALL FINISHED");
 
 //////////////////////////////////////////////////////////////////////////
 ///*				   		  PLUGIN SYSTEM							  *///
@@ -112,7 +112,7 @@ function loadJsPlugin(pluginFile)
         }
     }).catch((error) =>
     {
-        console.log(`Failed to load module: ${pluginFile}, error = ${error}`);
+        xmblog(`Failed to load module: ${pluginFile}, error = ${error}`);
     });
 }
 
@@ -133,7 +133,7 @@ function InitializePluginTable()
     while (plgCount < pluginFiles.length)
     {
         const pluginFile = pluginFiles[plgCount];
-        console.log(`Plugin Init: ${pluginFile}`)
+        xmblog(`Plugin Init: ${pluginFile}`)
 
         switch (getFileExtension(pluginFile))
         {
@@ -141,7 +141,7 @@ function InitializePluginTable()
             case "json": loadJsonPlugin(pluginFile); break;
             case "js": loadJsPlugin(pluginFile); break;
         }
-        console.log(`Plugin Finished: ${pluginFile}`)
+        xmblog(`Plugin Finished: ${pluginFile}`)
 
         plgCount++;
     }
@@ -345,9 +345,10 @@ function main()
             break;
     }
 
-    //PrintDebugInfo(); 		// Prints FPS and current RAM usage at the bottom of the screen.
+    PrintDebugInfo(); 		// Prints FPS and current RAM usage at the bottom of the screen.
     SoundStopProcess(); 	// If not present, after sound finishes playing the app freezes.
     processThreadCopy();	// This will process a thread Copy operation if it has been queued.
+    imgCache.process();
 
     drawOv(); 				// Handles all Overlay elements like Message Screens.
 }

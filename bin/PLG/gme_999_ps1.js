@@ -323,7 +323,7 @@ function PopsParseDirectory(path)
 
             let ico = (() => { return dash_icons[25]; });
             const icoFile = findICO(gameCode);
-            if (icoFile !== "") { ico = new Image(icoFile, RAM, async_list); }
+            if (icoFile !== "") { ico = icoFile; }
 
             let gamedesc = (device === "mass") ? `USB - ${gameCode}` : `HDD - ${gameCode}`;
             gamedesc = (device === "host") ? `HOST - ${gameCode}` : gamedesc;
@@ -429,7 +429,7 @@ function getGames()
 
     for (let i = 0; i < popsPaths.length; i++)
     {
-        console.log("PS1GAMES: Scanning " + popsPaths[i]);
+        xmblog("PS1GAMES: Scanning " + popsPaths[i]);
         // Skip already scanned paths.
         if ((scannedPaths.length > 0) && (scannedPaths.includes(popsPaths[i]))) { continue; }
 

@@ -434,7 +434,7 @@ function SetPadEvents_Message()
         {
             if (DATA.OVSTATE == "MESSAGE_IDLE")
             {
-                console.log(`PADEVENT: Starting Message Confirm Function.`);
+                xmblog(`PADEVENT: Starting Message Confirm Function.`);
                 DATA.OVSTATE = "MESSAGE_OUT";
                 DATA.DASH_STATE = (DATA.DASH_STATE == "SUBMENU_MESSAGE_IDLE") ? "SUBMENU_MESSAGE_FADE_IN" : "IDLE_MESSAGE_FADE_OUT";
                 DATA.DASH_MOVE_FRAME = 0;
@@ -443,7 +443,7 @@ function SetPadEvents_Message()
                 {
                     DATA.MESSAGE_INFO.Confirm();
                 }
-                console.log(`PADEVENT: Completed Message Confirm Function.`);
+                xmblog(`PADEVENT: Completed Message Confirm Function.`);
             }
         };
     }
@@ -580,4 +580,4 @@ function SetPadEvents_Information()
     };
 }
 
-console.log("INIT: PADS INIT COMPLETE");
+xmblog("INIT: PADS INIT COMPLETE");

@@ -21,7 +21,7 @@ function NetInit()
 
     try
     {
-        console.log("NETWORK: Initializing Network");
+        xmblog("NETWORK: Initializing Network");
         IOP.loadDefaultModule(IOP.network);
         Network.init();
 
@@ -30,7 +30,7 @@ function NetInit()
     }
     catch (err)
     {
-        console.log("NETWORK: Error Initializing Network " + err);
+        xmblog("NETWORK: Error Initializing Network " + err);
     }
 
     DATA.NETTRY = true;
@@ -49,7 +49,7 @@ function NetExit()
     }
     catch (err)
     {
-        console.log("NETWORK: Error Deinitializing Network " + err);
+        xmblog("NETWORK: Error Deinitializing Network " + err);
     }
 }
 
@@ -60,4 +60,4 @@ function NetCfgSave()
     DATA.CONFIG.Push("main.cfg", config);
 }
 
-console.log("INIT: NETWORK INIT COMPLETE");
+xmblog("INIT: NETWORK INIT COMPLETE");

@@ -69,7 +69,7 @@ DATA.CONFIG = {
         }
         else
         {
-            console.log(`IO ERROR: ${std.strerror(errObj.errno)}`);
+            xmblog(`IO ERROR: ${std.strerror(errObj.errno)}`);
         }
 
         return config;
@@ -77,7 +77,7 @@ DATA.CONFIG = {
 
     Set: function(path, config)
     {
-        console.log("Saving File: " + path);
+        xmblog("Saving File: " + path);
         path = `${this.configPath}${path}`;
         const lines = []; // Create an array to store each line
 
@@ -153,6 +153,7 @@ function ParseMainCFG()
             setScreenWidth();
             setScreeniMode();
             Screen.setMode(DATA.CANVAS);
+            DATA.SCREEN_PREVMODE = DATA.CANVAS.mode;
             TextRender.SetScreenDimensions();
         }
     }
@@ -235,4 +236,4 @@ function ParseMainCFG()
     if ("gsm" in neutconfig) { DATA.GAMESETS.GSM = (neutconfig["gsm"] === "true"); }
 }
 
-console.log("INIT: CONFIG INIT COMPLETE");
+xmblog("INIT: CONFIG INIT COMPLETE");

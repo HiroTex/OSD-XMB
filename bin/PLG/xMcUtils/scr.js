@@ -9,7 +9,7 @@ function parseIconSysTitle(path, name)
 
     const file = os.open(`${syspath}/icon.sys`, os.O_RDONLY);
 
-    if (file < 0) { console.log(`MCUTILS: Could not open icon sys from ${name}`); return RET; }
+    if (file < 0) { xmblog(`MCUTILS: Could not open icon sys from ${name}`); return RET; }
 
     const code = "PS2D";
     const match = true;

@@ -54,6 +54,9 @@ const textColor = { r:255, g:255, b:255, a:128 };
 // glowText object for selected text glowing animation.
 const glowText = { Dir: 1, Value: 1, Min: 0, Max: 64, };
 
+// Var for Pre-processed Boot Warning Text.
+let BOOT_WARNING_TEXT = false;
+
 //////////////////////////////////////////////////////////////////////////
 ///*				   	   		   FONT								  *///
 //////////////////////////////////////////////////////////////////////////
@@ -285,11 +288,12 @@ function DisplayBootWarningText(alpha)
 // Function exclusively made to render the Debug Info at the bottom of the screen.
 function PrintDebugInfo()
 {
+    if (!DBGMODE) { return; }
     let mem = System.getMemoryStats();
     TxtPrint(`${Screen.getFPS(360)}  FPS - RAM USAGE: ${Math.floor(mem.used / 1024)}KB / ${Math.floor(DATA.EE_INFO.RAMSize / 1024)}KB - W: ${DATA.CANVAS.width} H: ${DATA.CANVAS.height} - FREE VRAM: ${Screen.getFreeVRAM()} KB`, textColor, { x:20 + (DATA.WIDESCREEN * 32), y: DATA.CANVAS.height - 40 }, "LEFT", font_ss);
 }
 
 // Set Text Renderer Initial Parameters
 TextRender.SetScreenDimensions();
-let BOOT_WARNING_TEXT = false;
-console.log("INIT: TEXT INIT COMPLETE");
+
+xmblog("INIT: TEXT INIT COMPLETE");

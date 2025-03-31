@@ -35,8 +35,8 @@ function SoundStopProcess()
         Sound.setVolume(0);
         Sound.setPosition(AudioPlaying, 0);
         Sound.pause(AudioPlaying);
-        console.log("SFX LEN: " + currAudioDuration);
-        console.log("SFX POS: " + audCurPos);
+        xmblog("SFX LEN: " + currAudioDuration);
+        xmblog("SFX POS: " + audCurPos);
     }
 }
 
@@ -147,4 +147,4 @@ function playCancelSFX()
     }
 }
 
-console.log("INIT: SOUND INIT COMPLETE");
+xmblog("INIT: SOUND INIT COMPLETE");
