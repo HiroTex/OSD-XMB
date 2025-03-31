@@ -1259,87 +1259,90 @@ function DrawContextOption(x, y, lvl = DATA.DASH_CURCTXLVL, opt = DASH_CTX[DATA.
 {
     if ((lvl < 0) || (DASH_CTX[lvl].Options.length < opt)) { return; }
 
-    let xIcnMod = 0;
-    let currentSelected = false;
-    if ((opt == DASH_CTX[DATA.DASH_CURCTXLVL].Selected) && a == 0)
+    if (DASH_CTX[lvl].Options[opt])
     {
-        currentSelected = true;
-    }
-
-    if ((DASH_CTX[lvl].Options[opt].Icon != -1) && (TXTFULLA + a > 0) && (DASH_CTX[lvl].Options[opt].Icon.ready()))
-    {
-        if (currentSelected)
+        let xIcnMod = 0;
+        let currentSelected = false;
+        if ((opt == DASH_CTX[DATA.DASH_CURCTXLVL].Selected) && a == 0)
         {
-            if (DASH_CTX[lvl].Options[opt].Name === "")
-            {
-                // Update Glow Value if context option has no text to make the Icon still glow.
-                if (glowText.Value == glowText.Max) { glowText.Dir = -1; }
-                if (glowText.Value == glowText.Min) { glowText.Dir = 1; }
-                glowText.Value = glowText.Value + glowText.Dir;
-            }
-
-            dash_ctx_ico.color = Color.new(255,255,255, glowText.Value * 2);
-            dash_ctx_ico.draw(x - 8, y + 4);
+            currentSelected = true;
         }
 
-        DASH_CTX[lvl].Options[opt].Icon.width = 16;
-        DASH_CTX[lvl].Options[opt].Icon.height = 16;
-        DASH_CTX[lvl].Options[opt].Icon.color = Color.new(190,190,190,TXTFULLA + a);
-        DASH_CTX[lvl].Options[opt].Icon.draw(x, y + 11);
-        xIcnMod += 20;
-    }
-
-    if ((DASH_CTX[lvl].Options[opt].Name != "") && (TXTFULLA + a > 0))
-    {
-        let nameText = (Array.isArray(DASH_CTX[lvl].Options[opt].Name)) ? DASH_CTX[lvl].Options[opt].Name[DATA.LANGUAGE] : DASH_CTX[lvl].Options[opt].Name;
-        let displayText = (nameText.length > 24) ? (nameText.substring(0, 24) + "...") : nameText;
-        let colorText = { r: textColor.r, g: textColor.g, b: textColor.b, a: TXTFULLA + a };
-
-        if (currentSelected)
+        if ((DASH_CTX[lvl].Options[opt].Icon != -1) && (TXTFULLA + a > 0) && (DASH_CTX[lvl].Options[opt].Icon.ready()))
         {
-            colorText.r = TXTSELCOL.r;
-            colorText.g = TXTSELCOL.g;
-            colorText.b = TXTSELCOL.b;
-
-            if (nameText.length > 24)
+            if (currentSelected)
             {
-                if ((scrollIndex == 0) && (!DATA.DASH_TXT_TIMER))
+                if (DASH_CTX[lvl].Options[opt].Name === "")
                 {
-                    DATA.DASH_TXT_TIMER = Timer.new();
+                    // Update Glow Value if context option has no text to make the Icon still glow.
+                    if (glowText.Value == glowText.Max) { glowText.Dir = -1; }
+                    if (glowText.Value == glowText.Min) { glowText.Dir = 1; }
+                    glowText.Value = glowText.Value + glowText.Dir;
                 }
 
-                const endIndex = scrollIndex + 24;
-                if (scrollIndex === 0)
-                {
-                    displayText = nameText.substring(0, 24) + "..";
-                } else if (endIndex >= nameText.length)
-                {
-                    displayText = ".." + nameText.substring(scrollIndex);
-                } else
-                {
-                    displayText = ".." + nameText.substring(scrollIndex, endIndex) + "..";
-                }
+                dash_ctx_ico.color = Color.new(255, 255, 255, glowText.Value * 2);
+                dash_ctx_ico.draw(x - 8, y + 4);
+            }
 
-                if (endIndex < nameText.length)
+            DASH_CTX[lvl].Options[opt].Icon.width = 16;
+            DASH_CTX[lvl].Options[opt].Icon.height = 16;
+            DASH_CTX[lvl].Options[opt].Icon.color = Color.new(190, 190, 190, TXTFULLA + a);
+            DASH_CTX[lvl].Options[opt].Icon.draw(x, y + 11);
+            xIcnMod += 20;
+        }
+
+        if ((DASH_CTX[lvl].Options[opt].Name != "") && (TXTFULLA + a > 0))
+        {
+            let nameText = (Array.isArray(DASH_CTX[lvl].Options[opt].Name)) ? DASH_CTX[lvl].Options[opt].Name[DATA.LANGUAGE] : DASH_CTX[lvl].Options[opt].Name;
+            let displayText = (nameText.length > 24) ? (nameText.substring(0, 24) + "...") : nameText;
+            let colorText = { r: textColor.r, g: textColor.g, b: textColor.b, a: TXTFULLA + a };
+
+            if (currentSelected)
+            {
+                colorText.r = TXTSELCOL.r;
+                colorText.g = TXTSELCOL.g;
+                colorText.b = TXTSELCOL.b;
+
+                if (nameText.length > 24)
                 {
-                    let time = Math.round(Timer.getTime(DATA.DASH_TXT_TIMER) / 100000);
-                    if (time > 1)
+                    if ((scrollIndex == 0) && (!DATA.DASH_TXT_TIMER))
                     {
-                        scrollIndex++;
-                        Timer.reset(DATA.DASH_TXT_TIMER);
+                        DATA.DASH_TXT_TIMER = Timer.new();
+                    }
+
+                    const endIndex = scrollIndex + 24;
+                    if (scrollIndex === 0)
+                    {
+                        displayText = nameText.substring(0, 24) + "..";
+                    } else if (endIndex >= nameText.length)
+                    {
+                        displayText = ".." + nameText.substring(scrollIndex);
+                    } else
+                    {
+                        displayText = ".." + nameText.substring(scrollIndex, endIndex) + "..";
+                    }
+
+                    if (endIndex < nameText.length)
+                    {
+                        let time = Math.round(Timer.getTime(DATA.DASH_TXT_TIMER) / 100000);
+                        if (time > 1)
+                        {
+                            scrollIndex++;
+                            Timer.reset(DATA.DASH_TXT_TIMER);
+                        }
+                    }
+                    else if (endIndex > nameText.length)
+                    {
+                        Timer.destroy(DATA.DASH_TXT_TIMER);
+                        DATA.DASH_TXT_TIMER = false;
                     }
                 }
-                else if (endIndex > nameText.length)
-                {
-                    Timer.destroy(DATA.DASH_TXT_TIMER);
-                    DATA.DASH_TXT_TIMER = false;
-                }
+
+                DrawContextPreviewImage();
             }
 
-            DrawContextPreviewImage();
+            TxtPrint(displayText, colorText, { x: x + xIcnMod, y: y }, "LEFT", font_ss, currentSelected);
         }
-
-        TxtPrint(displayText, colorText, { x: x + xIcnMod, y: y }, "LEFT", font_ss, currentSelected);
     }
 }
 

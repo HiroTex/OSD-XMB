@@ -6,9 +6,9 @@
 /// 				   		  										   ///
 //////////////////////////////////////////////////////////////////////////
 
-// Main Debugging Log Function
-
 const DBGMODE = true; // Set to true to enable debug logs.
+
+// Main Debugging Log Function
 function xmblog(txt) { if (DBGMODE) { console.log(txt); } }
 
 // The 6 possible video modes that Athena can set.
@@ -1027,7 +1027,7 @@ function getSystemDataPath()
 
 function getCurrentDOSDate()
 {
-    const now = new Date();
+    const now = getDateInGMTOffset(DATA.TIME_ZONE);
     const year = now.getFullYear() - 1980; // DOS date starts at 1980
     const month = now.getMonth() + 1; // JS months are 0-based
     const day = now.getDate();

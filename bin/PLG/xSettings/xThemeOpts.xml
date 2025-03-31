@@ -47,7 +47,7 @@
     <Preview>
       <![CDATA[
         function(DATA, val) {
-            let OSDATE = new Date();
+            let OSDATE = getDateInGMTOffset(DATA.TIME_ZONE);
             DATA.BGTMP = val;
             DATA.BGCOL = (val == 0) ? (OSDATE.getMonth() + 1) : val;
             DATA.BGSWITCH = true;
@@ -58,7 +58,7 @@
     <Confirm>
       <![CDATA[
         function(DATA, val) {
-            let OSDATE = new Date();
+            let OSDATE = getDateInGMTOffset(DATA.TIME_ZONE);
             DATA.BGVAL = val;
             DATA.BGTMP = val;
             DATA.BGCOL = (val == 0) ? (OSDATE.getMonth() + 1) : val;
@@ -73,7 +73,7 @@
     <Cancel>
       <![CDATA[
         function(DATA, val) {
-            let OSDATE = new Date();
+            let OSDATE = getDateInGMTOffset(DATA.TIME_ZONE);
             DATA.BGTMP = DATA.BGVAL;
             DATA.BGCOL = (DATA.BGVAL == 0) ? (OSDATE.getMonth() + 1) : DATA.BGVAL;
             DATA.BGSWITCH = true;

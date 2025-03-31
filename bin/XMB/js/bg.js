@@ -51,7 +51,7 @@ const monthColors = {
 // to the current month.
 // Date's Month paramenter is zero based.
 
-let OSDATE = new Date();
+let OSDATE = getDateInGMTOffset(DATA.TIME_ZONE);
 DATA.BGCOL = OSDATE.getMonth() + 1;
 
 // Variables to hold temporary values to be
@@ -544,7 +544,7 @@ function DrawMessageFadeOut()
 
 function getDailyBrightness()
 {
-    const now = new Date();
+    const now = getDateInGMTOffset(DATA.TIME_ZONE);
     const hour = now.getHours();
     const minutes = now.getMinutes();
     let brightness = 0;
