@@ -69,14 +69,11 @@ function AddNewPlugin(Plugin)
 {
     if (!validatePlugin(Plugin)) { return false; }
 
-    // Resolve {cwd} placeholder dynamically
-    if (Plugin.Type === "ELF") { Plugin.Value.Path = Plugin.Value.Path.replace("{cwd}", os.getcwd()[0]); }
-
     if ("CustomIcon" in Plugin)
     {
         if (typeof Plugin.CustomIcon === "string")
         {
-            Plugin.CustomIcon = Plugin.CustomIcon.replace("{cwd}", os.getcwd()[0]);
+            Plugin.CustomIcon = resolveFilePath(Plugin.CustomIcon);
             const dir = getDirectoryName(Plugin.CustomIcon);
             if (os.readdir(dir)[0].includes(getFileName(Plugin.CustomIcon)))
             {

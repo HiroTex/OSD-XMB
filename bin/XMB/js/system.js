@@ -202,6 +202,8 @@ function logl(line)
 */
 function resolveFilePath(filePath)
 {
+    filePath = filePath.replace("{cwd}", os.getcwd()[0]);
+    filePath = filePath.replace("//", "/");
     if (!filePath.includes('?')) return filePath; // Literal path, return as is
 
     const prefixes = {
@@ -1092,6 +1094,24 @@ function OpenDialogMessage(DialogData)
     DATA.DASH_STATE = ((DATA.DASH_CURSUB > -1) && (DATA.DASH_CURCTXLVL > -1)) ? "SUBMENU_CONTEXT_MESSAGE_FADE_OUT" : "IDLE_MESSAGE_FADE_IN";
     DATA.MESSAGE_INFO = DialogData;
     DATA.MESSAGE_INFO.Processed = false;
+}
+
+function OpenErrorMessage(Message)
+{
+    DATA.DASH_MOVE_FRAME = 0;
+    DATA.OVSTATE = "MESSAGE_IN";
+    DATA.DASH_STATE = "IDLE_MESSAGE_FADE_IN";
+    DATA.MESSAGE_INFO =
+    {
+        Icon: -1,
+        Title: "",
+        BG: false,
+        SKIP_INTRO: true,
+        Type: "TEXT",
+        Text: Message,
+        BACK_BTN: true,
+        ENTER_BTN: false,
+    };
 }
 
 /* Function to set a new Context (Option) Menu Object. */

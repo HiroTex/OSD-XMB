@@ -340,55 +340,22 @@ function exit()
 
                 if (DASH_SEL.Value.Path.substring(0, 4) == "pfs1")
                 {
-                    if ("Partition" in DASH_SEL.Value)
-                    {
-                        mountHDDPartition(DASH_SEL.Value.Partition);
-                    }
+                    if ("Partition" in DASH_SEL.Value) { mountHDDPartition(DASH_SEL.Value.Partition); }
                     else
                     {
                         // Show Error Message
-                        DATA.DASH_MOVE_FRAME = 0;
-                        DATA.DASH_STATE = "IDLE_MESSAGE_FADE_IN";
-                        DATA.OVSTATE = "MESSAGE_IN";
-                        DATA.MESSAGE_INFO =
-                        {
-                            Icon: -1,
-                            Title: "",
-                            BG: false,
-                            SKIP_INTRO: true,
-                            Type: "TEXT",
-                            Text: "Partition not defined for ELF.",
-                            BACK_BTN: true,
-                            ENTER_BTN: false,
-                        };
+                        OpenErrorMessage("Partition not defined for ELF.");
                         xmblog("exit: Partition not defined for ELF.");
                         DATA.CURRENT_STATE = 1;
                     }
                 }
                 // Check if File Exists.
                 const elfExists = std.exists(DASH_SEL.Value.Path);
-                if (elfExists)
-                {
-                    DATA.EXIT_STATE = 1
-                }
+                if (elfExists) { DATA.EXIT_STATE = 1 }
                 else
                 {
                     // Show Error Message
-                    DATA.DASH_MOVE_FRAME = 0;
-                    DATA.DASH_STATE = "IDLE_MESSAGE_FADE_IN";
-                    DATA.OVSTATE = "MESSAGE_IN";
-                    DATA.MESSAGE_INFO =
-                    {
-                        Icon: -1,
-                        Title: "",
-                        BG: false,
-                        SKIP_INTRO: true,
-                        Type: "TEXT",
-                        Text: "ELF file not found.",
-                        BACK_BTN: true,
-                        ENTER_BTN: false,
-                    };
-
+                    OpenErrorMessage("ELF file not found.");
                     xmblog("exit: ELF File not found.");
                     DATA.CURRENT_STATE = 1;
                 }
@@ -396,21 +363,7 @@ function exit()
             else
             {
                 // Show Error Message
-                DATA.DASH_MOVE_FRAME = 0;
-                DATA.DASH_STATE = "IDLE_MESSAGE_FADE_IN";
-                DATA.OVSTATE = "MESSAGE_IN";
-                DATA.MESSAGE_INFO =
-                {
-                    Icon: -1,
-                    Title: "",
-                    BG: false,
-                    SKIP_INTRO: true,
-                    Type: "TEXT",
-                    Text: "Unknown Object Type.",
-                    BACK_BTN: true,
-                    ENTER_BTN: false,
-                };
-
+                OpenErrorMessage("Unknown Object Type.");
                 xmblog("exit: Unknown Object Type.");
                 DATA.CURRENT_STATE = 1;
             }
@@ -497,9 +450,10 @@ function InitPS2DiscDashItem(discType)
     const systemcnf = getDiscSystemCNF();
 
     // Do not add item if System.CNF data was not found.
-    if (systemcnf.length < 1) { return; }
+    if ((systemcnf.length < 1) || !("BOOT2" in systemcnf)) { return; }
 
     const bootparam = systemcnf["BOOT2"];
+
     const match = bootparam.match(/cdrom0:\\([^;]+)/);
     const ELFName = (match) ? match[1] : "";
 

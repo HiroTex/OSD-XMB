@@ -283,6 +283,7 @@ function DrawDashElementIcon(Obj, size, x, y, a, tint = ICOTINT)
         if (typeof Obj.CustomIcon !== "string") { drawCustomIcon(Obj.CustomIcon, size, x, y, a); }
         else if (typeof Obj.CustomIcon === "string")
         {
+            Obj.CustomIcon = resolveFilePath(Obj.CustomIcon);
             const img = imgCache.load(Obj.CustomIcon);
             if (img) { drawCustomIcon(img, size, x, y, a); }
             else { drawDashLoadIcon(size, size, ICOFULLA + a, x, y); }
@@ -313,12 +314,13 @@ function DrawFocusIcon(x, y, a, s)
 
 function DrawDashElementBackground(Obj, draw)
 {
-    if (("CustomBG" in Obj) && (Obj.CustomBG != "") && (draw) && (!imgCache.isProcessing()))
+    if (("CustomBG" in Obj) && (typeof Obj.CustomBG === "string") && (Obj.CustomBG != "") && (draw) && (!imgCache.isProcessing()))
     {
         const col = neutralizeOverlayWithAlpha();
 
         if (DATA.BGIMGTMPSTATE === 15)
         {
+            Obj.CustomBG = resolveFilePath(Obj.CustomBG);
             xmblog("Loading Custom Background Image: " + Obj.CustomBG);
             DATA.BGIMGTMP = new Image(Obj.CustomBG);
             DATA.BGIMGTMP.optimize();
