@@ -505,7 +505,7 @@ function getDesc()
 
 const Info = {
     Name: "Playstation",
-    Icon: 18,
+    Icon: "FOLDER",
     Category: 5,
     Type: "SUBMENU",
     Value: getGames(),

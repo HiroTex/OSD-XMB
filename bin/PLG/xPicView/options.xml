@@ -1,0 +1,19 @@
+<Option>
+  <Component Name="{SETASBG}" Icon="-1">
+    <Confirm>
+      <![CDATA[
+      function(DATA, val) {
+        DATA.CUSTOMBG_PATH = DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT].FullPath;
+        DATA.BGIMG = new Image(DATA.CUSTOMBG_PATH);
+        DATA.BGIMG.optimize();
+        DATA.BGIMG.filter = LINEAR;
+        DATA.DISPLAYBG = true;
+        let config = DATA.CONFIG.Get("main.cfg");
+        config["customBg"] = DATA.CUSTOMBG_PATH;
+        config["displayBg"] = DATA.DISPLAYBG.toString();
+        DATA.CONFIG.Push("main.cfg", config);
+      }
+      ]]>
+    </Confirm>
+  </Component>
+</Option>

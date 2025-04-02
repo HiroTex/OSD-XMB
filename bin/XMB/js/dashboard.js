@@ -70,39 +70,17 @@ const colr_icons = [];					// Image Array for the color icons on the Theme Setti
 
 // Image Names to search and load
 // from the current selected Theme.
-const dash_icons_names =
-[
-    "ic_cat_home.png",					// [00]
-    "ic_cat_settings.png",				// [01]
-    "ic_cat_picture.png",				// [02]
-    "ic_cat_music.png",					// [03]
-    "ic_cat_video.png",					// [04]
-    "ic_cat_game.png",					// [05]
-    "ic_cat_network.png",				// [06]
-    "ic_set_game.png",					// [07]
-    "ic_set_system.png",				// [08]
-    "ic_set_theme.png",					// [09]
-    "ic_set_time.png",					// [10]
-    "ic_set_display.png",				// [11]
-    "ic_set_parentalctrl.png",			// [12]
-    "ic_game_mctools.png",				// [13]
-    "ic_game_folder.png",				// [14]
-    "ic_set_cfg.png",					// [15]
-    "ic_x_mc1.png",						// [16]
-    "ic_x_mc2.png",						// [17]
-    "ic_x_folder.png",					// [18]
-    "ic_x_poweroff.png",				// [19]
-    "ic_x_reload.png",					// [20]
-    "ic_x_usbdrive.png",				// [21]
-    "ic_x_user.png",					// [22]
-    "ic_x_help.png",					// [23]
-    "ic_x_file.png",					// [24]
-    "ic_game_ps1.png",					// [25]
-    "ic_game_ps2.png",					// [26]
-    "ic_x_tool.png",					// [27]
-    "ic_set_net.png",                   // [28]
-    "ic_x_mass.png"                     // [29]
-];
+const dash_icons_info = xmlParseElement(std.loadFile("./XMB/dash/dash_icons.xml"));
+
+function findDashIcon(targetName)
+{
+    for (let i = 0; i < dash_icons_info.children.length; i++)
+    {
+        if (dash_icons_info.children[i].attributes.name === targetName) { return i; }
+    }
+
+    return -1;
+}
 
 //////////////////////////////////////////////////////////////////////////
 ///*				   		    PARAMETERS							  *///
@@ -310,7 +288,11 @@ function DrawDashElementIcon(Obj, size, x, y, a, tint = ICOTINT)
             else { drawDashLoadIcon(size, size, ICOFULLA + a, x, y); }
         }
     }
-    else { drawDashIcon(Obj.Icon, size, size, ICOFULLA + a, x, y, undefined, tint); }
+    else
+    {
+        if (typeof Obj.Icon === "string") { Obj.Icon = findDashIcon(Obj.Icon); }
+        drawDashIcon(Obj.Icon, size, size, ICOFULLA + a, x, y, undefined, tint);
+    }
 }
 
 // Draws the Focus Icon overlay
@@ -559,7 +541,7 @@ function DrawSelectedCat(cat = DATA.DASH_CURCAT, sizeMod = 0, xMod = 0, yMod = 0
 
 function DrawUnselectedCat(cat = DATA.DASH_CURCAT, basePos, xPosMod, yMod = 0, aMod = 0)
 {
-    drawDashIcon(DASH_CAT[cat].Icon, 48, 48, ICOFULLA + aMod, basePos + xPosMod, 119 + yMod, undefined, ICOTINT);
+    DrawDashElementIcon(DASH_CAT[cat], 48, basePos + xPosMod, 119 + yMod, aMod);
 }
 
 // Draw all the Unselected Categories while Idle.
@@ -586,7 +568,7 @@ function DrawUnselectedCats(aMod = 0, xMod = 0, yMod = 0)
 
         for (let i = DATA.DASH_CURCAT + 1; i < 7; i++)
         {
-            if (xPosMod > 500) { break; } // DO NOT DRAW UNNECESARILLY OFF-SCREEN
+            if (xPosMod > (DATA.CANVAS.width + 20)) { break; } // DO NOT DRAW UNNECESARILLY OFF-SCREEN
             DrawUnselectedCat(i, 166 + xMod, xPosMod, yMod, aMod);
             xPosMod += 80;
         }
@@ -883,12 +865,15 @@ function DrawSubMenuSelectedItem(sub = DATA.DASH_CURSUB, opt = DATA.DASH_CURSUBO
 
 function DrawSubMenuUnselectedItem(sub, opt, xPos, yPos, aMod = 0, txtAmod = 0)
 {
-    const namePpts = { x: xPos + 73, y: yPos + 6, a: txtAmod };
-    const descPpts = { x: xPos + 73, y: yPos + 12, a: -255 };
-    const cntxPpts = { x: xPos - 225, y: yPos + 6, a: txtAmod };
+    if (DASH_SUB[sub].Options[opt])
+    {
+        const namePpts = { x: xPos + 73, y: yPos + 6, a: txtAmod };
+        const descPpts = { x: xPos + 73, y: yPos + 12, a: -255 };
+        const cntxPpts = { x: xPos - 225, y: yPos + 6, a: txtAmod };
 
-    DrawDashElementIcon(DASH_SUB[sub].Options[opt], 48, xPos, yPos, aMod);
-    DrawDashElementText(DASH_SUB[sub].Options[opt], false, namePpts, descPpts, cntxPpts);
+        DrawDashElementIcon(DASH_SUB[sub].Options[opt], 48, xPos, yPos, aMod);
+        DrawDashElementText(DASH_SUB[sub].Options[opt], false, namePpts, descPpts, cntxPpts);
+    }
 }
 
 // Draws all the Sub Menu Unselected Items while Idle.

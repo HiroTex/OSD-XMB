@@ -9,7 +9,7 @@
     "Utilit�rio do Memory Card"
   ],
   "Description": "",
-  "Icon": 13,
+  "Icon": "GAME_MCTOOLS",
   "Category": 5,
   "Type": "SUBMENU",
   "Value": "./PLG/xMcUtils/scr.js"

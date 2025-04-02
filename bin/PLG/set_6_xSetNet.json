@@ -17,7 +17,7 @@
     "Adjusts settings for the internet connection.",
     "Adjusts settings for the internet connection."
   ],
-  "Icon": 28,
+  "Icon": "SET_NET",
   "Category": 1,
   "Type": "SUBMENU",
   "Value": "./PLG/xSettings/xNetOpts.xml"

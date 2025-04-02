@@ -9,11 +9,11 @@
     "Reiniciar Interface"
   ],
   "Description": "",
-  "Icon": 20,
+  "Icon": "RELOAD",
   "Category": 0,
   "Type": "ELF",
   "Value": {
     "Path": "{cwd}/OSDXMB.ELF",
-    "Args": ["main.js"]
+    "Args": [ "main.js" ]
   }
 }

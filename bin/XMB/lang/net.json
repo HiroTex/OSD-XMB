@@ -1,4 +1,44 @@
 {
+  "NETSET1": {
+    "NAME": [
+      "Settings and Connection Status List",
+      "Liste des paramètres et de l'état de la connexion",
+      "Ajustes y lista de estado de conexión",
+      "Liste der Einstellungen und des Verbindungsstatus",
+      "Elenco delle impostazioni e dello stato di connessione",
+      "Instellingen en verbindingsstatus",
+      "Lista de Definições e Estado das Ligações"
+    ],
+    "DESC": [
+      "View current network settings.",
+      "Pour afficher les paramètres réseau actuels.",
+      "Puede visualizar los ajustes de red actuales.",
+      "Sie können die aktuellen Netzwerk-Einstellungen.",
+      "È possibile visualizzare le impostazioni di rete correnti.",
+      "De huidige netwerkinstellingen en de status van de internetverbinding weergeven.",
+      "Visualize as definições de rede e o estado das ligações actuais."
+    ]
+  },
+  "NETSET2": {
+    "NAME": [
+      "Internet Connection",
+      "Connexion Internet",
+      "Conexión a Internet",
+      "Internetverbindung",
+      "Connessione Internet",
+      "Internetverbinding",
+      "Ligação à Internet"
+    ],
+    "DESC": [
+      "Enable or disable the system's connection to the Internet.",
+      "Pour activer ou désactiver connexion du système à Internet.",
+      "Puede activar o desactivar la conexión del sistema a Internet.",
+      "Sie können die Verbindung des Systems zum Internet aktivieren oder deaktivieren.",
+      "È possibile abilitare o disabilitare la connessione a Internet del sistema.",
+      "De internetverbinding van het systeem in- of uitschakelen.",
+      "Active ou desactive a ligação do sistema à Internet."
+    ]
+  },
   "NET": {
     "INIT_MSG": [
       "Trying to connect, please wait...",
@@ -11,21 +51,21 @@
     ],
     "INIT_COMPLETE_MSG": [
       "Connection successful.",
-      "Connexion r�ussie.",
-      "Conexi�n exitosa.",
+      "Connexion réussie.",
+      "Conexión exitosa.",
       "Verbindung erfolgreich.",
       "Connessione riuscita.",
       "Verbinding geslaagd.",
-      "Conex�o bem-sucedida."
+      "Conexão bem-sucedida."
     ],
     "ERR_1": [
       "Could not initialize Network.\nPlease check your connection and restart the console.",
-      "Impossible d'initialiser le r�seau.\nVeuillez v�rifier votre connexion et red�marrer la console.",
-      "No se pudo inicializar la red.\nCompruebe su conexi�n y reinicie la consola.",
-      "Netzwerk konnte nicht initialisiert werden.\nBitte �berpr�fen Sie Ihre Verbindung und starten Sie die Konsole neu.",
+      "Impossible d'initialiser le réseau.\nVeuillez vérifier votre connexion et redémarrer la console.",
+      "No se pudo inicializar la red.\nCompruebe su conexión y reinicie la consola.",
+      "Netzwerk konnte nicht initialisiert werden.\nBitte überprüfen Sie Ihre Verbindung und starten Sie die Konsole neu.",
       "Impossibile inizializzare la rete.\nControlla la tua connessione e riavvia la console.",
       "Kan netwerk niet initialiseren.\nControleer uw verbinding en start de console opnieuw op.",
-      "N�o foi poss�vel inicializar a Rede.\nVerifique a sua liga��o e reinicie a consola."
+      "Não foi possível inicializar a Rede.\nVerifique a sua ligação e reinicie a consola."
     ]
   }
 }

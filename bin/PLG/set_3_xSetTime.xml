@@ -1,4 +1,4 @@
-<App Icon="10" Category="1" Type="SUBMENU">
+<App Icon="#SET_TIME" Category="1" Type="SUBMENU">
   <Name>
     <String str="Date and Time Settings" />
     <String str="Paramètres date et heure" />
@@ -17,7 +17,7 @@
     <String str="Pas de instellingen voor datum en tijd aan." />
     <String str="Ajuste as configurações de data e hora." />
   </Description>
-  <Option Type="CONTEXT" Icon="15">
+  <Option Type="CONTEXT" Icon="#SET_CFG">
     <Name>
       <String str="Date Format" />
       <String str="Affichage de la date" />
@@ -50,7 +50,7 @@
       ]]>
     </Confirm>
   </Option>
-  <Option Type="CONTEXT" Icon="15">
+  <Option Type="CONTEXT" Icon="#SET_CFG">
     <Name>
       <String str="Time Format" />
       <String str="Affichage de l'heure" />
@@ -103,7 +103,7 @@
       ]]>
     </Confirm>
   </Option>
-  <Option Type="CONTEXT" Icon="15">
+  <Option Type="CONTEXT" Icon="#SET_CFG">
     <Name>
       <String str="Time Zone" />
       <String str="Fuseau horaire" />

@@ -17,7 +17,7 @@
 		"Pas de instellingen voor games aan.",
 		"Ajuste as configurações dos jogos."
 	],
-	"Icon": 7,
+	"Icon": "SET_GAME",
 	"Category": 1,
 	"Type": "SUBMENU",
 	"Value": "./PLG/xSettings/xGameOpts.xml"

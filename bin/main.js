@@ -7,6 +7,8 @@
 //////////////////////////////////////////////////////////////////////////
 
 std.loadScript("./XMB/js/system.js"); 		// Main DATA Object and Generic Functions.
+std.loadScript("./XMB/js/screen.js"); 		// Manage Screen Data.
+std.loadScript("./XMB/js/xml.js"); 		    // Manage support for XML files.
 std.loadScript("./XMB/js/config.js");		// Manage configuration files (.cfg).
 std.loadScript("./XMB/js/sound.js");		// Manage Audio playing.
 std.loadScript("./XMB/js/pads.js");			// Manage Events executed using Joystick's buttons.
@@ -57,7 +59,7 @@ function validatePlugin(plg)
   return (
     (("Name" in plg) && (typeof plg.Name === "string") || (Array.isArray(plg.Name))) &&
     (("Description" in plg) && (typeof plg.Description === "string") || (Array.isArray(plg.Description))) &&
-    (("Icon" in plg) && (typeof plg.Icon === "number")) &&
+    (("Icon" in plg) && ((typeof plg.Icon === "number") || (typeof plg.Icon === "string"))) &&
     (("Category" in plg) && (typeof plg.Category === "number")) &&
     (("Type" in plg) && (["ELF", "CODE", "SUBMENU"].includes(plg.Type)))
   );
@@ -72,7 +74,19 @@ function AddNewPlugin(Plugin)
 
     if ("CustomIcon" in Plugin)
     {
-        Plugin.CustomIcon = new Image(Plugin.CustomIcon.replace("{cwd}", os.getcwd()[0]), RAM, async_list);
+        if (typeof Plugin.CustomIcon === "string")
+        {
+            Plugin.CustomIcon = Plugin.CustomIcon.replace("{cwd}", os.getcwd()[0]);
+            const dir = getDirectoryName(Plugin.CustomIcon);
+            if (os.readdir(dir)[0].includes(getFileName(Plugin.CustomIcon)))
+            {
+                Plugin.CustomIcon = new Image(Plugin.CustomIcon, RAM, async_list);
+            }
+            else
+            {
+                delete Plugin.CustomIcon;
+            }
+        }
     }
 
     const item = DASH_CAT[Plugin.Category].Options.length;
@@ -202,9 +216,9 @@ function InitDashboard()
     if (baseDir.endsWith("//")) { baseDir = baseDir.substring(0, baseDir.length - 1); }
     const dirFiles = os.readdir(`${baseDir}${DATA.THEME_PATH}icons/`)[0];
 
-    for (let i = 0; i < dash_icons_names.length; i++)
+    for (let i = 0; i < dash_icons_info.children.length; i++)
     {
-        const imgPath = (dirFiles.includes(dash_icons_names[i])) ? `${DATA.THEME_PATH}icons/${ dash_icons_names[i]}` : `./THM/Original/icons/${dash_icons_names[i]}`;
+        const imgPath = (dirFiles.includes(dash_icons_info.children[i].attributes.path)) ? `${DATA.THEME_PATH}icons/${dash_icons_info.children[i].attributes.path}` : `./THM/Original/icons/${dash_icons_info.children[i].attributes.path}`;
         const tmpImage = new Image(imgPath, RAM, async_list);
         dash_icons.push(tmpImage);
     }

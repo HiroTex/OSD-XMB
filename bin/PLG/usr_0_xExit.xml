@@ -1,4 +1,4 @@
-<App Icon="19" Category="0" Type="CODE">
+<App Icon="#POWEROFF" Category="0" Type="CODE">
   <Name>
     <String str="Exit to Browser" />
     <String str="Quitter vers le navigateur" />

@@ -107,9 +107,9 @@ function GetThemeContextInfo()
                         {
                             if ((os.readdir(`${DATA.THEME_PATH}`)[0].includes("icons")))
                             {
-                                if (loaded_icons < dash_icons_names.length)
+                                if (loaded_icons < dash_icons_info.children.length)
                                 {
-                                    const imgPath = (os.readdir(`${DATA.THEME_PATH}icons/`)[0].includes(`${dash_icons_names[loaded_icons]}`)) ? `${DATA.THEME_PATH}icons/${dash_icons_names[loaded_icons]}` : `./THM/Original/icons/${dash_icons_names[loaded_icons]}`;
+                                    const imgPath = (os.readdir(`${DATA.THEME_PATH}icons/`)[0].includes(`${dash_icons_info.children[loaded_icons].attributes.path}`)) ? `${DATA.THEME_PATH}icons/${dash_icons_info.children[loaded_icons].attributes.path}` : `./THM/Original/icons/${dash_icons_info.children[loaded_icons].attributes.path}`;
                                     let icon = new Image(imgPath);
                                     icon.optimize();
                                     icon.filter = LINEAR;
@@ -123,7 +123,7 @@ function GetThemeContextInfo()
                             }
                             else
                             {
-                                loaded_icons = dash_icons_names.length;
+                                loaded_icons = dash_icons_info.children.length;
                                 imgsLoaded = true;
                             }
                         }

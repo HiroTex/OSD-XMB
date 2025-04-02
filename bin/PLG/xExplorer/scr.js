@@ -1,43 +1,10 @@
-function getOptionContextInfo()
-{
-    let dir_options = [];
-    dir_options.push({ Name: XMBLANG.DELETE, Icon: -1 });
-
-    let _a = function (DATA, val)
-    {
-        DATA.DASH_STATE = "SUBMENU_CONTEXT_MESSAGE_FADE_OUT";
-        DATA.OVSTATE = "MESSAGE_IN";
-        DATA.MESSAGE_INFO =
-        {
-            Icon: -1,
-            Title: "",
-            BG: false,
-            Type: "TEXT",
-            Text: XMBLANG.WAIT,
-            BACK_BTN: false,
-            ENTER_BTN: false,
-            BgFunction: () =>
-            {
-                const path = DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT].FullPath;
-                (path.endsWith('/')) ? System.removeDirectory(path) : os.remove(path);
-                DASH_SUB[DATA.DASH_CURSUB].Options.splice(DATA.DASH_CURSUBOPT, 1);
-                if (DASH_SUB[DATA.DASH_CURSUB].Options.length < 1) { DATA.DASH_CURSUBOPT = -1; }
-
-                DATA.OVSTATE = "MESSAGE_OUT";
-                DATA.DASH_STATE = "SUBMENU_MESSAGE_FADE_IN";
-                DATA.DASH_MOVE_FRAME = 0;
-                SetDashPadEvents(0);
-            },
-        };
-    };
-
-    return { Options: dir_options, Default: 0, Confirm: _a };
-}
+const CtxtMenu = xmlParseContext(xmlParseElement(std.loadFile("./PLG/xExplorer/options.xml")));
 
 function ParseDirectory(path)
 {
+    const dir_options = [];
+    const isHdd = (path === "hdd0:");
     const dir = System.listDir(path);
-    let dir_options = [];
 
     // Separate directories and files
     let directories = dir.filter(item => item.name !== "." && item.name !== ".." && item.dir); // All directories
@@ -47,126 +14,25 @@ function ParseDirectory(path)
     directories.sort((a, b) => a.name.localeCompare(b.name));
     files.sort((a, b) => a.name.localeCompare(b.name));
 
+    const valueFun = (isHdd) ? function () { const part = mountHDDPartition(this.Name); return ParseDirectory(`${part}:/`); } : function () { return ParseDirectory(this.FullPath); }
+
     directories.forEach((item) =>
     {
         dir_options.push({
-            Path: path,
             Name: item.name,
             Description: "",
             Icon: 18,
             Type: "SUBMENU",
             FullPath: `${path}${item.name}/`,
-            Option: getOptionContextInfo(),
-            get Value() { return ParseDirectory(`${this.Path}${this.Name}/`); }
+            Option: CtxtMenu,
         });
+
+        Object.defineProperty(dir_options[dir_options.length - 1], "Value", { get: valueFun });
     });
 
     files.forEach((item) =>
     {
-        let customIcon = false;
-        let icon = 24; // default icon for files
-        let type = "";
-        let value = {};
-
-        switch (getFileExtension(item.name).toLowerCase())
-        {
-            case "vcd": customIcon = true; icon = 25; break;
-            case "iso": customIcon = true; icon = 26; break;
-            case "elf": icon = 27; type = "ELF"; value = { Path: (`${path}${item.name}`), Args: [], }; break;
-            case "png":
-            case "jpg":
-            case "bmp": icon = 2; break;
-            case "mp3":
-            case "wav":
-            case "ogg": icon = 3; break;
-            case "mp4":
-            case "mkv":
-            case "avi": icon = 4; break;
-        }
-
-        dir_options.push({
-            Name: item.name,
-            Description: formatFileSize(item.size),
-            Icon: icon,
-            Type: type,
-            Value: value,
-            FullPath: `${path}${item.name}`,
-            Option: getOptionContextInfo(),
-        });
-
-        if (customIcon)
-        {
-            Object.defineProperty(dir_options[dir_options.length - 1], 'CustomIcon', {
-                get()
-                {
-                    return dash_icons[icon];
-                }
-            });
-        }
-    });
-
-    return { Options: dir_options, Default: 0 };
-}
-
-function getHDDPartitions()
-{
-    let dir_options = [];
-    let partitions = System.listDir("hdd0:");
-    let directories = partitions.filter(item => item.name !== "." && item.name !== ".." && item.dir); // All directories
-    let files = partitions.filter(item => !item.dir); // All files
-
-    // Sort directories and files alphabetically by name
-    directories.sort((a, b) => a.name.localeCompare(b.name));
-    files.sort((a, b) => a.name.localeCompare(b.name));
-
-    directories.forEach((item) =>
-    {
-        dir_options.push({
-            Name: item.name,
-            Description: "",
-            Icon: 18,
-            Type: "SUBMENU",
-            get Value() { const part = mountHDDPartition(this.Name); return ParseDirectory(`${part}:/`); }
-        });
-    });
-
-    files.forEach((item) =>
-    {
-
-        let customIcon = false;
-        let icon = 24; // default icon for files
-
-        switch (getFileExtension(item.name).toLowerCase())
-        {
-            case "vcd": customIcon = true; icon = 25; break;
-            case "iso": customIcon = true; icon = 26; break;
-            case "elf": icon = 27; break;
-            case "png":
-            case "jpg":
-            case "bmp": icon = 2; break;
-            case "mp3":
-            case "wav":
-            case "ogg": icon = 3; break;
-            case "mp4":
-            case "mkv":
-            case "avi": icon = 4; break;
-        }
-
-        dir_options.push({
-            Name: item.name,
-            Description: formatFileSize(item.size),
-            Icon: icon,
-        });
-
-        if (customIcon)
-        {
-            Object.defineProperty(dir_options[dir_options.length - 1], 'CustomIcon', {
-                get()
-                {
-                    return dash_icons[icon];
-                }
-            });
-        }
+        dir_options.push(getFileAsItem(`${path}${item.name}`, item.size, CtxtMenu));
     });
 
     return { Options: dir_options, Default: 0 };
@@ -189,7 +55,7 @@ if (os.readdir("hdd0:")[0].length > 0)
         Description: "",
         Icon: 29,
         Type: "SUBMENU",
-        get Value() { return getHDDPartitions(); }
+        get Value() { return ParseDirectory("hdd0:"); }
     });
 }
 

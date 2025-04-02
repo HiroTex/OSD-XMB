@@ -9,7 +9,7 @@
         "Visualizador de imagens"
     ],
     "Description": "",
-    "Icon": 18,
+    "Icon": "FOLDER",
     "Category": 2,
     "Type": "SUBMENU",
     "Value": "./PLG/xPicView/scr.js"

@@ -1,4 +1,4 @@
-<App Icon="11" Category="1" Type="SUBMENU">
+<App Icon="#SET_DISPLAY" Category="1" Type="SUBMENU">
   <Name>
     <String str="Display Settings" />
     <String str="Paramètres affichage" />

@@ -1,6 +1,6 @@
 <Options>
   <Option filepath="./PLG/xSettings/xThm.js"/>
-  <Option Type="CONTEXT" Icon="15">
+  <Option Type="CONTEXT" Icon="#SET_CFG">
     <Name>
       <String str="Color" />
       <String str="Couleur" />
@@ -82,7 +82,7 @@
       ]]>
     </Cancel>
   </Option>
-  <Option Type="CONTEXT" Icon="15">
+  <Option Type="CONTEXT" Icon="#SET_CFG">
     <Name>
       <String str="Background" />
       <String str="Arrière-plan" />
@@ -155,7 +155,7 @@
       ]]>
     </Confirm>
   </Option>
-  <Option Type="CONTEXT" Icon="15">
+  <Option Type="CONTEXT" Icon="#SET_CFG">
     <Name>
       <String str="Waves" />
       <String str="Waves" />

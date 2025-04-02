@@ -328,10 +328,15 @@ function SetPadEvents_Context()
         {
             playCancelSFX();
 
-            if ("Cancel" in DASH_CTX[DATA.DASH_CURCTXLVL])
+            if ("Cancel" in DASH_CTX[DATA.DASH_CURCTXLVL].Options[DASH_CTX[DATA.DASH_CURCTXLVL].Selected])
             {
-                let _f = DASH_CTX[DATA.DASH_CURCTXLVL].Cancel;
-                _f(DATA, DASH_CTX[DATA.DASH_CURCTXLVL].Selected);
+                let fun = DASH_CTX[DATA.DASH_CURCTXLVL].Options[DASH_CTX[DATA.DASH_CURCTXLVL].Selected].Cancel;
+                fun(DATA, DASH_CTX[DATA.DASH_CURCTXLVL].Selected);
+            }
+            else if ("Cancel" in DASH_CTX[DATA.DASH_CURCTXLVL])
+            {
+                let fun = DASH_CTX[DATA.DASH_CURCTXLVL].Cancel;
+                fun(DATA, DASH_CTX[DATA.DASH_CURCTXLVL].Selected);
             }
 
             DATA.DASH_STATE = (DATA.DASH_STATE == "MENU_CONTEXT") ? "MENU_CONTEXT_OUT" : "SUBMENU_CONTEXT_OUT";
@@ -351,7 +356,12 @@ function SetPadEvents_Context()
             DATA.DASH_MOVE_FRAME = 0;
             SetDashPadEvents(0);
 
-            if ("Confirm" in DASH_CTX[DATA.DASH_CURCTXLVL])
+            if ("Confirm" in DASH_CTX[DATA.DASH_CURCTXLVL].Options[DASH_CTX[DATA.DASH_CURCTXLVL].Selected])
+            {
+                const result = DASH_CTX[DATA.DASH_CURCTXLVL].Options[DASH_CTX[DATA.DASH_CURCTXLVL].Selected].Confirm(DATA, DASH_CTX[DATA.DASH_CURCTXLVL].Selected);
+                if ((result !== undefined) && (result === false)) { return; }
+            }
+            else if ("Confirm" in DASH_CTX[DATA.DASH_CURCTXLVL])
             {
                 const result = DASH_CTX[DATA.DASH_CURCTXLVL].Confirm(DATA, DASH_CTX[DATA.DASH_CURCTXLVL].Selected);
                 if ((result !== undefined) && (result === false)) { return;	}
@@ -434,7 +444,6 @@ function SetPadEvents_Message()
         {
             if (DATA.OVSTATE == "MESSAGE_IDLE")
             {
-                xmblog(`PADEVENT: Starting Message Confirm Function.`);
                 DATA.OVSTATE = "MESSAGE_OUT";
                 DATA.DASH_STATE = (DATA.DASH_STATE == "SUBMENU_MESSAGE_IDLE") ? "SUBMENU_MESSAGE_FADE_IN" : "IDLE_MESSAGE_FADE_OUT";
                 DATA.DASH_MOVE_FRAME = 0;
@@ -443,7 +452,6 @@ function SetPadEvents_Message()
                 {
                     DATA.MESSAGE_INFO.Confirm();
                 }
-                xmblog(`PADEVENT: Completed Message Confirm Function.`);
             }
         };
     }

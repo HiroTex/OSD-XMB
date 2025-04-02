@@ -1,26 +1,15 @@
 //////////////////////////////////////////////////////////////////////////
-///*				   			   SYSTEM							  *///
+///*				   			  SYSTEM							  *///
 /// 				   		  										   ///
 ///		This script initializes the main DATA object with the 		   ///
 ///		system information among useful generic functions to be used.  ///
 /// 				   		  										   ///
 //////////////////////////////////////////////////////////////////////////
 
-const DBGMODE = true; // Set to true to enable debug logs.
+const DBGMODE = false; // Set to true to enable debug logs.
 
 // Main Debugging Log Function
 function xmblog(txt) { if (DBGMODE) { console.log(txt); } }
-
-// The 6 possible video modes that Athena can set.
-// Used by the "Video Settings" plugin.
-
-const vmodes = [];
-vmodes.push({Name: "NTSC", Value: NTSC });
-vmodes.push({Name: "PAL", Value: PAL });
-vmodes.push({Name: "DTV 480p", Value: DTV_480p });
-vmodes.push({Name: "DTV 576p", Value: DTV_576p });
-vmodes.push({Name: "DTV 720p", Value: DTV_720p });
-vmodes.push({Name: "DTV 1080i", Value: DTV_1080i });
 
 /*	Info:
 
@@ -172,7 +161,6 @@ function execScript(filepath)
  * @param {String} path The path to write the text file.
  * @param {String} txt The text to write to the file.
  */
-
 function ftxtWrite(path, txt, mode = "w+")
 {
     let errObj = {};
@@ -193,7 +181,6 @@ function ftxtWrite(path, txt, mode = "w+")
  * Write 'line' text to the 'log.txt' file
  * @param {String} line The text to write to the log file.
  */
-
 function logl(line)
 {
     // Log Line to Virtual Console.
@@ -213,7 +200,6 @@ function logl(line)
  * @param {String} path The path to the file.
  * @returns {String} First possible validated path.
 */
-
 function resolveFilePath(filePath)
 {
     if (!filePath.includes('?')) return filePath; // Literal path, return as is
@@ -244,7 +230,6 @@ function resolveFilePath(filePath)
  * Get the system.cnf key pairs parsed from the disc root.
  * @returns {Object} The system.cnf file contents.
  */
-
 function getDiscSystemCNF()
 {
     // Get current disc root files.
@@ -289,7 +274,6 @@ function getDiscSystemCNF()
  * @param {String} partition The partition to mount.
  * @returns {String} The partition path mounted (`pfs1` or 'pfs0').
  */
-
 function mountHDDPartition(partition)
 {
     if (os.readdir("pfs1:/")[1] === 0) { System.fileXioUmount("pfs1:"); }
@@ -317,7 +301,6 @@ function mountHDDPartition(partition)
 }
 
 /* returns partition mounted on pfs0. */
-
 function getCWDPartition(partition)
 {
     // return empty if cwd is not a virtual hdd partition.
@@ -343,298 +326,56 @@ function getCWDPartition(partition)
 }
 
 //////////////////////////////////////////////////////////////////////////
-///*				   			   XML  							  *///
-//////////////////////////////////////////////////////////////////////////
-
-function xmlParseAttributes(attributesString)
-{
-    const attributes = {};
-    let i = 0, len = attributesString.length;
-
-    while (i < len)
-    {
-        // Skip leading whitespace
-        while (i < len && attributesString.charCodeAt(i) <= 32) i++;
-
-        // Break early if end of string after whitespace
-        if (i >= len) { break; }
-
-        // Find attribute name start
-        let nameStart = i;
-        while (i < len && attributesString.charCodeAt(i) !== 61) i++; // '='
-
-        // Extract name (avoid multiple slice/trim calls)
-        const nameEnd = i;
-        while (nameEnd > nameStart && attributesString.charCodeAt(nameEnd - 1) <= 32) i--;
-        const name = attributesString.slice(nameStart, nameEnd);
-
-        // Skip '="'
-        i += 2;
-
-        // Find attribute value
-        let valueStart = i;
-        while (i < len && attributesString.charCodeAt(i) !== 34) i++; // '"'
-
-        attributes[name] = attributesString.slice(valueStart, i);
-
-        // Move past closing quote
-        i++;
-    }
-
-    return attributes;
-}
-function xmlParseElement(xmlData)
-{
-    // Trim for performance-critical operations
-    xmlData = xmlData.trim();
-
-    // Quick self-closing tag check using direct string methods
-    if (xmlData.charCodeAt(xmlData.length - 2) === 47)
-    { // '/'
-        const spaceIndex = xmlData.indexOf(' ');
-        return {
-            tagName: xmlData.slice(1, spaceIndex > -1 ? spaceIndex : -2),
-            attributes: spaceIndex > -1 ? xmlParseAttributes(xmlData.slice(spaceIndex + 1, -2)) : {},
-            children: []
-        };
-    }
-
-    // Find tag boundaries using indexOf for speed
-    const openTagEnd = xmlData.indexOf('>');
-    const closeTagStart = xmlData.lastIndexOf('</');
-
-    if (openTagEnd === -1 || closeTagStart === -1) return null;
-
-    // Parse first tag
-    const firstTag = xmlData.slice(1, openTagEnd);
-    const spaceIndex = firstTag.indexOf(' ');
-
-    const element = {
-        tagName: spaceIndex > -1 ? firstTag.slice(0, spaceIndex) : firstTag,
-        attributes: spaceIndex > -1 ? xmlParseAttributes(firstTag.slice(spaceIndex + 1)) : {},
-        children: []
-    };
-
-    let body = xmlData.slice(openTagEnd + 1, closeTagStart).trim();
-
-    const cdataStart = body.indexOf("<![CDATA[");
-    if (cdataStart === 0)
-    {
-        const cdataEnd = body.indexOf("]]>", cdataStart);
-        cdataEnd !== -1 && (element.cdata = body.slice(cdataStart + 9, cdataEnd));
-        return element;
-    }
-
-    const childRegex = /<(\w+)([^>]*)\s*\/>|<(\w+)([^>]*)>([\s\S]*?)<\/\3>/g;
-    let childMatch;
-
-    while ((childMatch = childRegex.exec(body)) !== null)
-    {
-        const fullChildXML = childMatch[0];
-        const child = xmlParseElement(fullChildXML);
-        if (child)
-        {
-            element.children.push(child);
-        }
-    }
-
-    return element;
-}
-function xmlGetLangObj(match)
-{
-    const keys = match[1].split('.'); // Split by dot to access nested properties
-    let value = XMBLANG;
-
-    for (const key of keys)
-    {
-        if (value && typeof value === 'object' && key in value)
-        {
-            value = value[key]; // Traverse the object
-        }
-        else
-        {
-            return ""; // Return null if any key is missing
-        }
-    }
-
-    return value; // Return the found object (string array)
-}
-function xmlGetLocalizedString(element, attributeName)
-{
-    const tag = element.children.find(child => child.tagName === attributeName);
-    if (tag)
-    {
-        return tag.children.map(child => child.attributes.str);
-    }
-    if (attributeName in element.attributes)
-    {
-        const match = element.attributes[attributeName].match(/^\{(.+)\}$/);
-        if (match) { return xmlGetLangObj(match); }
-        return element.attributes[attributeName];
-    }
-
-    return "";
-}
-function xmlParseIcon(element)
-{
-    const match = element.match(/^\{(.+)\}$/);
-    if (match) { return std.evalScript(match[1]); }
-    return parseInt(element);
-}
-function xmlParseElfTag(element)
-{
-    // Parse the ELF-specific Value tag
-    const Value = {};
-
-    const valueTag = element.children.find(child => child.tagName === "Value");
-    if (valueTag)
-    {
-        Value.Path = valueTag.attributes.Path;
-        Value.Args = ((valueTag.attributes.Args === undefined) || (valueTag.attributes.Args === "")) ? [] : valueTag.attributes.Args.split(",").map(arg => arg.trim());
-    }
-
-    return Value;
-}
-function xmlParseCodeTag(element)
-{
-    const codeTag = element.children.find(child => child.tagName === "Code");
-    if (codeTag)
-    {
-        if ("filepath" in codeTag.attributes) { return codeTag.attributes.filepath; }
-        else if ("cdata" in codeTag) { return std.evalScript(`(${codeTag.cdata})`); }
-    }
-
-    // No code tag found, return empty function
-    return `()`;
-}
-function xmlParseSubMenu(element)
-{
-    const submenu = {};
-    submenu.Options = [];
-
-    element.children.forEach((option) =>
-    {
-        if (option.tagName === "Option")
-        {
-            if ("filepath" in option.attributes)
-            {
-                const optionObj = option.attributes.filepath;
-                submenu.Options.push(optionObj);
-                return;
-            }
-
-            const optionObj = {
-                Name: xmlGetLocalizedString(option, "Name"),
-                Description: xmlGetLocalizedString(option, "Description"),
-                Type: option.attributes.Type,
-                Icon: parseInt(option.attributes.Icon)
-            };
-
-            if (option.attributes.Type === "SUBMENU") { optionObj.Value = xmlParseSubMenu(option); }
-            else if (option.attributes.Type === "CONTEXT")
-            {
-                optionObj.Value = {};
-                optionObj.Value.Options = [];
-                let defaultGetter = false;
-
-                option.children.forEach((child) =>
-                {
-                    if (child.tagName === "Component")
-                    {
-                        const component = {};
-                        component.Name = xmlGetLocalizedString(child, "Name");
-                        component.Icon = xmlParseIcon(child.attributes.Icon);
-
-                        // Iterate over all attributes and add them as properties of the component object
-                        for (const [name, value] of Object.entries(child.attributes))
-                        {
-                            // Skip the Name and Icon attributes since they're already handled
-                            if (name !== "Name" && name !== "Icon")
-                            {
-                                component[name] = value;
-                            }
-                        }
-                        optionObj.Value.Options.push(component);
-                    } else if (child.tagName === "Default")
-                    {
-                        if ("Variable" in child.attributes)
-                        {
-                            const variableName = child.attributes.Variable;
-                            defaultGetter = () => std.evalScript(variableName);
-                        } else if ("cdata" in child)
-                        {
-                            optionObj.Value.Default = std.evalScript(`(() => { ${child.cdata} })()`);
-                        }
-                    } else if ("cdata" in child)
-                    {
-                        optionObj.Value[child.tagName] = std.evalScript(`(${child.cdata})`);
-                    }
-                });
-
-                if (defaultGetter)
-                {
-                    // Define Default as a getter function
-                    Object.defineProperty(optionObj.Value, "Default", {
-                        get: () => defaultGetter(),
-                        enumerable: true
-                    });
-                }
-            }
-            else if (option.attributes.Type === "CODE") { optionObj.Value = xmlParseCodeTag(option); }
-            else if (option.attributes.Type === "ELF") { optionObj.Value = xmlParseElfTag(option); }
-
-            submenu.Options.push(optionObj);
-        }
-    });
-
-    submenu.Default = 0;
-    return submenu;
-}
-function parseXmlPlugin(xmlString)
-{
-    const parsedData = xmlParseElement(xmlString);
-
-    if (parsedData.tagName !== "App") { return {}; }
-
-    const plugin = {
-        Name: xmlGetLocalizedString(parsedData, "Name"),
-        Description: xmlGetLocalizedString(parsedData, "Description"),
-        Icon: parseInt(parsedData.attributes.Icon),
-        Category: parseInt(parsedData.attributes.Category),
-        Type: parsedData.attributes.Type
-    };
-
-    if (plugin.Type === "SUBMENU")
-    {
-        const optionsTag = parsedData.children.find(child => child.tagName === "Options");
-        if (optionsTag)
-        {
-            plugin.Value = optionsTag.attributes.filepath;
-            if (("required" in optionsTag.attributes) && (optionsTag.attributes.required === "true"))
-            {
-                plugin.Value = {};
-                plugin.Value.Options = execScript(optionsTag.attributes.filepath);
-                plugin.Value.Default = 0;
-                if (plugin.Value.Options.length < 1) { return {}; }
-            }
-        }
-        else { plugin.Value = xmlParseSubMenu(parsedData); }
-    }
-    else if (plugin.Type === "ELF") { plugin.Value = xmlParseElfTag(parsedData); }
-    else if (plugin.Type === "CODE") { plugin.Value = xmlParseCodeTag(parsedData); }
-
-    // Check for CustomIcon and add it if present
-    const customIconTag = parsedData.children.find(child => child.tagName === "CustomIcon");
-    if (customIconTag) { plugin.CustomIcon = customIconTag.attributes.Path; }
-
-    return plugin;
-}
-
-//////////////////////////////////////////////////////////////////////////
 ///*				   			  FILES  							  *///
 //////////////////////////////////////////////////////////////////////////
-/* Decode a byte array into a UTF-8 string */
 
+/* Creates a File Element for the Dashboard */
+function getFileAsItem(filepath, filesize = -1, fileoptions = "")
+{
+    let customIcon = false;
+    let icon = "FILE"; // default icon for files
+    let type = "";
+    let value = {};
+
+    switch (getFileExtension(filepath).toLowerCase())
+    {
+        case "vcd": customIcon = true; icon = 25; break;
+        case "iso": customIcon = true; icon = 26; break;
+        case "elf": icon = "TOOL"; type = "ELF"; value = { Path: filepath, Args: [], }; break;
+        case "png":
+        case "jpg":
+        case "bmp": icon = "CAT_PICTURE"; break;
+        case "mp3":
+        case "wav":
+        case "ogg": icon = "CAT_MUSIC"; break;
+        case "mp4":
+        case "mkv":
+        case "avi": icon = "CAT_VIDEO"; break;
+    }
+
+    const item =
+    {
+        Name: getFileName(filepath),
+        Description: formatFileSize(filesize),
+        Icon: icon,
+        Value: value,
+        FullPath: filepath
+    }
+
+    if (type !== "") { item.Type = type; }
+    if (fileoptions != "") { item.Option = fileoptions; }
+
+    if (customIcon)
+    {
+        Object.defineProperty(item, 'CustomIcon', {
+            get() { return dash_icons[icon]; }
+        });
+    }
+
+    return item;
+}
+
+/* Decode a byte array into a UTF-8 string */
 function utf8Decode(byteArray) {
     let result = '';
     let i = 0;
@@ -676,7 +417,6 @@ function utf8Decode(byteArray) {
 }
 
 /* Read an Entire File and get all its contents as a utf-8 string */
-
 function readFileAsUtf8(filepath)
 {
     const file = os.open(filepath, os.O_RDONLY);
@@ -705,7 +445,6 @@ function readFileAsUtf8(filepath)
 }
 
 /* Get the root of a path */
-
 function getRootName(path)
 {
     const colonIndex = path.indexOf(":");
@@ -716,7 +455,6 @@ function getRootName(path)
 }
 
 /*	Get the full path without the root	*/
-
 function getPathWithoutRoot(path)
 {
     const colonIndex = path.indexOf(":");
@@ -726,9 +464,7 @@ function getPathWithoutRoot(path)
     return path.slice(colonIndex + 2); // Skip ":/" to get the remaining path
 }
 
-/*	Get the directory name of a path.						*/
-/*	NOTE: Currently this works better than the one below	*/
-
+/*	Get the directory name of a path.   */
 function getFolderNameFromPath(path)
 {
     if (typeof path !== 'string' || !path.endsWith('/')) {
@@ -744,9 +480,7 @@ function getFolderNameFromPath(path)
     return lastSlashIndex === -1 ? trimmedPath : trimmedPath.substring(lastSlashIndex + 1);
 }
 
-/*	Get the directory name of a path simplified			*/
-/*	I keep this one just in case it might be useful		*/
-
+/*	Get Path until Directory Name.  */
 function getDirectoryName(path)
 {
     // Regular expression to match the directory part
@@ -754,11 +488,19 @@ function getDirectoryName(path)
     return match ? match[1] : "./";
 }
 
-/*	Converts a given integer into a byte formatted string	*/
+/*	Get Path until Directory Name.  */
+function getFileName(path)
+{
+    const colonIndex = path.indexOf(":");
+    if (colonIndex !== -1) { path = path.slice(colonIndex + 1); }
+    const lastSlashIndex = path.lastIndexOf('/');
+    return lastSlashIndex === -1 ? path : path.substring(lastSlashIndex + 1);
+}
 
+/*	Converts a given integer into a byte formatted string	*/
 function formatFileSize(size)
 {
-  if (size < 0) return "Invalid size";
+  if (size < 0) return "";
 
   const suffixes = ["b", "Kb", "Mb", "Gb", "Tb"];
   let index = 0;
@@ -775,7 +517,6 @@ function formatFileSize(size)
 }
 
 /*	Parses a Path to extract the Game Name in case of Old Format naming conventions	*/
-
 function getGameName(path)
 {
     // Regular expression to match the identifier and game name
@@ -811,7 +552,6 @@ function getGameName(path)
 }
 
 /*	Parses a Path to extract the Game Code in case of Old Format naming conventions	*/
-
 function getGameCodeFromOldFormatName(path)
 {
     // Regular expression to match the "code" part
@@ -820,7 +560,6 @@ function getGameCodeFromOldFormatName(path)
 }
 
 /*	Parses a filepath to get its extension if it has one	*/
-
 function getFileExtension(filePath)
 {
     if (typeof filePath !== 'string') return "";
@@ -836,7 +575,6 @@ function getFileExtension(filePath)
 }
 
 /*	Parses a filepath to search if it matches any extension from a list of extensions	*/
-
 function isExtensionMatching(filePath, ...filterExtensions)
 {
     if (!Array.isArray(filterExtensions) || filterExtensions.length === 0)
@@ -854,6 +592,7 @@ function isExtensionMatching(filePath, ...filterExtensions)
     );
 }
 
+/*	Scans a Directory Art Folder looking for a match	*/
 function scanArtFolder(baseDir, baseFilename, suffix)
 {
     const dirPath = `${baseDir}ART/`;
@@ -901,32 +640,20 @@ function findArt(baseFilename, suffix)
 
 /*	Searchs for a matching ICO file in the ART folder for a specified string	*/
 /*	Returns empty string if not found.											*/
-
-function findICO(baseFilename)
-{
-    return findArt(baseFilename, "ICO");
-}
+function findICO(baseFilename) { return findArt(baseFilename, "ICO"); }
 
 /*	Searchs for a matching BG file in the ART folder for a specified string	*/
 /*	Returns empty string if not found.											*/
-
-function findBG(baseFilename)
-{
-    return findArt(baseFilename, "BG");
-}
+function findBG(baseFilename) { return findArt(baseFilename, "BG"); }
 
 //////////////////////////////////////////////////////////////////////////
 ///*				   			 THREADED 							  *///
 //////////////////////////////////////////////////////////////////////////
 
 /*	Set a new Copy Item to the thread copy queue	*/
-function threadCopyPush(_src, _dest)
-{
-    DATA.CPYQUEUE.push({ src: _src, dest: _dest });
-}
+function threadCopyPush(_src, _dest) { DATA.CPYQUEUE.push({ src: _src, dest: _dest }); }
 
-/*	Processes the thread copy queue		*/
-
+/*	Processes the thread copy queue     */
 function processThreadCopy()
 {
     const progress = System.getFileProgress();
@@ -953,7 +680,6 @@ function processThreadCopy()
 //////////////////////////////////////////////////////////////////////////
 
 // This will retrieve a UTF-8 string from the icon.sys S-JIS encoded Title
-
 function IconSysDecodeTitle(strIn) {
     let strOut = '';
 
@@ -1006,7 +732,6 @@ function IconSysDecodeTitle(strIn) {
 //////////////////////////////////////////////////////////////////////////
 
 // Functions to manage the history file on the memory card
-
 function getSystemDataPath()
 {
     const tmp = std.open("rom0:ROMVER", "r");
@@ -1024,7 +749,6 @@ function getSystemDataPath()
         case 'J': return "BIDATA-SYSTEM";
     }
 }
-
 function getCurrentDOSDate()
 {
     const now = getDateInGMTOffset(DATA.TIME_ZONE);
@@ -1033,7 +757,6 @@ function getCurrentDOSDate()
     const day = now.getDate();
     return (year << 9) | (month << 5) | day;
 }
-
 function getMcHistory()
 {
     const file = os.open(`mc0:/${getSystemDataPath()}/history`, os.O_RDONLY);
@@ -1061,7 +784,6 @@ function getMcHistory()
     os.close(file);
     return objects;
 }
-
 function setMcHistory(entries)
 {
     const systemDataPath = getSystemDataPath();
@@ -1097,7 +819,6 @@ function setMcHistory(entries)
     os.close(file);
     return true;
 }
-
 function setHistoryEntry(name)
 {
     const objects = getMcHistory();
@@ -1152,7 +873,6 @@ function setHistoryEntry(name)
     return setMcHistory(objects);
 }
 
-
 //////////////////////////////////////////////////////////////////////////
 ///*				   			   POPS								  *///
 //////////////////////////////////////////////////////////////////////////
@@ -1166,7 +886,6 @@ function setHistoryEntry(name)
     'game' must be the game's title followed by a '/'.
 
 */
-
 function getPOPSCheat(cheats, game = "", device = "mass")
 {
     // Create an array to store whether each cheat is enabled
@@ -1223,7 +942,6 @@ function getPOPSCheat(cheats, game = "", device = "mass")
     'game' must be the game's title followed by a '/'.
 
 */
-
 function setPOPSCheat(cheats, game = "", device = "mass")
 {
     let path = "";
@@ -1317,35 +1035,6 @@ function setPOPSCheat(cheats, game = "", device = "mass")
 }
 
 //////////////////////////////////////////////////////////////////////////
-///*				   			  SCREEN 							  *///
-//////////////////////////////////////////////////////////////////////////
-
-// Screen Video Mode Handlers
-
-function setScreenWidth()
-{
-    DATA.CANVAS.width = (DATA.WIDESCREEN) ? 704 : 640;
-}
-function setScreenHeight()
-{
-    switch (DATA.CANVAS.mode)
-    {
-        case NTSC:
-        case DTV_480p: DATA.CANVAS.height = 448; break;
-        case PAL: DATA.CANVAS.height = 512; break;
-    }
-}
-function setScreeniMode()
-{
-    switch (DATA.CANVAS.mode)
-    {
-        case NTSC:
-        case PAL: DATA.CANVAS.interlace = INTERLACED; break;
-        case DTV_480p: DATA.CANVAS.interlace = PROGRESSIVE; break;
-    }
-}
-
-//////////////////////////////////////////////////////////////////////////
 ///*				   			DASHBOARD							  *///
 //////////////////////////////////////////////////////////////////////////
 
@@ -1359,7 +1048,6 @@ function ValidateSubMenuObj(obj)
 {
     if (typeof obj.Value === "string")
     {
-        logl(`Parsing Sub Menu: ${Array.isArray(obj.Name) ? obj.Name[0] : obj.Name}`);
         switch (getFileExtension(obj.Value))
         {
             case "xml":
@@ -1378,14 +1066,39 @@ function ValidateSubMenuObj(obj)
                 else { obj.Value = { Options: {}, Default: 0 }; }
                 break;
         }
-        logl(`Parsing Sub Menu Completed: ${Array.isArray(obj.Name) ? obj.Name[0] : obj.Name}`);
     }
+}
+function ValidateContextMenu(obj)
+{
+    if (typeof obj === "string")
+    {
+        switch (getFileExtension(obj))
+        {
+            case "xml":
+                const data = std.loadFile(obj);
+                if (data) { return xmlParseContext(xmlParseElement(data)); }
+                break;
+            case "js":
+                return execScript(obj);
+        }
+    }
+
+    return obj;
+}
+
+function OpenDialogMessage(DialogData)
+{
+    DATA.OVSTATE = "MESSAGE_IN";
+    DATA.DASH_STATE = ((DATA.DASH_CURSUB > -1) && (DATA.DASH_CURCTXLVL > -1)) ? "SUBMENU_CONTEXT_MESSAGE_FADE_OUT" : "IDLE_MESSAGE_FADE_IN";
+    DATA.MESSAGE_INFO = DialogData;
+    DATA.MESSAGE_INFO.Processed = false;
 }
 
 /* Function to set a new Context (Option) Menu Object. */
 
 function SetDashContext(CONTEXT, STATE)
 {
+    CONTEXT = ValidateContextMenu(CONTEXT);
     DATA.DASH_CURCTXITMFIRST = 0;
     DATA.DASH_CURCTXITMLAST = 8;
     DATA.DASH_CURCTXLVL++;
@@ -1517,7 +1230,6 @@ function easeInCubic(t)
     To interpolate an integer from 'startValue' to 'endValue'
     using a 'progress' float that goes from 0.0 to 1.0
 */
-
 function interpolateValue(startValue, endValue, progress)
 {
     if (progress < 0.0) progress = 0.0; // Clamp progress to 0.0
@@ -1529,7 +1241,6 @@ function interpolateValue(startValue, endValue, progress)
     To interpolate a color object into another one
     using a 'progress' float that goes from 0.0 to 1.0
 */
-
 function interpolateColorObj(color1, color2, t)
 {
     return {
@@ -1542,7 +1253,6 @@ function interpolateColorObj(color1, color2, t)
 
 // Neutralizes the overlay tint color.
 // Used in case a custom loaded image needs to display in full color.
-
 function neutralizeOverlayWithAlpha()
 {
     if (DATA.OVALPHA === 0) { return { r: 128, g: 128, b: 128 }; }
@@ -1570,13 +1280,5 @@ function neutralizeOverlayWithAlpha()
 ///*				   			 	CODE							  *///
 //////////////////////////////////////////////////////////////////////////
 
-// Set Screen Parameters.
-
-DATA.CANVAS.double_buffering = true;
-DATA.CANVAS.zbuffering = false;
-Screen.setMode(DATA.CANVAS);
-Screen.setVSync(true);
-if (DBGMODE) { Screen.setFrameCounter(true); }
-DATA.SCREEN_PREVMODE = DATA.CANVAS.mode; 		// Store current Canvas mode for backup.
 ftxtWrite("./XMB/log.txt", ""); 	            // Initializes the log.txt file.
 xmblog("INIT: SYSTEM INIT COMPLETE");

@@ -1,7 +1,7 @@
 {
   "Name": "Retroarch",
   "Description": "",
-  "Icon": 22,
+  "Icon": "TOOL",
   "Category": 5,
   "Type": "ELF",
   "Value": {

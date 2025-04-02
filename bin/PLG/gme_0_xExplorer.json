@@ -9,7 +9,7 @@
     "Explorador de arquivos"
   ],
   "Description": "",
-  "Icon": 18,
+  "Icon": "FOLDER",
   "Category": 5,
   "Type": "SUBMENU",
   "Value": "./PLG/xExplorer/scr.js"

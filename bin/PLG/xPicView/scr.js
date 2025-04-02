@@ -1,91 +1,40 @@
-function getOptionContextInfo(fullpath)
-{
-    let dir_options = [];
-    dir_options.push({ Name: XMBLANG.SETASBG, Icon: -1 });
-
-    let _a = function (DATA, val)
-    {
-        DATA.CUSTOMBG_PATH = DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT].Option.FullPath;
-        DATA.BGIMG = new Image(DATA.CUSTOMBG_PATH);
-        DATA.BGIMG.optimize();
-        DATA.BGIMG.filter = LINEAR;
-        DATA.DISPLAYBG = true;
-        let config = DATA.CONFIG.Get("main.cfg");
-        config["customBg"] = DATA.CUSTOMBG_PATH;
-        config["displayBg"] = DATA.DISPLAYBG.toString();
-        DATA.CONFIG.Push("main.cfg", config);
-    };
-
-    return { Options: dir_options, Default: 0, Confirm: _a, FullPath: fullpath };
-}
+const CtxtMenu = xmlParseContext(xmlParseElement(std.loadFile("./PLG/xPicView/options.xml")));
 
 function ParseDirectory(path)
 {
+    const dir_options = [];
+    const isHdd = (path === "hdd0:");
     const dir = System.listDir(path);
-    let dir_options = [];
 
     // Separate directories and files
-    const directories = dir.filter(item => item.name !== "." && item.name !== ".." && item.dir); // All directories
-    const files = dir.filter(item => !item.dir); // All files
+    let directories = dir.filter(item => item.name !== "." && item.name !== ".." && item.dir); // All directories
+    let files = dir.filter(item => !item.dir); // All files
 
     // Sort directories and files alphabetically by name
     directories.sort((a, b) => a.name.localeCompare(b.name));
     files.sort((a, b) => a.name.localeCompare(b.name));
 
+    const valueFun = (isHdd) ? function () { const part = mountHDDPartition(this.Name); return ParseDirectory(`${part}:/`); } : function () { return ParseDirectory(this.FullPath); }
+
     directories.forEach((item) =>
     {
         dir_options.push({
-            Path: path,
             Name: item.name,
             Description: "",
             Icon: 18,
             Type: "SUBMENU",
-            get Value() { return ParseDirectory(`${this.Path}${this.Name}/`); }
+            FullPath: `${path}${item.name}/`
         });
+
+        Object.defineProperty(dir_options[dir_options.length - 1], "Value", { get: valueFun });
     });
 
     files.forEach((item) =>
     {
-
         if (isExtensionMatching(item.name, "png", "jpg", "bmp"))
         {
-            let icon = 2; // default icon for pictures
-            let type = "";
-            let value = {};
-
-            dir_options.push({
-                Name: item.name,
-                Description: formatFileSize(item.size),
-                Icon: icon,
-                Type: type,
-                Value: value,
-                Option: getOptionContextInfo(`${path}${item.name}`),
-            });
+            dir_options.push(getFileAsItem(`${path}${item.name}`, item.size, CtxtMenu));
         }
-    });
-
-    return { Options: dir_options, Default: 0 };
-}
-
-function getHDDPartitions()
-{
-    let dir_options = [];
-    let partitions = System.listDir("hdd0:");
-    let directories = partitions.filter(item => item.name !== "." && item.name !== ".." && item.dir); // All directories
-    let files = partitions.filter(item => !item.dir); // All files
-
-    // Sort directories and files alphabetically by name
-    directories.sort((a, b) => a.name.localeCompare(b.name));
-
-    directories.forEach((item) =>
-    {
-        dir_options.push({
-            Name: item.name,
-            Description: "",
-            Icon: 18,
-            Type: "SUBMENU",
-            get Value() { const part = mountHDDPartition(this.Name); return ParseDirectory(`${part}:/`); }
-        });
     });
 
     return { Options: dir_options, Default: 0 };
@@ -108,7 +57,7 @@ if (os.readdir("hdd0:")[0].length > 0)
         Description: "",
         Icon: 29,
         Type: "SUBMENU",
-        get Value() { return getHDDPartitions(); }
+        get Value() { return ParseDirectory("hdd0:"); }
     });
 }
 

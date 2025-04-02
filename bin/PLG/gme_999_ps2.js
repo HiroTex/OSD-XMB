@@ -512,7 +512,7 @@ if (!os.readdir(elfPath)[0].includes("neutrino.elf")) { return {}; }
 
 const Info = {
     Name: "Playstation 2",
-    Icon: 18,
+    Icon: "FOLDER",
     Category: 5,
     Type: "SUBMENU",
     Value: getGames(),

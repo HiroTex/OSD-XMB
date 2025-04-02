@@ -17,7 +17,7 @@
     "Pas instellingen aan die verband houden met het uiterlijk van het XMB-scherm.",
     "Ajuste as configurações relacionadas à aparência da tela XMB."
   ],
-  "Icon": 9,
+  "Icon": "SET_THEME",
   "Category": 1,
   "Type": "SUBMENU",
   "Value": "./PLG/xSettings/xThemeOpts.xml"
