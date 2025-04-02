@@ -171,6 +171,14 @@ function xmlParseCodeTag(element)
 }
 function xmlParseDialogTag(element)
 {
+    if (!element.tagName.includes("Dialog"))
+    {
+        const codeTag = element.children.find(child => child.tagName === "Dialog");
+        if (codeTag) { return xmlParseDialogTag(codeTag); }
+        // No Dialog tag found, return empty object
+        return {};
+    }
+
     msgInfo = {};
     msgInfo.Title = xmlGetLocalizedString(element, "Title");
     msgInfo.Icon = xmlParseIcon(element.attributes.Icon);
@@ -202,10 +210,6 @@ function xmlParseDialogTag(element)
             }
             break;
         case "INFO":
-            break;
-        case "PARENTAL_SET":
-            break;
-        case "PARENTAL_CHECK":
             break;
     }
 
@@ -295,6 +299,7 @@ function xmlParseSubMenu(element)
             else if (option.attributes.Type === "CONTEXT") { optionObj.Value = xmlParseContext(option); }
             else if (option.attributes.Type === "CODE") { optionObj.Value = xmlParseCodeTag(option); }
             else if (option.attributes.Type === "ELF") { optionObj.Value = xmlParseElfTag(option); }
+            else if (option.attributes.Type === "DIALOG") { optionObj.Value = xmlParseDialogTag(option); }
 
             submenu.Options.push(optionObj);
         }
@@ -336,6 +341,7 @@ function parseXmlPlugin(xmlString)
     else if (plugin.Type === "CONTEXT") { optionObj.Value = xmlParseContext(parsedData); }
     else if (plugin.Type === "ELF") { plugin.Value = xmlParseElfTag(parsedData); }
     else if (plugin.Type === "CODE") { plugin.Value = xmlParseCodeTag(parsedData); }
+    else if (plugin.Type === "DIALOG") { optionObj.Value = xmlParseDialogTag(parsedData); }
 
     // Check for CustomIcon and add it if present
     const customIconTag = parsedData.children.find(child => child.tagName === "CustomIcon");

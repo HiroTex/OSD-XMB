@@ -52,10 +52,7 @@ function GetThemeContextInfo()
 
     let _a = function (DATA, val)
     {
-        if (DATA.THEME_PATH === `THM/${DASH_CTX[DATA.DASH_CURCTXLVL].Options[DASH_CTX[DATA.DASH_CURCTXLVL].Selected].Name}/`)
-        {
-            return;
-        }
+        if (DATA.THEME_PATH === `THM/${DASH_CTX[DATA.DASH_CURCTXLVL].Options[DASH_CTX[DATA.DASH_CURCTXLVL].Selected].Name}/`) { return; }
 
         DATA.DASH_STATE = "SUBMENU_CONTEXT_MESSAGE_FADE_OUT";
         DATA.OVSTATE = "MESSAGE_IN";

@@ -14,7 +14,8 @@ std.loadScript("./XMB/js/sound.js");		// Manage Audio playing.
 std.loadScript("./XMB/js/pads.js");			// Manage Events executed using Joystick's buttons.
 std.loadScript("./XMB/js/text.js");			// Manage all kind of Text related stuff.
 std.loadScript("./XMB/js/net.js"); 		    // Manage network system.
-std.loadScript("./XMB/js/bg.js");			// Manage Background and Overlay Screens.
+std.loadScript("./XMB/js/bg.js");			// Manage Background and Overlay Elements.
+std.loadScript("./XMB/js/dialog.js");		// Manage Message/Dialog Screens.
 std.loadScript("./XMB/js/dashboard.js");	// Manages the Dashboard Graphic logic.
 std.loadScript("./XMB/js/handlers.js");		// Main Handler functions.
 
@@ -75,14 +76,9 @@ function AddNewPlugin(Plugin)
         {
             Plugin.CustomIcon = resolveFilePath(Plugin.CustomIcon);
             const dir = getDirectoryName(Plugin.CustomIcon);
-            if (os.readdir(dir)[0].includes(getFileName(Plugin.CustomIcon)))
-            {
+            if (os.readdir(dir)[0].includes(getFileName(Plugin.CustomIcon))) {
                 Plugin.CustomIcon = new Image(Plugin.CustomIcon, RAM, async_list);
-            }
-            else
-            {
-                delete Plugin.CustomIcon;
-            }
+            } else { delete Plugin.CustomIcon; }
         }
     }
 

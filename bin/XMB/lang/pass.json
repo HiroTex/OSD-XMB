@@ -1,4 +1,22 @@
 {
+  "PASS_CHANGE": [
+    "Change Password",
+    "Changer le mot de passe",
+    "Cambiar contraseña",
+    "Passwort ändern",
+    "Modifica la password",
+    "Wachtwoord wijzigen",
+    "Mudar a palavra-passe"
+  ],
+  "PARENTAL_CONTROL": [
+    "Parental Control",
+    "Contrôle parental",
+    "Control paterno",
+    "Kindersicherung",
+    "Filtro contenuti",
+    "Ouderlijk toezicht",
+    "Controlo parental"
+  ],
   "PASS_NEW_MSG": [
     "Enter your new password",
     "Enter your new password",

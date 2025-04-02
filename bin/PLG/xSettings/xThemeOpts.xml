@@ -112,42 +112,19 @@
         <String str="Original" />
       </Name>
     </Component>
-    <Component Icon="-1">
-      <Name>
-        <String str="Wallpaper" />
-        <String str="Fond d'écran" />
-        <String str="Fondo de pantalla" />
-        <String str="Hintergrundbild" />
-        <String str="Sfondo personalizzato" />
-        <String str="Achtergrondafbeelding" />
-        <String str="Fundo personalizado" />
-      </Name>
-    </Component>
+    <Component Name="{WALLPAPER}" Icon="-1"/>
     <Default Variable="Number(DATA.DISPLAYBG)"/>
+    <Dialog Icon="9" Title="{WALLPAPER}" BG="true" Type="TEXT" Text="{NOWPP_MSG}" BackBtn="true"/>
     <Confirm>
       <![CDATA[
         function(DATA, val) {
+          DATA.DISPLAYBG = false;
           if ((val == 1) && (!DATA.BGIMG))
           {
-              DATA.DISPLAYBG = false;
-              DATA.DASH_STATE = "SUBMENU_CONTEXT_MESSAGE_FADE_OUT";
-              DATA.OVSTATE = "MESSAGE_IN";
-              DATA.MESSAGE_INFO =
-              {
-                  Icon: 9,
-                  Title: DASH_CTX[DATA.DASH_CURCTXLVL].Options[DASH_CTX[DATA.DASH_CURCTXLVL].Selected].Name,
-                  BG: true,
-                  Type: "TEXT",
-                  Text: XMBLANG.NOWPP_MSG,
-                  BACK_BTN: true,
-                  ENTER_BTN: false,
-              };
-
+              OpenDialogMessage(DASH_CTX[DATA.DASH_CURCTXLVL].Dialog);
               return false;
           }
           else if ((val == 1) && (DATA.BGIMG)) { DATA.DISPLAYBG = true; }
-          else if (val == 0) { DATA.DISPLAYBG = false; }
-
           let config = DATA.CONFIG.Get("main.cfg");
           config["displayBg"] = DATA.DISPLAYBG.toString();
           DATA.CONFIG.Push("main.cfg", config);

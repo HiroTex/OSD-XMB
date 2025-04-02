@@ -1088,34 +1088,7 @@ function ValidateContextMenu(obj)
     return obj;
 }
 
-function OpenDialogMessage(DialogData)
-{
-    DATA.OVSTATE = "MESSAGE_IN";
-    DATA.DASH_STATE = ((DATA.DASH_CURSUB > -1) && (DATA.DASH_CURCTXLVL > -1)) ? "SUBMENU_CONTEXT_MESSAGE_FADE_OUT" : "IDLE_MESSAGE_FADE_IN";
-    DATA.MESSAGE_INFO = DialogData;
-    DATA.MESSAGE_INFO.Processed = false;
-}
-
-function OpenErrorMessage(Message)
-{
-    DATA.DASH_MOVE_FRAME = 0;
-    DATA.OVSTATE = "MESSAGE_IN";
-    DATA.DASH_STATE = "IDLE_MESSAGE_FADE_IN";
-    DATA.MESSAGE_INFO =
-    {
-        Icon: -1,
-        Title: "",
-        BG: false,
-        SKIP_INTRO: true,
-        Type: "TEXT",
-        Text: Message,
-        BACK_BTN: true,
-        ENTER_BTN: false,
-    };
-}
-
 /* Function to set a new Context (Option) Menu Object. */
-
 function SetDashContext(CONTEXT, STATE)
 {
     CONTEXT = ValidateContextMenu(CONTEXT);
@@ -1167,13 +1140,15 @@ function SelectItem()
 {
     if (DATA.DASH_CURSUB < 0)
     {
-        switch(DASH_CAT[DATA.DASH_CURCAT].Options[DATA.DASH_CUROPT].Type)
+        const SelectedObj = DASH_CAT[DATA.DASH_CURCAT].Options[DATA.DASH_CUROPT];
+        switch (SelectedObj.Type)
         {
-            case "ELF": DATA.DASH_STATE = "FADE_OUT"; DASH_SEL = DASH_CAT[DATA.DASH_CURCAT].Options[DATA.DASH_CUROPT]; break;
-            case "CODE": ValidateCodeObj(DASH_CAT[DATA.DASH_CURCAT].Options[DATA.DASH_CUROPT]); break;
-            case "CONTEXT": SetDashContext(DASH_CAT[DATA.DASH_CURCAT].Options[DATA.DASH_CUROPT].Value, "MENU_CONTEXT_IN"); break;
+            case "ELF": DATA.DASH_STATE = "FADE_OUT"; DASH_SEL = SelectedObj; break;
+            case "CODE": ValidateCodeObj(SelectedObj); break;
+            case "CONTEXT": SetDashContext(SelectedObj.Value, "MENU_CONTEXT_IN"); break;
+            case "DIALOG": if (SelectedObj.Value) { OpenDialogMessage(SelectedObj.Value); } break;
             case "SUBMENU":
-                ValidateSubMenuObj(DASH_CAT[DATA.DASH_CURCAT].Options[DATA.DASH_CUROPT]);
+                ValidateSubMenuObj(SelectedObj);
 
                 optBoxA = 0;                    // Reset the Option Box visibility.
                 DATA.BGTMPIMG = false;          // Reset the Temporary Background Image.
@@ -1181,9 +1156,9 @@ function SelectItem()
                 DATA.DASH_PRVSUB++;
                 DATA.DASH_CURSUB++;
                 DATA.DASH_STATE = "SUBMENU_IN";
-                DASH_SUB[DATA.DASH_CURSUB] = DASH_CAT[DATA.DASH_CURCAT].Options[DATA.DASH_CUROPT].Value;
+                DASH_SUB[DATA.DASH_CURSUB] = SelectedObj.Value;
                 DASH_SUB[DATA.DASH_CURSUB].Selected = DATA.DASH_CURSUBOPT;
-                DATA.DASH_CURSUBOPT = (DASH_SUB[DATA.DASH_CURSUB].Options.length < 1) ? -1 : DASH_CAT[DATA.DASH_CURCAT].Options[DATA.DASH_CUROPT].Value.Default;
+                DATA.DASH_CURSUBOPT = (DASH_SUB[DATA.DASH_CURSUB].Options.length < 1) ? -1 : (("Value" in SelectedObj.Value) ? SelectedObj.Value.Default : 0);
 
                 for (let i = 0; i < DASH_SUB[DATA.DASH_CURSUB].Options.length; i++)
                 {
@@ -1197,19 +1172,21 @@ function SelectItem()
     }
     else
     {
-        switch (DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT].Type)
+        const SelectedObj = DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT];
+        switch (SelectedObj.Type)
         {
-            case "ELF": DATA.DASH_STATE = "FADE_OUT"; DASH_SEL = DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT]; break;
-            case "CODE": ValidateCodeObj(DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT]); break;
-            case "CONTEXT": SetDashContext(DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT].Value, "SUBMENU_CONTEXT_IN"); break;
+            case "ELF": DATA.DASH_STATE = "FADE_OUT"; DASH_SEL = SelectedObj; break;
+            case "CODE": ValidateCodeObj(SelectedObj); break;
+            case "CONTEXT": SetDashContext(SelectedObj.Value, "SUBMENU_CONTEXT_IN"); break;
+            case "DIALOG": if (SelectedObj.Value) { OpenDialogMessage(SelectedObj.Value); } break;
             case "SUBMENU":
-                ValidateSubMenuObj(DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT]);
+                ValidateSubMenuObj(SelectedObj);
                 optBoxA = 0;                    // Reset the Option Box visibility.
                 DATA.BGTMPIMG = false;          // Reset the Temporary Background Image.
                 DATA.BGIMGTMPSTATE = 0;         // Reset the Temporary Background Image State.
                 DATA.DASH_STATE = "NEW_SUBMENU_IN";
                 DASH_SUB[DATA.DASH_CURSUB].Selected = DATA.DASH_CURSUBOPT;
-                DASH_SUB[DATA.DASH_CURSUB + 1] = DASH_SUB[DATA.DASH_CURSUB].Options[DATA.DASH_CURSUBOPT].Value;
+                DASH_SUB[DATA.DASH_CURSUB + 1] = SelectedObj.Value;
                 DATA.DASH_CURSUBOPT = (DASH_SUB[DATA.DASH_CURSUB + 1].Options.length < 1) ? -1 : 0;
                 DATA.DASH_PRVSUB++;
                 DATA.DASH_CURSUB++;

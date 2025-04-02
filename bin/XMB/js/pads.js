@@ -183,21 +183,7 @@ function SetPadEvents_Main()
             // If not, ask for Parental Code.
 
             const SAFE = ((!DATA.PARENTAL) || (("Safe" in DASH_CAT[DATA.DASH_CURCAT].Options[DATA.DASH_CUROPT]) && (DASH_CAT[DATA.DASH_CURCAT].Options[DATA.DASH_CUROPT].Safe)))
-            if (SAFE) { SelectItem(); }
-            else
-            {
-                DATA.DASH_STATE = "IDLE_MESSAGE_FADE_IN";
-                DATA.OVSTATE = "MESSAGE_IN";
-                DATA.MESSAGE_INFO =
-                {
-                    Icon: -1,
-                    Title: "",
-                    BG: true,
-                    Type: "PARENTAL_CHECK",
-                    BACK_BTN: true,
-                    ENTER_BTN: true,
-                };
-            }
+            if (SAFE) { SelectItem(); } else { OpenDialogParentalCheck(); }
         }
     };
 

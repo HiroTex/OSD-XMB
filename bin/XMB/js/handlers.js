@@ -315,20 +315,7 @@ function exit()
                 else
                 {
                     // Show Error Message
-                    DATA.DASH_MOVE_FRAME = 0;
-                    DATA.DASH_STATE = "IDLE_MESSAGE_FADE_IN";
-                    DATA.OVSTATE = "MESSAGE_IN";
-                    DATA.MESSAGE_INFO =
-                    {
-                        Icon: -1,
-                        Title: "",
-                        BG: false,
-                        SKIP_INTRO: true,
-                        Type: "TEXT",
-                        Text: "Option Function Code is empty.",
-                        BACK_BTN: true,
-                        ENTER_BTN: false,
-                    };
+                    OpenDialogErrorMsg("Option Function Code is empty.");
                     xmblog("exit: Option Function Code is empty.");
                     DATA.CURRENT_STATE = 1;
                 }
@@ -344,7 +331,7 @@ function exit()
                     else
                     {
                         // Show Error Message
-                        OpenErrorMessage("Partition not defined for ELF.");
+                        OpenDialogErrorMsg("Partition not defined for ELF.");
                         xmblog("exit: Partition not defined for ELF.");
                         DATA.CURRENT_STATE = 1;
                     }
@@ -355,7 +342,7 @@ function exit()
                 else
                 {
                     // Show Error Message
-                    OpenErrorMessage("ELF file not found.");
+                    OpenDialogErrorMsg("ELF file not found.");
                     xmblog("exit: ELF File not found.");
                     DATA.CURRENT_STATE = 1;
                 }
@@ -363,7 +350,7 @@ function exit()
             else
             {
                 // Show Error Message
-                OpenErrorMessage("Unknown Object Type.");
+                OpenDialogErrorMsg("Unknown Object Type.");
                 xmblog("exit: Unknown Object Type.");
                 DATA.CURRENT_STATE = 1;
             }
