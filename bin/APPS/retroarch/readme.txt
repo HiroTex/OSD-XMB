@@ -1,1 +1,0 @@
-Place your cores and info files on the respective folders.

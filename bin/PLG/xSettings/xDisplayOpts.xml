@@ -23,6 +23,7 @@
                 setScreenHeight();
                 setScreeniMode();
                 Screen.setMode(DATA.CANVAS);
+                TextRender.SetScreenDimensions();
                 OpenDialogMessage(DASH_CTX[DATA.DASH_CURCTXLVL].Dialog);
             }
         }

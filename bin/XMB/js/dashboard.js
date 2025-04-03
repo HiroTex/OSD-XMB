@@ -61,9 +61,6 @@ let spining = 0.0;
 // Option Box Alpha
 let optBoxA = 0;
 
-let processingAsyncList = false; 		// Set to true after all plugins were parsed.
-const async_list = new ImageList(); 	// Image List object to asynchronously load images.
-
 let loaded_icons = 0;					// Counter to get the current initialized icons.
 const dash_icons = [];					// Image Array containing the loaded images.
 const colr_icons = [];					// Image Array for the color icons on the Theme Settings.
@@ -93,12 +90,13 @@ let ICOSELCOL = { r: 128, g: 128, b: 128 };
 let TXTSELCOL = { r: 255, g: 255, b: 255 };
 let CTXTINT = { r: 128, g: 128, b: 128 };
 
-class TemporalImageCache
+class ImageLoader
 {
     constructor(limit = 15)
     {
         this.limit = limit;
-        this.images = Array.from({ length: limit }, (_, id) => ({ ID: id, Path: "", Img: false }));
+        this.cache = Array.from({ length: limit }, (_, id) => ({ ID: id, Path: "", Img: false }));
+        this.images = [];
         this.currentID = 0;
         this.asyncImgList = new ImageList();
         this.pendingRequests = [];
@@ -110,10 +108,10 @@ class TemporalImageCache
         return this.processing;
     }
 
-    load(path)
+    loadCached(path)
     {
         // Check if the image is already loaded
-        let existing = this.images.find(img => img.Path === path);
+        let existing = this.cache.find(img => img.Path === path);
         if (existing) return existing.Img;
 
         if (this.processing)
@@ -126,7 +124,7 @@ class TemporalImageCache
         }
 
         // Replace the oldest image
-        let slot = this.images[this.currentID];
+        let slot = this.cache[this.currentID];
         slot.Path = path;
         slot.Img = new Image(path, RAM, this.asyncImgList);
 
@@ -136,33 +134,38 @@ class TemporalImageCache
         return slot.Img;
     }
 
+    loadConstant(path)
+    {
+        // Check if the image is already loaded
+        let existing = this.images.find(img => img.Path === path);
+        if (existing) return existing.Img;
+        this.images.push({ Path: path, Img: new Image(path, RAM, this.asyncImgList) });
+        return this.images[this.images.length - 1].Img;
+    }
+
     process()
     {
         if (this.processing)
         {
             // Check if all images in the current batch are ready
             let allReady = true;
-            this.images.forEach(img =>
-            {
-                if ((img.Img) && (!img.Img.ready()))
-                {
-                    allReady = false;
-                }
-            });
+            this.cache.forEach(img => { if ((img.Img) && (!img.Img.ready())) { allReady = false; }});
+            this.images.forEach(img => { if ((img.Img) && (!img.Img.ready())) { allReady = false; }});
 
             if (!allReady) return;
 
-            // Reset processing state and create a new async list
+            // Reset processing state and constImgs array
             this.processing = false;
+            this.images = [];
 
             // Move pending requests to main array
             while (this.pendingRequests.length > 0)
             {
                 let path = this.pendingRequests.shift();
-                this.load(path);
+                this.loadCached(path);
             }
         } // Only call process() if there are images that are not ready
-        else if (!this.processing && this.images.some(img => img.Img && !img.Img.ready()))
+        else if ((!this.processing) && ((this.cache.some(img => img.Img && !img.Img.ready())) || (this.images.some(img => img.Img && !img.Img.ready()))))
         {
             this.processing = true;
             this.asyncImgList.process();
@@ -170,7 +173,7 @@ class TemporalImageCache
     }
 }
 
-const imgCache = new TemporalImageCache();
+const imgLoader = new ImageLoader();
 
 //////////////////////////////////////////////////////////////////////////
 ///*				   		    FUNCTIONS							  *///
@@ -284,7 +287,7 @@ function DrawDashElementIcon(Obj, size, x, y, a, tint = ICOTINT)
         else if (typeof Obj.CustomIcon === "string")
         {
             Obj.CustomIcon = resolveFilePath(Obj.CustomIcon);
-            const img = imgCache.load(Obj.CustomIcon);
+            const img = imgLoader.loadCached(Obj.CustomIcon);
             if (img) { drawCustomIcon(img, size, x, y, a); }
             else { drawDashLoadIcon(size, size, ICOFULLA + a, x, y); }
         }
@@ -314,7 +317,7 @@ function DrawFocusIcon(x, y, a, s)
 
 function DrawDashElementBackground(Obj, draw)
 {
-    if (("CustomBG" in Obj) && (typeof Obj.CustomBG === "string") && (Obj.CustomBG != "") && (draw) && (!imgCache.isProcessing()))
+    if (("CustomBG" in Obj) && (typeof Obj.CustomBG === "string") && (Obj.CustomBG != "") && (draw) && (!imgLoader.isProcessing()))
     {
         const col = neutralizeOverlayWithAlpha();
 
@@ -532,9 +535,9 @@ function DrawInterfaceFade(frm, direction = 1)
 
 // Draws the Interface selected Category Icon and Text.
 
-function DrawSelectedCat(cat = DATA.DASH_CURCAT, sizeMod = 0, xMod = 0, yMod = 0, aMod = 0, txtAmod = 0)
+function DrawSelectedCat(cat = DATA.DASH_CURCAT, sizeMod = 0, xMod = 0, yMod = 0, aMod = 0, txtAmod = 0, tint = ICOSELCOL)
 {
-    DrawDashElementIcon(DASH_CAT[cat], 72 + sizeMod, 142 + xMod, 104 + yMod, aMod, ICOSELCOL);
+    DrawDashElementIcon(DASH_CAT[cat], 72 + sizeMod, 142 + xMod, 104 + yMod, aMod, tint);
     const yPos = (Math.round((DATA.CANVAS.height - 328) / 2));
     TxtPrint(DASH_CAT[cat].Name[DATA.LANGUAGE], { r:255, g: 255, b: 255, a: TXTFULLA + txtAmod }, { x: (-142 + xMod), y: -yPos }, "CENTER");
 }
@@ -590,15 +593,16 @@ function DrawMovingCats(direction)
     const yMod = (119 - 104) * easedProgress;  // Y moves from 100 to 119
     const txtMod = (direction > 0) ? (-24 * DATA.DASH_MOVE_FRAME) : (-6 * (20 - DATA.DASH_MOVE_FRAME));
     const cat = (direction > 0) ? DATA.DASH_CURCAT + 1 : DATA.DASH_CURCAT;
-    DrawSelectedCat(cat, sizeMod, xMod, yMod, 0, txtMod);
+    const previcoTint = interpolateColorObj(ICOSELCOL,ICOTINT, easedProgress);
+    DrawSelectedCat(cat, sizeMod, xMod, yMod, 0, txtMod, previcoTint);
 
     const nextSizeMod = -reverseEased * (72 - 48);
     const nextxMod = -reverseEased * (142 - 60);
     const nextyMod = -reverseEased * (104 - 119);
     const nexttxtMod =  (direction < 0) ? (-24 * DATA.DASH_MOVE_FRAME) : (-6 * (20 - DATA.DASH_MOVE_FRAME));
     const nextcat = (direction > 0) ? DATA.DASH_CURCAT : DATA.DASH_CURCAT - 1;
-
-    DrawSelectedCat(nextcat, nextSizeMod, nextxMod, nextyMod, 0, nexttxtMod);
+    const nexticoTint = interpolateColorObj(ICOTINT, ICOSELCOL, easedProgress);
+    DrawSelectedCat(nextcat, nextSizeMod, nextxMod, nextyMod, 0, nexttxtMod, nexticoTint);
 
     // Draw Unselected Cats
 
@@ -1401,8 +1405,9 @@ function DrawContextPreviewImage()
         if (!DASH_CTX_PRWIMG)
         {
             DASH_CTX_PRWALPHA = 0;
-            DASH_CTX_PRWIMG = new Image(DASH_CTX[DATA.DASH_CURCTXLVL].Options[DASH_CTX[DATA.DASH_CURCTXLVL].Selected].PreviewImage);
+            DASH_CTX_PRWIMG = imgLoader.loadConstant(DASH_CTX[DATA.DASH_CURCTXLVL].Options[DASH_CTX[DATA.DASH_CURCTXLVL].Selected].PreviewImage);
         }
+        else if (!DASH_CTX_PRWIMG.ready()) { return; }
 
         if (DASH_CTX_PRWALPHA > 20) { DASH_CTX_PRWALPHA = 20; }
         let easedProgress = easeOutCubic(Math.min(DASH_CTX_PRWALPHA++ / 20, 1));

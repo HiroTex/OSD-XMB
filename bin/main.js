@@ -76,9 +76,7 @@ function AddNewPlugin(Plugin)
         {
             Plugin.CustomIcon = resolveFilePath(Plugin.CustomIcon);
             const dir = getDirectoryName(Plugin.CustomIcon);
-            if (os.readdir(dir)[0].includes(getFileName(Plugin.CustomIcon))) {
-                Plugin.CustomIcon = new Image(Plugin.CustomIcon, RAM, async_list);
-            } else { delete Plugin.CustomIcon; }
+            if (!os.readdir(dir)[0].includes(getFileName(Plugin.CustomIcon))) { delete Plugin.CustomIcon; }
         }
     }
 
@@ -152,10 +150,6 @@ function InitializePluginTable()
 
         plgCount++;
     }
-
-    // After processing all Plugins, load all queued images.
-    async_list.process();
-    processingAsyncList = true;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -212,13 +206,13 @@ function InitDashboard()
     for (let i = 0; i < dash_icons_info.children.length; i++)
     {
         const imgPath = (dirFiles.includes(dash_icons_info.children[i].attributes.path)) ? `${DATA.THEME_PATH}icons/${dash_icons_info.children[i].attributes.path}` : `./THM/Original/icons/${dash_icons_info.children[i].attributes.path}`;
-        const tmpImage = new Image(imgPath, RAM, async_list);
+        const tmpImage = imgLoader.loadConstant(imgPath);
         dash_icons.push(tmpImage);
     }
 
     for (let i = 1; i < 14; i++)
     {
-        const colr_icon = new Image(`./XMB/color/ico${i.toString()}.png`, RAM, async_list);
+        const colr_icon = imgLoader.loadConstant(`./XMB/color/ico${i.toString()}.png`);
         colr_icons.push(colr_icon);
     }
 
@@ -278,7 +272,7 @@ function boot()
         case 6: // DISPLAY WARNING TEXT
             Draw.rect(0, 0, DATA.CANVAS.width, DATA.CANVAS.height, Color.new(0, 0, 0, 64));
             DisplayBootWarningText(128);
-            if ((DATA.FADE_FRAME > 256) && (processingAsyncList))
+            if ((DATA.FADE_FRAME > 256) && (!imgLoader.isProcessing()))
             { DATA.FADE_FRAME = 0; DATA.BOOT_STATE++; }
             break;
         case 7: // FADE OUT WARNING TEXT
@@ -355,7 +349,7 @@ function main()
     PrintDebugInfo(); 		// Prints FPS and current RAM usage at the bottom of the screen.
     SoundStopProcess(); 	// If not present, after sound finishes playing the app freezes.
     processThreadCopy();	// This will process a thread Copy operation if it has been queued.
-    imgCache.process();
+    imgLoader.process();
 
     drawOv(); 				// Handles all Overlay elements like Message Screens.
 }

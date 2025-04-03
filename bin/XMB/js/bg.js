@@ -12,7 +12,7 @@ bg.filter = LINEAR;
 bg.startx = 2;
 bg.starty = 2;
 bg.endx = bg.width - 2;
-bg.endy = bg.width - 3;
+bg.endy = bg.height - 2;
 bg.width = DATA.CANVAS.width;
 bg.height = DATA.CANVAS.height;
 
@@ -24,8 +24,8 @@ bg_daily.optimize();
 bg_daily.filter = LINEAR;
 bg_daily.startx = 2;
 bg_daily.starty = 2;
-bg_daily.endx = bg.width - 2;
-bg_daily.endy = bg.width - 3;
+bg_daily.endx = bg_daily.width - 2;
+bg_daily.endy = bg_daily.height - 2;
 bg_daily.width = DATA.CANVAS.width;
 bg_daily.height = DATA.CANVAS.height;
 
@@ -159,17 +159,24 @@ function getDailyBrightness()
     const minutes = now.getMinutes();
     let brightness = 0;
 
-    if (hour >= 12 && hour < 18) {
-        // Interpolate from 0 to 128 between 12:00 and 18:00
-        const totalMinutes = (hour - 12) * 60 + minutes;
-        brightness = Math.round((totalMinutes / (6 * 60)) * 128);
-    } else if (hour >= 18 || hour < 6) {
-        // Brightness stays at 128 between 18:00 and 06:00
+    if (hour >= 15 && hour < 22)
+    {
+        // Interpolate from 0 to 128 between 15:00 and 22:00
+        const totalMinutes = (hour - 15) * 60 + minutes;
+        brightness = Math.round((totalMinutes / (7 * 60)) * 128);
+    } else if (hour >= 22 || hour < 6)
+    {
+        // Brightness stays at 128 between 22:00 and 06:00
         brightness = 128;
-    } else if (hour >= 6 && hour < 12) {
+    } else if (hour >= 6 && hour < 12)
+    {
         // Interpolate from 128 to 0 between 06:00 and 12:00
         const totalMinutes = (hour - 6) * 60 + minutes;
         brightness = Math.round(128 - (totalMinutes / (6 * 60)) * 128);
+    } else if (hour >= 12 && hour < 15)
+    {
+        // Brightness stays at 0 between 12:00 and 15:00
+        brightness = 0;
     }
 
     return brightness;
@@ -246,7 +253,7 @@ function drawBg()
         // Finally, set the background brightness with the gradient texture.
         bg_daily.height = DATA.CANVAS.height;
         bg_daily.width = DATA.CANVAS.width;
-        bg_daily.color = Color.new(190, 190, 190, DATA.BGBRIGHTNESS);
+        bg_daily.color = Color.new(128, 128, 128, DATA.BGBRIGHTNESS);
         bg_daily.draw(0, 0);
     }
 

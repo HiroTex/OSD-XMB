@@ -38,7 +38,7 @@ function GetThemeContextInfo()
     sortedDirectories.forEach((item) =>
     {
         const dirFiles = os.readdir(`./THM/${item.name}/`)[0];
-        const ico = (dirFiles.includes("thmico.png")) ? new Image(`./THM/${item.name}/thmico.png`) : -1;
+        const ico = (dirFiles.includes("thmico.png")) ? imgLoader.loadConstant(`./THM/${item.name}/thmico.png`) : -1;
         dir_options.push
             ({
                 Name: item.name,
