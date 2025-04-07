@@ -1,6 +1,9 @@
-name: Package OSDXMB Release
+name: Build Latest Release
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
