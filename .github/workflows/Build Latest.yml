@@ -1,0 +1,40 @@
+name: Package OSDXMB Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    name: Create OSDXMB ZIP
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Prepare folder structure
+      run: |
+        mkdir -p release/OSDXMB
+        cp -r bin/APPS/OPL release/OSDXMB/APPS/
+        cp -r bin/APPS/neutrino release/OSDXMB/APPS/
+        cp -r bin/ART release/OSDXMB/
+        cp -r bin/CFG release/OSDXMB/
+        cp -r bin/PLG release/OSDXMB/
+        cp -r bin/THM release/OSDXMB/
+        cp -r bin/VMC release/OSDXMB/
+        cp -r bin/XMB release/OSDXMB/
+        cp bin/athena.ini release/OSDXMB/
+        cp bin/OSDXMB.elf release/OSDXMB/
+        cp bin/main.js release/OSDXMB/
+        rm -f release/OSDXMB/PLG/gme_0_xRetroarch.json
+
+    - name: Create ZIP archive
+      run: |
+        cd release
+        zip -r OSDXMB.zip OSDXMB
+
+    - name: Upload ZIP as artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: OSDXMB-Package
+        path: release/OSDXMB.zip
