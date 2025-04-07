@@ -1,4 +1,4 @@
-name: Build Latest Release
+name: Build Latest
 
 on:
   push:
@@ -11,15 +11,26 @@ on:
 jobs:
   package:
     runs-on: ubuntu-latest
-    name: Create OSDXMB ZIP
+    name: Build and Package OSDXMB
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Setup Git identity
+      run: |
+        git config --global user.name "github-actions"
+        git config --global user.email "github-actions@github.com"
+
+    - name: Create or update 'latest' tag
+      run: |
+        git fetch origin
+        git tag -f latest
+        git push origin latest --force
+
     - name: Prepare folder structure
       run: |
-        mkdir -p release/OSDXMB
+        mkdir -p release/OSDXMB/APPS
         cp -r bin/APPS/OPL release/OSDXMB/APPS/
         cp -r bin/APPS/neutrino release/OSDXMB/APPS/
         cp -r bin/ART release/OSDXMB/
@@ -38,8 +49,19 @@ jobs:
         cd release
         zip -r OSDXMB.zip OSDXMB
 
-    - name: Upload ZIP as artifact
-      uses: actions/upload-artifact@v4
+    - name: Upload ZIP to GitHub Release
+      uses: softprops/action-gh-release@v2
       with:
-        name: OSDXMB-Package
-        path: release/OSDXMB.zip
+        tag_name: latest
+        name: OSDXMB Beta Build
+        body: |
+          ⚠️ This is an automatically generated build from the latest commit on the `main` branch.
+          
+          It may include **untested** or **experimental** changes.
+          
+          Always prefer a stable release for production use.
+        files: release/OSDXMB.zip
+        draft: false
+        prerelease: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
