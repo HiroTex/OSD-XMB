@@ -34,7 +34,7 @@ jobs:
         zip -r OSDXMB.zip OSDXMB
 
     - name: Upload ZIP as artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: OSDXMB-Package
         path: release/OSDXMB.zip
