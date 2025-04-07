@@ -24,7 +24,7 @@ jobs:
         cp -r bin/VMC release/OSDXMB/
         cp -r bin/XMB release/OSDXMB/
         cp bin/athena.ini release/OSDXMB/
-        cp bin/OSDXMB.elf release/OSDXMB/
+        cp bin/OSDXMB.ELF release/OSDXMB/
         cp bin/main.js release/OSDXMB/
         rm -f release/OSDXMB/PLG/gme_0_xRetroarch.json
 
