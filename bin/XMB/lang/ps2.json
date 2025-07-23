@@ -1,0 +1,74 @@
+{
+  "VMC1": [
+    "Virtual Memory Card 1",
+    "Virtual Memory Card 1",
+    "Tarjeta de Memoria Virtual 1",
+    "Virtual Memory Card 1",
+    "Virtual Memory Card 1",
+    "Virtual Memory Card 1",
+    "Virtual Memory Card 1"
+  ],
+  "VMC2": [
+    "Virtual Memory Card 2",
+    "Virtual Memory Card 2",
+    "Tarjeta de Memoria Virtual 2",
+    "Virtual Memory Card 2",
+    "Virtual Memory Card 2",
+    "Virtual Memory Card 2",
+    "Virtual Memory Card 2"
+  ],
+  "COPY_VMC_MSG": [
+    "Creating Virtual Memory Card",
+    "Creating Virtual Memory Card",
+    "Creando Tarjeta de Memoria Virtual",
+    "Creating Virtual Memory Card",
+    "Creating Virtual Memory Card",
+    "Creating Virtual Memory Card",
+    "Creating Virtual Memory Card"
+  ],
+  "GC_0": [
+	"IOP: Fast reads",
+	"IOP: Fast reads",
+	"IOP: Lectura Rápida",
+	"IOP: Fast reads",
+	"IOP: Fast reads",
+	"IOP: Fast reads",
+	"IOP: Fast reads"
+  ],
+  "GC_2": [
+	"IOP: Sync reads",
+	"IOP: Sync reads",
+	"IOP: Lectura Sincronizada",
+	"IOP: Sync reads",
+	"IOP: Sync reads",
+	"IOP: Sync reads",
+	"IOP: Sync reads"
+  ],
+  "GC_3": [
+	"EE : Unhook syscalls",
+	"EE : Unhook syscalls",
+	"EE : Desenganchar syscalls",
+	"EE : Unhook syscalls",
+	"EE : Unhook syscalls",
+	"EE : Unhook syscalls",
+	"EE : Unhook syscalls"
+  ],
+  "GC_5": [
+	"IOP: Emulate DVD-DL",
+	"IOP: Emulate DVD-DL",
+	"IOP: Emular DVD-DL",
+	"IOP: Emulate DVD-DL",
+	"IOP: Emulate DVD-DL",
+	"IOP: Emulate DVD-DL",
+	"IOP: Emulate DVD-DL"
+  ],
+  "GC_7": [
+	"IOP: Fix game buffer overrun",
+	"IOP: Fix game buffer overrun",
+	"IOP: Arreglar buffer rebasado",
+	"IOP: Fix game buffer overrun",
+	"IOP: Fix game buffer overrun",
+	"IOP: Fix game buffer overrun",
+	"IOP: Fix game buffer overrun"
+  ]
+}

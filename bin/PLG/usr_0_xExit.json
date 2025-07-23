@@ -1,0 +1,16 @@
+{
+  "Name": [
+    "Exit to Browser",
+    "Quitter vers le navigateur",
+    "Salir al navegador",
+    "Zum Browser zurückkehren",
+    "Esci al Browser",
+    "Verlaten naar de browser",
+    "Sair para o Navegador"
+  ],
+  "Description": "",
+  "Icon": "POWEROFF",
+  "Category": 0,
+  "Type": "CODE",
+  "Value": 0
+}

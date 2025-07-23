@@ -1,0 +1,239 @@
+<App Icon="SET_SYSTEM" Category="1" Type="SUBMENU">
+  <Name>
+    <String str="System settings" />
+    <String str="Paramètres système" />
+    <String str="Ajustes de Sistema" />
+    <String str="System-Einstellungen" />
+    <String str="Impostazioni del sistema" />
+    <String str="Systeeminstellingen" />
+    <String str="Definições de Sistema" />
+  </Name>
+  <Description>
+    <String str="Adjusts settings for this PS2 system." />
+    <String str="Réglez les paramètres de ce système PS2." />
+    <String str="Ajusta la configuración de este sistema PS2." />
+    <String str="Einstellungen für dieses PS2-System anpassen." />
+    <String str="Regola le impostazioni di questo sistema PS2." />
+    <String str="Pas de instellingen van dit PS2-systeem aan." />
+    <String str="Ajuste as configurações deste sistema PS2." />
+  </Description>
+  <Option Type="CONTEXT" Icon="15" Default="{UserConfig.Language}" >
+    <Name>
+      <String str="Language" />
+      <String str="Langue" />
+      <String str="Idioma" />
+      <String str="Sprache" />
+      <String str="Lingua" />
+      <String str="Taal" />
+      <String str="Idioma" />
+    </Name>
+    <Description>
+      <String str="Set the system Language." />
+      <String str="Définir la langue du système." />
+      <String str="Establecer el idioma del sistema." />
+      <String str="Systemsprache festlegen." />
+      <String str="Seleziona la lingua del sistema." />
+      <String str="Stel de systeemtaal in." />
+      <String str="Definir o idioma do sistema." />
+    </Description>
+    <Component Name="English" Icon="-1"/>
+    <Component Name="Français" Icon="-1"/>
+    <Component Name="Español" Icon="-1"/>
+    <Component Name="Deutsch" Icon="-1"/>
+    <Component Name="Italiano" Icon="-1"/>
+    <Component Name="Nederlands" Icon="-1"/>
+    <Component Name="Português" Icon="-1"/>
+    <Confirm>
+      <![CDATA[
+        function(index, item) {
+            UserConfig.Language = index;
+            let config = CfgMan.Get("main.cfg");
+            config["lang"] = index.toString();
+            CfgMan.Push("main.cfg", config);
+        }
+      ]]>
+    </Confirm>
+  </Option>
+  <Option Type="CONTEXT" Icon="15" Default="{UserConfig.ConfirmBtn}">
+    <Name>
+      <String str="Confirmation Button" />
+      <String str="Bouton de confirmation" />
+      <String str="Botón de confirmación" />
+      <String str="Bestätigungstaste" />
+      <String str="Pulsante di conferma" />
+      <String str="Bevestigingsknop" />
+      <String str="Botão de Confirmação" />
+    </Name>
+    <Description>
+      <String str="Sets the confirmation button type." />
+      <String str="Définit le type de bouton de confirmation." />
+      <String str="Establece el tipo de botón de confirmación." />
+      <String str="Legt den Typ der Bestätigungstaste." />
+      <String str="Imposta il tipo di pulsante di conferma." />
+      <String str="Stelt het type bevestigingsknop." />
+      <String str="Define o tipo de botão de confirmação." />
+    </Description>
+    <Component Name="X" Icon="-1"/>
+    <Component Name="O" Icon="-1"/>
+    <Confirm>
+      <![CDATA[
+        function(index, item) {
+            UserConfig.ConfirmBtn = index;
+            let config = CfgMan.Get("main.cfg");
+            config["btnType"] = index.toString();
+            CfgMan.Push("main.cfg", config);
+        }
+      ]]>
+    </Confirm>
+  </Option>
+  <Option Type="CONTEXT" Icon="15" Default="{Number(UserConfig.HDD)}">
+    <Name>
+      <String str="Internal Hard Disk Drive" />
+      <String str="Internal Hard Disk Drive" />
+      <String str="Disco Duro Interno" />
+      <String str="Internal Hard Disk Drive" />
+      <String str="Internal Hard Disk Drive" />
+      <String str="Internal Hard Disk Drive" />
+      <String str="Internal Hard Disk Drive" />
+    </Name>
+    <Description>
+      <String str="Enable HDD (ATA) Reading/Writing." />
+      <String str="Enable HDD (ATA) Reading/Writing." />
+      <String str="Habilitar Lectura/Escritura de HDD (ATA)." />
+      <String str="Enable HDD (ATA) Reading/Writing." />
+      <String str="Enable HDD (ATA) Reading/Writing." />
+      <String str="Enable HDD (ATA) Reading/Writing." />
+      <String str="Enable HDD (ATA) Reading/Writing." />
+    </Description>
+    <Component Name="{DISABLED}" Icon="-1"/>
+    <Component Name="{ENABLED}" Icon="-1"/>
+    <Dialog Icon="-1" BG="false" Type="TEXT" Text="{PLEASE_RESTART}" BackBtn="true"/>
+    <Confirm>
+      <![CDATA[
+        function(index, item) {
+            UserConfig.HDD = index === 1;
+            let config = CfgMan.Get("main.cfg");
+            config["hdd"] = UserConfig.Mx4sio.toString();
+            CfgMan.Push("main.cfg", config);
+			DashUISetDialog(DashUI.Context.ItemCollection[DashUI.Context.Level].Dialog);
+        }
+      ]]>
+    </Confirm>
+  </Option>
+  <Option Type="CONTEXT" Icon="15" Default="{Number(UserConfig.Mx4sio)}" Hide="true">
+    <Name>
+      <String str="MX4SIO Mode" />
+      <String str="MX4SIO Mode" />
+      <String str="Modo MX4SIO" />
+      <String str="MX4SIO Mode" />
+      <String str="MX4SIO Mode" />
+      <String str="MX4SIO Mode" />
+      <String str="MX4SIO Mode" />
+    </Name>
+    <Description>
+      <String str="Set Mx4sio support (disable MMCE)." />
+      <String str="Set Mx4sio support (disable MMCE)." />
+      <String str="Habilita soporte para Mx4sio (deshabilita MMCE)." />
+      <String str="Set Mx4sio support (disable MMCE)." />
+      <String str="Set Mx4sio support (disable MMCE)." />
+      <String str="Set Mx4sio support (disable MMCE)." />
+      <String str="Set Mx4sio support (disable MMCE)." />
+    </Description>
+    <Component Name="{DISABLED}" Icon="-1"/>
+    <Component Name="{ENABLED}" Icon="-1"/>
+    <Dialog Icon="-1" BG="false" Type="TEXT" Text="{PLEASE_RESTART}" BackBtn="true"/>
+    <Confirm>
+      <![CDATA[
+        function(index, item) {
+            UserConfig.Mx4sio = index === 1;
+            let config = CfgMan.Get("main.cfg");
+            config["mx4sio"] = UserConfig.Mx4sio.toString();
+            CfgMan.Push("main.cfg", config);
+			DashUISetDialog(DashUI.Context.ItemCollection[DashUI.Context.Level].Dialog);
+        }
+      ]]>
+    </Confirm>
+  </Option>
+  <Option Type="DIALOG" Icon="15">
+    <Name>
+      <String str="System Information" />
+      <String str="Informations système" />
+      <String str="Información del Sistema" />
+      <String str="Systeminformationen" />
+      <String str="Informazioni sul sistema" />
+      <String str="Systeeminformatie" />
+      <String str="Informação do Sistema" />
+    </Name>
+	<Dialog Icon="8" BG="false" Type="INFO" BackBtn="true" ConfirmBtn="false">
+	  <Title>
+        <String str="System Information" />
+        <String str="Informations système" />
+        <String str="Información del Sistema" />
+        <String str="Systeminformationen" />
+        <String str="Informazioni sul sistema" />
+        <String str="Systeeminformatie" />
+        <String str="Informação do Sistema" />
+      </Title>
+	  <Info>
+		<Item Value="{SCERomVerInfo.Model}" Selectable="false">
+		  <Name>
+			<String str="Model" />
+			<String str="Model" />
+			<String str="Modelo" />
+			<String str="Model" />
+			<String str="Model" />
+			<String str="Model" />
+			<String str="Model" />
+		  </Name>
+		</Item>
+		<Item Name="ROMVER" Value="{SCERomVerInfo.VersionFormatted}" Selectable="false" />
+		<Item Value="{SCERomVerInfo.VersionFormatted}" Selectable="false">
+		  <Name>
+			<String str="Browser" />
+			<String str="Browser" />
+			<String str="Navegador" />
+			<String str="Browser" />
+			<String str="Browser" />
+			<String str="Browser" />
+			<String str="Browser" />
+		  </Name>
+		</Item>
+		<Item Value="{SCERomVerInfo.CDVER}" Selectable="false">
+		  <Name>
+			<String str="CD Player" />
+			<String str="CD Player" />
+			<String str="Reproductor de CD" />
+			<String str="CD Player" />
+			<String str="CD Player" />
+			<String str="CD Player" />
+			<String str="CD Player" />
+		  </Name>
+		</Item>
+		<Item Name="Playstation Driver" Value="{SCERomVerInfo.PS1VER}" Selectable="false" />
+		<Item Name="Region" Value="{SCERomVerInfo.Region}" Selectable="false" />
+		<Item Value="{SCERomVerInfo.Hardware}" Selectable="false">
+		  <Name>
+			<String str="Console Type" />
+			<String str="Console Type" />
+			<String str="Tipo de Consola" />
+			<String str="Console Type" />
+			<String str="Console Type" />
+			<String str="Console Type" />
+			<String str="Console Type" />
+		  </Name>
+		</Item>
+		<Item Value="{SCERomVerInfo.Date}" Selectable="false">
+		  <Name>
+			<String str="Build Date" />
+			<String str="Build Date" />
+			<String str="Fecha" />
+			<String str="Build Date" />
+			<String str="Build Date" />
+			<String str="Build Date" />
+			<String str="Build Date" />
+		  </Name>
+		</Item>
+	  </Info>
+	</Dialog>
+  </Option>
+</App>

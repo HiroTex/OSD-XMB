@@ -1,4 +1,4 @@
-<App Icon="#SET_DISPLAY" Category="1" Type="SUBMENU">
+<App Icon="SET_DISPLAY" Category="1" Type="DISABLED">
   <Name>
     <String str="Display Settings" />
     <String str="Paramètres affichage" />
@@ -17,5 +17,50 @@
     <String str="Pas de instellingen voor video-uitvoer aan." />
     <String str="Ajuste as configurações de saída de vídeo." />
   </Description>
-  <Options filepath="./PLG/xSettings/xDisplayOpts.xml"/>
+  <Option Name="{DISPLAYSET1.NAME}" Description="{DISPLAYSET1.DESC}" Type="CONTEXT" Icon="15">
+    <Component Name="NTSC" Icon="-1"/>
+    <Component Name="PAL" Icon="-1"/>
+    <Component Name="DTV 480p" Icon="-1"/>
+    <Dialog Icon="#SET_DISPLAY" Title="{DISPLAYSET1.NAME}" BG="false" Type="VMODE" ConfirmBtn="true"/>
+    <Default>
+      <![CDATA[
+        switch(ScrCanvas.mode)
+        {
+            case Screen.NTSC: return 0; break;
+            case Screen.PAL: return 1; break;
+            case Screen.DTV_480p: return 2; break;
+        }
+      ]]>
+    </Default>
+    <Confirm>
+      <![CDATA[
+        function(index, item) {
+			const vmodes = [ Screen.NTSC, Screen.PAL, Screen.DTV_480p ];
+            if (ScrCanvas.mode != vmodes[index])
+            {
+                ScrCanvas.mode = vmodes[index];
+                Screen.setMode(ScrCanvas);
+                DashUISetDialog(DashUI.Context.ItemCollection[DashUI.Context.Level].Dialog);
+            }
+        }
+      ]]>
+    </Confirm>
+  </Option>
+  <Option Name="{DISPLAYSET2.NAME}" Description="{DISPLAYSET2.DESC}" Type="CONTEXT" Icon="15" Default="{UserConfig.Aspect}">
+    <Component Name="4:3" Icon="-1"/>
+    <Component Name="16:9" Icon="-1"/>
+    <Confirm>
+      <![CDATA[
+        function(index, item) {
+            UserConfig.Aspect = index;
+			ScrCanvas.width = (index === 0) ? 640 : 704;
+            Screen.setMode(ScrCanvas);
+
+            let config = CfgMan.Get("main.cfg");
+            config["aspect"] = index.toString();
+            CfgMan.Push("main.cfg", config);
+        }
+      ]]>
+    </Confirm>
+  </Option>
 </App>

@@ -1,14 +1,15 @@
-DATA.BGVAL = 8;
-DATA.BGTMP = 8;
-DATA.BGCOL = 8;
-DATA.BGSWITCH = true;
-DATA.BGFRAME = 0;
-DATA.DASH_FOCUS = new Image(`${DATA.THEME_PATH}icons/focus.png`);
-DATA.DASH_FOCUS.optimize();
-DATA.BGIMG = new Image(`${DATA.THEME_PATH}bg/bg.png`);
-DATA.BGIMG.optimize();
-DATA.BGIMG.filter = LINEAR;
-DATA.DISPLAYBG = true;
-ICOSELCOL = { r: 160, g: 140, b: 50 };
-TXTSELCOL = { r: 180, g: 120, b: 0 };
-CTXTINT = { r: 40, g: 96, b: 220 };
+UserConfig.BgColor = 8;
+BgElements.BgColor.Next = UserConfig.BgColor;
+BgElements.BgColor.Progress = 0.0f;
+
+if (!DashElements.ItemFocus)
+{	
+	DashElements.ItemFocus = new Image(`${PATHS.Theme}${UserConfig.Theme}/icons/focus.png`);
+	DashElements.ItemFocus.optimize();
+	DashElements.ItemFocus.filter = LINEAR;
+}
+
+SetNewCustomBgImg(`${PATHS.Theme}${UserConfig.Theme}/bg/bg.png`)
+UICONST.Category.IconSelectedColor = { R: 160, G: 140, B: 50 };
+UICONST.TextSelectedColor = { R: 180, G: 120, B: 0 };
+UICONST.Context.Tint = { R: 40, G: 96, B: 220 };

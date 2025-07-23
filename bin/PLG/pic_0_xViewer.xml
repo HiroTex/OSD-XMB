@@ -1,0 +1,29 @@
+<App Icon="FOLDER" Category="2" Type="SUBMENU">
+  <Name>
+    <String str="Image Viewer" />
+    <String str="Visionneuse d'images" />
+    <String str="Visualizador de Imágenes" />
+    <String str="Bildbetrachter" />
+    <String str="Visualizzatore di immagini" />
+    <String str="Afbeeldingviewer" />
+    <String str="Visualizador de imagens" />
+  </Name>
+  <Options Type="Explorer" ExtensionFilter="png, jpg, bmp" DeviceFilter="Memory Card" />
+  <Context Name="OptionContext" Filter="File">
+	<Component Name="{SETASBG}" Icon="-1" />
+    <Confirm>
+      <![CDATA[
+        function(index, item)
+		{
+			const path = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].FullPath;
+			SetNewCustomBgImg(path);
+			
+		    let config = CfgMan.Get("main.cfg");
+			config["customBg"] = path;
+		    config["displayBg"] = UserConfig.DisplayBg.toString();
+		    CfgMan.Push("main.cfg", config);
+		}
+      ]]>
+    </Confirm>
+  </Context>
+</App>
