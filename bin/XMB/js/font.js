@@ -23,13 +23,13 @@ function FontInit() {
 		const custom_font = `${PATHS.Theme}${UserConfig.Theme}/text/font.ttf`
 		if (std.exists(custom_font)) { FontObj.Font = new Font(custom_font); }
 	}
-	
+
     FontObj.SizeS = 0.44f;
     FontObj.SizeM = 0.5f;
     FontObj.SizeL = 0.65f;
 }
 
-function WrapTextByPixelWidth(line) {	
+function WrapTextByPixelWidth(line) {
 	const limit = (ScrCanvas.width - FontObj.Wrap);
 
 	let lines = [];
@@ -71,7 +71,7 @@ function WrapTextByPixelWidth(line) {
 		// Move to the next set of words
 		i = bestFitIndex + 1;
 	}
-	
+
 	return lines;
 }
 
@@ -80,7 +80,7 @@ function PreprocessText(txt) {
 	let finalLines = [];
 
 	const limit = ScrCanvas.width - FontObj.Wrap;
-	
+
 	lines.forEach((line) =>
 	{
 		let splitLines = (FontObj.Font.getTextSize(line).width < limit) ? [ line ] : WrapTextByPixelWidth(line);
@@ -96,11 +96,11 @@ function FontGlowUpdate() {
 	FontObj.Glow.Value = FontObj.Glow.Value + FontObj.Glow.Dir;
 }
 
-function FontAlignPos(Text, Alignment = "LEFT", Position) {	
+function FontAlignPos(Text, Alignment = "LEFT", Position) {
 	switch(Alignment) {
 		case "LEFT":
 			Position.Y += 10;
-			FontObj.Font.align = Font.ALIGN_LEFT; 
+			FontObj.Font.align = Font.ALIGN_LEFT;
 			break;
 		case "HCENTER":
 			Position.X = Position.X + (ScrCanvas.width >> 1);
@@ -118,17 +118,17 @@ function FontAlignPos(Text, Alignment = "LEFT", Position) {
 			const totalTextWidth = FontObj.Font.getTextSize(longestLine).width;
 			Position.X = ((ScrCanvas.width - totalTextWidth) >> 1) + Position.X;
 			Position.Y = (ScrCanvas.height >> 1) + (Position.Y - ((FontObj.Font.scale * 16) * (Text.length - 1)));
-			FontObj.Font.align = Font.ALIGN_LEFT; 
+			FontObj.Font.align = Font.ALIGN_LEFT;
 			break;
 	}
-	
+
 	return Position;
 }
 
 function FontTextPrint(txt, pos) {
 	const lineSize = FontObj.Font.scale * 32;
     let y = pos.Y;
-    
+
     // Use for loop instead of forEach
     for (let i = 0; i < txt.length; i++) {
         FontObj.Font.print(pos.X, y, txt[i]);
@@ -136,7 +136,7 @@ function FontTextPrint(txt, pos) {
     }
 }
 
-function TxtPrint(Obj) {	
+function TxtPrint(Obj) {
 	// Validate Object
     if (!Obj.Text || !Obj.Position || !('X' in Obj.Position) || !('Y' in Obj.Position)) {
         throw new Error("Invalid text object parameters");
@@ -144,18 +144,18 @@ function TxtPrint(Obj) {
 
 	// Prepare Text Array.
 	if (typeof Obj.Text === 'string') { Obj.Text = PreprocessText(Obj.Text); }
-	
+
 	// Prepare Default Parameters
 	if (!('Color' in Obj)) { Obj.Color = FontObj.Color; }
 	if (!('Scale' in Obj)) { Obj.Scale = FontObj.SizeS; }
 	if (!('Glow' in Obj)) { Obj.Glow = false; }
-	
+
 	// Cap Alpha Value
 	Obj.Color.A = alphaCap(Obj.Color.A);
-	
+
 	// Exit if Alpha less than 1
 	if (Obj.Color.A < 1) { return; }
-	
+
 	FontObj.Font.scale = Obj.Scale;
 	FontObj.Font.dropshadow_color = Color.new(0,0,0, Obj.Color.A >> 1);
 	FontObj.Font.dropshadow = 1.0f;
@@ -163,7 +163,7 @@ function TxtPrint(Obj) {
 	//FontObj.Font.outline = 1.0f;
 	Obj.Position = FontAlignPos(Obj.Text, Obj.Alignment, Obj.Position);
 	FontObj.Font.color = Color.new(Obj.Color.R, Obj.Color.G, Obj.Color.B, Obj.Color.A);
-	
+
 	FontTextPrint(Obj.Text, Obj.Position);
 
 	if (!Obj.Glow) { return; }

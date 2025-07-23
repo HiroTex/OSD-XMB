@@ -11,7 +11,7 @@ const DiscTray = (() => {
 	let oldDisc = 0;
 	let item = false;
 	let processed = false;
-	
+
 	// Disc Types Table
 	const Type = [];
 	Type.push({ Name: "" });
@@ -31,7 +31,7 @@ const DiscTray = (() => {
 	Type.push({ Name: "Audio CD" });
 	Type.push({ Name: "Video DVD" });
 	Type.push({ Name: "Unsupported" });
-	
+
 	function PS1Disc() {
 		const systemcnf = GetSystemCNF();
 		let bootpath = "???";
@@ -82,10 +82,10 @@ const DiscTray = (() => {
 			Type: "ELF",
 			Value: { Path: "rom0:PS1DRV", Args: [bootpath, ver] }
 		});
-		
+
 		return true;
 	}
-	
+
 	function PS2Disc() {
 		const systemcnf = GetSystemCNF();
 
@@ -107,13 +107,13 @@ const DiscTray = (() => {
 		let name = (disc === 11) ? "Playstation 2 DVD" : "Playstation 2 CD";
 		const gmecfg = CfgMan.Get(`${ELFName.toUpperCase()}.cfg`);
 		if ("Title" in gmecfg) { name = gmecfg["Title"]; }
-		
+
 		// Use neutrino if available
 		if ((std.exists(`${PATHS.Neutrino}neutrino.elf`)) && (os.readdir(PATHS.Neutrino)[0].includes("modules"))) {
 			ELFPath = `${PATHS.Neutrino}neutrino.elf`;
 			ELFArgs = GetNeutrinoArgs(ELFName.toUpperCase);
 		}
-		
+
 		AddItem({
 			Disctray: true,
 			Name: name,
@@ -122,30 +122,30 @@ const DiscTray = (() => {
 			Type: "ELF",
 			Value: { Path: ELFPath, Args: ELFArgs }
 		});
-		
+
 		return true;
 	}
-	
+
 	function GetSystemCNF() {
 		const files 	= os.readdir("cdfs:/")[0]; if (files.length < 1) { return false; }
 		const index 	= files.findIndex(file => file.toLowerCase() === 'system.cnf');
 		return ReadCFG(`cdfs:/${files[index]}`);
 	}
-	
+
 	function GoToNewItem() {
 		if ((DashUI.AnimationQueue.length < 1) && (DashUI.State.Current === 1) && (DashUI.Category.Current === 5)) {
 			DashUI.Items.Current = DashCatItems[5].Items.length - 2;
 			DashUI.Items.Next = DashCatItems[5].Items.length - 2;
 			UIAnimationCategoryItemsMove_Start(1);
-		}	
+		}
 	}
-	
+
 	function AddItem(item) {
 		// Set new Item in Dashboard
 		DashCatItems[5].Items.push(item);
 		GoToNewItem();
 	}
-	
+
     function RemoveItem() {
 		for (let i = 0; i < DashCatItems[5].Items.length; i++)
         {
@@ -161,12 +161,12 @@ const DiscTray = (() => {
         }
 		item = false;
 	}
-	
+
     function ProcessItem() {
 		const oldDisc = disc;
 		disc = System.getDiscType();
 		if (disc !== oldDisc) { processed = false; }
-		if (('Function' in Type[disc]) && !processed) { 
+		if (('Function' in Type[disc]) && !processed) {
 			processed = true;
 			const thread = Threads.new(() => { item = Type[disc].Function(); });
 			thread.start();
@@ -176,7 +176,7 @@ const DiscTray = (() => {
     return {
         Process: function() {
 			stat = System.checkDiscTray();
-			
+
 			if (stat !== 0 && item)  { RemoveItem(); 	} // Disctray has been opened
 			if (stat === 0 && !item) { ProcessItem(); 	} // Disctray is closed and needs processing
 		},

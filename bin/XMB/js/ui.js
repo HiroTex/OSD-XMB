@@ -18,8 +18,8 @@ const DashIconsInfo = JSON.parse(std.loadFile(`${PATHS.XMB}dash/dash_icons.json`
 //////////////////////////////////////////////////////////////////////////
 
 function UIHandler() {
-	DashUIStateHandler();
-	
+    DashUIStateHandler();
+
 	switch(DashUI.State.Current) {
 		case 0: // Boot Sequence
 			BootSequenceHandler();
@@ -36,7 +36,7 @@ function UIHandler() {
 			ExitSequenceHandler();
 			break;
 	}
-	
+
 	DashUIAnimationHandler();
 	DrawUIObjectBg();
 	DrawUICategoryItems();
@@ -51,7 +51,7 @@ function UIHandler() {
 
 function BootSequenceHandler() {
 	const StateDuration = UICONST.BootInfo.StateDurations[DashUI.BootState];
-	
+
 	switch (DashUI.BootState) {
 		case 0: // Fade In Screen
 			DashUI.Overlay.Alpha--;
@@ -59,7 +59,7 @@ function BootSequenceHandler() {
 			if (DashUI.BootFrame > StateDuration) { DashUI.BootState++; DashUI.BootFrame = 0; }
 			break;
 		case 1: // Fade In Screen + Boot Logo
-			DashUI.Overlay.Alpha--; 
+			DashUI.Overlay.Alpha--;
 			UIAnimateBootLogo_Work(DashUI.BootFrame);
 			if (DashUI.BootFrame > StateDuration) { DashUI.BootState++; DashUI.BootFrame = 0; }
 			break;
@@ -84,22 +84,22 @@ function BootSequenceHandler() {
 			DashUI.BootWarningAlpha-=2;
 			if (DashUI.BootFrame > StateDuration) { DashUI.OverlayState = 0; DashUI.BootState++; DashUI.BootFrame = 0; }
 			break;
-		case 7: // Fade In Main UI				
+		case 7: // Fade In Main UI
 			if (std.exists(`${PATHS.Theme}${UserConfig.Theme}/thm.js`))	{ std.loadScript(`${PATHS.Theme}${UserConfig.Theme}/thm.js`); }
-			
+
 			UIAnimationCommonFade_Start(DashUI.Clock, () => UIAnimationCommon_Work(DashUI.Clock.Fade, 0.04f), true);
 			UIAnimationCommonFade_Start(DashUI.Category, () => UIAnimationCommon_Work(DashUI.Category.Fade, 0.04f), true);
 			UIAnimationCommonFade_Start(DashUI.Items, () => UIAnimationCommon_Work(DashUI.Items.Fade, 0.04f), true);
 			DashUI.BootState++;
 			break;
 		case 8: //
-			if (DashUI.AnimationQueue.length < 1) { 
+			if (DashUI.AnimationQueue.length < 1) {
 				DashUI.BootState++;
 				DashUI.State.Next = 1;
 			}
 			break;
 	}
-	
+
 	DashUI.BootFrame++;
 }
 
@@ -160,19 +160,19 @@ function ExitSequenceHandler() {
 
 function ExitErrorHandler() {
 	let result = true; // No problems found
-	
+
 	if ('Elf' in gExit)	{
 		// Check if File Exists.
 		const elfExists = std.exists(gExit.Elf.Path);
 		if (!elfExists) {
 			result = false; // An Error has been encountered
-			
+
 			// Show new Error Message
 			OpenDialogErrorMsg(XMBLANG.ERROR.ELF_NOT_FOUND);
 		}
 	}
-	
-	if (result) { DashUI.ExitState++; } // Continue 
+
+	if (result) { DashUI.ExitState++; } // Continue
 	else { DashUI.ExitState = 5; } 		// Fade Back In
 }
 
@@ -193,7 +193,7 @@ function OvHandler() {
 	if (DashUI.Overlay.Alpha < 1) { return; }
 	const ovColor = Color.new(DashUI.Overlay.Color.R, DashUI.Overlay.Color.G, DashUI.Overlay.Color.B, DashUI.Overlay.Alpha);
 	Draw.rect(0, 0, ScrCanvas.width, ScrCanvas.height, ovColor);
-	
+
 	switch(DashUI.OverlayState)
 	{
 		case 1: // Show Boot Warning Text
@@ -206,7 +206,7 @@ function OvHandler() {
 			DrawUIDialog();
 			break;
 	}
-	
+
 }
 
 function DashUIObjectHandler(Item) {
@@ -222,21 +222,21 @@ function DashUIObjectHandler(Item) {
 
 function DashUIStateHandler() {
 	// Only handle State changes after animations are finished.
-	
+
 	if (DashUI.AnimationQueue.length > 0) { SetDashPadEvents(0); return; }
-	
+
 	// Check if there is a state change and handle it accordingly.
 	if (DashUI.State.Next !== DashUI.State.Current) {
 		if ((DashUI.State.Next === 3 && DashUI.Context.Level < 0) || (DashUI.State.Next === 4 && DashUI.Dialog.Level < 0)) {
 			DashUI.State.Next = (DashUI.SubMenu.Level > -1) ? 2 : 1;
 		}
-		
+
 		DashUI.State.Previous = DashUI.State.Current;
 		DashUI.State.Current = DashUI.State.Next;
 	}
-	
+
 	// Update Pad Mode if there is a state change.
-	if (PadSettings.Mode !== DashUI.State.Current) { SetDashPadEvents(DashUI.State.Current); }	
+	if (PadSettings.Mode !== DashUI.State.Current) { SetDashPadEvents(DashUI.State.Current); }
 }
 
 function DashUIResetBg() {
@@ -245,23 +245,23 @@ function DashUIResetBg() {
 	if ('Image' in DashUI.ItemBG) { delete DashUI.ItemBG.Image; }
 }
 
-function DrawUIObjectBg() {	
+function DrawUIObjectBg() {
 	let time = ~~(Timer.getTime(DashUI.ItemBG.Timer) / 100000);
 	if (time < 8) { DashUI.ItemBG.A = 0; return; }
-	
+
 	if (!('Image' in DashUI.ItemBG)) { DashUI.ItemBG.A = 0; return; }
-	
+
 	const customBg = ImageCache.Get(DashUI.ItemBG.Image);
 	const Ready = customBg && customBg.ready();
 	if (!Ready) { DashUI.ItemBG.A = 0; return; }
-	
+
 	if (DashUI.ItemBG.A === 0) {
 		let ival = os.setInterval(() => {
 			DashUI.ItemBG.A += 8;
 			if (DashUI.ItemBG.A > 120) { os.clearInterval(ival); }
 		}, 0)
 	}
-	
+
 	customBg.width = ScrCanvas.width;
 	customBg.height = ScrCanvas.height;
 	customBg.color = Color.new(128, 128, 128, DashUI.ItemBG.A);
@@ -312,10 +312,10 @@ const ImageCache = (() => {
             }
         }
     }
-	
+
 	function loadImages(itemsToLoad) {
 		try {
-			
+
 			for (let i = 0; i < itemsToLoad.length; i++) {
 				const { Path } = itemsToLoad[i];
 				if (!std.exists(Path)) { continue; }
@@ -323,13 +323,13 @@ const ImageCache = (() => {
 				const image = new Image(Path);
 				image.optimize();
 				image.filter = LINEAR;
-				
+
 				// Update cache entry with loaded image
 				const cached = findInCache(Path);
-				
+
 				if (cached) { console.log(`Succesfully Loaded Image: ${Path}`); cached.Image = image; }
 			}
-			
+
 			console.log("Finished Loading All Cached Images");
 		} catch (e) {
 			xlog(e);
@@ -384,37 +384,37 @@ function DashElementsInit() {
 	DashElements.ClockIco = new Image(`${PATHS.XMB}dash/dash_clock.png`);
 	DashElements.ClockIco.startx = 1;
 	DashElements.ClockIco.starty = 1;
-	
+
 	DashElements.ClockOutline = new Image(`${PATHS.XMB}dash/dash_clock_outline.png`);
 	DashElements.ClockOutline.height = ~~(DashElements.ClockOutline.height / 2);
-	
+
 	DashElements.Context = new Image(`${PATHS.XMB}dash/dash_context.png`);
 	DashElements.Context.width = 275;
 	DashElements.Context.startx = 4;
 	DashElements.Context.starty = 2;
-	
+
 	DashElements.CtxIco = new Image(`${PATHS.XMB}color/ctx.png`);
 	DashElements.CtxIco.width = 26;
 	DashElements.CtxIco.height = 26;
-	
+
 	DashElements.LoadIco = new Image(`${PATHS.XMB}dash/dash_load.png`);
-	
+
 	DashElements.BootLogo = new Image(`${PATHS.XMB}dash/dash_logo.png`);
-	
+
 	DashElements.OptionBox = new Image(`${PATHS.XMB}dash/dash_option_box.png`);
 	DashElements.OptionBox.height = 79;
-	
+
 	DashElements.OptionIco = new Image(`${PATHS.XMB}dash/triangle.png`);
 	DashElements.OptionIco.width = 14;
 	DashElements.OptionIco.height = 14;
-	
+
 	DashElements.Arrow = new Image(`${PATHS.XMB}dash/dash_submenu.png`);
-	
+
 	Object.values(DashElements).forEach((dashElem) => {
 		dashElem.optimize();
 		dashElem.filter = LINEAR;
 	});
-	
+
 	DashElements.ItemFocus = false;
 }
 
@@ -424,23 +424,23 @@ function DashPluginsInit() {
 
 	for (let i = 0; i < plugins.length; i++) {
 		if ((plugins[i].dir) || (!extensionMatches(plugins[i].name, [ "json", "xml" ]))) { continue; }
-		
+
 		const fname = plugins[i].name.toLowerCase();
 		const path = `${PATHS.Plugins}${plugins[i].name}`;
 		const plg = std.loadFile(path);
 		let Plugin = false;
-		
+
 		xlog(`Loading Plugin: ${plugins[i].name}`);
-		
+
 		if (plg) {
 			if 		(fname.endsWith(".json")) { Plugin = JSON.parse(plg); 		}
 			else if (fname.endsWith(".xml"))  { Plugin = parseXmlPlugin(plg); 	}
 		}
-		
+
 		if (Plugin) { AddNewPlugin(Plugin);
 		xlog(`Succesfully Loaded Plugin: ${plugins[i].name}`); }
 	}
-	
+
 	UICONST.LoadedPlugins = true;
 	xlog("DashPluginsInit(): All Plugins Loaded");
 }
@@ -456,11 +456,11 @@ function DashBackgroundLoad() {
 			icn.filter = LINEAR;
 			DashIcons.push(icn);
 		}
-		
+
 		DashPluginsInit();
 	} catch (e) {
 		xlog(e);
-	} 
+	}
 }
 
 function DashBackgroundThreadWork() {
@@ -470,19 +470,19 @@ function DashBackgroundThreadWork() {
 
 function DashUIConstantsInit() {
 	UICONST.LoadedPlugins = false;
-	
+
 	UICONST.ClockTextObj = {
 		Text: "",
 		Position: { X: 0, Y: 0 },
 		Scale: FontObj.SizeM,
 		Color: { R: 128, G: 128, B: 128, A: 128 }
 	};
-	
+
 	UICONST.BootInfo = {
 		SfxFrame: 12,
 		StateDurations: [ 63, 127, 29, 127, 63, 119, 127 ]
 	};
-	
+
 	UICONST.BootWarningText = {
 		Text: getLocalText(XMBLANG.BOOT_WARNING),
 		Position: { X: 0, Y: 0 },
@@ -490,10 +490,10 @@ function DashUIConstantsInit() {
 		Scale: FontObj.SizeM,
 		Color: { R:128, G:128, B:128, A:0 }
 	};
-	
+
 	UICONST.BootLogoY = ~~(ScrCanvas.height / 3) + 20;
 	UICONST.BootLogoX = ScrCanvas.width - DashElements.BootLogo.width;
-	UICONST.CatItems = { 
+	UICONST.CatItems = {
 		IconX: (ScrCanvas.width >> 1) - 178,
 		IconY: (ScrCanvas.height >> 1) - 32,
 		TextX: (ScrCanvas.width >> 1) - 80,
@@ -512,7 +512,7 @@ function DashUIConstantsInit() {
 		BaseY: (ScrCanvas.height >> 1) - 15,
 		Tint: false
 	};
-	
+
 	UICONST.ScreenDrawLimit = 64;
 	UICONST.IcoSelSize = 72;
 	UICONST.IcoUnselMod = 24;
@@ -521,7 +521,7 @@ function DashUIConstantsInit() {
 	UICONST.TextUnselectedColor = { R: 128, G: 128, B: 128 };
 	UICONST.ClockX = ScrCanvas.width - 164;
 	UICONST.ClockY = 35;
-	
+
 	UICONST.SubItems = {
 		ArrowX: (ScrCanvas.width >> 1) - 174,
 		ArrowY: (ScrCanvas.height >> 1) - 6,
@@ -530,10 +530,10 @@ function DashUIConstantsInit() {
 		TextX: (ScrCanvas.width >> 1) - 60,
 		TextY: (ScrCanvas.height >> 1) - 16
 	};
-	
+
 	UICONST.ScrLowerLimit = ScrCanvas.height + UICONST.ScreenDrawLimit;
 	UICONST.ScrRightLimit = ScrCanvas.width + UICONST.ScreenDrawLimit;
-	
+
 	UICONST.DialogInfo = {
 		LineYTop: (ScrCanvas.height >> 1) - 160,
 		LineYBottom: (ScrCanvas.height >> 1) + 170,
@@ -542,7 +542,7 @@ function DashUIConstantsInit() {
 		NameY: (ScrCanvas.height >> 1),
 		DescX: (ScrCanvas.width >> 1),
 	}
-	
+
 	UICONST.OptionBox = {
 		XBOX: ScrCanvas.width - 100,
 		YBOX: ScrCanvas.height - 70,
@@ -567,23 +567,23 @@ function DashUInit() {
 	DashUI.BootFrame = 0;
 	DashUI.OverlayState = 0;
 	DashUI.AnimationQueue = [];
-	
+
 	// Overlay Object
 	DashUI.Overlay = {};
 	DashUI.Overlay.Alpha = 128;
 	DashUI.Overlay.Color = { R: 0, G: 0, B: 0 }
-	
+
 	// Init Clock Object
 	DashUI.Clock = {};
 	DashUI.Clock.Display = false;
 	DashUI.Clock.Fade = createFade();
-	
+
 	// Init Item Backgroud Object
 	DashUI.ItemBG = {};
 	DashUI.ItemBG.Timer = Timer.new();
 	Timer.reset(DashUI.ItemBG.Timer);
 	Timer.pause(DashUI.ItemBG.Timer);
-		
+
 	// Init Categories Object
 	DashUI.Category = {};
 	DashUI.Category.Display = false;
@@ -593,7 +593,7 @@ function DashUInit() {
 	DashUI.Category.Animation.Running = false;
 	DashUI.Category.Animation.Progress = 0.0f;
 	DashUI.Category.Fade = createFade();
-	
+
 	// Init Items Object
 	DashUI.ItemCollection = {};
 	DashUI.ItemCollection.Current = DashCatItems[DashUI.Category.Current].Items;
@@ -603,7 +603,7 @@ function DashUInit() {
 		Progress: 0.0f,
 		Running: false
 	};
-	
+
 	DashUI.Items = {};
 	DashUI.Items.Display = false;
 	DashUI.Items.Current = 0;
@@ -612,7 +612,7 @@ function DashUInit() {
 	DashUI.Items.Animation.Running = false;
 	DashUI.Items.Animation.Progress = 0.0f;
 	DashUI.Items.Fade = createFade();
-	
+
 	// Init Sub Menu Object
 	DashUI.SubMenu = {};
 	DashUI.SubMenu.Display = false;
@@ -628,7 +628,7 @@ function DashUInit() {
 	DashUI.SubMenu.Animation.Fade = createFade();
 	DashUI.SubMenu.PrevAnimation = {};
 	DashUI.SubMenu.PrevAnimation.Fade = createFade();
-	
+
 	// Init Context Object
 	DashUI.Context = {};
 	DashUI.Context.Display = false;
@@ -647,10 +647,10 @@ function DashUInit() {
 	DashUI.Context.Fade = createFade();
 	Timer.reset(DashUI.Context.Timer);
 	Timer.pause(DashUI.Context.Timer);
-	
+
 	DashUI.OptionBox = {};
 	DashUI.OptionBox.Progress = 0.0f;
-	
+
 	// Init Dialog Object
 	DashUI.Dialog = {};
 	DashUI.Dialog.Display = false;
@@ -688,10 +688,10 @@ function UIClockText(a) {
     const minutes = gTime.getMinutes();
     const hours12 = (hours24 % 12) || 12;
     const amPm = hours24 >= 12 ? 'PM' : 'AM';
-	
+
 	const date = (UserConfig.DateFormat === 0) ? `${npad2(day)}/${npad2(month)}` : `${npad2(month)}/${npad2(day)}`;
 	const time = (UserConfig.HourFormat === 0) ? `${npad2(hours12)}:${npad2(minutes)} ${amPm}` : `${npad2(hours24)}:${npad2(minutes)}`;
-    
+
 	UICONST.ClockTextObj.Text = [`${date}  ${time}`];
     UICONST.ClockTextObj.Position.X = UICONST.ClockX + 12;
     UICONST.ClockTextObj.Position.Y = UICONST.ClockY + 1;
@@ -701,7 +701,7 @@ function UIClockText(a) {
 }
 
 function DrawUIClock() {
-	if (DashUI.Clock.Display === false) { return; } 
+	if (DashUI.Clock.Display === false) { return; }
 	const fadeProgress = getFadeProgress(DashUI.Clock.Fade);
 	const alpha = ~~(128 * fadeProgress);
 	const clockCol = Color.new(128,128,128,alpha);
@@ -722,7 +722,7 @@ function DrawUIClock() {
 
     clockIco.color = clockCol;
     clockIco.draw(UICONST.ClockX + 139, UICONST.ClockY + 7);
-	
+
 	TxtPrint(UIClockText(alpha));
 }
 
@@ -733,7 +733,7 @@ function DrawUIClock() {
 function DrawDashLoadIcon(Properties) {
 	Properties.Alpha = alphaCap(Properties.Alpha);
     if (Properties.Alpha < 1) { return; }
-	
+
 	DashElements.LoadIco.width = Properties.Width;
 	DashElements.LoadIco.height = Properties.Height;
 	DashElements.LoadIco.color = Color.new(128,128,128, Properties.Alpha);
@@ -741,12 +741,12 @@ function DrawDashLoadIcon(Properties) {
 	DashElements.LoadIco.draw(Properties.X, Properties.Y);
 }
 
-function DrawDashIcon(Properties) {	
+function DrawDashIcon(Properties) {
 	let Image = false;
 	let Ready = false;
 	Properties.Alpha = alphaCap(Properties.Alpha);
 	if (Properties.Alpha < 1) { return; }
-	
+
 	if (('CustomIcon' in Properties) && (typeof Properties.CustomIcon === "string")) {
 		const customImg = ImageCache.Get(Properties.CustomIcon);
 		Ready = customImg && customImg.ready();
@@ -758,7 +758,7 @@ function DrawDashIcon(Properties) {
 		Ready = DashIcons[Properties.ID] && DashIcons[Properties.ID].ready();
 		if (Ready) { Image = DashIcons[Properties.ID]; }
 	}
-	
+
 	if (Ready) {
 		if (!('Tint' in Properties)) { Properties.Tint = { R: 128, G: 128, B: 128 }; }
 		Image.width  = Properties.Width;
@@ -789,16 +789,16 @@ function UpdateIconSpinning() {
     if (DashUI.LoadSpinning == 6.05f) { DashUI.LoadSpinning = 0.05f; }
 }
 
-function UIAnimationCommonFade_Start(element, work, isIn) {	
-	if ((element.Display && isIn === true) || (!element.Display && isIn === false)) { 
-		return; 
+function UIAnimationCommonFade_Start(element, work, isIn) {
+	if ((element.Display && isIn === true) || (!element.Display && isIn === false)) {
+		return;
 	}
-	
+
 	element.Fade.In = isIn;
 	element.Fade.Progress = 0.0f;
 	element.Fade.Running = true;
 	element.Display = true;
-	
+
 	DashUI.AnimationQueue.push(() => {
 		const result = work();
 		if (result) { element.Display = isIn; }
@@ -809,14 +809,14 @@ function UIAnimationCommonFade_Start(element, work, isIn) {
 function UIAnimationCommon_Work(anim, progress) {
 	if (!anim.Running) { return true; }
 	anim.Progress += progress;
-	
+
 	if (anim.Progress >= 1.0f)
 	{
 		anim.Progress = 1.0f;
 		anim.Running = false;
 		return true;
 	}
-	
+
 	return false;
 }
 
@@ -827,10 +827,10 @@ function UIAnimationCommon_Work(anim, progress) {
 function UIAnimationCategoryMove_Start(delta) {
 	const next = DashUI.Category.Next + delta;
 	const run = next >= 0 && next < CATNAME.length;
-	if ((run) && (DashUI.Category.Current === DashUI.Category.Next)) { 
+	if ((run) && (DashUI.Category.Current === DashUI.Category.Next)) {
 		DashUIResetBg();
-		PlayCursorSfx(); 
-		DashUI.Category.Next = next; 
+		PlayCursorSfx();
+		DashUI.Category.Next = next;
 		DashUI.Category.Animation.Running = true;
 		DashUI.Category.Animation.Progress = 0.0f;
 		DashUI.AnimationQueue.push(UIAnimationCategoryMove_Work);
@@ -841,20 +841,20 @@ function UIAnimationCategoryMove_Start(delta) {
 function UIAnimationCategoryMove_Work() {
 	if (!DashUI.Category.Animation.Running) { return true; }
 	DashUI.Category.Animation.Progress += 0.075f;
-	if (DashUI.Category.Animation.Progress < 1.0f) { 
+	if (DashUI.Category.Animation.Progress < 1.0f) {
 		const l = pad.pressed(Pads.LEFT) || (pad.lx < -64);
 		const r = pad.pressed(Pads.RIGHT) || (pad.lx > 64);
 		if ((DashUI.Category.Animation.Progress > 0.6f) && (l || r)) {
 			const delta = l ? -1 : 1;
 			UIAnimationCategoryMove_Reset(delta)
 		}
-		return false; 
+		return false;
 	}
-	
+
 	DashUI.Category.Current = DashUI.Category.Next;
 	DashUI.Category.Animation.Progress = 0.0f;
 	DashUI.Category.Animation.Running = false;
-	
+
 	return true;
 }
 
@@ -862,14 +862,14 @@ function UIAnimationCategoryMove_Reset(delta) {
 	const next = DashUI.Category.Next + delta;
 	const run = next >= 0 && next < CATNAME.length;
 	if (!run) { return }
-	
+
 	DashUIResetBg();
-	PlayCursorSfx(); 
+	PlayCursorSfx();
 	DashUI.Category.Current = DashUI.Category.Next;
 	DashUI.ItemCollection.Current = DashUI.ItemCollection.Next;
 	DashUI.Items.Current = DashCatItems[DashUI.Category.Next].Default;
 	DashUI.Items.Next = DashUI.Items.Current;
-	DashUI.Category.Next = next; 
+	DashUI.Category.Next = next;
 	DashUI.ItemCollection.Swipe.Dir = DashUI.Category.Next - DashUI.Category.Current;
 	DashUI.ItemCollection.Next = DashCatItems[DashUI.Category.Next].Items;
 	DashUI.Category.Animation.Progress = 0.0f;
@@ -878,15 +878,15 @@ function UIAnimationCategoryMove_Reset(delta) {
 
 function DrawUICategories() {
 	if ((!DashUI.Category.Display) || (DashUI.SubMenu.Level > 1)) { return; }
-	
+
 	const anim = DashUI.Category.Animation;
-	
+
 	const Icon = {};
 	const Text = {};
 	Text.Position = {};
 	Text.Alignment = "CENTER";
 	Text.Scale = FontObj.SizeM;
-	
+
 	const fade = DashUI.Category.Fade;
 	const faderunning = fade.Running || (DashUI.Dialog.Display && (!DashUI.Dialog.Data[DashUI.Dialog.Level].BG));
 	let fadeProgress = getFadeProgress(fade);
@@ -896,34 +896,34 @@ function DrawUICategories() {
 	const current = DashUI.Category.Current;
 	const next = DashUI.Category.Next;
 	const nextDif = next - current;
-	
+
 	// Sub Menu Modifiers
 	const subMod = DashUI.SubMenu.Display;
-	
+
 	const subfade = DashUI.SubMenu.Fade;
 	const subfadeProgress = getFadeProgress(subfade);
-	
-	const subSelXmod 	= 80 * subfadeProgress; 
-	const subSelAmod 	= ~~(128 * subfadeProgress); 
-	const subNoSelXmod 	= 18 * subfadeProgress + (18 * DashUI.SubMenu.Level); 
+
+	const subSelXmod 	= 80 * subfadeProgress;
+	const subSelAmod 	= ~~(128 * subfadeProgress);
+	const subNoSelXmod 	= 18 * subfadeProgress + (18 * DashUI.SubMenu.Level);
 	const subNoSelYmod 	= 5 * subfadeProgress + (5 * DashUI.SubMenu.Level);
 	const subNoSelAmod 	= ~~((-102 * subfadeProgress) - (101 * DashUI.SubMenu.Level));
 	const subLevelXmod 	= 80 * DashUI.SubMenu.Level;
-	
+
 	// Context Modifiers
 	const contextMod = DashUI.Context.Display;
 	const contextfade = DashUI.Context.Fade;
 	const contextfadeProgress = contextfade.Running ? (contextfade.In ? cubicEaseOut(contextfade.Progress) : cubicEaseIn(contextfade.Progress)) : 1;
-	
+
     const halfMod    = UICONST.IcoUnselMod >> 1;
 	const contextX 	 = halfMod * contextfadeProgress;
-	
+
 	for (let i = 0; i < CATNAME.length; i++) {
 		const dif = i - current;
 		// Cull: Objects greatly above and below the selected item
 		if (dif < -3) { continue; }
 		else if (dif > 7) { break; }
-				
+
 		Icon.ID 		= i;
 		Icon.Alpha 		= 110;
 		Icon.Width 		= UICONST.IcoSelSize;
@@ -931,7 +931,7 @@ function DrawUICategories() {
 		Icon.X 			= UICONST.Category.IconX;
 		Icon.Y 			= UICONST.Category.IconY;
 		Icon.Tint		= UICONST.Category.IconUnselectedColor;
-		
+
 		Text.Text 		= [ getLocalText(CATNAME[i]) ];
 		Text.Position.X = -142;
 		Text.Position.Y = -54;
@@ -946,15 +946,15 @@ function DrawUICategories() {
 			Text.Color		 = (anim.Running) ? interpolateColorObj(UICONST.TextSelectedColor, UICONST.TextUnselectedColor, anim.Progress) : UICONST.TextSelectedColor;
 			Text.Color.A 	 = 128 + (-120 * easing);
 			Text.Position.X  = Text.Position.X - (92 * easing * nextDif);
-			
-			if (subMod) { 
+
+			if (subMod) {
 				Icon.X 			-= (subSelXmod + subLevelXmod);
 				Icon.Alpha 		-= (128 * subfadeProgress) * DashUI.SubMenu.Level;
 				Text.Position.X -= (subSelXmod + subLevelXmod);
 				Text.Color.A 	-= subSelAmod;
 				Text.Color.A 	-= (128 * DashUI.SubMenu.Level)
 			}
-			
+
 			if (contextMod) {
 				Icon.Tint		 = interpolateColorObj(UICONST.Category.IconSelectedColor, UICONST.Category.IconUnselectedColor, contextfadeProgress);
 				Text.Color.A 	-= ~~(128 * contextfadeProgress); ;
@@ -978,36 +978,36 @@ function DrawUICategories() {
 			Icon.Y 		+= 15;
 			Icon.X 		+= baseX;
 			Icon.X 		+= 81 * -nextDif * easing;
-			
-			if (subMod) { 
+
+			if (subMod) {
 				Icon.Alpha += (subNoSelAmod);
 				Icon.X -= subNoSelXmod;
 				Icon.Y += subNoSelYmod;
 			}
-			
+
 			if (contextMod) {
 				Icon.Alpha += ~~(-102 * contextfadeProgress);
 				Icon.X -= 5 * contextfadeProgress;
 				Icon.Y += 5 * contextfadeProgress;
 			}
 		}
-		
+
 		if (faderunning) {
 			Icon.Alpha 		= ~~(Icon.Alpha * fadeProgress);
 			Text.Color.A 	= ~~(Text.Color.A * fadeProgress);
-			
+
 			// Movimiento interpolado
 			let offsetX = 0;
 			let offsetY = -10 * (1 - fadeProgress);
 			if (dif < 0)      { offsetX = -20 * (1 - fadeProgress); }
 			else if (dif > 0) { offsetX =  20 * (1 - fadeProgress); }
-			
+
 			Icon.X	 		+= offsetX;
 			Icon.Y 			+= offsetY;
 			Text.Position.X += offsetX;
 			Text.Position.Y += offsetY;
 		}
-		
+
 		const insideLimits = (Icon.X > -UICONST.ScreenDrawLimit) && (Icon.X < UICONST.ScrRightLimit);
 		if (insideLimits) { DrawDashIcon(Icon); }
 		if (i === current || i === next) { TxtPrint(Text); }
@@ -1021,9 +1021,9 @@ function DrawUICategories() {
 function UIAnimationCategoryItemsMove_Start(delta) {
 	const next = DashUI.Items.Next + delta;
 	const run = next >= 0 && next < DashUI.ItemCollection.Current.length;
-	if ((run) && (DashUI.Items.Current === DashUI.Items.Next)) { 
+	if ((run) && (DashUI.Items.Current === DashUI.Items.Next)) {
 		DashUIResetBg();
-		PlayCursorSfx(); 
+		PlayCursorSfx();
 		DashUI.Items.Next = next;
 		DashCatItems[DashUI.Category.Current].Default = next;
 		DashUI.Items.Animation.Running = true;
@@ -1034,22 +1034,22 @@ function UIAnimationCategoryItemsMove_Start(delta) {
 
 function UIAnimationCategoryItemsMove_Work() {
 	if (!DashUI.Items.Animation.Running) { return true; }
-	
+
 	DashUI.Items.Animation.Progress += 0.07f;
-	if (DashUI.Items.Animation.Progress < 1.0f) { 
+	if (DashUI.Items.Animation.Progress < 1.0f) {
 		const u = pad.pressed(Pads.UP) || (pad.ly < -64);
 		const d = pad.pressed(Pads.DOWN) || (pad.ly > 64);
 		if ((DashUI.Items.Animation.Progress > 0.6f) && (u || d)) {
 			const delta = u ? -1 : 1;
 			UIAnimationCategoryItemsMove_Reset(delta)
 		}
-		return false; 
+		return false;
 	}
-	
+
 	DashUI.Items.Current = DashUI.Items.Next;
 	DashUI.Items.Animation.Progress = 0.0f;
 	DashUI.Items.Animation.Running = false;
-	
+
 	return true;
 }
 
@@ -1057,8 +1057,8 @@ function UIAnimationCategoryItemsMove_Reset(delta) {
 	const next = DashUI.Items.Next + delta;
 	const run = next >= 0 && next < DashUI.ItemCollection.Current.length;
 	if (!run) { return; }
-	
-	PlayCursorSfx(); 
+
+	PlayCursorSfx();
 	DashUIResetBg();
 	DashUI.Items.Animation.Progress = 0.0f;
 	DashUI.Items.Current = DashUI.Items.Next;
@@ -1078,41 +1078,41 @@ function UIAnimationItemCollectionMove_Work() {
 	if (!DashUI.ItemCollection.Swipe.Running) { return true; }
 	DashUI.ItemCollection.Swipe.Progress += 0.075f;
 	if (DashUI.ItemCollection.Swipe.Progress < 1.0f) { return false; }
-	
+
 	DashUI.ItemCollection.Swipe.Progress = 0.0f;
 	DashUI.ItemCollection.Swipe.Running = false;
 	DashUI.ItemCollection.Current = DashUI.ItemCollection.Next;
 	DashUI.Items.Current = DashCatItems[DashUI.Category.Next].Default;
 	DashUI.Items.Next = DashUI.Items.Current;
-	
+
 	return true;
 }
 
 function DrawUICategoryItems() {
 	DrawUICategoryItems_Work(DashUI.ItemCollection.Current, DashUI.Items.Current, 0)
-	if (DashUI.ItemCollection.Swipe.Running) { 
-		DrawUICategoryItems_Work(DashUI.ItemCollection.Next, 
-								 DashCatItems[DashUI.Category.Next].Default, 
-								 90 * DashUI.ItemCollection.Swipe.Dir); 
+	if (DashUI.ItemCollection.Swipe.Running) {
+		DrawUICategoryItems_Work(DashUI.ItemCollection.Next,
+								 DashCatItems[DashUI.Category.Next].Default,
+								 90 * DashUI.ItemCollection.Swipe.Dir);
 	}
 }
 
 function DrawUICategoryItems_Work(items, current, x) {
     if ((!DashUI.Items.Display) || (DashUI.SubMenu.Level > 1)) return;
-	
+
 	const Name = {};
 	const Icon = {};
-	
+
 	const swipe = DashUI.ItemCollection.Swipe;
-	const swipeProgress = swipe.Running ? 
-		((x !== 0) ? 
-			cubicEaseOut(swipe.Progress) : 
-			cubicEaseIn(swipe.Progress)) 
+	const swipeProgress = swipe.Running ?
+		((x !== 0) ?
+			cubicEaseOut(swipe.Progress) :
+			cubicEaseIn(swipe.Progress))
 		: 1;
-		
+
 	const swipeConst = swipe.Running ? cubicEaseOut(swipe.Progress) : 0;
 	const swipeoffsetX = x + 90 * swipeConst * -swipe.Dir;
-	
+
 	const fade = DashUI.Items.Fade;
 	let faderunning = fade.Running || (DashUI.Dialog.Display && (!DashUI.Dialog.Data[DashUI.Dialog.Level].BG));
 	let fadeProgress = getFadeProgress(fade);
@@ -1129,49 +1129,49 @@ function DrawUICategoryItems_Work(items, current, x) {
     const downOff    = 18;
     const textUp     = -99;
     const textDown   = 21;
-	
+
     const modCurrY      = (dir < 0 ? 82 : -142) * easing;
     const modNextShift  = UICONST.SubItemSlotSize * easing * (-dir);
-	
+
 	// Sub Menu Modifiers
 	const subMod = DashUI.SubMenu.Display;
 	const subfade = DashUI.SubMenu.Fade;
 	const subfadeProgress = getFadeProgress(subfade);
-	
+
 	const subNoSelAmod 		= ~~(-98 * subfadeProgress) - (98 * DashUI.SubMenu.Level);
 	const subNoSelXmod 		= 28 * subfadeProgress + (28 * DashUI.SubMenu.Level);
-	const subSelAmod 		= ~~(-128 * subfadeProgress) - (128 * DashUI.SubMenu.Level); 
+	const subSelAmod 		= ~~(-128 * subfadeProgress) - (128 * DashUI.SubMenu.Level);
 	const subSelXmod 		= 80 * subfadeProgress;
 	const subLevelXmod 		= 80 * DashUI.SubMenu.Level;
 	const subNoSelTextAmod 	= ~~((-128 * subfadeProgress) - (128 * DashUI.SubMenu.Level));
 	const subSelAFadeMod 	= (128 * subfadeProgress) * DashUI.SubMenu.Level;
-	
+
 	// Context Modifiers
 	const contextMod = DashUI.Context.Display;
 	const contextfade = DashUI.Context.Fade;
 	const contextfadeProgress = getFadeProgress(contextfade);
-	
+
 	const contextX = halfMod * contextfadeProgress;
-	
+
     for (let i = 0; i < total; i++) {
 		// Cull: Objects greatly above and below the selected item
 		const diff = i - current;
 		if (diff < -4) continue;
 		if (diff > 5) break;
-		
+
         const info = items[i];
         let Desc = false;
-		
+
 		Icon.ID 		= info.Icon;
 		Icon.Alpha 		= 110;
 		Icon.Width 		= UICONST.IcoSelSize;
 		Icon.Height 	= UICONST.IcoSelSize;
 		Icon.X 			= UICONST.CatItems.IconX;
 		Icon.Y 			= UICONST.CatItems.IconY;
-		
+
 		if ('CustomIcon' in info) { Icon.CustomIcon = info.CustomIcon; }
 		else if ('CustomIcon' in Icon) { delete Icon.CustomIcon; }
-		
+
         Name.Text 		= [ getLocalText(info.Name) ];
 		Name.Position 	= { X:UICONST.CatItems.TextX, Y: UICONST.CatItems.TextY };
 		Name.Scale 		= FontObj.SizeL;
@@ -1188,7 +1188,7 @@ function DrawUICategoryItems_Work(items, current, x) {
             Name.Glow   	= !anim.Running && !contextMod;
 			Name.Color 		= (anim.Running) ? interpolateColorObj(UICONST.TextSelectedColor, UICONST.TextUnselectedColor, anim.Progress) : UICONST.TextSelectedColor;
 			Name.Color.A 	= 128;
-			
+
 			if (Name.Glow) { if ('CustomBG' in info) { DashUI.ItemBG.Image = info.CustomBG; } }
 
 			Desc = {
@@ -1200,17 +1200,17 @@ function DrawUICategoryItems_Work(items, current, x) {
                 },
                 Color: { R:128, G:128, B:128, A: ~~(128 - (128 * easing)) }
             };
-			
-			if (subMod) { 
+
+			if (subMod) {
 				Name.Glow 		= false;
-				Icon.X 			-= (subSelXmod + subLevelXmod); 
+				Icon.X 			-= (subSelXmod + subLevelXmod);
 				Icon.Alpha 		-= subSelAFadeMod;
 				Name.Color.A 	+= subSelAmod;
 				Desc.Color.A 	+= subSelAmod;
 				Name.Position.X -= subSelXmod;
 				Desc.Position.X -= subSelXmod;
 			}
-			
+
 			if (contextMod) {
 				Name.Glow 			= false;
 				if (!subMod) {
@@ -1228,16 +1228,16 @@ function DrawUICategoryItems_Work(items, current, x) {
         }
         else
         {
-            const baseY 	= (diff > 0 ? downOff : upOff) 
-							+ diff * UICONST.SubItemSlotSize 
+            const baseY 	= (diff > 0 ? downOff : upOff)
+							+ diff * UICONST.SubItemSlotSize
 							+ modNextShift;
             Icon.Y      	+= baseY + halfMod;
             Icon.Width  	-= UICONST.IcoUnselMod;
             Icon.Height 	-= UICONST.IcoUnselMod;
             Icon.X      	+= halfMod;
-			
-            Name.Position.Y += ((diff > 0 ? textDown : textUp) 
-                                + diff * UICONST.SubItemSlotSize 
+
+            Name.Position.Y += ((diff > 0 ? textDown : textUp)
+                                + diff * UICONST.SubItemSlotSize
                                 + modNextShift );
 
             if ((anim.Running) && (i === next)) {
@@ -1261,17 +1261,17 @@ function DrawUICategoryItems_Work(items, current, x) {
                     Color: { R:128, G:128, B:128, A: ~~(128 * easing) }
                 };
             }
-			
-			if (subMod) { 
+
+			if (subMod) {
 				const subNoSelYmod = ((diff > 0) ? -8 : 8) * subfadeProgress;
-				Icon.X 			-= subNoSelXmod; 
+				Icon.X 			-= subNoSelXmod;
 				Icon.Y 			+= (subNoSelYmod + (((diff > 0) ? -8 : 8) * DashUI.SubMenu.Level));
 				Icon.Alpha 		+= subNoSelAmod;
 				Name.Color.A 	+= subNoSelTextAmod;
 				Name.Position.X -= subNoSelXmod;
 				Name.Position.Y += subNoSelYmod;
 			}
-			
+
 			if (contextMod) {
 				const ctxNoSelYmod = ((diff > 0) ? 10 : -10) * contextfadeProgress;
 				Icon.Y 			+= ctxNoSelYmod;
@@ -1280,43 +1280,43 @@ function DrawUICategoryItems_Work(items, current, x) {
 				Name.Position.Y += ctxNoSelYmod;
 			}
         }
-		
+
 		if (faderunning) {
 			Name.Glow 		= false;
 			Icon.Alpha 		= ~~(Icon.Alpha * fadeProgress);
 			Name.Color.A 	= ~~(Name.Color.A * fadeProgress);
-			
+
 			const rel = i - current;
 			let offsetX = -5 * (1 - fadeProgress);
 			let offsetY = 0;
 			if (rel < 0)      { offsetY = -20 * (1 - fadeProgress); }
 			else if (rel > 0) { offsetY =  20 * (1 - fadeProgress); }
-			
+
 			Icon.X 			+= offsetX;
 			Icon.Y 			+= offsetY;
 			Name.Position.X += offsetX;
 			Name.Position.Y += offsetY;
-			
-			if (Desc) { 
+
+			if (Desc) {
 				Desc.Color.A 	= ~~(Desc.Color.A * fadeProgress);
 				Desc.Position.X += offsetX;
-				Desc.Position.Y += offsetY; 
+				Desc.Position.Y += offsetY;
 			}
 		}
 		else if (swipe.Running) {
 			Name.Glow = false;
-			
+
 			Icon.Alpha 		= ~~(Icon.Alpha * swipeProgress);
 			Name.Color.A 	= ~~(Name.Color.A * swipeProgress);
 			Icon.X 			+= swipeoffsetX;
 			Name.Position.X += swipeoffsetX;
-			
+
 			if (Desc) { Desc.Color.A = Name.Color.A; Desc.Position.X = Name.Position.X; }
 		}
 
         if (Icon.Y < -UICONST.ScreenDrawLimit) continue;
         if (Icon.Y > UICONST.ScrLowerLimit) break;
-		
+
 		// Draw Focus
 		if ((DashUI.SubMenu.Level < 1) && (DashElements.ItemFocus) && (i === current || i === next) && Desc) {
 			let FocusX = Icon.X - 5;
@@ -1331,7 +1331,7 @@ function DrawUICategoryItems_Work(items, current, x) {
 				const mod = 24 * (isNext ? (1 - easing) : easing);
 				focus.width = 82 - mod;
 				focus.height = 72 - mod;
-			} 
+			}
 			else if (contextMod) {
 				const mod = 24 * contextfadeProgress;
 				focus.width = 82 + mod;
@@ -1341,7 +1341,7 @@ function DrawUICategoryItems_Work(items, current, x) {
 				focus.width = 82;
 				focus.height = 72;
 			}
-			
+
 			focus.color = Color.new(128, 128, 128, FocusA);
 			focus.draw(FocusX, FocusY);
 		}
@@ -1374,14 +1374,14 @@ function DashUIBackFromSubMenu() {
 function UIAnimateSubMenuItemsFade_Start(isIn) {
 	DashUIResetBg();
 
-	const element = DashUI.SubMenu;	
+	const element = DashUI.SubMenu;
 	element.Fade.In = isIn;
 	element.Fade.Progress = 0.0f;
 	element.Fade.Running = true;
 	element.Display = true;
 	element.PrevAnimation.Display = true;
 	DashUI.AnimationQueue.push(UIAnimateSubMenuItemsFade_Work);
-	
+
 	const subElement = DashUI.SubMenu.Animation;
 	subElement.Fade.In = isIn;
 	subElement.Fade.Progress = 0.0f;
@@ -1397,8 +1397,8 @@ function UIAnimateSubMenuItemsFade_Work() {
 	if (DashUI.SubMenu.Fade.Progress >= 1.0f) {
 		DashUI.SubMenu.Fade.Progress = 1.0f;
 		DashUI.SubMenu.Fade.Running = false;
-		if (!DashUI.SubMenu.Fade.In) { 
-			DashUI.SubMenu.Level--; 
+		if (!DashUI.SubMenu.Fade.In) {
+			DashUI.SubMenu.Level--;
 			DashUI.SubMenu.Display = (DashUI.SubMenu.Level > -1);
 			if (DashUI.SubMenu.Level > -1) {
 				const next = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Default;
@@ -1411,16 +1411,16 @@ function UIAnimateSubMenuItemsFade_Work() {
 		}
 		return true;
 	}
-	
+
 	return false;
 }
 
 function UIAnimationSubMenuItemsMove_Start(delta) {
 	const next = DashUI.SubMenu.Items.Next + delta;
 	const run = next >= 0 && next < DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items.length;
-	if ((run) && (DashUI.SubMenu.Items.Current === DashUI.SubMenu.Items.Next)) { 
+	if ((run) && (DashUI.SubMenu.Items.Current === DashUI.SubMenu.Items.Next)) {
 		DashUIResetBg();
-		PlayCursorSfx(); 
+		PlayCursorSfx();
 		DashUI.SubMenu.Items.Next = next;
 		DashUI.SubMenu.Animation.Running = true;
 		DashUI.SubMenu.Animation.Progress = 0.0f;
@@ -1430,24 +1430,24 @@ function UIAnimationSubMenuItemsMove_Start(delta) {
 
 function UIAnimationSubMenuItemsMove_Work() {
 	if (!DashUI.SubMenu.Animation.Running) { return true; }
-	
+
 	DashUI.SubMenu.Animation.Progress += 0.07f;
-	if (DashUI.SubMenu.Animation.Progress < 1.0f) { 
+	if (DashUI.SubMenu.Animation.Progress < 1.0f) {
 		const u = pad.pressed(Pads.UP) || (pad.ly < -64);
 		const d = pad.pressed(Pads.DOWN) || (pad.ly > 64);
 		if ((DashUI.SubMenu.Animation.Progress > 0.6f) && (u || d)) {
 			const delta = u ? -1 : 1;
 			UIAnimationSubMenuItemsMove_Reset(delta)
 		}
-		
-		return false; 
+
+		return false;
 	}
-	
+
 	DashUI.SubMenu.Items.Current = DashUI.SubMenu.Items.Next;
 	DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Default = DashUI.SubMenu.Items.Current;
 	DashUI.SubMenu.Animation.Progress = 0.0f;
 	DashUI.SubMenu.Animation.Running = false;
-	
+
 	return true;
 }
 
@@ -1455,8 +1455,8 @@ function UIAnimationSubMenuItemsMove_Reset(delta) {
 	const next = DashUI.SubMenu.Items.Next + delta;
 	const run = next >= 0 && next < DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items.length;
 	if (!run) { return; }
-	
-	PlayCursorSfx(); 
+
+	PlayCursorSfx();
 	DashUIResetBg();
 	DashUI.SubMenu.Items.Current = DashUI.SubMenu.Items.Next;
 	DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Default = DashUI.SubMenu.Items.Current;
@@ -1548,12 +1548,12 @@ function DrawUISubMenuPreviousLevel() {
 	DashElements.Arrow.draw(UICONST.SubItems.ArrowX - (80 * fadeProgress), UICONST.SubItems.ArrowY);
 
 	let Icon = {}, Name = {}, Desc = null;
-	
+
 	// Context Modifiers
 	const contextMod = DashUI.Context.Display;
 	const contextfade = DashUI.Context.Fade;
 	const contextfadeProgress = contextfade.Running ? (contextfade.In ? cubicEaseOut(contextfade.Progress) : cubicEaseIn(contextfade.Progress)) : 1;
-	
+
 	const contextX = halfMod * contextfadeProgress;
 
 	for (let i = 0, len = items.length; i < len; i++) {
@@ -1572,7 +1572,7 @@ function DrawUISubMenuPreviousLevel() {
 
 		if ('CustomIcon' in info) { Icon.CustomIcon = info.CustomIcon; }
 		else if ('CustomIcon' in Icon) { delete Icon.CustomIcon; }
-		
+
 		Name.Text     = [ getLocalText(info.Name) ];
 		Name.Position = { X: UICONST.SubItems.TextX, Y: UICONST.SubItems.TextY };
 		Name.Scale    = FontObj.SizeL;
@@ -1597,7 +1597,7 @@ function DrawUISubMenuPreviousLevel() {
 				},
 				Color: { R:128, G:128, B:128, A: baseA }
 			};
-			
+
 			if (contextMod)	{ Icon.X -= contextX; }
 		}
 		else {
@@ -1612,7 +1612,7 @@ function DrawUISubMenuPreviousLevel() {
 			Icon.Y       += yOffset + baseY + halfMod;
 			Name.Position.Y += yOffset + mod + diff * UICONST.SubItemSlotSize;
 			Name.Position.X -= noSelModX;
-			
+
 			if (contextMod)	{
 				Icon.X -= contextX;
 				Icon.Y -= ((diff > 0) ? contextX : -contextX);
@@ -1622,16 +1622,16 @@ function DrawUISubMenuPreviousLevel() {
 
 		if ((Icon.Y < -UICONST.ScreenDrawLimit) || (Icon.Y > UICONST.ScrLowerLimit)) continue;
 		if (Desc) TxtPrint(Desc);
-		if (CtxtName) { 
+		if (CtxtName) {
 			const modX = (i === current) ? SelModX : noSelModX;
 			CtxtName.Text	= [ info.Value.Items[info.Value.Default].Name ];
 			CtxtName.Alignment = "RIGHT";
 			CtxtName.Position = { X: -40 - modX , Y: Name.Position.Y };
 			CtxtName.Color = UICONST.TextUnselectedColor;
 			CtxtName.Color.A = Name.Color.A;
-			TxtPrint(CtxtName); 
+			TxtPrint(CtxtName);
 		}
-		
+
 		// Draw Focus
 		if ((DashElements.ItemFocus) && Desc) {
 			let FocusX = Icon.X - 5;
@@ -1639,11 +1639,11 @@ function DrawUISubMenuPreviousLevel() {
 			let FocusA = Desc.Color.A;
 			let focus = DashElements.ItemFocus;
 			focus.width = 82;
-			focus.height = 72;			
+			focus.height = 72;
 			focus.color = Color.new(128, 128, 128, FocusA);
 			focus.draw(FocusX, FocusY);
 		}
-		
+
 		TxtPrint(Name);
 		DrawDashIcon(Icon);
 	}
@@ -1651,47 +1651,47 @@ function DrawUISubMenuPreviousLevel() {
 
 function DrawUISubMenu() {
 	if ((!DashUI.SubMenu.Display) || (!DashUI.SubMenu.Animation.Display)) { return; }
-	
+
 	DrawUISubMenuFadingInitialLevel();
 	DrawUISubMenuPreviousLevel();
-	
+
 	const Name 		= {};
 	const Icon 		= {};
 	const items 	= DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items;
 	const current 	= DashUI.SubMenu.Items.Current;
-	
+
 	const anim 		 = DashUI.SubMenu.Animation;
     const easing     = anim.Running ? cubicEaseOut(anim.Progress) : 0;
     const next       = DashUI.SubMenu.Items.Next;
     const dir        = next - current;
-	
+
 	const fade			= DashUI.SubMenu.Fade;
 	const fadeProgress	= getFadeProgress(fade);
 	const aFade 		= DashUI.SubMenu.Animation.Fade;
 	let aFadeProgress 	= getFadeProgress(aFade);
-	
+
 	if (!aFade.Running) { aFadeProgress = fadeProgress; }
-	
+
     const halfMod    	= UICONST.IcoUnselMod >> 1;
 	const baseA 	 	= ~~(128 * aFadeProgress);
 	const icoA		 	= ~~(110 * aFadeProgress);
 	const xFadeMod 	 	= ((DashUI.SubMenu.Level > 0) ? 4 : 24) * (1 - fadeProgress);
     const modNextShift  = UICONST.SubItemSlotSize * easing * (-dir);
     const modCurrY      = (dir < 0 ? 87 : -65) * easing;
-	
+
 	// Context Modifiers
 	const contextMod = DashUI.Context.Display;
 	const contextfade = DashUI.Context.Fade;
 	const contextfadeProgress = contextfade.Running ? (contextfade.In ? cubicEaseOut(contextfade.Progress) : cubicEaseIn(contextfade.Progress)) : 1;
-	
+
 	const ArrowA = ~~(84 * aFadeProgress);
 	const ArrowX = (contextMod) ? ~~(-halfMod * contextfadeProgress) : 0;
-	
+
 	DashElements.Arrow.width = 20;
 	DashElements.Arrow.height = 20;
 	DashElements.Arrow.color = Color.new(128,128,128,ArrowA);
 	DashElements.Arrow.draw(UICONST.SubItems.ArrowX + ArrowX, UICONST.SubItems.ArrowY);
-	
+
 	// Display Empty Message
 	if (items.length < 1) {
 		Name.Text 		= [ getLocalText(XMBLANG.MSG_SUBMENU_EMPTY) ];
@@ -1700,39 +1700,39 @@ function DrawUISubMenu() {
 		Name.Color 		= { R:128, G:128, B:128, A:baseA };
 		Name.Glow   	= false;
 		if (fade.Running) Name.Position.X -= xFadeMod;
-		
+
         TxtPrint(Name);
 	}
-	
+
 	for (let i = 0; i < items.length; i++) {
 		const diff = i - current;
 		if (diff < -8) continue;
 		if (diff > 6) break;
-		
+
 		let Desc = false;
         const info = items[i];
-		
+
 		Icon.ID 		= info.Icon;
 		Icon.Alpha 		= icoA;
 		Icon.Width 		= UICONST.IcoSelSize;
 		Icon.Height 	= UICONST.IcoSelSize;
 		Icon.X 			= UICONST.SubItems.IconX;
 		Icon.Y 			= UICONST.SubItems.IconY;
-		
+
 		if ('CustomIcon' in info) { Icon.CustomIcon = info.CustomIcon; }
 		else if ('CustomIcon' in Icon) { delete Icon.CustomIcon; }
-		
+
         Name.Text 		= [ getLocalText(info.Name) ];
 		Name.Position 	= { X: UICONST.SubItems.TextX, Y:UICONST.SubItems.TextY };
 		Name.Scale 		= FontObj.SizeL;
 		Name.Color 		= UICONST.TextUnselectedColor;
 		Name.Color.A 	= baseA;
 		Name.Glow   	= false;
-		
+
 		let CtxtName = (info.Type === "CONTEXT") ? {} : false;
-		
+
 		if (i === current) {
-			
+
             Icon.X     		+= halfMod * easing;
             Icon.Y      	+= modCurrY;
             Icon.Width  	-= UICONST.IcoUnselMod * easing;
@@ -1741,22 +1741,22 @@ function DrawUISubMenu() {
 			Name.Color 		 = (anim.Running) ? interpolateColorObj(UICONST.TextSelectedColor, UICONST.TextUnselectedColor, anim.Progress) : UICONST.TextSelectedColor;
 			Name.Color.A 	 = baseA;
 			Name.Glow   	 = (baseA === 128) && (!anim.Running) && (!contextMod);
-			
+
 			if (Name.Glow) { if ('CustomBG' in info) { DashUI.ItemBG.Image = info.CustomBG; } }
-			
+
 			Desc = {
 				Text: 		[ getLocalText(info.Description) ],
 				Scale:		FontObj.SizeM,
 				Position:	{ X:Name.Position.X, Y:Name.Position.Y + 18 },
 				Color: 		{ R:128, G:128, B:128, A:~~(baseA - (128 * easing)) }
 			};
-			
+
 			if (fade.Running) {
 				Icon.X -= xFadeMod;
 				Name.Position.X -= xFadeMod;
 				Desc.Position.X -= xFadeMod;
 			}
-			
+
 			if (contextMod) {
 				Icon.X      	-= halfMod * contextfadeProgress;
 				Icon.Y      	-= halfMod * contextfadeProgress;
@@ -1770,14 +1770,14 @@ function DrawUISubMenu() {
 		}
 		else {
 			const mod = (diff > 0) ? 24 : -24;
-			
+
             const baseY = mod + diff * UICONST.SubItemSlotSize + modNextShift;
             Icon.Y      += baseY + halfMod;
             Icon.Width  -= UICONST.IcoUnselMod;
             Icon.Height -= UICONST.IcoUnselMod;
             Icon.X      += halfMod;
             Name.Position.Y += mod + diff * UICONST.SubItemSlotSize + modNextShift;
-			
+
             if ((anim.Running) && (i === next)) {
                 const modYNext = (dir < 0 ? 24 : -24) * easing;
                 Icon.Width   += UICONST.IcoUnselMod * easing;
@@ -1785,11 +1785,11 @@ function DrawUISubMenu() {
                 Icon.X       -= halfMod * easing;
                 Icon.Y       -= halfMod * easing;
                 Icon.Y       += modYNext;
-				
+
 				Name.Color 		 = interpolateColorObj(UICONST.TextUnselectedColor, UICONST.TextSelectedColor, anim.Progress);
 				Name.Color.A 	 = baseA;
                 Name.Position.Y += modYNext;
-			
+
 				Desc = {
 					Text: 		[ getLocalText(info.Description) ],
 					Scale:		FontObj.SizeM,
@@ -1797,7 +1797,7 @@ function DrawUISubMenu() {
 					Color: 		{ R:128, G:128, B:128, A:~~(128 * easing) }
 				};
             }
-			
+
 			if (fade.Running) {
 				const yMod = mod * (1 - fadeProgress);
 				Icon.X -= xFadeMod;
@@ -1805,7 +1805,7 @@ function DrawUISubMenu() {
 				Name.Position.X -= xFadeMod;
 				Name.Position.Y -= yMod;
 			}
-			
+
 			if (contextMod)	{
 				const ctxNoSelYmod = ((diff > 0) ? 10 : -10) * contextfadeProgress;
 				Icon.Y 			+= ctxNoSelYmod;
@@ -1814,23 +1814,23 @@ function DrawUISubMenu() {
 				Name.Position.Y += ctxNoSelYmod;
 			}
 		}
-		
+
         if (Icon.Y < -UICONST.ScreenDrawLimit) continue;
         if (Icon.Y > UICONST.ScrLowerLimit) break;
 
 		if (Desc) { TxtPrint(Desc); }
-		if (CtxtName) { 
-		
+		if (CtxtName) {
+
 			CtxtName.Text		= [ getLocalText(info.Value.Items[info.Value.Default].Name) ];
 			CtxtName.Alignment  = "RIGHT";
 			CtxtName.Position 	= { X: -40 - xFadeMod , Y: Name.Position.Y };
 			CtxtName.Color 		= UICONST.TextUnselectedColor;
 			CtxtName.Color.A 	= Name.Color.A;
-			
+
 			if (contextMod) CtxtName.Color.A += ~~(-128 * contextfadeProgress);
-			TxtPrint(CtxtName); 
+			TxtPrint(CtxtName);
 		}
-		
+
 		// Draw Focus
 		if ((DashElements.ItemFocus) && (i === current || i === next) && Desc) {
 			let FocusX = Icon.X - 5;
@@ -1846,7 +1846,7 @@ function DrawUISubMenu() {
 				const mod = 24 * (isNext ? (1 - easing) : easing);
 				focus.width = 82 - mod;
 				focus.height = 72 - mod;
-			} 
+			}
 			else if (contextMod) {
 				const mod = 24 * contextfadeProgress;
 				focus.width = 82 + mod;
@@ -1856,11 +1856,11 @@ function DrawUISubMenu() {
 				focus.width = 82;
 				focus.height = 72;
 			}
-			
+
 			focus.color = Color.new(128, 128, 128, FocusA);
 			focus.draw(FocusX, FocusY);
 		}
-		
+
         TxtPrint(Name);
         DrawDashIcon(Icon);
 	}
@@ -1870,40 +1870,40 @@ function DrawUISubMenu() {
 ///*				   			  Context							  *///
 //////////////////////////////////////////////////////////////////////////
 
-function DashUISetNewContextMenu(Context) {	
+function DashUISetNewContextMenu(Context) {
 	if (typeof Context.Items === "function") { Context.Items = Context.Items(); }
-	
+
 	PlayCursorSfx();
 	DashUI.Context.Items.Current = Context.Default;
 	DashUI.Context.Items.Next = Context.Default;
 	DashUI.Context.Level++;
 	DashUI.Context.ItemCollection[DashUI.Context.Level] = Context;
 	DashUI.State.Next = 3;
-	
+
 	DashUI.Context.Items.UpperLimit = 0;
 	DashUI.Context.Items.LowerLimit = 9;
 
     if (Context.Items.length < 9) { DashUI.Context.Items.LowerLimit = Context.Items.length; }
-	
+
     if (Context.Default > 8)
     {
-        if ((Context.Default + 8) >= Context.Items.length) { 
+        if ((Context.Default + 8) >= Context.Items.length) {
 			DashUI.Context.Items.LowerLimit = Context.Items.length;
-			DashUI.Context.Items.UpperLimit = DashUI.Context.Items.LowerLimit - 9; 
+			DashUI.Context.Items.UpperLimit = DashUI.Context.Items.LowerLimit - 9;
 		}
-        else { 
-			DashUI.Context.Items.UpperLimit = Context.Default; 
-			DashUI.Context.Items.LowerLimit = DashUI.Context.Items.UpperLimit + 9; 
+        else {
+			DashUI.Context.Items.UpperLimit = Context.Default;
+			DashUI.Context.Items.LowerLimit = DashUI.Context.Items.UpperLimit + 9;
 		}
     }
-	
+
 	UIAnimateContextMenuItemsFade_Start(true);
 }
 
 function UIAnimateContextMenuItemsFade_Start(isIn) {
 	const element = DashUI.Context;
 	if (isIn === element.Fade.In) { return; }
-	
+
 	element.Fade.In = isIn;
 	element.Fade.Progress = 0.0f;
 	element.Fade.Running = true;
@@ -1918,9 +1918,9 @@ function UIAnimateContextMenuItemsFade_Work() {
 	if (DashUI.Context.Fade.Progress >= 1.0f) {
 		DashUI.Context.Fade.Progress = 1.0f;
 		DashUI.Context.Fade.Running = false;
-		if (!DashUI.Context.Fade.In) { 
-			DashUI.Context.Level--; 
-			DashUI.Context.Display = (DashUI.Context.Level > -1); 
+		if (!DashUI.Context.Fade.In) {
+			DashUI.Context.Level--;
+			DashUI.Context.Display = (DashUI.Context.Level > -1);
 			if (DashUI.Context.Display)	{
 				const next = DashUI.Context.ItemCollection[DashUI.Context.Level].Default;
 				DashUI.Context.Items.Current = next;
@@ -1932,7 +1932,7 @@ function UIAnimateContextMenuItemsFade_Work() {
 		}
 		return true;
 	}
-	
+
 	return false;
 }
 
@@ -1940,8 +1940,8 @@ function UIAnimationContextMenuItemsMove_Start(delta) {
 	const next = DashUI.Context.Items.Current + delta;
 	const run = next >= 0 && next < DashUI.Context.ItemCollection[DashUI.Context.Level].Items.length;
 	if (!run) { return; }
-	
-	PlayCursorSfx(); 
+
+	PlayCursorSfx();
 	if (next >= DashUI.Context.Items.LowerLimit) {
 		DashUI.Context.Items.UpperLimit++;
 		DashUI.Context.Items.LowerLimit++;
@@ -1950,7 +1950,7 @@ function UIAnimationContextMenuItemsMove_Start(delta) {
 		DashUI.Context.Items.UpperLimit--;
 		DashUI.Context.Items.LowerLimit--;
 	}
-	
+
 	DashUI.Context.Items.Next = next;
 	DashUI.Context.Animation.Running = true;
 	DashUI.Context.Animation.Progress = 0.0f;
@@ -1959,14 +1959,14 @@ function UIAnimationContextMenuItemsMove_Start(delta) {
 
 function UIAnimationContextMenuItemsMove_Work() {
 	if (!DashUI.Context.Animation.Running) { return true; }
-	
+
 	DashUI.Context.Animation.Progress += 0.2f;
 	if (DashUI.Context.Animation.Progress < 1.0f) { return false; }
-	
+
 	DashUI.Context.Items.Current = DashUI.Context.Items.Next;
 	DashUI.Context.Animation.Progress = 0.0f;
 	DashUI.Context.Animation.Running = false;
-	
+
 	return true;
 }
 
@@ -1974,10 +1974,10 @@ function DashUISelectContextItem() {
 	const current = DashUI.Context.Items.Current;
 	const context = DashUI.Context.ItemCollection[DashUI.Context.Level];
 	const item = context.Items[current];
-	
+
 	PlayCursorSfx();
 	UIAnimateContextMenuItemsFade_Start(false);
-	
+
 	if ('Confirm' in item) {
 		const result = item.Confirm(current, item);
 		if ((result !== undefined) && (result === false)) { return; }
@@ -1986,7 +1986,7 @@ function DashUISelectContextItem() {
 		const result = context.Confirm(current, item);
 		if ((result !== undefined) && (result === false)) { return; }
 	}
-	
+
 	context.Default = current;
 }
 
@@ -1994,20 +1994,20 @@ function DashUIBackFromContextMenu() {
 	const current = DashUI.Context.Items.Current;
 	const context = DashUI.Context.ItemCollection[DashUI.Context.Level];
 	const item = context.Items[current];
-	
+
 	if ('Cancel' in context) { context.Cancel(current, item); }
-	
+
 	PlayCursorSfx();
 	UIAnimateContextMenuItemsFade_Start(false);
 }
 
 function DashUIContextPreviewHandler(item) {
-	if (DashUI.AnimationQueue.length > 0) { 
+	if (DashUI.AnimationQueue.length > 0) {
 		Timer.reset(DashUI.Context.Timer);
 		Timer.resume(DashUI.Context.Timer);
 		return;
 	}
-	
+
 	let time = ~~(Timer.getTime(DashUI.Context.Timer) / 100000);
     if (('Preview' in DashUI.Context.ItemCollection[DashUI.Context.Level]) && (time > 10)) {
         if (Timer.isPlaying(DashUI.Context.Timer)) {
@@ -2016,11 +2016,11 @@ function DashUIContextPreviewHandler(item) {
             fun(DashUI.Context.Items.Current, item);
         }
     }
-	
+
 	if (('PreviewImage' in item) && (time > 6))	{
 		const customImg = ImageCache.Get(item.PreviewImage);
 		const Ready = customImg && customImg.ready();
-		if (Ready) { 
+		if (Ready) {
 			if (DashUI.Context.PreviewA === 0)
 			{
 				let ival = os.setInterval(() => {
@@ -2028,7 +2028,7 @@ function DashUIContextPreviewHandler(item) {
 					if (DashUI.Context.PreviewA > 120) { os.clearInterval(ival); }
 				}, 0)
 			}
-			
+
 			customImg.width = 240;
 			customImg.height = 135;
 			customImg.color = Color.new(128, 128, 128, DashUI.Context.PreviewA);
@@ -2045,20 +2045,20 @@ function DashUIContextPreviewHandler(item) {
 
 function DrawUIContext() {
 	if (!DashUI.Context.Display) { return; }
-	
+
 	const fade = DashUI.Context.Fade;
 	const fadeProgress = getFadeProgress(fade);
-	
+
 	const boxA = UICONST.Context.BoxA * fadeProgress;
 	const boxX = UICONST.Context.BoxX + (25 * fadeProgress);
-	
+
 	const Box = DashElements.Context;
 	const Col = (UICONST.Context.Tint) ? UICONST.Context.Tint : BgElements.BgColor.Color;
-	
+
 	Box.height = ScrCanvas.height;
 	Box.color = Color.new(Col.R, Col.G, Col.B, boxA);
 	Box.draw(ScrCanvas.width - boxX, 0);
-	
+
 	const items = DashUI.Context.ItemCollection[DashUI.Context.Level].Items;
 	const current = DashUI.Context.Items.Current;
 	const baseX = UICONST.Context.BaseX - (25 * fadeProgress);
@@ -2066,16 +2066,16 @@ function DrawUIContext() {
 	const baseA = ~~(128 * fadeProgress);
 	const first = DashUI.Context.Items.UpperLimit;
 	const last = DashUI.Context.Items.LowerLimit;
-	
+
 	const Name = {};
 	const Icon = {};
 	Icon.Width 		= 14;
 	Icon.Height 	= 14;
 	Icon.Alpha 		= baseA;
 	Icon.X 			= baseX;
-	
+
 	let slotPos = 0;
-	
+
 	for (let i = first; i < last; i++)
 	{
 		const item = items[i];
@@ -2083,21 +2083,21 @@ function DrawUIContext() {
 		if (('Icon' in item) && (item.Icon !== -1))
 		{
 			icomodX += 20;
-			
+
 			Icon.ID 		= item.Icon;
 			Icon.Y 			= 7 + baseY + slotPos;
-			
+
 			if (typeof item.Icon === "string") { Icon.CustomIcon = item.Icon; }
-			
+
 			if (!fade.Running && i === current)
 			{
 				DashElements.CtxIco.color = Color.new(128,128,128, FontObj.Glow.Value + 64);
 				DashElements.CtxIco.draw(Icon.X - 6, Icon.Y - 6);
 			}
-			
+
 			DrawDashIcon(Icon);
 		}
-		
+
 		if (item.Name !== "")
 		{
 			Name.Text = [ getLocalText(item.Name) ];
@@ -2105,28 +2105,28 @@ function DrawUIContext() {
 			Name.Color = UICONST.TextUnselectedColor;
 			Name.Color.A = baseA;
 			Name.Glow = !fade.Running && (i === current);
-			
-			if (i === current) { 
+
+			if (i === current) {
 				Name.Color = UICONST.TextSelectedColor;
 				Name.Color.A = baseA;
 			}
-			
+
 			TxtPrint(Name);
 		}
-		
+
 		slotPos += 16;
 	}
-	
+
 	const arrowA = (!fade.Running) ? -FontObj.Glow.Value : 0;
-	
-	if (first > 0) {		
+
+	if (first > 0) {
 		DashElements.Arrow.angle = -0.5f;
 		DashElements.Arrow.width = 12;
 		DashElements.Arrow.height = 12;
 		DashElements.Arrow.color = Color.new(128,128,128,baseA + arrowA);
 		DashElements.Arrow.draw(baseX, baseY - 6);
 	}
-	
+
 	if (last < items.length) {
 		DashElements.Arrow.angle = 0.5f;
 		DashElements.Arrow.width = 12;
@@ -2134,9 +2134,9 @@ function DrawUIContext() {
 		DashElements.Arrow.color = Color.new(128,128,128,baseA + arrowA);
 		DashElements.Arrow.draw(baseX, baseY + slotPos + 6);
 	}
-	
+
 	DashElements.Arrow.angle = 0.0f;
-	
+
 	DashUIContextPreviewHandler(items[current]);
 }
 
@@ -2153,12 +2153,12 @@ function GetOptionContext() {
 		if ('Filter' in mainItem.OptionContext) {
 			switch (mainItem.OptionContext.Filter) {
 				case "File": if (!('Type' in item) || item.Type !== "SUBMENU") { return mainItem.OptionContext; } break;
-				case "SubDeviceOnly": 
+				case "SubDeviceOnly":
 					if (('FullPath' in item) && item.FullPath.substring(0,3) !== "hdd")	{
 						return mainItem.OptionContext;
 					}
 					break;
-				case "Custom": 
+				case "Custom":
 					if ('Condition' in mainItem.OptionContext) {
 						if (eval(mainItem.OptionContext.Condition)) {
 							return mainItem.OptionContext;
@@ -2169,11 +2169,11 @@ function GetOptionContext() {
 		}
 		else { return mainItem.OptionContext; }
 	}
-	
+
 	return false;
 }
 
-function OpenOptionBox() {	
+function OpenOptionBox() {
 	const context = GetOptionContext();
 	if (context) { DashUISetNewContextMenu(context); }
 }
@@ -2183,26 +2183,26 @@ function DrawUIOptionBox() {
 	{ DashUI.OptionBox.Progress = 0.0f; return; }
 
 	const context = GetOptionContext();
-	
+
 	if (!context) { return; }
-	
+
 	DashUI.OptionBox.Progress += 0.05f;
 	if (DashUI.OptionBox.Progress >= 1.0f) { DashUI.OptionBox.Progress = 1.0f; }
-	
+
 	const alpha = ~~(DashUI.OptionBox.Progress * 128);
-	
+
 	const optxt = {
 		Text: [ getLocalText(XMBLANG.OPTIONS) ],
 		Position: { X:UICONST.OptionBox.XTXT, Y:UICONST.OptionBox.YTXT },
 		Color: { R: 128, G: 128, B: 128, A: alpha }
 	};
-	
+
 	DashElements.OptionBox.width = 80 + Math.fround((optxt.Text[0].length + 6) / 2);
 	DashElements.OptionBox.color = Color.new(128, 128, 128, alpha);
 	DashElements.OptionIco.color = Color.new(128, 128, 128, alpha);
 	DashElements.OptionBox.draw(UICONST.OptionBox.XBOX, UICONST.OptionBox.YBOX);
 	DashElements.OptionIco.draw(UICONST.OptionBox.XICO, UICONST.OptionBox.YICO);
-	
+
 	TxtPrint(optxt);
 }
 
@@ -2213,12 +2213,12 @@ function DrawUIOptionBox() {
 function DashUISetDialog(Dialog) {
 	DashUI.Dialog.Level++;
 	DashUI.Dialog.Data.push({ ...Dialog });
-	
+
 	DashUI.State.Next = 4; 	 // Dialog Message State
     DashUI.OverlayState = 2; // Show Dialog Overlay
 	DashUI.Overlay.Color = { R: 0, G: 0, B: 0 }
 	DashUI.Overlay.Alpha = 0;
-	UIAnimationDialogFade_Start(true);	
+	UIAnimationDialogFade_Start(true);
 }
 
 function OpenDialogErrorMsg(Message) {
@@ -2231,11 +2231,11 @@ function OpenDialogErrorMsg(Message) {
         BACK_BTN: true,
         ENTER_BTN: true,
 	};
-	
+
 	DashUISetDialog(dialog);
 }
 
-function OpenDialogParentalCheck(Item) {	
+function OpenDialogParentalCheck(Item) {
 	const dialog = {
         Icon: -1,
         Title: "",
@@ -2252,14 +2252,14 @@ function OpenDialogParentalCheck(Item) {
 		if (succeed) { DashUIObjectHandler(Item); }
 		UIAnimationDialogFade_Start(false);
     };
-	
+
 	DashUISetDialog(dialog);
 }
 
 function UIAnimationDialogFade_Start(isIn) {
 	const element = DashUI.Dialog;
 	if (isIn === element.Fade.In) { return; }
-	
+
 	element.Fade.In = isIn;
 	element.Fade.Progress = 0.0f;
 	element.Fade.Running = true;
@@ -2281,14 +2281,14 @@ function UIAnimationDialogFade_Work() {
 	fade.Progress += 0.04f;
 	DashUI.Overlay.Alpha = (fade.In) ? (DashUI.Overlay.Alpha + 4) : (DashUI.Overlay.Alpha - 4);
 	const ovLimit = (fade.In) ? DashUI.Overlay.Alpha >= upperlimit : DashUI.Overlay.Alpha <= 0;
-	
+
 	DashUI.Overlay.Alpha = (ovLimit) ? ((fade.In) ? upperlimit : 0) : DashUI.Overlay.Alpha;
-	
+
 	if ((fade.Progress >= 1.0f) && (ovLimit)) {
 		fade.Progress = 1.0f;
 		fade.Running = false;
-		if (!fade.In) { 
-			DashUI.Dialog.Level = -1; 
+		if (!fade.In) {
+			DashUI.Dialog.Level = -1;
 			DashUI.Dialog.Data = [];
 			DashUI.OverlayState = 0; // Hide Overlay
 			DashUI.Dialog.Display = (DashUI.Dialog.Level > -1);
@@ -2298,7 +2298,7 @@ function UIAnimationDialogFade_Work() {
 		}
 		return true;
 	}
-	
+
 	return false;
 }
 
@@ -2314,8 +2314,8 @@ function UIAnimationDialogMove_Start(delta, upperLimit) {
 	const next = data.Selected + delta;
 	const run = next >= 0 && next < upperLimit;
 	if (!run) { return; }
-	
-	PlayCursorSfx(); 
+
+	PlayCursorSfx();
 	data.Selected = next;
 	DashUI.Dialog.Animation = {};
 	DashUI.Dialog.Animation.Progress = 0.0f;
@@ -2328,12 +2328,12 @@ function UIAnimationDialogInfoMove_Start(delta) {
 	if (data.Selected < 0) { return; }
 	const item = data.Info[data.Selected];
 	if (!item.Selectable) { return; }
-	
+
 	const next = item.Selected + delta;
 	const run = next >= 0 && next < item.Value.length;
 	if (!run) { return; }
-	
-	PlayCursorSfx(); 
+
+	PlayCursorSfx();
 	item.Selected = next;
 	DashUI.Dialog.Animation = {};
 	DashUI.Dialog.Animation.Progress = 0.0f;
@@ -2345,7 +2345,7 @@ function UIAnimationParentalDialogChange_Start(delta) {
 	const data = DashUI.Dialog.Data[DashUI.Dialog.Level];
 	let next = data.TmpCode[data.Selected] + delta;
 	next = (next > 9) ? 0 : ((next < 0) ? 9 : next);
-	PlayCursorSfx(); 
+	PlayCursorSfx();
 	DashUI.Dialog.Animation = {};
 	DashUI.Dialog.Animation.Progress = 0.0f;
 	DashUI.Dialog.Animation.Running = true;
@@ -2356,16 +2356,16 @@ function UIAnimationParentalDialogChange_Start(delta) {
 function DrawUIDialogParentalScreen(data, baseA) {
 	if (!('Selected' in data)) { data.Selected = 0; }
 	if (!('TmpCode' in data)) { data.TmpCode = [ 0, 0, 0, 0]; }
-	
+
 	if (DashUI.AnimationQueue.length < 1) { SetPadEvents_Parental(); }
-	
+
 	const Message = {
 		Text: getLocalText(data.Text),
 		Alignment: "CENTER",
 		Position: { X: 0, Y: -40 },
 		Color: { R: 128, G: 128, B: 128, A: baseA }
 	};
-	
+
 	TxtPrint(Message);
 
 	for (let i = 0; i < 4; i++) {
@@ -2378,10 +2378,10 @@ function DrawUIDialogParentalScreen(data, baseA) {
 		};
 		TxtPrint(CodeChar);
 	}
-	
+
 	let baseY = (ScrCanvas.height >> 1) + 20;
 	let arrowX = (ScrCanvas.width >> 1) - 56 + (data.Selected * 30);
-	
+
 	DashElements.Arrow.angle = -0.5f;
 	DashElements.Arrow.width = 16;
 	DashElements.Arrow.height = 16;
@@ -2393,35 +2393,35 @@ function DrawUIDialogParentalScreen(data, baseA) {
 }
 
 function DrawUIDialogInfoScreen(data, baseA) {
-	if (!('Processed' in data)) {	
-		data.Info = data.Info.filter(item => item.Value !== "");	
+	if (!('Processed' in data)) {
+		data.Info = data.Info.filter(item => item.Value !== "");
 		data.Processed = true;
 	}
-	
+
 	if (DashUI.AnimationQueue.length < 1) { SetPadEvents_Information(); }
-	
+
 	const items = data.Info;
 	const baseX = (ScrCanvas.width >> 1);
 	const nameY = UICONST.DialogInfo.NameY - (8 * (items.length - 1));
 	let posY = 0;
 	let seltxtSize = 0;
 	let selYpos = 0;
-	
+
 	for (let i = 0; i < items.length; i++) {
-		if (Array.isArray(items[i].Value)) {			
+		if (Array.isArray(items[i].Value)) {
 			const Value = {
 				Text: getLocalText(items[i].Value[items[i].Selected]),
 				Alignment: "LEFT",
 				Position: { X: UICONST.DialogInfo.DescX, Y: nameY + posY },
 				Color: { R: 128, G: 128, B: 128, A: baseA }
 			};
-			
-			if (data.Selected === i) { 
+
+			if (data.Selected === i) {
 				selYpos = Value.Position.Y;
-				seltxtSize = FontObj.Font.getTextSize(Value.Text).width; 
-				Value.Glow = DashUI.AnimationQueue.length < 1; 
+				seltxtSize = FontObj.Font.getTextSize(Value.Text).width;
+				Value.Glow = DashUI.AnimationQueue.length < 1;
 			}
-			
+
 			TxtPrint(Value);
 		}
 		else {
@@ -2431,26 +2431,26 @@ function DrawUIDialogInfoScreen(data, baseA) {
 				Position: { X: UICONST.DialogInfo.DescX, Y: nameY + posY },
 				Color: { R: 128, G: 128, B: 128, A: baseA }
 			};
-			
+
 			TxtPrint(Value);
 		}
-		
+
 		const Name = {
 			Text: getLocalText(items[i].Name) + ":",
 			Alignment: "RIGHT",
 			Position: { X: UICONST.DialogInfo.NameX, Y: nameY + posY },
 			Color: { R: 128, G: 128, B: 128, A: baseA }
 		};
-		
+
 		TxtPrint(Name);
 		posY += 16;
 	}
-	
-	if (data.Selected > -1) { 
+
+	if (data.Selected > -1) {
 		DashElements.Arrow.width = 16;
 		DashElements.Arrow.height = 16;
 		DashElements.Arrow.color = Color.new(128,128,128,baseA);
-		
+
 		if (items[data.Selected].Selected > 0) {
 			DashElements.Arrow.angle = 0.0f;
 			DashElements.Arrow.draw(UICONST.DialogInfo.DescX - 16, selYpos + 6);
@@ -2459,41 +2459,41 @@ function DrawUIDialogInfoScreen(data, baseA) {
 			DashElements.Arrow.angle = 1.0f;
 			DashElements.Arrow.draw(UICONST.DialogInfo.DescX + seltxtSize, selYpos + 6);
 		}
-		
+
 		DashElements.Arrow.angle = 0.0f;
 	}
 }
 
 function DrawUIConfirmationScreen(data, txtA) {
 	if (DashUI.AnimationQueue.length < 1) { SetPadEvents_Confirmation(); }
-	
+
 	const Message = {
 		Text: getLocalText(data.Text),
 		Alignment: "CENTER",
 		Position: { X: 0, Y: -40 },
 		Color: { R: 128, G: 128, B: 128, A: txtA }
 	};
-	
+
 	const Yes = {
 		Text: getLocalText(XMBLANG.YES),
 		Alignment: "CENTER",
 		Position: { X: -30, Y: 0 },
 		Color: { R: 128, G: 128, B: 128, A: txtA }
 	};
-	
+
 	const No = {
 		Text: getLocalText(XMBLANG.NO),
 		Alignment: "CENTER",
 		Position: { X: 30, Y: 0 },
 		Color: { R: 128, G: 128, B: 128, A: txtA }
 	};
-	
+
 	if (DashUI.AnimationQueue.length < 1) {
 		if (!('Selected' in data)) { data.Selected = 1; }
 		else if (data.Selected === 0) { Yes.Glow = true; }
 		else { No.Glow = true; }
 	}
-	
+
 	TxtPrint(Message);
 	TxtPrint(Yes);
 	TxtPrint(No);
@@ -2506,26 +2506,26 @@ function DrawUITextDialog(data, a) {
 		Position: { X: 0, Y: 0 },
 		Color: { R: 128, G: 128, B: 128, A: a }
 	};
-	
+
 	if ('Align' in data) { TXT.Alignment = data.Align; }
 	if ('X' 	in data) { TXT.Position.X = data.X; }
 	if ('Y' 	in data) { TXT.Position.Y = data.Y; }
-	
+
 	TxtPrint(TXT);
-	
+
 	if ((DashUI.AnimationQueue.length < 1) && ('Fun' in data)) {
-		if (gThreads) { 
+		if (gThreads) {
 			const thread = Threads.new(data.Fun);
 			thread.start();
 		}
-		else { data.Fun(); }		
+		else { data.Fun(); }
 		delete data.Fun;
 	}
 }
 
 function DrawUIDialog() {
 	if (!DashUI.Dialog.Display) { return; }
-	
+
 	const cfad = DashUI.Dialog.ContentFade;
 	const fade = DashUI.Dialog.Fade;
 	const data = DashUI.Dialog.Data[DashUI.Dialog.Level];
@@ -2538,10 +2538,10 @@ function DrawUIDialog() {
 	const lineTopY = UICONST.DialogInfo.LineYTop;
 	const lineBottomY = UICONST.DialogInfo.LineYBottom;
 	const iconX = UICONST.DialogInfo.IconX;
-	
+
 	Draw.line(0, lineTopY, ScrCanvas.width, lineTopY, lineCol);
     Draw.line(0, lineBottomY, ScrCanvas.width, lineBottomY, lineCol);
-	
+
 	if (('Icon' in data) && (data.Icon !== -1)) {
 		const Icon = {
 			ID: 	data.Icon,
@@ -2551,7 +2551,7 @@ function DrawUIDialog() {
 			X:		iconX,
 			Y:		lineTopY - 25
 		};
-		
+
 		DrawDashIcon(Icon);
     }
 
@@ -2561,10 +2561,10 @@ function DrawUIDialog() {
 			Position: { X: iconX + 30, Y: lineTopY - 25 },
 			Color: { R: 128, G: 128, B: 128, A: baseA }
 		};
-		
+
 		TxtPrint(Title);
     }
-	
+
 	if (("BACK_BTN" in data) && (data.BACK_BTN)) {
         const Back = {
 			Text: `${(UserConfig.ConfirmBtn === 0) ? "O" : "X"}  ${XMBLANG.BACK[0]}`,
@@ -2572,7 +2572,7 @@ function DrawUIDialog() {
 			Position: { X: 65, Y: 178 },
 			Color: { R: 128, G: 128, B: 128, A: baseA }
 		};
-		
+
 		TxtPrint(Back);
     }
 
@@ -2583,12 +2583,12 @@ function DrawUIDialog() {
 			Position: { X: -70, Y: 178 },
 			Color: { R: 128, G: 128, B: 128, A: baseA }
 		};
-		
+
 		TxtPrint(Enter);
     }
-	
+
 	if (contentAlpha < 1) { return; }
-	
+
 	switch (data.Type) {
 		case "TEXT": DrawUITextDialog(data, contentAlpha); break;
 		case "CONFIRMATION": DrawUIConfirmationScreen(data, contentAlpha); break;

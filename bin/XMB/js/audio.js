@@ -13,12 +13,8 @@ const Sounds = {
 
 function playSfx(sound) {
     if (!sound) return;
-	
-    if (sound.playing()) {
-        sound.rewind();
-    } else {
-        sound.play();
-    }
+    if (sound.playing()) { sound.rewind(); }
+    else { sound.play(); }
 }
 
 const PlayBootSfx   = () => playSfx(Sounds.BOOT);

@@ -14,17 +14,17 @@ function umountHDD() { if (os.readdir("pfs1:/")[1] === 0) { System.umount("pfs1:
 
 function mountHDDPartition(partName) {
 	if (!UserConfig.HDD) { return "?"; }
-	
+
 	umountHDD();
 	const result = System.mount("pfs1:", `hdd0:${partName}`);
 	xlog(`Partition "${partName}" Mount process finished with result: ${result}`);
-	
+
 	switch (result) {
 		case 0: // This partition is already mounted or was mounted correctly.
 		case -16: break;
 		default: return "pfs0"; // The partition was already mounted on pfs0 probably.
 	}
-	
+
 	return "pfs1";
 }
 
@@ -34,33 +34,33 @@ function getDevicesAsItems(params = {}) {
 	const devices = System.devices();
 	const fileFilters = ('fileFilters' in params) ? params.fileFilters : false;
 	const fileoptions = ('fileoptions' in params) ? params.fileoptions : false;
-	
+
 	xlog("getDevicesAsItems(): Add Main Directory Item");
-	
+
 	Items.push({
 		Name: XMBLANG.WORK_DIR_NAME,
 		Description: "",
 		Icon: 18,
 		Type: "SUBMENU"
 	});
-	
+
 	Object.defineProperty(Items[0], "Value", {
 		get() {	return exploreDir({ dir:CWD, fileFilters: fileFilters, fileoptions: fileoptions }); },
 		enumerable: true,
 		configurable: true,
 	});
-	
+
 	xlog("getDevicesAsItems(): Added Main Directory Item");
-	
+
 	for (let i = 0; i < devices.length; i++) {
 		let dev = devices[i];
-		
+
 		let count = 0;
 		let basepath = "";
 		let nameList = [];
 		let descList = [];
 		let iconList = [];
-		
+
 		xlog("getDevicesAsItems(): Parsing Device: " + dev.name);
 		switch(dev.name) {
 			case "mc":
@@ -69,9 +69,9 @@ function getDevicesAsItems(params = {}) {
 				for (let j = 0; j < count; j++)	{
 					nameList.push(`Memory Card ${(j + 1).toString()}`);
 					iconList.push(16 + j);
-					
+
 					let mcInfo = System.getMCInfo(j);
-					if (mcInfo) { 
+					if (mcInfo) {
 						let used = 8000 - mcInfo.freemem;
 						descList.push(`${used} / 8000 Kb`);
 					}
@@ -106,7 +106,7 @@ function getDevicesAsItems(params = {}) {
 				}
 				break;
 		}
-		
+
 		for (let j = 0; j < count; j++)	{
 			const root = `${basepath}${j.toString()}:`;
 			xlog("getDevicesAsItems(): Adding Item: " + root);
@@ -117,7 +117,7 @@ function getDevicesAsItems(params = {}) {
 					Icon: iconList[j],
 					Type: "SUBMENU"
 				});
-				
+
 				Object.defineProperty(Items[Items.length - 1], "Value", {
 					get() {	return exploreDir({ dir: root, fileFilters: fileFilters, fileoptions: fileoptions }); },
 					enumerable: true,
@@ -127,7 +127,7 @@ function getDevicesAsItems(params = {}) {
 			xlog("getDevicesAsItems(): Succesfully Added Item: " + root);
 		}
 	}
-	
+
 	xlog("getDevicesAsItems(): Finished");
 	return Items;
 }
@@ -139,7 +139,7 @@ function exploreDir(params) {
 	const isHdd = (params.dir.substring(0,3) === "hdd");
 	const isMc = (params.dir.substring(0,2) === "mc");
 	const dirItems = System.listDir(params.dir);
-	
+
     // Separate directories and files
     let directories = dirItems.filter(item => item.name !== "." && item.name !== ".." && item.dir); // All directories
     let files = dirItems.filter(item => !item.dir); // All files
@@ -147,14 +147,14 @@ function exploreDir(params) {
     // Sort directories and files alphabetically by name
     directories.sort((a, b) => a.name.localeCompare(b.name));
     files.sort((a, b) => a.name.localeCompare(b.name));
-	
+
 	const defGetter = function() { return exploreDir({ dir: this.FullPath, fileFilters: fileFilters, fileoptions: fileoptions }); };
 	const hddGetter = function() { const part = mountHDDPartition(this.Name); return exploreDir({ dir:`${part}:/`, fileFilters: fileFilters, fileoptions: fileoptions}); };
 	const getter = (isHdd) ? hddGetter : defGetter;
-	
+
 	for (let i = 0; i < directories.length; i++) {
 		let item = directories[i];
-		
+
 		collection.push({
             Name: item.name,
             Description: "",
@@ -164,22 +164,22 @@ function exploreDir(params) {
         });
         Object.defineProperty(collection[collection.length - 1], "Value", { get: getter });
 	}
-	
+
 	collection.sort((a, b) => a.Name.localeCompare(b.Name));
-	
+
 	for (let i = 0; i < files.length; i++) {
 		let item = files[i];
-		if (!fileFilters || extensionMatches(item.name, fileFilters)) { 
+		if (!fileFilters || extensionMatches(item.name, fileFilters)) {
 			const itemParams = {
 				path: `${params.dir}${item.name}`,
 				size: item.size,
 				fileoptions: fileoptions
 			}
-			
-			collection.push(getFileAsItem(itemParams)); 
+
+			collection.push(getFileAsItem(itemParams));
 		}
 	}
-	
+
 	return { Items: collection, Default: 0 };
 }
 
@@ -205,7 +205,7 @@ function getFileAsItem(params) {
         case "mkv":
         case "avi": item.Icon = "CAT_VIDEO"; break;
     }
-	
+
     if (('fileoptions' in params) && params.fileoptions) { item.Option = params.fileoptions; }
 
     return item;
@@ -362,21 +362,21 @@ function getGameCodeFromOldFormatName(path) {
 }
 
 function getISOgameID(isoPath, isoSize) {
-	
+
 	const RET = { success: false, code: "ERR" };
 	const sectorSize = 2048; // Standard ISO sector size
 	// Check if the Game ID is in the file name
 	const nameID = getGameCodeFromOldFormatName(isoPath);
 	if (nameID !== "") { RET.success = true; RET.code = nameID; return RET; }
-	
+
 	// Open the file in read mode
-	let file = false;  
-	
+	let file = false;
+
 	try {
-		
+
 		file = std.open(isoPath, "r");
 		if (!file) { throw new Error(`Could not open file: ${isoPath}`); }
-		
+
 		// Seek to the Primary Volume Descriptor (sector 16 in ISO 9660)
 		file.seek(16 * sectorSize, std.SEEK_SET);
 		const pvd = file.readAsString(sectorSize);
@@ -410,18 +410,18 @@ function getISOgameID(isoPath, isoSize) {
 	} finally {
         if (file) file.close();
 	}
-	
+
     return RET;
 }
 
 function getISOgameArgs(info) {
 	let args = [];
-	
+
 	let root 	= getRootName(info.path);
 	let dir 	= getPathWithoutRoot(info.path);
-	
-    if (info.dev === "ata") { 
-		root = "hdl"; dir = ""; 
+
+    if (info.dev === "ata") {
+		root = "hdl"; dir = "";
 		args.push(`-bsdfs=${root}`);
 	}
 	else {
@@ -433,11 +433,11 @@ function getISOgameArgs(info) {
 
     // Specify media type if available
     if (info.mt !== "") { args.push(`-mt=${info.mt}`); }
-	
+
 	// Additional Main/Per-Game Settings.
 	const ID = (info.id !== "") ? info.id : false;
 	args = args.concat(GetNeutrinoArgs(ID));
-	
+
 	return args;
 }
 
@@ -449,13 +449,13 @@ function getVCDGameID(path, size) {
     const RET = { success: false, code: "ERR" };
 
     // Open the file in read mode
-    let file = false; 
+    let file = false;
 	try {
 		if (size <= 0x10d900) { throw new Error(`File is too small: ${path}`); }
-		
+
 		file = std.open(path, "r");
 		if (!file) { throw new Error(`Failed to open file: ${path}`); }
-		
+
 		// Seek to the desired position
         file.seek(0x10c900, std.SEEK_SET);
 
@@ -465,13 +465,13 @@ function getVCDGameID(path, size) {
         const match = buffer.match(/[A-Z]{4}[-_][0-9]{3}\.[0-9]{2}/);
 
         if (match) { RET.success = true; RET.code = match[0]; }
-		
+
 	} catch (e) {
 		xlog(e);
 	} finally {
 		if (file) { file.close(); }
 	}
-	
+
 	return RET;
 }
 
@@ -487,7 +487,7 @@ function getPOPSCheat(params) {
 	const cheats = params.cheats;
 	const game = ('game' in params) ? `${params.game}/` : "";
 	const device = ('device' in params) ? params.device : "mass";
-	
+
     // Create an array to store whether each cheat is enabled
     const enabledCheats = new Array(cheats.length).fill(false);
     let path = "";
@@ -502,20 +502,20 @@ function getPOPSCheat(params) {
         case "mass": path = `mass:/POPS/${game}`; break;
         case "host": path = `${CWD}/POPS/${game}`; break;
     }
-	
+
 	const dirFiles = os.readdir(path)[0];
 	if (!dirFiles.includes("CHEATS.TXT")) { return enabledCheats; }
 
 	let errObj = {};
 	let file = false;
-	
-	try {		
+
+	try {
 		file = std.open(`${path}CHEATS.TXT`, "r", errObj);
 		if (!file) { throw new Error(`getPOPSCheat(): I/O Error - ${std.strerror(errObj.errno)}`); }
-		
+
 		const content = file.readAsString();
 		const lines = content.split(/\r?\n/);    // Split the content into lines
-		
+
 		// Iterate over the lines in the content
 		for (const line of lines) {
 			for (let i = 0; i < cheats.length; i++) {
@@ -621,7 +621,7 @@ function scanArtFolder(baseDir, baseFilename, suffix) {
     const extensions = [`_${suffix.toUpperCase()}.png`, `_${suffix.toUpperCase()}.jpg`];
     const dirFiles = os.readdir(dirPath)[0];
 	if (dirFiles.length < 1) { return ""; }
-	
+
     for (const ext of extensions) {
         const fileCandidates = [
             `${baseFilename}${ext}`,
@@ -676,8 +676,8 @@ function validatePlugin(plg) {
   );
 }
 function AddNewPlugin(Plugin) {
-    if (!validatePlugin(Plugin)) { return false; }    
-	
+    if (!validatePlugin(Plugin)) { return false; }
+
 	if (("CustomIcon" in Plugin) && (typeof Plugin.CustomIcon === "string"))
     {
 		Plugin.CustomIcon = resolveFilePath(Plugin.CustomIcon);
@@ -709,11 +709,11 @@ function ExecuteSpecial() {
 }
 function ExecuteELF() {
 	if (!('Args' in gExit.Elf)) 		{ gExit.Elf.Args = [] }
-	if (!('RebootIOP' in gExit.Elf)) 	{ gExit.Elf.RebootIOP = false } 
+	if (!('RebootIOP' in gExit.Elf)) 	{ gExit.Elf.RebootIOP = false }
 	if ('Code' in gExit.Elf) { gExit.Elf.Code(); }
 	if (gExit.Elf.Path.substring(0, 3) !== "pfs") { umountHDD(); }
-	
-	xlog( `Executing Elf: ${gExit.Elf.Path}\n With Args: [ ${gExit.Elf.Args} ]`);	
+
+	xlog( `Executing Elf: ${gExit.Elf.Path}\n With Args: [ ${gExit.Elf.Args} ]`);
 	System.loadELF(gExit.Elf.Path, gExit.Elf.Args, gExit.Elf.RebootIOP);
 }
 
@@ -850,7 +850,7 @@ function getCurrentDOSDate() {
 function getMcHistoryFilePath() {
 	const systemPath = getSystemDataPath();
 	let path = `mc0:/${systemPath}/history`;
-    if (!std.exists(path)) { 
+    if (!std.exists(path)) {
 		// try memory card 2
 		path = `mc1:/${systemPath}/history`;
 		if (!std.exists(path)) { path = ""; }
@@ -860,14 +860,14 @@ function getMcHistoryFilePath() {
 function getMcHistory() {
 	let file = false;
 	let data = [];
-	
-	try { 
+
+	try {
 		const historyPath = getMcHistoryFilePath();
 		if (historyPath === "") { throw new Error(`ERROR: Could not find history file`); }
-		
+
 		file = os.open(`mc0:/${getSystemDataPath()}/history`, os.O_RDONLY);
 		if (file < 0) { throw new Error(`ERROR: Could not open history file`); }
-		
+
 		const entrySize = 0x16;
 		const buffer = new Uint8Array(entrySize);
 
@@ -881,13 +881,13 @@ function getMcHistory() {
 
 			data.push({ name, playCount, bitmask, bitshift, dosDate });
 		}
-		
+
 	} catch (e) {
 		xlog(e);
 	} finally {
 		if (file) { os.close(file); }
 	}
-	
+
 	return data;
 }
 function setMcHistory(entries) {
@@ -897,13 +897,13 @@ function setMcHistory(entries) {
 		const path = getSystemDataPath();
 		let historyPath = getMcHistoryFilePath();
 		let flags = os.O_RDWR;
-		if (historyPath === "") { // file must be created 
+		if (historyPath === "") { // file must be created
 			// Make memory card path on slot 1
 			os.mkdir(`mc0:/${path}`);
 			historyPath = `mc0:/${path}/history`;
 			flags = flags | os.O_CREAT;
 		}
-		
+
 		file = os.open(historyPath, flags);
 		if (file < 0) { throw new Error(`ERROR: Could not create history file on ${historyPath}`); }
 
@@ -930,7 +930,7 @@ function setMcHistory(entries) {
 	} finally {
 		if (file) { os.close(file); }
 	}
-	
+
     return result;
 }
 function setHistoryEntry(name) {
@@ -1004,7 +1004,7 @@ function getLocalTime() {
 	// Athena has a bug where the current time is shifted 12 hours ahead.
     const date = new Date();
 	date.setTime(date.getTime() - 43200000);
-	
+
 	// Apply Timezone if necessary.
 	let gmtOffset = GetOsdConfig("Timezone");
 	if ((gmtOffset & 0x400) !== 0) {
@@ -1013,10 +1013,10 @@ function getLocalTime() {
 		gmtOffset *= -1; 	// Make it negative
 		gmtOffset /= 60;	// Get Hours
 	}
-	
+
 	if (gTimezone !== 0) { date.setTime(date.getTime() - ~~(-gTimezone * 3600000)); }
 	else if (gmtOffset !== 0) { date.setTime(date.getTime() - ~~(-gmtOffset * 3600000)); }
-	
+
     return date;
 }
 
@@ -1026,22 +1026,22 @@ function getLocalTime() {
 
 function PrintDebugInformation() {
 	if (!gDebug) { return; }
-	
+
 	const DebugInfo = [];
 	const ee_info = System.getCPUInfo();
-	
+
     const mem = System.getMemoryStats();
 	DebugInfo.push(`${Screen.getFPS(360)}  FPS`);
 	DebugInfo.push(`RAM USAGE: ${Math.floor(mem.used / 1024)}KB / ${Math.floor(ee_info.RAMSize / 1024)}KB`);
 	DebugInfo.push(`WIDTH: ${ScrCanvas.width} HEIGHT: ${ScrCanvas.height}`);
 	DebugInfo.push(`DATE: ${gTime.getDate()}/${gTime.getMonth() + 1}/${gTime.getFullYear()} ${gTime.getHours()}:${gTime.getMinutes()}:${gTime.getSeconds()}`);
-	
+
 	TxtPrint({ Text: DebugInfo, Position: { X: 5, Y: ScrCanvas.height - (DebugInfo.length * 16) }});
 }
 function xlog(l) {
 	// Log Line to Virtual Console.
     console.log(l);
-	
+
 	if (!gDebug) { return; }
 
     // Write line to log file with timestamp.

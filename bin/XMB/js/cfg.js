@@ -34,19 +34,19 @@ const NeutrinoConfig = {
 
 function GetNeutrinoArgs(GAMEID = false) {
 	const Args = [];
-	
+
 	if (NeutrinoConfig.DBC) 	{ Args.push("-dbc"); }
 	if (NeutrinoConfig.PS2LOGO) { Args.push("-logo"); }
 	if (NeutrinoConfig.GSM) 	{ Args.push("-gsm=fp"); }
-	
+
 	if (!GAMEID) { return Args; }
-	
+
 	const GameCFG = CfgMan.Get(`${GAMEID}.cfg`);
-	
+
 	if ('gc' 	in GameCFG) { Args.push(`-gc=${GameCFG["gc"]}`); }
 	if ('VMC0' 	in GameCFG) { Args.push(`-mc0=${PATHS.VMC}${GameCFG["VMC0"]}_0.vmc`); }
 	if ('VMC1' 	in GameCFG) { Args.push(`-mc1=${PATHS.VMC}${GameCFG["VMC0"]}_1.vmc`); }
-	
+
 	return Args;
 }
 
@@ -59,7 +59,7 @@ function GetCfgUserSetting(setting) {
 function ReadUserSettings() {
 	const config = CfgMan.Get("main.cfg");
 	if (config.length < 1) { return; }
-	
+
 	if ('mx4sio'	 in config) { UserConfig.Mx4sio		  = (config["mx4sio"] === "true");	}
 	if ('lang'		 in config) { UserConfig.Language 	  = parseInt(config["lang"]); 		}
 	if ('btnType'	 in config) { UserConfig.ConfirmBtn   = parseInt(config["btnType"]); 	}
@@ -71,21 +71,21 @@ function ReadUserSettings() {
 	if ('BgColor'	 in config) { UserConfig.BgColor	  = parseInt(config["BgColor"]); 	}
 	if ('waves'		 in config) { UserConfig.Waves		  = (config["waves"] === "true"); 	}
 	if ('Theme'		 in config) { UserConfig.Theme		  = config["Theme"];				}
-	
+
 	if (UserConfig.Mx4sio) { IOP.loadModule("mmceman"); }
 	else 				   { IOP.loadModule("mmceman"); }
-	if (UserConfig.HDD)    { 
+	if (UserConfig.HDD)    {
 		IOP.loadModule("ps2hdd");
-		IOP.loadModule("ps2fs"); 
+		IOP.loadModule("ps2fs");
 	}
-	
+
 	if (!os.readdir(PATHS.Theme)[0].includes(UserConfig.Theme)) { UserConfig.Theme = "Original"; }
-	
+
 	const neut = CfgMan.Get("neutrino.cfg");
 	if ('logo'		   in neut) { NeutrinoConfig.PS2LOGO  = (neut["logo"] === "true"); 		}
 	if ('dbc'		   in neut) { NeutrinoConfig.DBC  	  = (neut["dbc"] === "true"); 		}
 	if ('gsm'		   in neut) { NeutrinoConfig.GSM  	  = (neut["gsm"] === "true"); 		}
-	
+
 }
 
 function ReadCFG(fullPath) {
@@ -93,8 +93,8 @@ function ReadCFG(fullPath) {
 	let config = {};
 	let errObj = {};
 	let file = false;
-	
-	try { 
+
+	try {
 		file = std.open(fullPath, "r", errObj);
 		if (!file) { throw new Error(`IO ERROR: ${std.strerror(errObj.errno)}`); }
 		while (!file.eof()) {
@@ -107,7 +107,7 @@ function ReadCFG(fullPath) {
 		}
 	} catch (e) {
 		xlog(e);
-	} finally { 
+	} finally {
 		if (file) { file.close(); }
 	}
 
@@ -153,7 +153,7 @@ const CfgMan = {
 
         const hasfile = std.exists(fullPath);
         if (!hasfile) { return {}; } // Return Empty Table if not found
-		return ReadCFG(fullPath);        
+		return ReadCFG(fullPath);
     },
 
     Set: function(path, config) {

@@ -41,15 +41,15 @@ function BgElementsInit() {
 	BgElements.BgDailyOv.filter = LINEAR;
 	BgElements.BgDailyOv.startx = 2;
 	BgElements.BgDailyOv.starty = 2;
-	
-	BgElements.BgColor = { 
+
+	BgElements.BgColor = {
 		Color: getBgColor(),
 		Progress: 0.0f,
 		Previous: UserConfig.BgColor,
 		Current: UserConfig.BgColor,
 		Next: UserConfig.BgColor
 	}
-	
+
 	BgElements.BgImage = {
 		Image: false,
 		TmpImage: false,
@@ -57,20 +57,20 @@ function BgElementsInit() {
 		Alpha: 0,
 		Progress: 0.0f
 	}
-	
+
 	Screen.clearColor(Color.new(BgElements.BgColor.Color.R, BgElements.BgColor.Color.G, BgElements.BgColor.Color.B, 128));
 }
 
 function getBgColor(param = UserConfig.BgColor) {
 	if (param === 0) { return monthColors[getLocalTime().getMonth()]; }
-	else { return monthColors[param - 1]; }	
+	else { return monthColors[param - 1]; }
 }
 
 function BgColorHandler() {
 	if (BgElements.BgColor.Next === BgElements.BgColor.Current) { return; }
-	
+
 	BgElements.BgColor.Progress += 0.03f;
-	
+
 	if (BgElements.BgColor.Progress > 0.9f) {
 		BgElements.BgColor.Progress = 0.0f;
 		BgElements.BgColor.Color = getBgColor(BgElements.BgColor.Next);
@@ -79,7 +79,7 @@ function BgColorHandler() {
 	else {
 		BgElements.BgColor.Color = interpolateColorObj(getBgColor(BgElements.BgColor.Current), getBgColor(BgElements.BgColor.Next), BgElements.BgColor.Progress);
 	}
-	
+
 	const color = BgElements.BgColor.Color;
 	const bgcol = Color.new(color.R, color.G, color.B, 128);
 	Screen.clearColor(bgcol);
@@ -89,36 +89,36 @@ function BgColorHandler() {
 function getDailyBrightness() {
     const hour = gTime.getHours();
     const minutes = gTime.getMinutes();
-	
+
 	const DAY_START	  = 6;  // Hour to Start to Decrease Overlay
 	const DAY_PEAK    = 12; // Hour of Zero Overlay
 	const NIGHT_START = 15; // Hour to Start to Apply Overlay
 	const NIGHT_PEAK  = 22; // Hour of Max Overlay
-	
+
 	if 		((hour >= DAY_PEAK)    && (hour < NIGHT_START)) { return 0; }
-	else if ((hour >= NIGHT_PEAK)  || (hour < DAY_START))   { return 128; } 
+	else if ((hour >= NIGHT_PEAK)  || (hour < DAY_START))   { return 128; }
     else if ((hour >= NIGHT_START) && (hour < NIGHT_PEAK))  {
         const totalMinutes = ~~((hour - NIGHT_START) * 60 + minutes);
         return ~~((totalMinutes / ((NIGHT_PEAK - NIGHT_START) * 60)) * 128);
-    } 
+    }
 	else if ((hour >= DAY_START)   && (hour < DAY_PEAK))	{
         const totalMinutes = ~~((hour - DAY_START) * 60 + minutes);
         return ~~(128 - (totalMinutes / ((DAY_PEAK - DAY_START) * 60)) * 128);
-    } 
+    }
 }
 
 function DrawDailyOverlay() {
 	if (BgElements.BgColor.Current !== 0 && BgElements.BgColor.Next !== 0) { /* Apply Custom User Brightness */ return; }
-	
+
 	let daily = 0;//getDailyBrightness();
-	
+
 	if ((BgElements.BgColor.Current !== 0) && (BgElements.BgColor.Next === 0)) {
 		daily = ~~(daily * BgElements.BgColor.Progress);
 	}
 	else if ((BgElements.BgColor.Next !== 0) && (BgElements.BgColor.Current === 0))	{
 		daily = ~~(daily - (daily * BgElements.BgColor.Progress));
 	}
-	
+
 	BgElements.BgDailyOv.width = ScrCanvas.width;
 	BgElements.BgDailyOv.height = ScrCanvas.height + 5;
 	BgElements.BgDailyOv.color = Color.new(128,128,128,daily);
@@ -133,8 +133,8 @@ function DrawTexture() {
 
 function SetNewCustomBgImg(Path) {
 	UserConfig.DisplayBg = true;
-	
-	if (UserConfig.CustomBgImg !== Path || !BgElements.BgImage.Image) {		
+
+	if (UserConfig.CustomBgImg !== Path || !BgElements.BgImage.Image) {
 		// If there is already an Image being displayed, place it on Tmp and switch from one to another
 		if (BgElements.BgImage.Image) {
 			BgElements.BgImage.TmpImage = BgElements.BgImage.Image;
@@ -148,25 +148,25 @@ function SetNewCustomBgImg(Path) {
 		BgElements.BgImage.Image.width = ScrCanvas.width;
 		BgElements.BgImage.Image.height = ScrCanvas.height;
 	}
-	
+
 	BgElements.BgImage.Alpha = 0;
-	BgElements.BgImage.Progress = 0.0f; 
-	
+	BgElements.BgImage.Progress = 0.0f;
+
 	// Animation to make it appear.
 	let ival = os.setInterval(() => {
 		if (BgElements.BgImage.TmpImage) { BgElements.BgImage.TmpAlpha = 128 - ~~(128 * BgElements.BgImage.Progress); }
 		BgElements.BgImage.Alpha = ~~(128 * BgElements.BgImage.Progress);
 		BgElements.BgImage.Progress += 0.1f;
-		
+
 		if (BgElements.BgImage.Progress >= 1.0)	{
 			BgElements.BgImage.Progress = 0.0f;
 			BgElements.BgImage.Alpha = 128;
-			
-			if (BgElements.BgImage.TmpImage) { 
+
+			if (BgElements.BgImage.TmpImage) {
 				BgElements.BgImage.TmpAlpha = 0;
 				BgElements.BgImage.TmpImage = false;
 			}
-			
+
 			os.clearInterval(ival);
 		}
 	}, 0);
@@ -174,15 +174,15 @@ function SetNewCustomBgImg(Path) {
 
 function DisableCustomBgImg() {
 	if (!UserConfig.DisplayBg || !BgElements.BgImage.Image) { return; }
-	
+
 	BgElements.BgImage.Alpha = 128;
-	BgElements.BgImage.Progress = 1.0f; 
-	
+	BgElements.BgImage.Progress = 1.0f;
+
 	// Animation to make it disappear.
 	let ival = os.setInterval(() => {
 		BgElements.BgImage.Alpha = ~~(128 * BgElements.BgImage.Progress);
 		BgElements.BgImage.Progress -= 0.1f;
-		
+
 		if (BgElements.BgImage.Progress <= 0.0)
 		{
 			BgElements.BgImage.Progress = 0.0f;
@@ -195,38 +195,42 @@ function DisableCustomBgImg() {
 
 function BgImageHandler() {
 	if (!BgElements.BgImage.TmpImage && (!UserConfig.DisplayBg || !UserConfig.CustomBgImg)) { return; }
-	
-	if ((UserConfig.DisplayBg && UserConfig.CustomBgImg) && BgElements.BgImage.Image && BgElements.BgImage.Image.ready()) {	
+
+	if ((UserConfig.DisplayBg && UserConfig.CustomBgImg) && BgElements.BgImage.Image && BgElements.BgImage.Image.ready()) {
 		BgElements.BgImage.Image.color = Color.new(128,128,128,BgElements.BgImage.Alpha);
 		BgElements.BgImage.Image.draw(0, 0);
 	}
-	
+
 	if (BgElements.BgImage.TmpImage && BgElements.BgImage.TmpImage.ready())	{
 		BgElements.BgImage.TmpImage.color = Color.new(128,128,128,BgElements.BgImage.TmpAlpha);
 		BgElements.BgImage.TmpImage.draw(0, 0);
 	}
 }
 
-function BgHandler() {	
+function BgHandler() {
 	BgColorHandler();
-	
+
 	// Execute Background Graphic logic if:
 		// There is no Tmp Image to draw
 		// There is a Tmp Image to draw but it still has not appeared completely
 	// and
 		// There is no Custom Background Image to draw
 		// There is a Custom Background Image to draw but it still has not appeared completely.
-		
-	if ((!BgElements.BgImage.TmpImage || BgElements.BgImage.TmpAlpha < 128) && 
+
+	if ((!BgElements.BgImage.TmpImage || BgElements.BgImage.TmpAlpha < 128) &&
 		(!UserConfig.DisplayBg || BgElements.BgImage.Alpha < 128)) {
-			
+
 		if ((Waves) && (UserConfig.Waves)) { Waves.Render(); }
 		DrawTexture();
 		DrawDailyOverlay();
 	}
-	
+
 	BgImageHandler();
 }
+
+//////////////////////////////////////////////////////////////////////////
+///*				   			 Init Work							  *///
+//////////////////////////////////////////////////////////////////////////
 
 MonthColorsInit();
 BgElementsInit();

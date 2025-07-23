@@ -147,12 +147,12 @@ function xmlGetLangObj(match) {
 }
 function xmlDefineDefaultProperty(object, element) {
     let _getter = false;
-	
+
 	if ("Default" in element.attributes) {
 		// return getter for code
         const match = element.attributes.Default.match(/^\{(.+)\}$/);
         if (match) { _getter = match[1]; }
-		else { 
+		else {
 			// Return Value if Integer
 			const i = parseInt(element.attributes.Default);
 			if (!isNaN(i)) { object.Default = i; }
@@ -166,8 +166,8 @@ function xmlDefineDefaultProperty(object, element) {
 				else if ("cdata" in child) { _getter = `(() => { ${child.cdata} })()`; }
 			}
 		}
-	}    
-	
+	}
+
 	if (_getter) {
         // Define Default as a getter function
         Object.defineProperty(object, "Default", {
@@ -195,7 +195,7 @@ function xmlGetLocalizedString(element, attributeName) {
 		if (element.attributes[attributeName].startsWith("$")) {
 			return element.attributes[attributeName];
 		}
-		
+
         // Check if the attribute value is a language object (e.g. "{SOME_KEY}")
         const match = element.attributes[attributeName].match(/^\{(.+)\}$/);
         if (match) { return xmlGetLangObj(match); }
@@ -218,7 +218,7 @@ function xmlParseIcon(element) {
 	// Check for Executable code.
     const match = element.match(/^\{(.+)\}$/);
     if (match) { return std.evalScript(match[1]); }
-	
+
 	// Get Number or string
 	const i = parseInt(element);
 	if (isNaN(i)) { return element; }
@@ -267,33 +267,33 @@ function xmlParseDialogTag(element) {
 		if (name in msgInfo) 		{ continue; }
         if (name === "ConfirmBtn") 	{ msgInfo.ENTER_BTN = (value === "true"); continue; }
         if (name === "BackBtn") 	{ msgInfo.BACK_BTN = (value === "true"); continue; }
-		
+
 		const parsed = parseInt(value);
-		if (isNaN(parsed)) { msgInfo[name] = value; } 
+		if (isNaN(parsed)) { msgInfo[name] = value; }
 		else { msgInfo[name] = parsed; }
     }
-	
+
 	for (let i = 0; i < element.children.length; i++) {
 		let child = element.children[i];
 		if (child.tagName in msgInfo) { continue; }
-		if (child.tagName === "Event") { 
+		if (child.tagName === "Event") {
 			if (('Type' in child.attributes) && ('On' in child.attributes)) {
 				let event = false;
-				
+
 				switch (child.attributes.Type) {
-					case "Transition": 
+					case "Transition":
 						if (!('To' in child.attributes)) { continue; }
 						event = function() {
 							if ('Condition' in child.attributes) {
 								const condition = std.evalScript(child.attributes.Condition);
-								
-								if (!condition) { 
+
+								if (!condition) {
 									if (child.attributes.Exit) { UIAnimationDialogFade_Start(false); }
-									return; 
+									return;
 								}
 							}
-							
-							if (gThreads) { 
+
+							if (gThreads) {
 								const thread = Threads.new(() => {
 									UIAnimationDialogContentFade_Start(false);
 									while (DashUI.Dialog.ContentFade.Running) { /*Wait*/ }
@@ -311,7 +311,7 @@ function xmlParseDialogTag(element) {
 						}
 						break;
 				}
-				
+
 				if (!event) { continue; }
 				msgInfo[child.attributes.On] = event;
 			}
@@ -338,7 +338,7 @@ function xmlParseDialogTag(element) {
 					item.Selectable = (child.attributes.Selectable === "true");
 					item.Name = xmlGetLocalizedString(child, "Name");
 					const value = xmlGetObject(child, "Value");
-					if (typeof value === "function") { 
+					if (typeof value === "function") {
 						Object.defineProperty(item, "Value", {
 							get: () => value(),
 							enumerable: true
@@ -358,7 +358,7 @@ function xmlParseDialogTag(element) {
 			}
             break;
     }
-	
+
 	xmlParseNamedChildrens(element, msgInfo);
 
     return msgInfo;
@@ -367,7 +367,7 @@ function xmlParseContext(element) {
     contextObj = {};
     contextObj.Items = [];
 	xmlDefineDefaultProperty(contextObj, element);
-	
+
 	for (let i = 0; i < element.children.length; i++) {
 		const child = element.children[i];
 		if (child.tagName in contextObj) { continue; }
@@ -381,7 +381,7 @@ function xmlParseContext(element) {
                 // Skip attributes that are already included
                 if (!(name in component)) { component[name] = value; }
             }
-			
+
 			for (let j = 0; j < child.children.length; j++) {
 				const option = child.children[j];
 				if (option.tagName === "Dialog") { component[option.tagName] = xmlParseDialogTag(option); }
@@ -426,11 +426,11 @@ function xmlParseSubMenu(element) {
     const submenu = {};
     submenu.Items = [];
 	xmlDefineDefaultProperty(submenu, element);
-	
+
 	for (let i = 0; i < element.children.length; i++) {
 		const option = element.children[i];
 		if ((option.tagName !== "Option") || (('Hide' in option.attributes) && (option.attributes.Hide === "true"))) { continue; }
-		
+
 		if ("filepath" in option.attributes) {
 			const optionObj = option.attributes.filepath;
 			submenu.Items.push(optionObj);
@@ -443,7 +443,7 @@ function xmlParseSubMenu(element) {
 			Type: option.attributes.Type,
 			Icon: xmlParseIcon(option.attributes.Icon)
 		};
-		
+
 		xmlDefineEvalProperty(optionObj, "Name");
 		xmlDefineEvalProperty(optionObj, "Description");
 
@@ -454,7 +454,7 @@ function xmlParseSubMenu(element) {
 		else if (option.attributes.Type === "DIALOG") { optionObj.Value = xmlParseDialogTag(option); }
 		submenu.Items.push(optionObj);
 	}
-	
+
     return submenu;
 }
 function parseXmlPlugin(xmlString) {
@@ -471,12 +471,12 @@ function parseXmlPlugin(xmlString) {
         Category: parseInt(parsedData.attributes.Category),
         Type: parsedData.attributes.Type
     };
-	
+
 	xmlDefineEvalProperty(plugin, "Name");
 	xmlDefineEvalProperty(plugin, "Description");
-	
+
 	xlog("parseXmlPlugin(): Parsing Plugin Type");
-	
+
 	switch(plugin.Type)	{
 		case "SUBMENU":
 			const optionsTag = parsedData.children.find(child => child.tagName === "Options");
@@ -495,16 +495,16 @@ function parseXmlPlugin(xmlString) {
 						case "Explorer":
 							xlog("parseXmlPlugin(): Parsing Explorer Type");
 							const explorerParams = {};
-							if ('ExtensionFilter' in optionsTag.attributes) { 
+							if ('ExtensionFilter' in optionsTag.attributes) {
 								explorerParams.fileFilters = optionsTag.attributes.ExtensionFilter.replace(' ', '').split(',');
 							}
-							
+
 							plugin.Value = {};
 							plugin.Value.Items = getDevicesAsItems(explorerParams);
 							xmlDefineDefaultProperty(plugin.Value, parsedData);
 							xlog("parseXmlPlugin(): Get Devices Items Completed");
-							
-							if ('DeviceFilter' in optionsTag.attributes) { 
+
+							if ('DeviceFilter' in optionsTag.attributes) {
 								const devices = optionsTag.attributes.DeviceFilter.split(',');
 								function filterDevices(item) {
 								  for (let i = 0; i < devices.length; i++) {
@@ -512,7 +512,7 @@ function parseXmlPlugin(xmlString) {
 								  }
 								  return true;
 								}
-								plugin.Value.Items = plugin.Value.Items.filter(filterDevices); 
+								plugin.Value.Items = plugin.Value.Items.filter(filterDevices);
 							}
 							xlog("parseXmlPlugin(): Finished Parsing Explorer Type");
 							break;
@@ -532,13 +532,13 @@ function parseXmlPlugin(xmlString) {
 		case "CODE":	plugin.Value = xmlParseCodeTag(parsedData); break;
 		case "DIALOG":	plugin.Value = xmlParseDialogTag(parsedData); break;
 	}
-	
+
 	xlog("parseXmlPlugin(): Get CustomIcon Tag");
-	
+
     // Check for CustomIcon and add it if present
     const customIconTag = parsedData.children.find(child => child.tagName === "CustomIcon");
     if (customIconTag) { plugin.CustomIcon = customIconTag.attributes.Path; }
-	
+
 	xmlParseNamedChildrens(parsedData, plugin);
 	xlog("parseXmlPlugin(): Finished");
     return plugin;

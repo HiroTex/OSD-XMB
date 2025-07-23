@@ -4,31 +4,31 @@
 
 function InitCWD() {
 	// Try OS Current Working Directory.
-	if (os.readdir(os.getcwd()[0])[0].includes("XMB")) { 
+	if (os.readdir(os.getcwd()[0])[0].includes("XMB")) {
 		return ((os.getcwd()[0].endsWith('/')) ? os.getcwd()[0] : (os.getcwd()[0] + "/"));
 	}
-	
+
 	// Try MMCE directories
 	for (let i = 0; i < 2; i++) {
 		let tmp = `mmce${i.toString()}:/`;
 		if (os.readdir(tmp)[0].includes("XMB")) { return; }
 		else if (os.readdir(tmp).includes("OSDXMB")) { return tmp + "OSDXMB/"; }
 	}
-	
+
 	// Try Mass Directories
 	for (let i = 0; i < 10; i++) {
 		let tmp = `mass${i.toString()}:/`;
 		if (os.readdir(tmp)[0].includes("XMB")) { return; }
 		else if (os.readdir(tmp).includes("OSDXMB")) { return tmp + "OSDXMB/"; }
 	}
-	
+
 	// Try ATA HDD "hdd0:/__common/OSDXMB/" directory
 	if (os.readdir("hdd0")[0].includes("__common"))	{
         System.mount("pfs0:", "hdd0:__common");
 		if (os.readdir("pfs0:/").includes("OSDXMB")) { return "pfs0:/OSDXMB/"; }
 		System.umount("pfs0:");
 	}
-	
+
 	// Lastly, try MC directories.
 	if (os.readdir("mc0:/")[0].includes("OSDXMB")) { return "mc0:/OSDXMB/"; }
 	else if (os.readdir("mc1:/")[0].includes("OSDXMB")) { return "mc1:/OSDXMB/"; }
@@ -44,7 +44,7 @@ function InitModules() {
 }
 
 InitModules();
-globalThis.CWD = InitCWD();	
+globalThis.CWD = InitCWD();
 globalThis.PATHS = {
 	XMB: `${CWD}XMB/`,
 	Plugins: `${CWD}PLG/`,
@@ -68,7 +68,7 @@ const jsList = [
 	`lang`,		// Language and Localization Strings.
 	`ui`		// Main XMB User Interface Module.
 ];
-	
+
 jsList.forEach((js) => { std.loadScript(`${PATHS.XMB}js/${js}.js`); });
 
 //////////////////////////////////////////////////////////////////////////
@@ -79,17 +79,17 @@ function main() {
 	// Update Global Variables.
 	gTime 	  = getLocalTime();
 	ScrCanvas = Screen.getMode();
-	
+
 	// Execute Handlers
 	BgHandler();
 	UIHandler();
 	OvHandler();
 	PadsHandler();
 	DiscTray.Process();
-	
+
 	// Threaded Operations
 	ImageCache.Process();
-	
+
 	// Show Debug Information at bottom.
 	PrintDebugInformation();
 }

@@ -12,9 +12,9 @@ const SCEConfigParamTable = {
     VIDEO_OUTPUT: 		{ Mask: 0x00000008, Shift: 03 },
     JAP_LANGUAGE: 		{ Mask: 0x00000010, Shift: 04 },
     PS1DRV_CONFIG: 		{ Mask: 0x00000FE0, Shift: 05 },
-    VERSION: 			{ Mask: 0x00007000, Shift: 13 }, 
-    LANGUAGE: 			{ Mask: 0x001F0000, Shift: 16 }, 
-    TIMEZONE_OFFSET: 	{ Mask: 0xFFE00000, Shift: 21 }  
+    VERSION: 			{ Mask: 0x00007000, Shift: 13 },
+    LANGUAGE: 			{ Mask: 0x001F0000, Shift: 16 },
+    TIMEZONE_OFFSET: 	{ Mask: 0xFFE00000, Shift: 21 }
 };
 const SCERomVerInfo = {};
 
@@ -63,7 +63,7 @@ function utf8Decode(byteArray) {
 function readFileAsUtf8(filepath) {
 	let file = false;
 	let result = "";
-	
+
 	try {
 		file = os.open(filepath, os.O_RDONLY);
 		if (!file) { throw new Error(`Could not open file: ${filepath}`); }
@@ -78,7 +78,7 @@ function readFileAsUtf8(filepath) {
 	} finally {
 		if (file) { os.close(file); }
 	}
-	
+
 	return result;
 }
 
@@ -240,7 +240,7 @@ function CollectRomVerInfo() {
 	if (!tmp) { return; }
 	const ROMVER = tmp.readAsString();
 	tmp.close();
-	
+
     SCERomVerInfo.VersionRaw = ROMVER.substring(0, 4);
     SCERomVerInfo.VersionFormatted = getConsoleVersion(SCERomVerInfo.VersionRaw);
     SCERomVerInfo.Date = getConsoleDate(ROMVER);
@@ -261,7 +261,7 @@ function CollectOsdParams() {
 
 function GetOsdConfig(param) {
 	let Config = false;
-	
+
 	switch(param) {
 		case "SPDIF": Config = SCEConfigParamTable.SPDIF_MODE; break;
 		case "Aspect": Config = SCEConfigParamTable.SCREEN_TYPE; break;
@@ -272,7 +272,7 @@ function GetOsdConfig(param) {
 		case "Language": Config = SCEConfigParamTable.LANGUAGE; break;
 		case "Timezone": Config = SCEConfigParamTable.TIMEZONE_OFFSET; break;
 	}
-	
+
 	if (Config) { return (OsdParams & Config.Mask) >>> Config.Shift; }
 	else return 0;
 }

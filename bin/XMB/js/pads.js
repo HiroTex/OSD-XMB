@@ -16,11 +16,11 @@ const pad = Pads.get(PadSettings.Port);
 function PadsHandler() {
 	PadSettings.ConfirmButton = (UserConfig.ConfirmBtn === 0) ? Pads.CROSS : Pads.CIRCLE;
 	PadSettings.CancelButton = (UserConfig.ConfirmBtn === 0) ? Pads.CIRCLE : Pads.CROSS;
-	
+
 	const checkStates = (BUTTON) => {
 		return (pad.justPressed(BUTTON) || pad.pressed(BUTTON));
 	};
-	
+
 	pad.update();
 
 		 if ((PADEVENTS.ACCEPT) 	&& (pad.justPressed(PadSettings.ConfirmButton))) 	{ PADEVENTS.ACCEPT(); }
@@ -31,7 +31,7 @@ function PadsHandler() {
     else if ((PADEVENTS.RIGHT) 		&& (checkStates(Pads.RIGHT))) 						{ PADEVENTS.RIGHT(); }
     else if ((PADEVENTS.UP) 		&& (checkStates(Pads.UP))) 							{ PADEVENTS.UP(); }
     else if ((PADEVENTS.DOWN) 		&& (checkStates(Pads.DOWN))) 						{ PADEVENTS.DOWN(); }
-	
+
 		 if ((pad.lx < -64) && (PADEVENTS.LEFT)) 	{ PADEVENTS.LEFT(); }
 	else if ((pad.lx >  64) && (PADEVENTS.RIGHT)) 	{ PADEVENTS.RIGHT(); }
 	else if ((pad.ly < -64) && (PADEVENTS.UP)) 		{ PADEVENTS.UP(); }
@@ -66,12 +66,12 @@ function SetDashPadEvents(MODE) {
         case 4: SetPadEvents_Message(); break;		// Mode 4: Pad Events for Overlay Messages.
     }
 }
-function SetPadEvents_Main() { 	
+function SetPadEvents_Main() {
 	PADEVENTS.ACCEPT 	= () => {
 		if (DashUI.Items.Current >= DashUI.ItemCollection.length) { return; }
 		ExecuteItem(DashUI.ItemCollection.Current[DashUI.Items.Current]);
 	};
-	
+
 	PADEVENTS.TRIANGLE  = () => { OpenOptionBox(DashUI.ItemCollection.Current[DashUI.Items.Current]) };
 
 	PADEVENTS.LEFT  	= () => UIAnimationCategoryMove_Start(-1);
@@ -85,9 +85,9 @@ function SetPadEvents_Sub() {
 		if (DashUI.SubMenu.Items.Current >= Items.length) { return; }
 		ExecuteItem(Items[DashUI.SubMenu.Items.Current]);
 	};
-	
+
 	PADEVENTS.TRIANGLE  = () => { OpenOptionBox(DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current]) };
-	
+
 	PADEVENTS.CANCEL 	= () => DashUIBackFromSubMenu();
 	PADEVENTS.LEFT  	= () => DashUIBackFromSubMenu();
 	PADEVENTS.UP 		= () => UIAnimationSubMenuItemsMove_Start(-1);
@@ -116,7 +116,7 @@ function SetPadEvents_Confirmation() {
 function SetPadEvents_Information() {
     PADEVENTS.LEFT 		= () => UIAnimationDialogInfoMove_Start(-1);
     PADEVENTS.RIGHT 	= () => UIAnimationDialogInfoMove_Start(1);
-    PADEVENTS.UP 		= () => { 
+    PADEVENTS.UP 		= () => {
 		const data = DashUI.Dialog.Data[DashUI.Dialog.Level];
 		let next = 0;
 		for (let i = data.Selected - 1; i > -1; i--) {
@@ -124,7 +124,7 @@ function SetPadEvents_Information() {
 		}
 		if (next !== 0) { UIAnimationDialogMove_Start(next - data.Selected, data.Info.length); }
 	}
-    PADEVENTS.DOWN 		= () => { 
+    PADEVENTS.DOWN 		= () => {
 		const data = DashUI.Dialog.Data[DashUI.Dialog.Level];
 		let next = 0;
 		for (let i = data.Selected + 1; i < data.Info.length; i++) {
