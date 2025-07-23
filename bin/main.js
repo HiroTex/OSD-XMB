@@ -37,13 +37,6 @@ function InitCWD() {
 	return "./";
 }
 
-function InitModules() {
-	IOP.loadModule("mcman");
-	IOP.loadModule("cdfs");
-	IOP.loadModule("usbmass_bd");
-}
-
-InitModules();
 globalThis.CWD = InitCWD();
 globalThis.PATHS = {
 	XMB: `${CWD}XMB/`,
@@ -88,7 +81,7 @@ function main() {
 	DiscTray.Process();
 
 	// Threaded Operations
-	ImageCache.Process();
+    ImageCache.Process();
 
 	// Show Debug Information at bottom.
 	PrintDebugInformation();

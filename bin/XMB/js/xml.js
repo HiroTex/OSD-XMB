@@ -163,7 +163,7 @@ function xmlDefineDefaultProperty(object, element) {
 			const child = element.children[i];
 			if (child.tagName === "Default") {
 				if ("Variable" in child.attributes) { _getter = child.attributes.Variable; }
-				else if ("cdata" in child) { _getter = `(() => { ${child.cdata} })()`; }
+				else if ("cdata" in child) { _getter = `(() => { ${child.cdata} })();`; }
 			}
 		}
 	}
@@ -217,7 +217,7 @@ function xmlGetObject(element, name) {
 function xmlParseIcon(element) {
 	// Check for Executable code.
     const match = element.match(/^\{(.+)\}$/);
-    if (match) { return std.evalScript(match[1]); }
+    if (match) { return eval(match[1]); }
 
 	// Get Number or string
 	const i = parseInt(element);
@@ -285,7 +285,7 @@ function xmlParseDialogTag(element) {
 						if (!('To' in child.attributes)) { continue; }
 						event = function() {
 							if ('Condition' in child.attributes) {
-								const condition = std.evalScript(child.attributes.Condition);
+                                const condition = std.eval(child.attributes.Condition);
 
 								if (!condition) {
 									if (child.attributes.Exit) { UIAnimationDialogFade_Start(false); }
@@ -391,7 +391,7 @@ function xmlParseContext(element) {
             contextObj.Items.push(component);
         }
 		else if (child.tagName === "Components") {
-			if ("cdata" in child) { contextObj.Items = std.evalScript(`(() => { ${child.cdata} })()`); }
+            if ("cdata" in child) { contextObj.Items = std.evalScript(`(() => { ${child.cdata} })();`); }
 			else if ("filepath" in child.attributes) { contextObj.Items = std.loadScript(child.attributes.filepath); }
 		}
         else if (child.tagName.includes("Dialog")) { contextObj[child.tagName] = xmlParseDialogTag(child); }
@@ -425,7 +425,7 @@ function xmlParseNamedChildrens(source, element) {
 function xmlParseSubMenu(element) {
     const submenu = {};
     submenu.Items = [];
-	xmlDefineDefaultProperty(submenu, element);
+    xmlDefineDefaultProperty(submenu, element);
 
 	for (let i = 0; i < element.children.length; i++) {
 		const option = element.children[i];
@@ -442,106 +442,104 @@ function xmlParseSubMenu(element) {
 			Description: xmlGetLocalizedString(option, "Description"),
 			Type: option.attributes.Type,
 			Icon: xmlParseIcon(option.attributes.Icon)
-		};
+        };
 
 		xmlDefineEvalProperty(optionObj, "Name");
-		xmlDefineEvalProperty(optionObj, "Description");
+        xmlDefineEvalProperty(optionObj, "Description");
 
 		if (option.attributes.Type === "SUBMENU") { optionObj.Value = xmlParseSubMenu(option); }
 		else if (option.attributes.Type === "CONTEXT") { optionObj.Value = xmlParseContext(option); }
 		else if (option.attributes.Type === "CODE") { optionObj.Value = xmlParseCodeTag(option); }
 		else if (option.attributes.Type === "ELF") { optionObj.Value = xmlParseElfTag(option); }
 		else if (option.attributes.Type === "DIALOG") { optionObj.Value = xmlParseDialogTag(option); }
-		submenu.Items.push(optionObj);
+        submenu.Items.push(optionObj);
 	}
 
     return submenu;
 }
 function parseXmlPlugin(xmlString) {
-	xlog("parseXmlPlugin(): Start");
-	const parsedData = xmlParseElement(xmlString);
-	xlog("parseXmlPlugin(): Parsed Data");
+    try {
+        const parsedData = xmlParseElement(xmlString);
 
-    if ((!('tagName' in parsedData)) || (parsedData.tagName !== "App")) { return {}; }
+        if ((!('tagName' in parsedData)) || (parsedData.tagName !== "App")) { return {}; }
 
-    const plugin = {
-        Name: xmlGetLocalizedString(parsedData, "Name"),
-        Description: xmlGetLocalizedString(parsedData, "Description"),
-        Icon: xmlParseIcon(parsedData.attributes.Icon),
-        Category: parseInt(parsedData.attributes.Category),
-        Type: parsedData.attributes.Type
-    };
+        const plugin = {
+            Name: xmlGetLocalizedString(parsedData, "Name"),
+            Description: xmlGetLocalizedString(parsedData, "Description"),
+            Icon: xmlParseIcon(parsedData.attributes.Icon),
+            Category: parseInt(parsedData.attributes.Category),
+            Type: parsedData.attributes.Type
+        };
 
-	xmlDefineEvalProperty(plugin, "Name");
-	xmlDefineEvalProperty(plugin, "Description");
+        xmlDefineEvalProperty(plugin, "Name");
+        xmlDefineEvalProperty(plugin, "Description");
 
-	xlog("parseXmlPlugin(): Parsing Plugin Type");
+        // Check for CustomIcon and add it if present
+        const customIconTag = parsedData.children.find(child => child.tagName === "CustomIcon");
+        if (customIconTag) { plugin.CustomIcon = customIconTag.attributes.Path; }
 
-	switch(plugin.Type)	{
-		case "SUBMENU":
-			const optionsTag = parsedData.children.find(child => child.tagName === "Options");
-			if (optionsTag) {
-				if ('filepath' in optionsTag.attributes) {
-					const fpath = `${PATHS.Plugins}${optionsTag.attributes.filepath}`;
-					if (std.exists(fpath)) {
-						plugin.Value = {};
-						plugin.Value.Items = std.loadScript(fpath);
-						xmlDefineDefaultProperty(plugin.Value, parsedData);
-						if (('HideEmpty' in optionsTag.attributes) && (optionsTag.attributes.HideEmpty === "true") && (plugin.Value.Items.length < 1)) { return {}; }
-					}
-				}
-				else if ('Type' in optionsTag.attributes) {
-					switch(optionsTag.attributes.Type) {
-						case "Explorer":
-							xlog("parseXmlPlugin(): Parsing Explorer Type");
-							const explorerParams = {};
-							if ('ExtensionFilter' in optionsTag.attributes) {
-								explorerParams.fileFilters = optionsTag.attributes.ExtensionFilter.replace(' ', '').split(',');
-							}
+        switch (plugin.Type) {
+            case "SUBMENU":
+                const optionsTag = parsedData.children.find(child => child.tagName === "Options");
+                if (optionsTag) {
+                    if ('filepath' in optionsTag.attributes) {
+                        const fpath = `${PATHS.Plugins}${optionsTag.attributes.filepath}`;
+                        if (std.exists(fpath)) {
+                            plugin.Value = {};
+                            plugin.Value.Items = std.loadScript(fpath);
+                            xmlDefineDefaultProperty(plugin.Value, parsedData);
+                            if (('HideEmpty' in optionsTag.attributes) && (optionsTag.attributes.HideEmpty === "true") && (plugin.Value.Items.length < 1)) { return {}; }
+                        }
+                    }
+                    else if ('Type' in optionsTag.attributes) {
+                        switch (optionsTag.attributes.Type) {
+                            case "Explorer":
+                                xlog("parseXmlPlugin(): Parsing Explorer Type");
+                                const explorerParams = {};
+                                if ('ExtensionFilter' in optionsTag.attributes) {
+                                    explorerParams.fileFilters = optionsTag.attributes.ExtensionFilter.replace(' ', '').split(',');
+                                }
 
-							plugin.Value = {};
-							plugin.Value.Items = getDevicesAsItems(explorerParams);
-							xmlDefineDefaultProperty(plugin.Value, parsedData);
-							xlog("parseXmlPlugin(): Get Devices Items Completed");
+                                plugin.Value = {};
+                                plugin.Value.Items = getDevicesAsItems(explorerParams);
+                                xmlDefineDefaultProperty(plugin.Value, parsedData);
+                                xlog("parseXmlPlugin(): Get Devices Items Completed");
 
-							if ('DeviceFilter' in optionsTag.attributes) {
-								const devices = optionsTag.attributes.DeviceFilter.split(',');
-								function filterDevices(item) {
-								  for (let i = 0; i < devices.length; i++) {
-									  if (item.Name.includes(devices[i]) === true) { return false; }
-								  }
-								  return true;
-								}
-								plugin.Value.Items = plugin.Value.Items.filter(filterDevices);
-							}
-							xlog("parseXmlPlugin(): Finished Parsing Explorer Type");
-							break;
-					}
-				}
-				else if ('cdata' in optionsTag)	{
-					plugin.Value = {};
-					plugin.Value.Items = std.evalScript(`(() => { ${optionsTag.cdata} })()`);
-					xmlDefineDefaultProperty(plugin.Value, parsedData);
-					if (('HideEmpty' in optionsTag.attributes) && (optionsTag.attributes.HideEmpty === "true") && (plugin.Value.Items.length < 1)) { return {}; }
-				}
-			}
-			else { plugin.Value = xmlParseSubMenu(parsedData); }
-			break;
-		case "CONTEXT": plugin.Value = xmlParseContext(parsedData); break;
-		case "ELF": 	plugin.Value = xmlParseElfTag(parsedData); break;
-		case "CODE":	plugin.Value = xmlParseCodeTag(parsedData); break;
-		case "DIALOG":	plugin.Value = xmlParseDialogTag(parsedData); break;
-	}
+                                if ('DeviceFilter' in optionsTag.attributes) {
+                                    const devices = optionsTag.attributes.DeviceFilter.split(',');
+                                    function filterDevices(item) {
+                                        for (let i = 0; i < devices.length; i++) {
+                                            if (item.Name.includes(devices[i]) === true) { return false; }
+                                        }
+                                        return true;
+                                    }
+                                    plugin.Value.Items = plugin.Value.Items.filter(filterDevices);
+                                }
+                                xlog("parseXmlPlugin(): Finished Parsing Explorer Type");
+                                break;
+                        }
+                    }
+                    else if ('cdata' in optionsTag) {
+                        plugin.Value = {};
+                        plugin.Value.Items = std.evalScript(`(() => { ${optionsTag.cdata} })();`);
+                        xmlDefineDefaultProperty(plugin.Value, parsedData);
+                        if (('HideEmpty' in optionsTag.attributes) && (optionsTag.attributes.HideEmpty === "true") && (plugin.Value.Items.length < 1)) { return {}; }
+                    }
+                }
+                else { plugin.Value = xmlParseSubMenu(parsedData); }
+                break;
+            case "CONTEXT": plugin.Value = xmlParseContext(parsedData); break;
+            case "ELF": plugin.Value = xmlParseElfTag(parsedData); break;
+            case "CODE": plugin.Value = xmlParseCodeTag(parsedData); break;
+            case "DIALOG": plugin.Value = xmlParseDialogTag(parsedData); break;
+        }
 
-	xlog("parseXmlPlugin(): Get CustomIcon Tag");
-
-    // Check for CustomIcon and add it if present
-    const customIconTag = parsedData.children.find(child => child.tagName === "CustomIcon");
-    if (customIconTag) { plugin.CustomIcon = customIconTag.attributes.Path; }
-
-	xmlParseNamedChildrens(parsedData, plugin);
-	xlog("parseXmlPlugin(): Finished");
-    return plugin;
+        xmlParseNamedChildrens(parsedData, plugin);
+        return plugin;
+    } catch (e) {
+        xlog(`parseXmlPlugin(): Error parsing XML: ${e.message}`);
+        return {};
+    }
 }
 
 console.log("INIT LIB: XML COMPLETE");

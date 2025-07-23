@@ -77,7 +77,7 @@ function BootSequenceHandler() {
 			if (DashUI.BootFrame > StateDuration) { DashUI.BootState++; DashUI.BootFrame = 0; }
 			break;
 		case 5: // Show Epilepsy Warning Message
-			if ((DashUI.BootFrame > StateDuration) && (UICONST.LoadedPlugins)) { DashUI.BootState++; DashUI.BootFrame = 0; }
+            if ((DashUI.BootFrame > StateDuration) && (DashUI.LoadedPlugins)) { DashUI.BootState++; DashUI.BootFrame = 0; }
 			break;
 		case 6: // Fade Out Epilepsy Warning Message
 			DashUI.Overlay.Alpha--;
@@ -315,11 +315,9 @@ const ImageCache = (() => {
 
 	function loadImages(itemsToLoad) {
 		try {
-
 			for (let i = 0; i < itemsToLoad.length; i++) {
 				const { Path } = itemsToLoad[i];
 				if (!std.exists(Path)) { continue; }
-				console.log(`Loading Image: ${Path}`);
 				const image = new Image(Path);
 				image.optimize();
 				image.filter = LINEAR;
@@ -327,10 +325,8 @@ const ImageCache = (() => {
 				// Update cache entry with loaded image
 				const cached = findInCache(Path);
 
-				if (cached) { console.log(`Succesfully Loaded Image: ${Path}`); cached.Image = image; }
+				if (cached) { cached.Image = image; }
 			}
-
-			console.log("Finished Loading All Cached Images");
 		} catch (e) {
 			xlog(e);
 		} finally {
@@ -419,8 +415,7 @@ function DashElementsInit() {
 }
 
 function DashPluginsInit() {
-	xlog("DashPluginsInit(): Start Plugin Loading");
-	const plugins = System.listDir(PATHS.Plugins).sort((a,b) => a.name.localeCompare(b.name));
+    const plugins = System.listDir(PATHS.Plugins).sort((a, b) => a.name.localeCompare(b.name));
 
 	for (let i = 0; i < plugins.length; i++) {
 		if ((plugins[i].dir) || (!extensionMatches(plugins[i].name, [ "json", "xml" ]))) { continue; }
@@ -430,28 +425,22 @@ function DashPluginsInit() {
 		const plg = std.loadFile(path);
 		let Plugin = false;
 
-		xlog(`Loading Plugin: ${plugins[i].name}`);
-
 		if (plg) {
 			if 		(fname.endsWith(".json")) { Plugin = JSON.parse(plg); 		}
 			else if (fname.endsWith(".xml"))  { Plugin = parseXmlPlugin(plg); 	}
 		}
 
-		if (Plugin) { AddNewPlugin(Plugin);
-		xlog(`Succesfully Loaded Plugin: ${plugins[i].name}`); }
+        if (Plugin) { AddNewPlugin(Plugin); }
 	}
 
-	UICONST.LoadedPlugins = true;
-	xlog("DashPluginsInit(): All Plugins Loaded");
+    DashUI.LoadedPlugins = true;
 }
 
 function DashBackgroundLoad() {
 	try {
 		while (DashIconsInfo.length > DashIcons.length) {
-			console.log(`Loading Image: ${DashIconsInfo[DashIcons.length].path}`);
 			const path = `${PATHS.Theme}${UserConfig.Theme}/icons/${DashIconsInfo[DashIcons.length].path}`;
 			const icn = std.exists(path) ? new Image(path) : new Image(`${PATHS.Theme}Original/icons/${DashIconsInfo[DashIcons.length].path}`);
-			console.log(`Succesfully Loaded Image: ${DashIconsInfo[DashIcons.length].path}`);
 			icn.optimize();
 			icn.filter = LINEAR;
 			DashIcons.push(icn);
@@ -469,7 +458,6 @@ function DashBackgroundThreadWork() {
 }
 
 function DashUIConstantsInit() {
-	UICONST.LoadedPlugins = false;
 
 	UICONST.ClockTextObj = {
 		Text: "",
@@ -554,7 +542,8 @@ function DashUIConstantsInit() {
 }
 
 function DashUInit() {
-	// Common Parameters
+    // Common Parameters
+    DashUI.LoadedPlugins = false;
 	DashUI.LoadSpinning = 0.0f;
 	DashUI.BootWarningAlpha = 0;
 	DashUI.State = {
@@ -907,7 +896,7 @@ function DrawUICategories() {
 	const subSelAmod 	= ~~(128 * subfadeProgress);
 	const subNoSelXmod 	= 18 * subfadeProgress + (18 * DashUI.SubMenu.Level);
 	const subNoSelYmod 	= 5 * subfadeProgress + (5 * DashUI.SubMenu.Level);
-	const subNoSelAmod 	= ~~((-102 * subfadeProgress) - (101 * DashUI.SubMenu.Level));
+    const subNoSelAmod  = (DashUI.SubMenu.Level < 1) ? ~~(-102 * subfadeProgress) : -102 - (26 * subfadeProgress);
 	const subLevelXmod 	= 80 * DashUI.SubMenu.Level;
 
 	// Context Modifiers
@@ -979,13 +968,15 @@ function DrawUICategories() {
 			Icon.X 		+= baseX;
 			Icon.X 		+= 81 * -nextDif * easing;
 
-			if (subMod) {
-				Icon.Alpha += (subNoSelAmod);
-				Icon.X -= subNoSelXmod;
-				Icon.Y += subNoSelYmod;
-			}
-
-			if (contextMod) {
+            if (subMod) {
+                Icon.Alpha += (subNoSelAmod);
+                Icon.X -= subNoSelXmod;
+                Icon.Y += subNoSelYmod;
+                if (contextMod) {
+                    Icon.Alpha += ~~(-8 * contextfadeProgress);
+                }
+            }
+			else if (contextMod) {
 				Icon.Alpha += ~~(-102 * contextfadeProgress);
 				Icon.X -= 5 * contextfadeProgress;
 				Icon.Y += 5 * contextfadeProgress;
@@ -1138,13 +1129,13 @@ function DrawUICategoryItems_Work(items, current, x) {
 	const subfade = DashUI.SubMenu.Fade;
 	const subfadeProgress = getFadeProgress(subfade);
 
-	const subNoSelAmod 		= ~~(-98 * subfadeProgress) - (98 * DashUI.SubMenu.Level);
+    const subNoSelAmod      = (DashUI.SubMenu.Level < 1) ? ~~(-98 * subfadeProgress) : -98 - ~~(12 * subfadeProgress);
 	const subNoSelXmod 		= 28 * subfadeProgress + (28 * DashUI.SubMenu.Level);
-	const subSelAmod 		= ~~(-128 * subfadeProgress) - (128 * DashUI.SubMenu.Level);
+    const subSelAmod        = (DashUI.SubMenu.Level < 1) ? ~~(-128 * subfadeProgress) : -128;
 	const subSelXmod 		= 80 * subfadeProgress;
 	const subLevelXmod 		= 80 * DashUI.SubMenu.Level;
-	const subNoSelTextAmod 	= ~~((-128 * subfadeProgress) - (128 * DashUI.SubMenu.Level));
-	const subSelAFadeMod 	= (128 * subfadeProgress) * DashUI.SubMenu.Level;
+    const subNoSelTextAmod  = (DashUI.SubMenu.Level < 1) ? ~~(-128 * subfadeProgress) : -128;
+	const subSelAFadeMod 	= ~~((128 * subfadeProgress) * DashUI.SubMenu.Level);
 
 	// Context Modifiers
 	const contextMod = DashUI.Context.Display;
@@ -1208,26 +1199,21 @@ function DrawUICategoryItems_Work(items, current, x) {
 				Name.Color.A 	+= subSelAmod;
 				Desc.Color.A 	+= subSelAmod;
 				Name.Position.X -= subSelXmod;
-				Desc.Position.X -= subSelXmod;
+                Desc.Position.X -= subSelXmod;
+                if (contextMod) { Icon.X -= contextX; }
 			}
-
-			if (contextMod) {
-				Name.Glow 			= false;
-				if (!subMod) {
-					Icon.X      	-= contextX;
-					Icon.Y      	-= contextX;
-					Icon.Width  	+= UICONST.IcoUnselMod * contextfadeProgress;
-					Icon.Height 	+= UICONST.IcoUnselMod * contextfadeProgress;
-					Name.Color.A 	+= ~~(-90 * contextfadeProgress);
-					Desc.Color.A 	+= ~~(-90 * contextfadeProgress);
-					Name.Position.X += contextX;
-					Desc.Position.X += contextX;
-				}
-				else { Icon.X -= contextX; }
+            else if (contextMod) {
+                Icon.X -= contextX;
+                Icon.Y -= contextX;
+                Icon.Width += UICONST.IcoUnselMod * contextfadeProgress;
+                Icon.Height += UICONST.IcoUnselMod * contextfadeProgress;
+                Name.Color.A += ~~(-90 * contextfadeProgress);
+                Desc.Color.A += ~~(-90 * contextfadeProgress);
+                Name.Position.X += contextX;
+                Desc.Position.X += contextX;
 			}
         }
-        else
-        {
+        else {
             const baseY 	= (diff > 0 ? downOff : upOff)
 							+ diff * UICONST.SubItemSlotSize
 							+ modNextShift;
@@ -1269,10 +1255,12 @@ function DrawUICategoryItems_Work(items, current, x) {
 				Icon.Alpha 		+= subNoSelAmod;
 				Name.Color.A 	+= subNoSelTextAmod;
 				Name.Position.X -= subNoSelXmod;
-				Name.Position.Y += subNoSelYmod;
+                Name.Position.Y += subNoSelYmod;
+                if (contextMod) {
+                    Icon.Alpha += ~~(-12 * contextfadeProgress);
+                }
 			}
-
-			if (contextMod) {
+            else if (contextMod) {
 				const ctxNoSelYmod = ((diff > 0) ? 10 : -10) * contextfadeProgress;
 				Icon.Y 			+= ctxNoSelYmod;
 				Icon.Alpha 		+= ~~(-98 * contextfadeProgress);
@@ -2534,7 +2522,7 @@ function DrawUIDialog() {
 	const cfadProgress = (cfad.Running) ? getFadeProgress(cfad) : (cfad.In ? 1 : 0);
 	const baseA = ~~(128 * fadeProgress);
 	const contentAlpha = ~~(128 * cfadProgress);
-	const lineCol = Color.new(128, 128, 128, baseA);
+    const lineCol = Color.new(196, 196, 196, baseA);
 	const lineTopY = UICONST.DialogInfo.LineYTop;
 	const lineBottomY = UICONST.DialogInfo.LineYBottom;
 	const iconX = UICONST.DialogInfo.IconX;

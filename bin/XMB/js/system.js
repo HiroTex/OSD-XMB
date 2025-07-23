@@ -81,12 +81,12 @@ function getDevicesAsItems(params = {}) {
 			case "mass":
 				count = 10;
 				basepath = "mass";
-				for (let j = 0; j < count; j++)	{
+                for (let j = 0; j < count; j++) {
+                    const info = System.getBDMInfo(`mass${j.toString()}:/`);
+                    if (!info) { count = j; break; }
 					nameList.push(XMBLANG.MASS_DIR_NAME);
 					iconList.push(21);
-					const info = System.getBDMInfo(`mass${j.toString()}:/`);
-					if (info) { descList.push(`${info.name.toUpperCase()} ${(info.index + 1).toString()}`);	}
-					else { descList.push(""); }
+                    descList.push(`${info.name.toUpperCase()} ${(info.index + 1).toString()}`);
 				}
 				break;
 			case "hdd":
@@ -991,7 +991,6 @@ function alphaCap(a) {	if (a < 0) { a = 0; } if (a > 128) { a = 128; }	return a;
 function getLocalText(t) { return ((Array.isArray(t)) ? t[UserConfig.Language] : t); }
 function getFadeProgress(fade) { return fade.Running ? (fade.In ? cubicEaseOut(fade.Progress) : cubicEaseIn(fade.Progress)) : 1; }
 function npad2(n) { return (n < 10) ? ('0' + n) : ('' + n); }
-
 function interpolateColorObj(color1, color2, t) {
     return {
         R: Math.fround(color1.R + (color2.R - color1.R) * t),
@@ -999,7 +998,6 @@ function interpolateColorObj(color1, color2, t) {
         B: Math.fround(color1.B + (color2.B - color1.B) * t),
     };
 }
-
 function getLocalTime() {
 	// Athena has a bug where the current time is shifted 12 hours ahead.
     const date = new Date();
@@ -1036,20 +1034,28 @@ function PrintDebugInformation() {
 	DebugInfo.push(`WIDTH: ${ScrCanvas.width} HEIGHT: ${ScrCanvas.height}`);
 	DebugInfo.push(`DATE: ${gTime.getDate()}/${gTime.getMonth() + 1}/${gTime.getFullYear()} ${gTime.getHours()}:${gTime.getMinutes()}:${gTime.getSeconds()}`);
 
-	TxtPrint({ Text: DebugInfo, Position: { X: 5, Y: ScrCanvas.height - (DebugInfo.length * 16) }});
+    TxtPrint({ Text: DebugInfo, Position: { X: 5, Y: ScrCanvas.height - (DebugInfo.length * 16) } });
+    xlogProcess();
 }
 function xlog(l) {
-	// Log Line to Virtual Console.
-    console.log(l);
-
-	if (!gDebug) { return; }
 
     // Write line to log file with timestamp.
     const hours = String(gTime.getHours()).padStart(2, '0');
     const minutes = String(gTime.getMinutes()).padStart(2, '0');
     const seconds = String(gTime.getSeconds()).padStart(2, '0');
     const milliseconds = String(gTime.getMilliseconds()).padStart(3, '0');
-    ftxtWrite(`${PATHS.XMB}log.txt`, `[ ${hours}:${minutes}:${seconds}:${milliseconds} ] ${l}\n`, "a+"); // Write to file
+    const line = `[ ${hours}:${minutes}:${seconds}:${milliseconds} ] ${l}\n`;
+    console.log(line);
+
+    if (!gDebug) { return; }
+
+    gDbgTxt.push(line);
+}
+function xlogProcess() {
+    // Extract lines of gDbgTxt Var
+    if (gDbgTxt.length < 1) { return; }
+    let lines = gDbgTxt.splice(0, gDbgTxt.length).join('\n'); // Get all lines and clear the array
+    ftxtWrite(`${PATHS.XMB}log.txt`, lines, "a+"); // Write to file
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -1062,7 +1068,9 @@ if (isNaN(gTimezone)) { gTimezone = 0; }
 let gExit 		= {};
 let gTime 		= getLocalTime();
 let gThreads 	= true;
-let gDebug 		= true;
+let gDebug      = true;
+let gDbgTxt     = [];
+let gEvals      = [];
 let ScrCanvas 	= Screen.getMode();
 
 ftxtWrite(`${PATHS.XMB}log.txt`, ""); // Init Log File.

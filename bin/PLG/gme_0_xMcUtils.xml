@@ -14,7 +14,7 @@
 			// Initialize an empty array to hold the items
 			const directories = [];
 			const dir = System.listDir(`mc${slot.toString()}:/`);
-			
+
 			// Loop through dir and collect directories into the desired structure
 			for (let i = 0; i < dir.length; i++) {
 				const item = dir[i];
@@ -32,11 +32,11 @@
 
 			return { Items: directories, Default: 0 };
 		}
-		
+
 		const Items = [];
-		
+
 		for (let j = 0; j < 2; j++)	{
-			if (System.listDir(`mc${j.toString()}:/`).length > 0) {
+			if (os.readdir(`mc${j.toString()}:/`)[1] > -1) {
 				let mcInfo = System.getMCInfo(j);
 				let used = 8000 - mcInfo.freemem;
 				Items.push({
@@ -48,7 +48,7 @@
 				});
 			}
 		}
-		
+
 		return Items;
     ]]>
   </Options>
@@ -67,7 +67,7 @@
 		<Dialog Name="DeleteItemDialogTask" Icon="-1" Title="" BG="false" Type="TEXT" Text="{WAIT}">
 		  <Task>
 		    <![CDATA[
-			  function() { 
+			  function() {
 				const collection = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items;
 				const item = collection[DashUI.SubMenu.Items.Current];
 			    const path = item.FullPath;

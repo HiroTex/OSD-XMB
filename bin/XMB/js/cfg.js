@@ -9,8 +9,6 @@
 /* Handles main User Settings */
 
 const UserConfig = {
-	Mx4sio: false,
-	HDD: false,
 	Theme: "Original",
 	Language: GetOsdConfig("Language") - 1,
 	ConfirmBtn: 0,
@@ -57,10 +55,15 @@ function GetCfgUserSetting(setting) {
 }
 
 function ReadUserSettings() {
+
+    const neut = CfgMan.Get("neutrino.cfg");
+    if ('logo' in neut) { NeutrinoConfig.PS2LOGO = (neut["logo"] === "true"); }
+    if ('dbc' in neut) { NeutrinoConfig.DBC = (neut["dbc"] === "true"); }
+    if ('gsm' in neut) { NeutrinoConfig.GSM = (neut["gsm"] === "true"); }
+
 	const config = CfgMan.Get("main.cfg");
 	if (config.length < 1) { return; }
 
-	if ('mx4sio'	 in config) { UserConfig.Mx4sio		  = (config["mx4sio"] === "true");	}
 	if ('lang'		 in config) { UserConfig.Language 	  = parseInt(config["lang"]); 		}
 	if ('btnType'	 in config) { UserConfig.ConfirmBtn   = parseInt(config["btnType"]); 	}
 	if ('dateFormat' in config) { UserConfig.DateFormat   = parseInt(config["dateFormat"]); }
@@ -72,19 +75,7 @@ function ReadUserSettings() {
 	if ('waves'		 in config) { UserConfig.Waves		  = (config["waves"] === "true"); 	}
 	if ('Theme'		 in config) { UserConfig.Theme		  = config["Theme"];				}
 
-	if (UserConfig.Mx4sio) { IOP.loadModule("mmceman"); }
-	else 				   { IOP.loadModule("mmceman"); }
-	if (UserConfig.HDD)    {
-		IOP.loadModule("ps2hdd");
-		IOP.loadModule("ps2fs");
-	}
-
 	if (!os.readdir(PATHS.Theme)[0].includes(UserConfig.Theme)) { UserConfig.Theme = "Original"; }
-
-	const neut = CfgMan.Get("neutrino.cfg");
-	if ('logo'		   in neut) { NeutrinoConfig.PS2LOGO  = (neut["logo"] === "true"); 		}
-	if ('dbc'		   in neut) { NeutrinoConfig.DBC  	  = (neut["dbc"] === "true"); 		}
-	if ('gsm'		   in neut) { NeutrinoConfig.GSM  	  = (neut["gsm"] === "true"); 		}
 
 }
 
