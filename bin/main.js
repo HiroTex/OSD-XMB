@@ -76,7 +76,6 @@ function main() {
 	// Execute Handlers
 	BgHandler();
 	UIHandler();
-	OvHandler();
 	PadsHandler();
 	DiscTray.Process();
 

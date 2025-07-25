@@ -9,13 +9,13 @@
     <String str="Configurações de tema" />
   </Name>
   <Description>
-    <String str="Adjust settings related to the appearance of the XMB Screen." />
-    <String str="Réglez les paramètres liés à l'apparence de l'écran XMB." />
+    <String str="Adjust settings related to appearance." />
+    <String str="Réglez les paramètres liés à l'apparence." />
     <String str="Ajusta la apariencia de la pantalla XMB." />
     <String str="Einstellungen für das Erscheinungsbild des XMB-Bildschirms anpassen." />
-    <String str="Regola le impostazioni relative all'aspetto dello schermo XMB." />
+    <String str="Regola le impostazioni relative all'aspetto." />
     <String str="Pas instellingen aan die verband houden met het uiterlijk van het XMB-scherm." />
-    <String str="Ajuste as configurações relacionadas à aparência da tela XMB." />
+    <String str="Ajuste as configurações relacionadas à aparência." />
   </Description>
   <Option Type="CONTEXT" Icon="SET_CFG">
     <Name>
@@ -36,41 +36,40 @@
       <String str="Stel de interface-stijl in." />
       <String str="Definir o estilo da interface." />
     </Description>
-	<Default>
+	  <Default>
       <![CDATA[
-		const Items = [];
-		Items.push("Original");
+		    const Items = [];
+		    Items.push("Original");
 
-		const sortedDirectories = System.listDir(PATHS.Theme)
-			.filter((item) => item.name !== "." && item.name !== ".." && item.name !== "Original" && item.dir) // Exclude "." and ".." and keep only directories
-			.sort((a, b) => a.name.localeCompare(b.name));
-			
-		for (let i = 0; i < sortedDirectories.length; i++) { Items.push(sortedDirectories[i].name); }
-		let index = Items.indexOf(UserConfig.Theme);
-		return (index > -1) ? index : 0;
+		    const sortedDirectories = System.listDir(PATHS.Theme)
+			    .filter((item) => item.name !== "." && item.name !== ".." && item.name !== "Original" && item.dir) // Exclude "." and ".." and keep only directories
+			    .sort((a, b) => a.name.localeCompare(b.name));
+
+		    for (let i = 0; i < sortedDirectories.length; i++) { Items.push(sortedDirectories[i].name); }
+		    let index = Items.indexOf(UserConfig.Theme);
+		    return (index > -1) ? index : 0;
       ]]>
-	</Default>
-	<Components>
+	  </Default>
+	  <Components>
       <![CDATA[
         const Items = [];
-		Items.push({Name: "Original"});
+		    Items.push({Name: "Original"});
 
-		const sortedDirectories = System.listDir(PATHS.Theme)
-			.filter((item) => item.name !== "." && item.name !== ".." && item.name !== "Original" && item.dir) // Exclude "." and ".." and keep only directories
-			.sort((a, b) => a.name.localeCompare(b.name));
-			
-		for (let i = 0; i < sortedDirectories.length; i++)
-		{
-			const item = sortedDirectories[i];
-			const dirFiles = os.readdir(`${PATHS.Theme}${item.name}/`)[0];
-			const ico = (dirFiles.includes("thmico.png")) ? `${PATHS.Theme}${item.name}/thmico.png` : -1;
-			Items.push({ Name: item.name, Icon: ico });
-			if (dirFiles.includes("thmprw.png")) { Items[Items.length - 1].PreviewImage = `${PATHS.Theme}${item.name}/thmprw.png`; }
-		}
-		
-		return Items;
+		    const sortedDirectories = System.listDir(PATHS.Theme)
+			    .filter((item) => item.name !== "." && item.name !== ".." && item.name !== "Original" && item.dir) // Exclude "." and ".." and keep only directories
+			    .sort((a, b) => a.name.localeCompare(b.name));
+
+		    for (let i = 0; i < sortedDirectories.length; i++) {
+			    const item = sortedDirectories[i];
+			    const dirFiles = os.readdir(`${PATHS.Theme}${item.name}/`)[0];
+			    const ico = (dirFiles.includes("thmico.png")) ? `${PATHS.Theme}${item.name}/thmico.png` : -1;
+			    Items.push({ Name: item.name, Icon: ico });
+			    if (dirFiles.includes("thmprw.png")) { Items[Items.length - 1].PreviewImage = `${PATHS.Theme}${item.name}/thmprw.png`; }
+		    }
+
+		    return Items;
       ]]>
-	</Components>
+	  </Components>
     <Confirm>
       <![CDATA[
         function(index, item) {
@@ -78,7 +77,7 @@
 		  let config = CfgMan.Get("main.cfg");
 		  config["Theme"] = UserConfig.Theme;
 		  CfgMan.Push("main.cfg", config);
-		  
+
 		  const _bg = function() {
 			DisableCustomBgImg();
 			UserConfig.BgColor = 0;
@@ -93,22 +92,22 @@
 				icn.filter = LINEAR;
 				DashIcons[i] = icn;
 			}
-			
+
 			let thmival = os.setInterval(() => {
 				FontInit();
 				DashUIConstantsInit();
-				
+
 				if (std.exists(`${PATHS.Theme}${UserConfig.Theme}/thm.js`))
 				{
 					std.loadScript(`${PATHS.Theme}${UserConfig.Theme}/thm.js`);
 				}
-				
+
 				os.clearInterval(thmival);
 			}, 0);
-			
+
 			UIAnimationDialogFade_Start(false);
 		  }
-		  
+
 		  const dialog = {
 			Icon: 9,
 			Title: DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Name,
@@ -117,7 +116,7 @@
 			Text: XMBLANG.WAIT,
 			Fun: _bg,
 		  };
-			
+
 		  DashUISetDialog(dialog);
         }
       ]]>
@@ -184,10 +183,10 @@
     <Confirm>
       <![CDATA[
         function(index, item) {
-			if ((BgElements.BgColor.Next === BgElements.BgColor.Current) && (BgElements.BgColor.Next !== index)) { 
+			if ((BgElements.BgColor.Next === BgElements.BgColor.Current) && (BgElements.BgColor.Next !== index)) {
 				BgElements.BgColor.Current = BgElements.BgColor.Next;
 				BgElements.BgColor.Next = index;
-				BgElements.BgColor.Progress = 0.0f; 
+				BgElements.BgColor.Progress = 0.0f;
 			}
 			BgElements.BgColor.Previous = index;
 			UserConfig.BgColor = index;
@@ -200,10 +199,10 @@
     <Cancel>
       <![CDATA[
         function(index, item) {
-			if (BgElements.BgColor.Next !== BgElements.BgColor.Previous) { 
+			if (BgElements.BgColor.Next !== BgElements.BgColor.Previous) {
 				BgElements.BgColor.Current = BgElements.BgColor.Next;
 				BgElements.BgColor.Next = BgElements.BgColor.Previous;
-				BgElements.BgColor.Progress = 0.0f; 
+				BgElements.BgColor.Progress = 0.0f;
 			}
         }
       ]]>

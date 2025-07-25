@@ -8,7 +8,7 @@
 			CfgMan.Set("neutrino.cfg", cfg);
 			setHistoryEntry(DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].GameID.toUpperCase());
 		}
-		
+
 		function ScanGames(path, device, media) {
 			const items = [];
 			let gameDir = System.listDir(path).filter(item => (item.dir === false) && (getFileExtension(item.name).toLowerCase() === "iso"));
@@ -23,12 +23,12 @@
 					Type: "ELF",
 					Data: { path: path, fname: gameDir[j].name, id: code, dev: device, mt: media }
 				});
-				
+
 				Object.defineProperty(items[items.length - 1], "Value", {
 					get() {	return { Path: `${PATHS.Neutrino}neutrino.elf`, Args: getISOgameArgs(this.Data), Code: SaveLastPlayed }; },
 					enumerable: true
 				});
-				
+
 				const ico = gameID.success ? findICO(code) : "";
 				if (ico !== "") { items[items.length - 1].CustomIcon = ico; }
 				const bgFile = gameID.success ? findBG(code) : "";
@@ -36,19 +36,20 @@
 			}
 			return items;
 		}
-		
+		const devices = System.devices();
 		const bsd = [];
-		bsd.push({ root: "mass", count: 10, device: "usb"  });
-		bsd.push({ root: "hdd",  count: 1,  device: "ata"  });
-		bsd.push({ root: "mmce", count: 2,  device: "mmce" });
-		
+
+		if (devices.some(dev => dev.name === "mass")) { bsd.push({ root: "mass", count: 10, device: "usb"  }); }
+		if (devices.some(dev => dev.name === "hdd"))  { bsd.push({ root: "hdd",  count: 1,  device: "ata"  }); }
+		if (devices.some(dev => dev.name === "mmce")) { bsd.push({ root: "mmce", count: 2,  device: "mmce" }); }
+
 		let gameList = [];
-		
-		bsd.forEach((bsd) => {
-			for (let i = 0; i < bsd.count; i++) {
-				const path = `${bsd.root}${i.toString()}:`;
-				let dev = bsd.device;
-				if (bsd.root === "mass") {
+		for (let i = 0; i < bsd.length; i++) {
+			const b = bsd[i];
+      for (let i = 0; i < b.count; i++) {
+				const path = `${b.root}${i.toString()}:`;
+				let dev = b.device;
+				if (b.root === "mass") {
 					const bdmInfo = System.getBDMInfo(path);
 					if (!bdmInfo) { break; }
 					switch (bdmInfo.name) {
@@ -60,24 +61,26 @@
 					}
 					console.log(`BDM device ${bdmInfo.index} type: ${dev}`);
 				}
+        else if (b.root === "hdd") {
+					gameList = gameList.concat(ScanGames(path, dev, ""));
+          continue;
+        }
+
 				const directory = os.readdir(path)[0];
 				if (!directory) { return; }
-			
-				if (bsd.root === "hdd") 			{ gameList = gameList.concat(ScanGames(path, dev, "")); }
-				else {
-					if (directory.includes("DVD")) 	{ gameList = gameList.concat(ScanGames(`${path}/DVD/`, dev, "dvd")); }
-					if (directory.includes("CD")) 	{ gameList = gameList.concat(ScanGames(`${path}/CD/`, dev, "cd")); }
-					if (directory.includes("PS2")) 	{ 
-						const subdir = os.readdir(`${path}PS2/`)[0];
-						if 	   (subdir.includes("DVD")) { gameList = gameList.concat(ScanGames(`${path}PS2/DVD/`, dev, "dvd")); }
-						else if (subdir.includes("CD")) { gameList = gameList.concat(ScanGames(`${path}PS2/CD/`, dev, "cd")); }
-					}
+
+				if (directory.includes("DVD")) 	{ gameList = gameList.concat(ScanGames(`${path}/DVD/`, dev, "dvd")); }
+				if (directory.includes("CD")) 	{ gameList = gameList.concat(ScanGames(`${path}/CD/`, dev, "cd")); }
+				if (directory.includes("PS2")) 	{
+					const subdir = os.readdir(`${path}PS2/`)[0];
+					if 	   (subdir.includes("DVD")) { gameList = gameList.concat(ScanGames(`${path}PS2/DVD/`, dev, "dvd")); }
+					else if (subdir.includes("CD")) { gameList = gameList.concat(ScanGames(`${path}PS2/CD/`, dev, "cd")); }
 				}
 			}
-		});
-		
+    }
+
 		if (gameList.length > 1) { gameList.sort((a, b) => a.Name.localeCompare(b.Name)); }
-		
+
 		return gameList;
     ]]>
   </Options>
@@ -144,19 +147,19 @@
 		<Dialog Name="SaveSettingsDialog" Icon="-1" Title="" BG="false" Type="TEXT" Text="{WAIT}" Align="HCENTER">
 		  <Task>
 		    <![CDATA[
-			  function() { 
+			  function() {
 				let fdSrc = false;
 				let fdDst = false;
-				
-				try { 
+
+				try {
 					const gameID = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].GameID.toUpperCase();
 					const config = CfgMan.Get(`${gameID}.cfg`);
 					const vmcgroups = CfgMan.Get("PS2VMCGRP.cfg");
 					let vmcgameid = gameID;
 					if (gameID in vmcgroups) { vmcgameid = vmcgroups[gameID]; }
-					
+
 					const info = DashUI.Dialog.Data[DashUI.Dialog.Level - 1].Info;
-					
+
 					let gcModes = "";
 					if (info[4].Selected === 1) { gcModes += "0"; }
 					if (info[5].Selected === 1) { gcModes += "2"; }
@@ -165,21 +168,21 @@
 					if (info[8].Selected === 1) { gcModes += "3"; }
 					if (gcModes) { config["gc"] = gcModes; }
 					else if ('gc' in config) { delete config.gc; }
-					
+
 					if (info[2].Selected === 1) { config["VMC0"] = vmcgameid; }
 					else if ('VMC0' in config) { delete config.VMC0; }
 					if (info[3].Selected === 1) { config["VMC1"] = vmcgameid; }
 					else if ('VMC1' in config) { delete config.VMC1; }
-					
+
 					for(let i = 0; i < 2; i++) {
 						const vmcpath = `${PATHS.VMC}${vmcgameid}_${i.toString()}.vmc`;
 						if ((info[2 + i].Selected !== 1) || (std.exists(vmcpath))) { continue; }
-						
+
 						xlog("VMC COPY OPERATION STARTED");
-						
+
 						const waitTxt = XMBLANG.WAIT[UserConfig.Language];
 						const mcTxt = `${XMBLANG.COPY_VMC_MSG[UserConfig.Language]} ${(i + 1).toString()}`;
-						
+
 						const src = `${PATHS.VMC}blank.vmc`;
 						const BLOCK_SIZE = 64 * 1024;
 						const buffer = new ArrayBuffer(BLOCK_SIZE);
@@ -208,18 +211,18 @@
 							const percent = ~~((copied / totalSize) * 100);
 							DashUI.Dialog.Data[DashUI.Dialog.Level].Text = `${mcTxt}\n\n${waitTxt}\n\n${percent}%`;
 						}
-						
+
 						xlog("VMC COPY OPERATION FINISHED");
 
 						os.close(fdSrc);
 						os.close(fdDst);
-						
+
 						DashUI.Dialog.Data[DashUI.Dialog.Level].Text = `${XMBLANG.WAIT[UserConfig.Language]}`;
 					}
-					
+
 					CfgMan.Set(`${gameID}.cfg`, config);
 					UIAnimationDialogFade_Start(false);
-				} catch (e) { 
+				} catch (e) {
 					xlog(e);
 				} finally {
 					if (fdSrc) { os.close(fdSrc); }
@@ -234,7 +237,7 @@
 	</Component>
     <Confirm>
       <![CDATA[
-        function(index, item) { 
+        function(index, item) {
 			const items = item.Dialog.Info;
 			const config = CfgMan.Get(`${DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].GameID.toUpperCase()}.cfg`);
 			items[2].Selected = ('VNC0' in config) ? 1 : 0;
@@ -248,8 +251,8 @@
 				items[8].Selected = /3/.test(gc) ? 1 : 0;
 			}
 			else { for (let i = 4; i < items.length; i++) { items[i].Selected = 0; } }
-			
-			DashUISetDialog(item.Dialog); 
+
+			DashUISetDialog(item.Dialog);
 		}
       ]]>
     </Confirm>

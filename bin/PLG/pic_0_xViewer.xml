@@ -13,16 +13,15 @@
 	<Component Name="{SETASBG}" Icon="-1" />
     <Confirm>
       <![CDATA[
-        function(index, item)
-		{
-			const path = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].FullPath;
-			SetNewCustomBgImg(path);
-			
-		    let config = CfgMan.Get("main.cfg");
-			config["customBg"] = path;
-		    config["displayBg"] = UserConfig.DisplayBg.toString();
-		    CfgMan.Push("main.cfg", config);
-		}
+        function(index, item)	{
+			    const path = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].FullPath;
+			    SetNewCustomBgImg(path);
+
+		      let config = CfgMan.Get("main.cfg");
+			    config["customBg"] = path;
+		      config["displayBg"] = UserConfig.DisplayBg.toString();
+		      CfgMan.Push("main.cfg", config);
+		    }
       ]]>
     </Confirm>
   </Context>

@@ -2,8 +2,7 @@ UserConfig.BgColor = 8;
 BgElements.BgColor.Next = UserConfig.BgColor;
 BgElements.BgColor.Progress = 0.0f;
 
-if (!DashElements.ItemFocus)
-{	
+if (!DashElements.ItemFocus) {
 	DashElements.ItemFocus = new Image(`${PATHS.Theme}${UserConfig.Theme}/icons/focus.png`);
 	DashElements.ItemFocus.optimize();
 	DashElements.ItemFocus.filter = LINEAR;

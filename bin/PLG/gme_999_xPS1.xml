@@ -7,22 +7,22 @@
 			cfg["last"] = value;
 			CfgMan.Set("pops.cfg", cfg);
 		}
-		
+
 		function getPOPSElfPath(data) {
 			const prefix = (data.dev === "mass") ? "XX." : "";
 			let path = "mass:/POPS/"
-			if (data.dev === "hdd") { 
+			if (data.dev === "hdd") {
 				const part = mountHDDPartition("__common");
 				path = `${part}:/POPS/`;
 			}
-			
+
 			const elfPath = `${path}${prefix}${data.fname.substring(0, data.fname.length - 3)}ELF`;
-			
+
 			if (!std.exists(elfPath)) { System.copyFile(`${path}POPSTARTER.ELF`, elfPath); }
-			
+
 			return elfPath;
 		}
-		
+
 		function generateVMCs(gameList) {
 			const vmcgrps = CfgMan.Get("PS1VMCGRP.cfg");
 			for (let i = 0; i < gameList.length; i++) {
@@ -30,18 +30,18 @@
 				if (game.GameID === "") { continue; }
 				if (!(game.GameID in vmcgrps)) { continue; }
 				const basePath = (game.Data.dev === "mass") ? "mass:/POPS/" : `${mountHDDPartition("__common")}:/POPS/`;
-				
+
 				// Make Dirs
 				if (!os.readdir(basePath)[0].includes(vmcgrps[game.GameID])) { os.mkdir(`${basePath}${vmcgrps[game.GameID]}`); }
 				if (!os.readdir(basePath)[0].includes(game.Name)) 			 { os.mkdir(`${basePath}${game.Name}`); }
-				
+
 				// Write VMC
 				if (!os.readdir(`${basePath}${game.Name}/`)[0].includes("VMCDIR.TXT")) {
 					ftxtWrite(`${basePath}${game.Name}/VMCDIR.TXT`, vmcgrps[game.GameID]);
 				}
 			}
 		}
-		
+
 		function ScanGames(path, dev) {
 			const items = [];
 			let gameDir = System.listDir(path).filter(item => (item.dir === false) && (getFileExtension(item.name).toLowerCase() === "vcd"));
@@ -56,12 +56,12 @@
 					Type: "ELF",
 					Data: { path: path, fname: gameDir[j].name, dev: dev }
 				});
-				
+
 				Object.defineProperty(items[items.length - 1], "Value", {
 					get() {	return { Path: getPOPSElfPath(this.Data), Args: [], Code: SaveLastPlayed }; },
 					enumerable: true
 				});
-				
+
 				const ico = gameID.success ? findICO(code) : "";
 				if (ico !== "") { items[items.length - 1].CustomIcon = ico; }
 				const bgFile = gameID.success ? findBG(code) : "";
@@ -69,33 +69,38 @@
 			}
 			return items;
 		}
-		
+
+		const devices = System.devices();
 		let gameList = [];
-		
-		const massDir = os.readdir("mass:/")[0];
-		if (massDir && massDir.includes("POPS")) {
-			const dirFiles = os.readdir("mass:/POPS/")[0];
-			
-			// Check if files are present
-			if (dirFiles.includes("POPS_IOX.PAK") && dirFiles.includes("POPSTARTER.ELF")) { 
-				gameList = gameList.concat(ScanGames("mass:/POPS/", "mass"));
+
+    if (devices.some(dev => dev.name === "mass")) {
+			const massDir = os.readdir("mass:/")[0];
+			if (massDir && massDir.includes("POPS")) {
+				const dirFiles = os.readdir("mass:/POPS/")[0];
+
+				// Check if files are present
+				if (dirFiles.includes("POPS_IOX.PAK") && dirFiles.includes("POPSTARTER.ELF")) {
+					gameList = gameList.concat(ScanGames("mass:/POPS/", "mass"));
+				}
 			}
-		}
-		
-		const hddDir = os.readdir("hdd0:")[0];
-		if (hddDir && hddDir.includes("__common") && hddDir.includes("__.POPS")) {
-			const commpart = mountHDDPartition("__common");
-            const dirFiles = os.readdir(`${commpart}:/POPS/`)[0];
-			const filesPresent = (dirFiles.includes("POPS.ELF") && dirFiles.includes("IOPRP252.IMG") && dirFiles.includes("POPSTARTER.ELF"));
-            if (filesPresent) { 
-				gameList = gameList.concat(ScanGames(`${mountHDDPartition("__.POPS")}:/`, "hdd"));
+    }
+
+    if (devices.some(dev => dev.name === "hdd")) {
+			const hddDir = os.readdir("hdd0:")[0];
+			if (hddDir && hddDir.includes("__common") && hddDir.includes("__.POPS")) {
+				const commpart = mountHDDPartition("__common");
+				const dirFiles = os.readdir(`${commpart}:/POPS/`)[0];
+				const filesPresent = (dirFiles.includes("POPS.ELF") && dirFiles.includes("IOPRP252.IMG") && dirFiles.includes("POPSTARTER.ELF"));
+				if (filesPresent) {
+					gameList = gameList.concat(ScanGames(`${mountHDDPartition("__.POPS")}:/`, "hdd"));
+				}
 			}
-		}
-		
+    }
+
 		if (gameList.length > 1) { gameList.sort((a, b) => a.Name.localeCompare(b.Name)); }
-		
+
 		generateVMCs(gameList);
-		
+
 		return gameList;
     ]]>
   </Options>
@@ -179,7 +184,7 @@
 		<Dialog Name="SaveSettingsDialog" Icon="-1" Title="" BG="false" Type="TEXT" Text="{WAIT}" Align="HCENTER">
 		  <Task>
 		    <![CDATA[
-			  function() { 
+			  function() {
 				const info = DashUI.Dialog.Data[DashUI.Dialog.Level - 1].Info;
 				const cheats = [];
 				cheats.push({ code: "COMPATIBILITY_0x01", enabled: (info[1].Selected === 1)});
@@ -215,11 +220,11 @@
 	</Component>
     <Confirm>
       <![CDATA[
-        function(index, item) { 
+        function(index, item) {
 			const items = item.Dialog.Info;
 			const title = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Name;
 			let dev = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Data.dev;
-			
+
 			const cheats = [
 				"COMPATIBILITY_0x01",
 				"COMPATIBILITY_0x02",
@@ -264,12 +269,12 @@
 			settings[6] = (statuses[16]) ? 2 : settings[6];
 			settings[7] = (statuses[17]) ? 1 : 0;
 			settings[7] = (statuses[18]) ? 2 : settings[7];
-			
-			for (let i = 2; i < items.length; i++) { 
+
+			for (let i = 2; i < items.length; i++) {
 				items[i].Selected = settings[i - 2];
 			}
-			
-			DashUISetDialog(item.Dialog); 
+
+			DashUISetDialog(item.Dialog);
 		}
       ]]>
     </Confirm>

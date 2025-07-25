@@ -217,9 +217,11 @@ function BgHandler() {
 		// There is no Custom Background Image to draw
 		// There is a Custom Background Image to draw but it still has not appeared completely.
 
-	if ((!BgElements.BgImage.TmpImage || BgElements.BgImage.TmpAlpha < 128) &&
-		(!UserConfig.DisplayBg || BgElements.BgImage.Alpha < 128)) {
+    const tmpBgImg      = (BgElements.BgImage.TmpImage && BgElements.BgImage.TmpAlpha === 128);
+    const customBgImg   = (UserConfig.DisplayBg && BgElements.BgImage.Alpha === 128);
+    const uiBgImg = (('Image' in DashUI.ItemBG) && DashUI.ItemBG.A === 128);
 
+    if (!tmpBgImg && !customBgImg && !uiBgImg){
 		if ((Waves) && (UserConfig.Waves)) { Waves.Render(); }
 		DrawTexture();
 		DrawDailyOverlay();

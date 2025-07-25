@@ -12,16 +12,13 @@ PadSettings.Mode = 0;
 PadSettings.Port = 0;
 
 const pad = Pads.get(PadSettings.Port);
-
+function checkStates(BUTTON) { return (pad.justPressed(BUTTON) || pad.pressed(BUTTON)); }
 function PadsHandler() {
+
 	PadSettings.ConfirmButton = (UserConfig.ConfirmBtn === 0) ? Pads.CROSS : Pads.CIRCLE;
 	PadSettings.CancelButton = (UserConfig.ConfirmBtn === 0) ? Pads.CIRCLE : Pads.CROSS;
-
-	const checkStates = (BUTTON) => {
-		return (pad.justPressed(BUTTON) || pad.pressed(BUTTON));
-	};
-
-	pad.update();
+    pad.update();
+    if (PadSettings.Mode === 0) { return; } // If Mode is 0, no events are set.
 
 		 if ((PADEVENTS.ACCEPT) 	&& (pad.justPressed(PadSettings.ConfirmButton))) 	{ PADEVENTS.ACCEPT(); }
     else if ((PADEVENTS.CANCEL) 	&& (pad.justPressed(PadSettings.CancelButton))) 	{ PADEVENTS.CANCEL(); }

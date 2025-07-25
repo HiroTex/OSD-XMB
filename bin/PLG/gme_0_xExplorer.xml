@@ -24,15 +24,15 @@
 		<Dialog Name="DeleteItemDialogTask" Icon="-1" Title="" BG="false" Type="TEXT" Text="{WAIT}">
 		  <Task>
 		    <![CDATA[
-			  function() { 
-				const collection = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items;
-				const item = collection[DashUI.SubMenu.Items.Current];
-			    const path = item.FullPath;
-				(path.endsWith('/')) ? System.removeDirectory(path) : os.remove(path);
-				collection.splice(DashUI.SubMenu.Items.Current, 1);
-				if (collection.length < 1) { DashUI.SubMenu.Items.Current = -1; }
-				else if (DashUI.SubMenu.Items.Current >= collection.length) { DashUI.SubMenu.Items.Current = collection.length - 1; }
-				UIAnimationDialogFade_Start(false);
+			  function() {
+					const collection = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items;
+					const item = collection[DashUI.SubMenu.Items.Current];
+						const path = item.FullPath;
+					(path.endsWith('/')) ? System.removeDirectory(path) : os.remove(path);
+					collection.splice(DashUI.SubMenu.Items.Current, 1);
+					if (collection.length < 1) { DashUI.SubMenu.Items.Current = -1; }
+					else if (DashUI.SubMenu.Items.Current >= collection.length) { DashUI.SubMenu.Items.Current = collection.length - 1; }
+					UIAnimationDialogFade_Start(false);
 			  }
 		    ]]>
 		  </Task>

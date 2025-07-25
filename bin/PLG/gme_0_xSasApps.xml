@@ -5,7 +5,7 @@
 		{
 			// Scan directory for title.cfg
 			if (!std.exists(`${path}title.cfg`)) { return {}; }
-			
+
 			// Parse the Title CFG file.
 			let data = ReadCFG(`${path}title.cfg`);
 			let AppName = "";
@@ -35,7 +35,7 @@
 			}
 			else { return {}; }
 		}
-		
+
 		function GetSasApps(path)
 		{
 			const options = [];
@@ -49,21 +49,25 @@
 			}
 			return options;
 		}
-
+		const devices = System.devices();
 		let options = [];
-		
-		// Read Memory Card Directories
-		for (let i = 0; i < 2; i++)	{ options = options.concat(GetSasApps(`mc${i.toString()}:/`)); }
-		
-		// Read HDD Common Directory
-		const hdd = os.readdir("hdd0:")[0];
-		if (hdd && hdd.includes("__common"))
-		{
-			const part = mountHDDPartition("__common");
-			options = options.concat(GetSasApps(`${part}:APPS/`));
-		}
 
-		options.sort((a, b) => a.Name.localeCompare(b.Name));
+		// Read Memory Card Directories
+    if (devices.some(dev => dev.name === "mc")) {
+			for (let i = 0; i < 2; i++)	{ options = options.concat(GetSasApps(`mc${i.toString()}:/`)); }
+    }
+
+		// Read HDD Common Directory
+    if (devices.some(dev => dev.name === "hdd")) {
+			const hdd = os.readdir("hdd0:")[0];
+			if (hdd && hdd.includes("__common"))
+			{
+				const part = mountHDDPartition("__common");
+				options = options.concat(GetSasApps(`${part}:APPS/`));
+			}
+    }
+
+		if (options.length > 1) { options.sort((a, b) => a.Name.localeCompare(b.Name)); }
 		return options;
     ]]>
   </Options>

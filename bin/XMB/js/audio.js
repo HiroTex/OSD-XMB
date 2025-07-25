@@ -6,20 +6,30 @@
 //////////////////////////////////////////////////////////////////////////
 
 const Sounds = {
-    BOOT:   Sound.Stream(`${PATHS.Theme}Original/sound/snd_boot.wav`),
-    CURSOR: Sound.Stream(`${PATHS.Theme}Original/sound/snd_cursor.wav`),
-    CANCEL: Sound.Stream(`${PATHS.Theme}Original/sound/snd_cancel.wav`)
+    BOOT:   `${PATHS.Theme}Original/sound/snd_boot.wav`,
+    CURSOR: Sound.Sfx(`${PATHS.Theme}Original/sound/cursor.adp`),
+    CANCEL: Sound.Sfx(`${PATHS.Theme}Original/sound/cancel.adp`)
 };
 
 function playSfx(sound) {
     if (!sound) return;
-    if (sound.playing()) { sound.rewind(); }
-    else { sound.play(); }
+    sound.play();
+}
+function playBgm(sound) {
+    if (!sound) return;
+    const bgm = Sound.Stream(sound);
+    bgm.play();
+    let ival = os.setInterval(() => {
+        if (!bgm.playing()) {
+            bgm.free();
+            os.clearInterval(ival);
+        }
+    }, 0);
 }
 
-const PlayBootSfx   = () => playSfx(Sounds.BOOT);
-const PlayCursorSfx = () => playSfx(/*Sounds.CURSOR*/false);
-const PlayCancelSfx = () => playSfx(/*Sounds.CANCEL*/false);
+const PlayBootSfx   = () => playBgm(Sounds.BOOT);
+const PlayCursorSfx = () => playSfx(Sounds.CURSOR);
+const PlayCancelSfx = () => playSfx(Sounds.CANCEL);
 
 //////////////////////////////////////////////////////////////////////////
 ///*				   			 Init Work							  *///

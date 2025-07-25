@@ -285,7 +285,7 @@ function xmlParseDialogTag(element) {
 						if (!('To' in child.attributes)) { continue; }
 						event = function() {
 							if ('Condition' in child.attributes) {
-                                const condition = std.eval(child.attributes.Condition);
+                                const condition = std.evalScript(child.attributes.Condition);
 
 								if (!condition) {
 									if (child.attributes.Exit) { UIAnimationDialogFade_Start(false); }
@@ -303,10 +303,17 @@ function xmlParseDialogTag(element) {
 									UIAnimationDialogContentFade_Start(true);
 								}); thread.start();
 							}
-							else {
-								const prevData = DashUI.Dialog.Data[DashUI.Dialog.Level];
-								DashUI.Dialog.Data.push({ ...prevData[child.attributes.To] });
-								DashUI.Dialog.Level++;
+                            else {
+                                UIAnimationDialogContentFade_Start(false);
+                                let ival = os.setInterval(() => {
+                                    if (!DashUI.Dialog.ContentFade.Running) {
+                                        const prevData = DashUI.Dialog.Data[DashUI.Dialog.Level];
+                                        DashUI.Dialog.Data.push({ ...prevData[child.attributes.To] });
+                                        DashUI.Dialog.Level++;
+                                        UIAnimationDialogContentFade_Start(true);
+                                        os.clearInterval(ival);
+                                    }
+                                }, 0);
 							}
 						}
 						break;
@@ -404,7 +411,6 @@ function xmlParseContext(element) {
 		if (name in contextObj) { continue; }
 		else { contextObj[name] = element.attributes[name]; }
 	}
-
     return contextObj;
 }
 function xmlParseNamedChildrens(source, element) {
@@ -457,9 +463,8 @@ function xmlParseSubMenu(element) {
 
     return submenu;
 }
-function parseXmlPlugin(xmlString) {
+function parseXmlPlugin(parsedData) {
     try {
-        const parsedData = xmlParseElement(xmlString);
 
         if ((!('tagName' in parsedData)) || (parsedData.tagName !== "App")) { return {}; }
 
@@ -494,17 +499,11 @@ function parseXmlPlugin(xmlString) {
                     else if ('Type' in optionsTag.attributes) {
                         switch (optionsTag.attributes.Type) {
                             case "Explorer":
-                                xlog("parseXmlPlugin(): Parsing Explorer Type");
-                                const explorerParams = {};
-                                if ('ExtensionFilter' in optionsTag.attributes) {
-                                    explorerParams.fileFilters = optionsTag.attributes.ExtensionFilter.replace(' ', '').split(',');
-                                }
-
                                 plugin.Value = {};
-                                plugin.Value.Items = getDevicesAsItems(explorerParams);
-                                xmlDefineDefaultProperty(plugin.Value, parsedData);
-                                xlog("parseXmlPlugin(): Get Devices Items Completed");
-
+                                plugin.Value.ExploreParams = {};
+                                if ('ExtensionFilter' in optionsTag.attributes) {
+                                    plugin.Value.ExploreParams = optionsTag.attributes.ExtensionFilter.replace(' ', '').split(',');
+                                }
                                 if ('DeviceFilter' in optionsTag.attributes) {
                                     const devices = optionsTag.attributes.DeviceFilter.split(',');
                                     function filterDevices(item) {
@@ -513,9 +512,22 @@ function parseXmlPlugin(xmlString) {
                                         }
                                         return true;
                                     }
-                                    plugin.Value.Items = plugin.Value.Items.filter(filterDevices);
+                                    plugin.Value.FilterDev = filterDevices;
                                 }
-                                xlog("parseXmlPlugin(): Finished Parsing Explorer Type");
+
+                                Object.defineProperty(plugin.Value, "Items", {
+                                    get() {
+                                        let devices = getDevicesAsItems(this.ExploreParams);
+                                        if (this.FilterDev) { devices = devices.filter(this.FilterDev); }
+                                        delete this.Items;
+                                        this.Items = devices;
+                                        return devices;
+                                    },
+                                    enumerable: true,
+                                    configurable: true
+                                });
+
+                                xmlDefineDefaultProperty(plugin.Value, parsedData);
                                 break;
                         }
                     }

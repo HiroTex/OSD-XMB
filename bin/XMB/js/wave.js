@@ -57,8 +57,8 @@ const Waves = (() => {
 		for (let x = 0; x <= screenWidth; x += step) {
 			const waveX = precomputedXWave[x];
 
-			const y1 = Math.sinf(precomputedXWave[x] + timeWave1) * wave1Amplitude;
-            const y2 = Math.sinf(precomputedXWave[x] + timeWave2) * wave2Amplitude;
+            const y1 = Math.sinf(waveX + timeWave1) * wave1Amplitude;
+            const y2 = Math.sinf(waveX + timeWave2) * wave2Amplitude;
 
 			const currentY1 = baseYStart + y1;
 			const currentY2 = baseYStart + y2;
@@ -70,7 +70,7 @@ const Waves = (() => {
 			Draw.rect(x, currentY2 + 1, rectW, height, wave2ColorBottom);
 		}
 
-		time = (time + 1) % 6284;
+        time++; if (time === 6284) time = 0;
     }
 
     return {

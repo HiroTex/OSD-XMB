@@ -29,13 +29,10 @@ function mountHDDPartition(partName) {
 }
 
 function getDevicesAsItems(params = {}) {
-	xlog("getDevicesAsItems(): Start");
 	const Items = [];
 	const devices = System.devices();
 	const fileFilters = ('fileFilters' in params) ? params.fileFilters : false;
 	const fileoptions = ('fileoptions' in params) ? params.fileoptions : false;
-
-	xlog("getDevicesAsItems(): Add Main Directory Item");
 
 	Items.push({
 		Name: XMBLANG.WORK_DIR_NAME,
@@ -50,8 +47,6 @@ function getDevicesAsItems(params = {}) {
 		configurable: true,
 	});
 
-	xlog("getDevicesAsItems(): Added Main Directory Item");
-
 	for (let i = 0; i < devices.length; i++) {
 		let dev = devices[i];
 
@@ -59,9 +54,8 @@ function getDevicesAsItems(params = {}) {
 		let basepath = "";
 		let nameList = [];
 		let descList = [];
-		let iconList = [];
+        let iconList = [];
 
-		xlog("getDevicesAsItems(): Parsing Device: " + dev.name);
 		switch(dev.name) {
 			case "mc":
 				count = 2;
@@ -109,7 +103,6 @@ function getDevicesAsItems(params = {}) {
 
 		for (let j = 0; j < count; j++)	{
 			const root = `${basepath}${j.toString()}:`;
-			xlog("getDevicesAsItems(): Adding Item: " + root);
 			if (os.readdir(root)[0].length > 0) {
 				Items.push({
 					Name: nameList[j],
@@ -124,11 +117,8 @@ function getDevicesAsItems(params = {}) {
 					configurable: true,
 				});
 			}
-			xlog("getDevicesAsItems(): Succesfully Added Item: " + root);
 		}
 	}
-
-	xlog("getDevicesAsItems(): Finished");
 	return Items;
 }
 
@@ -615,6 +605,30 @@ function setPOPSCheat(params) {
 ///*				   			    ART								  *///
 //////////////////////////////////////////////////////////////////////////
 
+/* Get Available Art Paths */
+function getArtPaths() {
+    const devices = System.devices();
+    const paths = [CWD];
+    let art = "";
+
+    if (devices.some(dev => dev.name === "mmce")) {
+        let dir0 = os.readdir("mmce0:/")[0];
+        let dir1 = os.readdir("mmce1:/")[0];
+        dir0 && dir0.length > 0 && paths.push("mmce0:/");
+        dir1 && dir1.length > 0 && paths.push("mmce1:/");
+    }
+
+    if (devices.some(dev => dev.name === "mass")) {
+        for (let i = 0; i < 10; i++) {
+            const dir = os.readdir(`mass${i.toString()}:/`)[0];
+            if (!dir || dir.length < 1) { break; }
+            paths.push(`mass${i.toString()}:/`);
+        }
+    }
+
+    return paths;
+}
+
 /*	Scans a Directory Art Folder looking for a match	*/
 function scanArtFolder(baseDir, baseFilename, suffix) {
     const dirPath = `${baseDir}ART/`;
@@ -637,19 +651,9 @@ function scanArtFolder(baseDir, baseFilename, suffix) {
 
 /*	Searchs for an Image file either in PNG or JPG Format following a name pattern.	*/
 function findArt(baseFilename, suffix) {
-    let baseDir = CWD;
-    let art = scanArtFolder(baseDir, baseFilename, suffix);
-    if (art === "") {
-        // Scan mmce devices
-        for (let i = 0; i < 2; i++) {
-            art = scanArtFolder(`mmce${i.toString()}:/`, baseFilename, suffix);
-            if (art !== "") { break; }
-        }
-        // Scan all mass root devices
-        for (let i = 0; i < 10; i++) {
-            art = scanArtFolder(`mass${i.toString()}:/`, baseFilename, suffix);
-            if (art !== "") { break; }
-        }
+    for (let i = 0; i < gArtPaths.length; i++) {
+        art = scanArtFolder(gArtPaths[i], baseFilename, suffix);
+        if (art !== "") { break; }
     }
 
     return art; // Return empty string if no matching file is found
@@ -1034,7 +1038,7 @@ function PrintDebugInformation() {
 	DebugInfo.push(`WIDTH: ${ScrCanvas.width} HEIGHT: ${ScrCanvas.height}`);
 	DebugInfo.push(`DATE: ${gTime.getDate()}/${gTime.getMonth() + 1}/${gTime.getFullYear()} ${gTime.getHours()}:${gTime.getMinutes()}:${gTime.getSeconds()}`);
 
-    TxtPrint({ Text: DebugInfo, Position: { X: 5, Y: ScrCanvas.height - (DebugInfo.length * 16) } });
+    TxtPrint({ Text: DebugInfo, Position: { X: 5, Y: ScrCanvas.height - ((DebugInfo.length + 1) * 16) } });
     xlogProcess();
 }
 function xlog(l) {
@@ -1067,10 +1071,10 @@ if (isNaN(gTimezone)) { gTimezone = 0; }
 
 let gExit 		= {};
 let gTime 		= getLocalTime();
-let gThreads 	= true;
-let gDebug      = true;
+let gThreads 	= false;
+let gDebug      = false;
 let gDbgTxt     = [];
-let gEvals      = [];
+let gArtPaths   = getArtPaths();
 let ScrCanvas 	= Screen.getMode();
 
 ftxtWrite(`${PATHS.XMB}log.txt`, ""); // Init Log File.

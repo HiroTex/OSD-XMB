@@ -24,9 +24,9 @@ function FontInit() {
 		if (std.exists(custom_font)) { FontObj.Font = new Font(custom_font); }
 	}
 
-    FontObj.SizeS = 0.44f;
-    FontObj.SizeM = 0.5f;
-    FontObj.SizeL = 0.65f;
+    FontObj.SizeS = 0.5f;
+    FontObj.SizeM = 0.65f;
+    FontObj.SizeL = 0.75f;
 }
 
 function WrapTextByPixelWidth(line) {
@@ -58,8 +58,7 @@ function WrapTextByPixelWidth(line) {
 			{
 				bestFitIndex = mid;
 				start = mid + 1;
-			} else
-			{
+			} else {
 				end = mid;
 			}
 		}
@@ -76,6 +75,8 @@ function WrapTextByPixelWidth(line) {
 }
 
 function PreprocessText(txt) {
+
+    FontObj.Font.scale = FontObj.SizeS;
 	let lines = typeof txt === 'string' ? txt.split('\n') : txt;
 	let finalLines = [];
 
@@ -109,7 +110,7 @@ function FontAlignPos(Text, Alignment = "LEFT", Position) {
 			break;
 		case "RIGHT":
 			Position.Y += 10;
-			Position.X = Position.X + ScrCanvas.width;
+            Position.X = ScrCanvas.width + Position.X;
 			FontObj.Font.align = Font.ALIGN_RIGHT;
 			break;
 		case "CENTER":
@@ -126,10 +127,9 @@ function FontAlignPos(Text, Alignment = "LEFT", Position) {
 }
 
 function FontTextPrint(txt, pos) {
-	const lineSize = FontObj.Font.scale * 32;
+	const lineSize = ~~(FontObj.Font.scale * 32);
     let y = pos.Y;
 
-    // Use for loop instead of forEach
     for (let i = 0; i < txt.length; i++) {
         FontObj.Font.print(pos.X, y, txt[i]);
         y += lineSize;
