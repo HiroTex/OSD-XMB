@@ -162,7 +162,13 @@ function xmlDefineDefaultProperty(object, element) {
 		for (let i = 0; i < element.children.length; i++) {
 			const child = element.children[i];
 			if (child.tagName === "Default") {
-				if ("Variable" in child.attributes) { _getter = child.attributes.Variable; }
+                if ("Variable" in child.attributes) {
+                    Object.defineProperty(object, "Default", {
+                        get() { return eval(`Number(${child.attributes.Variable})`); },
+                        enumerable: true,
+                        configurable: true,
+                    });
+                }
 				else if ("cdata" in child) { _getter = `(() => { ${child.cdata} })();`; }
 			}
 		}
@@ -502,7 +508,7 @@ function parseXmlPlugin(parsedData) {
                                 plugin.Value = {};
                                 plugin.Value.ExploreParams = {};
                                 if ('ExtensionFilter' in optionsTag.attributes) {
-                                    plugin.Value.ExploreParams = optionsTag.attributes.ExtensionFilter.replace(' ', '').split(',');
+                                    plugin.Value.ExploreParams.fileFilters = optionsTag.attributes.ExtensionFilter.replace(' ', '').split(',');
                                 }
                                 if ('DeviceFilter' in optionsTag.attributes) {
                                     const devices = optionsTag.attributes.DeviceFilter.split(',');

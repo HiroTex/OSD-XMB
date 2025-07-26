@@ -7,8 +7,74 @@
 //////////////////////////////////////////////////////////////////////////
 
 const monthColors 	= [];
-const BgElements 	= {};
+const BgElements = {};
 
+//////////////////////////////////////////////////////////////////////////
+///*				   		    Handlers							  *///
+//////////////////////////////////////////////////////////////////////////
+
+function BgHandler() {
+    BgColorHandler();
+
+    // Execute Background Graphic logic if:
+    // There is no Tmp Image to draw
+    // There is a Tmp Image to draw but it still has not appeared completely
+    // and
+    // There is no Custom Background Image to draw
+    // There is a Custom Background Image to draw but it still has not appeared completely.
+
+    const tmpBgImg = (BgElements.BgImage.TmpImage && BgElements.BgImage.TmpAlpha === 128);
+    const customBgImg = (UserConfig.DisplayBg && BgElements.BgImage.Alpha === 128);
+    const uiBgImg = (('Image' in DashUI.ItemBG) && DashUI.ItemBG.A === 128);
+
+    if (!tmpBgImg && !customBgImg && !uiBgImg) {
+        if ((Waves) && (UserConfig.Waves)) { Waves.Render(); }
+        DrawTexture();
+        DrawDailyOverlay();
+    }
+
+    BgImageHandler();
+}
+function BgColorHandler() {
+    if (BgElements.BgColor.Next === BgElements.BgColor.Current) { return; }
+
+    BgElements.BgColor.Progress += 0.03f;
+
+    if (BgElements.BgColor.Progress > 0.9f) {
+        BgElements.BgColor.Progress = 0.0f;
+        BgElements.BgColor.Color = getBgColor(BgElements.BgColor.Next);
+        BgElements.BgColor.Current = BgElements.BgColor.Next;
+    }
+	else {
+        BgElements.BgColor.Color = interpolateColorObj(getBgColor(BgElements.BgColor.Current), getBgColor(BgElements.BgColor.Next), BgElements.BgColor.Progress);
+    }
+
+    const color = BgElements.BgColor.Color;
+    const bgcol = Color.new(color.R, color.G, color.B, 128);
+    Screen.clearColor(bgcol);
+    Waves.SetColor(color);
+}
+function BgImageHandler() {
+    const tmpImage = BgElements.BgImage.TmpImage;
+    const tmpAlpha = BgElements.BgImage.TmpAlpha;
+    const usrImage = BgElements.BgImage.Image;
+    const usrAlpha = BgElements.BgImage.Alpha;
+
+    if ((!UserConfig.DisplayBg || !UserConfig.CustomBgImg) && !tmpImage) { return; }
+
+    if ((UserConfig.DisplayBg && UserConfig.CustomBgImg) && usrImage && usrImage.ready()) {
+        usrImage.color = Color.setA(usrImage.color, usrAlpha);
+        usrImage.draw(0, 0);
+    }
+    if (tmpImage && tmpImage.ready()) {
+        tmpImage.color = Color.setA(tmpImage.color, tmpAlpha);
+        tmpImage.draw(0, 0);
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////
+///*				   		 Initialization							  *///
+//////////////////////////////////////////////////////////////////////////
 function MonthColorsInit() {
 	// Background Colors based on each month (from PS3's XMB).
 	monthColors.push({ R: 0xCB, G: 0xCB, B: 0xCB });
@@ -26,7 +92,6 @@ function MonthColorsInit() {
 	monthColors.push({ R: 0x12, G: 0x12, B: 0x18 });
 	monthColors.push({ R: 0x00, G: 0x00, B: 0x00 });
 }
-
 function BgElementsInit() {
 	BgElements.BgTex = new Image(`${PATHS.XMB}dash/dash_bg.png`);
 	BgElements.BgTex.optimize();
@@ -61,31 +126,13 @@ function BgElementsInit() {
 	Screen.clearColor(Color.new(BgElements.BgColor.Color.R, BgElements.BgColor.Color.G, BgElements.BgColor.Color.B, 128));
 }
 
+//////////////////////////////////////////////////////////////////////////
+///*				   		     Drawing							  *///
+//////////////////////////////////////////////////////////////////////////
 function getBgColor(param = UserConfig.BgColor) {
 	if (param === 0) { return monthColors[getLocalTime().getMonth()]; }
 	else { return monthColors[param - 1]; }
 }
-
-function BgColorHandler() {
-	if (BgElements.BgColor.Next === BgElements.BgColor.Current) { return; }
-
-	BgElements.BgColor.Progress += 0.03f;
-
-	if (BgElements.BgColor.Progress > 0.9f) {
-		BgElements.BgColor.Progress = 0.0f;
-		BgElements.BgColor.Color = getBgColor(BgElements.BgColor.Next);
-		BgElements.BgColor.Current = BgElements.BgColor.Next;
-	}
-	else {
-		BgElements.BgColor.Color = interpolateColorObj(getBgColor(BgElements.BgColor.Current), getBgColor(BgElements.BgColor.Next), BgElements.BgColor.Progress);
-	}
-
-	const color = BgElements.BgColor.Color;
-	const bgcol = Color.new(color.R, color.G, color.B, 128);
-	Screen.clearColor(bgcol);
-	Waves.SetColor(color);
-}
-
 function getDailyBrightness() {
     const hour = gTime.getHours();
     const minutes = gTime.getMinutes();
@@ -106,7 +153,6 @@ function getDailyBrightness() {
         return ~~(128 - (totalMinutes / ((DAY_PEAK - DAY_START) * 60)) * 128);
     }
 }
-
 function DrawDailyOverlay() {
 	if (BgElements.BgColor.Current !== 0 && BgElements.BgColor.Next !== 0) { /* Apply Custom User Brightness */ return; }
 
@@ -121,57 +167,59 @@ function DrawDailyOverlay() {
 
 	BgElements.BgDailyOv.width = ScrCanvas.width;
 	BgElements.BgDailyOv.height = ScrCanvas.height + 5;
-	BgElements.BgDailyOv.color = Color.new(128,128,128,daily);
+    BgElements.BgDailyOv.color = Color.setA(BgElements.BgDailyOv.color, daily);
 	BgElements.BgDailyOv.draw(0,-5);
 }
-
 function DrawTexture() {
 	BgElements.BgTex.width = ScrCanvas.width;
 	BgElements.BgTex.height = ScrCanvas.height;
 	BgElements.BgTex.draw(0,0);
 }
 
+//////////////////////////////////////////////////////////////////////////
+///*				   	     Background Image						  *///
+//////////////////////////////////////////////////////////////////////////
 function SetNewCustomBgImg(Path) {
-	UserConfig.DisplayBg = true;
+    UserConfig.DisplayBg = true;
+    const BgImage = BgElements.BgImage;
 
-	if (UserConfig.CustomBgImg !== Path || !BgElements.BgImage.Image) {
+    if (UserConfig.CustomBgImg !== Path || !BgImage.Image) {
 		// If there is already an Image being displayed, place it on Tmp and switch from one to another
-		if (BgElements.BgImage.Image) {
-			BgElements.BgImage.TmpImage = BgElements.BgImage.Image;
-			BgElements.BgImage.TmpAlpha = 128;
+        if (BgImage.Image) {
+            BgImage.TmpImage = BgImage.Image;
+            BgImage.TmpAlpha = 128;
 		}
 
 		UserConfig.CustomBgImg = Path;
-		BgElements.BgImage.Image = new Image(UserConfig.CustomBgImg);
-		BgElements.BgImage.Image.optimize();
-		BgElements.BgImage.Image.filter = LINEAR;
-		BgElements.BgImage.Image.width = ScrCanvas.width;
-		BgElements.BgImage.Image.height = ScrCanvas.height;
+        BgImage.Image = new Image(UserConfig.CustomBgImg);
+        BgImage.Image.optimize();
+        BgImage.Image.filter = LINEAR;
+        BgImage.Image.width = ScrCanvas.width;
+        BgImage.Image.height = ScrCanvas.height;
 	}
 
-	BgElements.BgImage.Alpha = 0;
-	BgElements.BgImage.Progress = 0.0f;
+    BgImage.Alpha = 0;
+    BgImage.Progress = 0.0f;
 
 	// Animation to make it appear.
 	let ival = os.setInterval(() => {
-		if (BgElements.BgImage.TmpImage) { BgElements.BgImage.TmpAlpha = 128 - ~~(128 * BgElements.BgImage.Progress); }
-		BgElements.BgImage.Alpha = ~~(128 * BgElements.BgImage.Progress);
-		BgElements.BgImage.Progress += 0.1f;
+        if (BgImage.TmpImage) { BgImage.TmpAlpha = 128 - ~~(128 * BgImage.Progress); }
+        BgImage.Alpha = ~~(128 * BgImage.Progress);
+        BgImage.Progress += 0.1f;
 
-		if (BgElements.BgImage.Progress >= 1.0)	{
-			BgElements.BgImage.Progress = 0.0f;
-			BgElements.BgImage.Alpha = 128;
+        if (BgImage.Progress >= 1.0)	{
+            BgImage.Progress = 0.0f;
+            BgImage.Alpha = 128;
 
-			if (BgElements.BgImage.TmpImage) {
-				BgElements.BgImage.TmpAlpha = 0;
-				BgElements.BgImage.TmpImage = false;
+            if (BgImage.TmpImage) {
+                BgImage.TmpAlpha = 0;
+                BgImage.TmpImage = false;
 			}
 
 			os.clearInterval(ival);
 		}
 	}, 0);
 }
-
 function DisableCustomBgImg() {
 	if (!UserConfig.DisplayBg || !BgElements.BgImage.Image) { return; }
 
@@ -191,43 +239,6 @@ function DisableCustomBgImg() {
 			os.clearInterval(ival);
 		}
 	}, 0);
-}
-
-function BgImageHandler() {
-	if (!BgElements.BgImage.TmpImage && (!UserConfig.DisplayBg || !UserConfig.CustomBgImg)) { return; }
-
-	if ((UserConfig.DisplayBg && UserConfig.CustomBgImg) && BgElements.BgImage.Image && BgElements.BgImage.Image.ready()) {
-		BgElements.BgImage.Image.color = Color.new(128,128,128,BgElements.BgImage.Alpha);
-		BgElements.BgImage.Image.draw(0, 0);
-	}
-
-	if (BgElements.BgImage.TmpImage && BgElements.BgImage.TmpImage.ready())	{
-		BgElements.BgImage.TmpImage.color = Color.new(128,128,128,BgElements.BgImage.TmpAlpha);
-		BgElements.BgImage.TmpImage.draw(0, 0);
-	}
-}
-
-function BgHandler() {
-	BgColorHandler();
-
-	// Execute Background Graphic logic if:
-		// There is no Tmp Image to draw
-		// There is a Tmp Image to draw but it still has not appeared completely
-	// and
-		// There is no Custom Background Image to draw
-		// There is a Custom Background Image to draw but it still has not appeared completely.
-
-    const tmpBgImg      = (BgElements.BgImage.TmpImage && BgElements.BgImage.TmpAlpha === 128);
-    const customBgImg   = (UserConfig.DisplayBg && BgElements.BgImage.Alpha === 128);
-    const uiBgImg = (('Image' in DashUI.ItemBG) && DashUI.ItemBG.A === 128);
-
-    if (!tmpBgImg && !customBgImg && !uiBgImg){
-		if ((Waves) && (UserConfig.Waves)) { Waves.Render(); }
-		DrawTexture();
-		DrawDailyOverlay();
-	}
-
-	BgImageHandler();
 }
 
 //////////////////////////////////////////////////////////////////////////

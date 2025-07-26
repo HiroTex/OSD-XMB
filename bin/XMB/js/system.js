@@ -1029,16 +1029,14 @@ function getLocalTime() {
 function PrintDebugInformation() {
 	if (!gDebug) { return; }
 
-	const DebugInfo = [];
-	const ee_info = System.getCPUInfo();
-
+    const DebugInfo = [];
     const mem = System.getMemoryStats();
 	DebugInfo.push(`${Screen.getFPS(360)}  FPS`);
 	DebugInfo.push(`RAM USAGE: ${Math.floor(mem.used / 1024)}KB / ${Math.floor(ee_info.RAMSize / 1024)}KB`);
 	DebugInfo.push(`WIDTH: ${ScrCanvas.width} HEIGHT: ${ScrCanvas.height}`);
 	DebugInfo.push(`DATE: ${gTime.getDate()}/${gTime.getMonth() + 1}/${gTime.getFullYear()} ${gTime.getHours()}:${gTime.getMinutes()}:${gTime.getSeconds()}`);
 
-    TxtPrint({ Text: DebugInfo, Position: { X: 5, Y: ScrCanvas.height - ((DebugInfo.length + 1) * 16) } });
+    TxtPrint({ Text: DebugInfo, Position: { X: 5, Y: ScrCanvas.height - ((DebugInfo.length + 1) * 16)}});
     xlogProcess();
 }
 function xlog(l) {
@@ -1072,10 +1070,11 @@ if (isNaN(gTimezone)) { gTimezone = 0; }
 let gExit 		= {};
 let gTime 		= getLocalTime();
 let gThreads 	= false;
-let gDebug      = false;
+let gDebug      = true;
 let gDbgTxt     = [];
 let gArtPaths   = getArtPaths();
 let ScrCanvas 	= Screen.getMode();
+const ee_info   = System.getCPUInfo();
 
 ftxtWrite(`${PATHS.XMB}log.txt`, ""); // Init Log File.
 console.log("INIT LIB: SYSTEM COMPLETE");

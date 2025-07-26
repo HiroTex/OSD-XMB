@@ -106,14 +106,14 @@
   </Options>
   <Default>
     <![CDATA[
-	  let val = 0;
-	  const cfg = CfgMan.Get("pops.cfg");
-	  if ('last' in cfg) {
-		const index = this.Items.findIndex(item => item.Name === cfg["last"]);
-		val = (index > -1) ? index : 0;
-	  }
-	  return val;
-  ]]>
+			let val = 0;
+			const cfg = CfgMan.Get("pops.cfg");
+			if ('last' in cfg) {
+			const index = this.Items.findIndex(item => item.Name === cfg["last"]);
+			val = (index > -1) ? index : 0;
+			}
+			return val;
+		]]>
   </Default>
   <Context Name="OptionContext" Filter="Custom" Condition="('GameID' in item && item.GameID)">
 	<Component Name="{INFO}" Icon="-1">

@@ -28,8 +28,8 @@ function playBgm(sound) {
 }
 
 const PlayBootSfx   = () => playBgm(Sounds.BOOT);
-const PlayCursorSfx = () => playSfx(Sounds.CURSOR);
-const PlayCancelSfx = () => playSfx(Sounds.CANCEL);
+const PlayCursorSfx = () => playSfx(false);
+const PlayCancelSfx = () => playSfx(false);
 
 //////////////////////////////////////////////////////////////////////////
 ///*				   			 Init Work							  *///

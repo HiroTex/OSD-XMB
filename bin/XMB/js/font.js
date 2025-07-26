@@ -13,7 +13,7 @@ let FontObj = {
 	SizeM: false,
 	SizeL: false,
 	Glow: { Value: 0, Dir: 1, Min: 0, Max: 64 },
-	Color: { R:128, G:128, B:128, A:128 },
+	Color: Color.new(128,128,128,128),
 	Wrap: 205
 }
 
@@ -27,6 +27,7 @@ function FontInit() {
     FontObj.SizeS = 0.5f;
     FontObj.SizeM = 0.65f;
     FontObj.SizeL = 0.75f;
+    FontObj.Font.dropshadow = 1.0f;
 }
 
 function WrapTextByPixelWidth(line) {
@@ -142,35 +143,32 @@ function TxtPrint(Obj) {
         throw new Error("Invalid text object parameters");
     }
 
-	// Prepare Text Array.
-	if (typeof Obj.Text === 'string') { Obj.Text = PreprocessText(Obj.Text); }
-
-	// Prepare Default Parameters
-	if (!('Color' in Obj)) { Obj.Color = FontObj.Color; }
-	if (!('Scale' in Obj)) { Obj.Scale = FontObj.SizeS; }
-	if (!('Glow' in Obj)) { Obj.Glow = false; }
-
 	// Cap Alpha Value
-	Obj.Color.A = alphaCap(Obj.Color.A);
+    if ('Alpha' in Obj) { Obj.Alpha = alphaCap(Obj.Alpha); }
+    else { Obj.Alpha = 128; }
 
 	// Exit if Alpha less than 1
-	if (Obj.Color.A < 1) { return; }
+    if (Obj.Alpha < 1) { return; }
+
+    // Prepare Text Array.
+    if (typeof Obj.Text === 'string') { Obj.Text = PreprocessText(Obj.Text); }
+
+    // Prepare Default Parameters
+    if (!('Scale' in Obj)) { Obj.Scale = FontObj.SizeS; }
+    if (!('Glow' in Obj)) { Obj.Glow = false; }
 
 	FontObj.Font.scale = Obj.Scale;
-	FontObj.Font.dropshadow_color = Color.new(0,0,0, Obj.Color.A >> 1);
-	FontObj.Font.dropshadow = 1.0f;
-	//FontObj.Font.outline_color = Color.new(0,0,0, Obj.Color.A >> 2);
-	//FontObj.Font.outline = 1.0f;
-	Obj.Position = FontAlignPos(Obj.Text, Obj.Alignment, Obj.Position);
-	FontObj.Font.color = Color.new(Obj.Color.R, Obj.Color.G, Obj.Color.B, Obj.Color.A);
+    FontObj.Font.dropshadow_color = Color.new(0, 0, 0, Obj.Alpha >> 1);
+    FontAlignPos(Obj.Text, Obj.Alignment, Obj.Position);
+
+    if ('Color' in Obj) { FontObj.Font.color = Color.new(Obj.Color.R, Obj.Color.G, Obj.Color.B, Obj.Alpha); }
+    else { FontObj.Font.color = Color.setA(FontObj.Color, Obj.Alpha); }
 
 	FontTextPrint(Obj.Text, Obj.Position);
 
 	if (!Obj.Glow) { return; }
-
-	//FontObj.Font.outline_color = Color.new(Obj.Color.R, Obj.Color.G, Obj.Color.B, FontObj.Glow.Value);
-	FontObj.Font.dropshadow_color = Color.new(Obj.Color.R, Obj.Color.G, Obj.Color.B, FontObj.Glow.Value);
-	FontObj.Font.color = Color.new(Obj.Color.R, Obj.Color.G, Obj.Color.B, FontObj.Glow.Value * 2);
+    FontObj.Font.dropshadow_color = Color.setA(FontObj.Font.color, FontObj.Glow.Value);
+	FontObj.Font.color = Color.setA(FontObj.Font.color, FontObj.Glow.Value * 2);
 	FontTextPrint(Obj.Text, Obj.Position);
 }
 

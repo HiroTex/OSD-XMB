@@ -184,9 +184,8 @@ function DashUIAnimationHandler() {
 }
 function OvHandler() {
     DashUI.Overlay.Alpha = alphaCap(DashUI.Overlay.Alpha);
-    const color = DashUI.Overlay.Color;
-	if (DashUI.Overlay.Alpha < 1) { return; }
-    const ovColor = Color.new(color.R, color.G, color.B, DashUI.Overlay.Alpha);
+    if (DashUI.Overlay.Alpha < 1) { return; }
+    const ovColor = Color.setA(DashUI.Overlay.Color, DashUI.Overlay.Alpha);
 	Draw.rect(0, 0, ScrCanvas.width, ScrCanvas.height, ovColor);
 
 	switch(DashUI.OverlayState)
@@ -194,7 +193,7 @@ function OvHandler() {
 		case 1: // Show Boot Warning Text
 			UICONST.BootWarningText.Position.X = 0;
 			UICONST.BootWarningText.Position.Y = 0;
-			UICONST.BootWarningText.Color.A = alphaCap(DashUI.BootWarningAlpha);
+			UICONST.BootWarningText.Alpha = alphaCap(DashUI.BootWarningAlpha);
 			TxtPrint(UICONST.BootWarningText);
 			break;
 		case 2: // Show Dialog
@@ -446,8 +445,8 @@ function DashUIConstantsInit() {
 	UICONST.ClockTextObj = {
 		Text: "",
 		Position: { X: 0, Y: 0 },
-		Scale: FontObj.SizeM,
-		Color: { R: 128, G: 128, B: 128, A: 128 }
+        Scale: FontObj.SizeM,
+        Alpha: 128
 	};
 
 	UICONST.BootInfo = {
@@ -459,8 +458,8 @@ function DashUIConstantsInit() {
         Text: PreprocessText(getLocalText(XMBLANG.BOOT_WARNING)),
 		Position: { X: 0, Y: 0 },
 		Alignment: "CENTER",
-		Scale: FontObj.SizeM,
-		Color: { R:128, G:128, B:128, A:0 }
+        Scale: FontObj.SizeM,
+        Alpha: 0
 	};
 
 	UICONST.BootLogoY = ~~(ScrCanvas.height / 3) + 20;
@@ -489,6 +488,7 @@ function DashUIConstantsInit() {
 	UICONST.IcoSelSize = 72;
 	UICONST.IcoUnselMod = 24;
 	UICONST.SubItemSlotSize = 52;
+    UICONST.DefaultIconColor = Color.new(128, 128, 128, 128);
 	UICONST.TextSelectedColor = { R: 128, G: 128, B: 128 };
 	UICONST.TextUnselectedColor = { R: 128, G: 128, B: 128 };
 	UICONST.ClockX = ScrCanvas.width - 194;
@@ -514,7 +514,8 @@ function DashUIConstantsInit() {
         DialogAnimation: () => UIAnimationCommon_Work(DashUI.Dialog.Animation, 0.15f)
     };
 
-	UICONST.DialogInfo = {
+    UICONST.DialogInfo = {
+        LineCol: Color.new(196,196,196,128),
 		LineYTop: (ScrCanvas.height >> 1) - 160,
 		LineYBottom: (ScrCanvas.height >> 1) + 170,
 		IconX: (ScrCanvas.width >> 1) - 280,
@@ -651,8 +652,9 @@ function DashCatInit() {
 //////////////////////////////////////////////////////////////////////////
 
 function UIAnimateBootLogo_Work(Alpha) {
-	Alpha = alphaCap(Alpha);
-	DashElements.BootLogo.color = Color.new(128,128,128, Alpha);
+    Alpha = alphaCap(Alpha);
+    if (Alpha < 1) { return; }
+    DashElements.BootLogo.color = Color.setA(DashElements.BootLogo.color, Alpha);
 	DashElements.BootLogo.draw(UICONST.BootLogoX, UICONST.BootLogoY);
 }
 
@@ -674,7 +676,7 @@ function UIClockText(a) {
 	UICONST.ClockTextObj.Text = [`${date}  ${time}`];
     UICONST.ClockTextObj.Position.X = UICONST.ClockX + 12;
     UICONST.ClockTextObj.Position.Y = UICONST.ClockY - 1;
-    UICONST.ClockTextObj.Color.A = a;
+    UICONST.ClockTextObj.Alpha = a;
 
     return UICONST.ClockTextObj;
 }
@@ -682,9 +684,9 @@ function DrawUIClock() {
 	if (DashUI.Clock.Display === false) { return; }
 	const fadeProgress = getFadeProgress(DashUI.Clock.Fade);
 	const alpha    = ~~(128 * fadeProgress);
-	const clockCol = Color.new(128,128,128,alpha);
 	const clockBox = DashElements.ClockOutline;
-	const clockIco = DashElements.ClockIco;
+    const clockIco = DashElements.ClockIco;
+    const clockCol = Color.setA(clockBox.color, alpha);
 
     // Draw Start of Clock Outline
     clockBox.width = 32;
@@ -746,7 +748,7 @@ function DrawDashLoadIcon(Properties) {
 
 	DashElements.LoadIco.width = Properties.Width;
 	DashElements.LoadIco.height = Properties.Height;
-	DashElements.LoadIco.color = Color.new(128,128,128, Properties.Alpha);
+    DashElements.LoadIco.color = Color.setA(DashElements.LoadIco.color, Properties.Alpha);
 	DashElements.LoadIco.angle = DashUI.LoadSpinning;
 	DashElements.LoadIco.draw(Properties.X, Properties.Y);
 }
@@ -768,10 +770,10 @@ function DrawDashIcon(Properties) {
 	}
 
 	if (Ready) {
-		if (!('Tint' in Properties)) { Properties.Tint = { R: 128, G: 128, B: 128 }; }
+        if ('Tint' in Properties) { Image.color = Color.new(Properties.Tint.R, Properties.Tint.G, Properties.Tint.B, Properties.Alpha); }
+        else { Image.color = Color.setA(UICONST.DefaultIconColor, Properties.Alpha); }
 		Image.width  = Properties.Width;
 		Image.height = Properties.Height;
-		Image.color  = Color.new(Properties.Tint.R, Properties.Tint.G, Properties.Tint.B, Properties.Alpha);
 		Image.angle  = ('Rotation' in Properties) ? Properties.Rotation : 0.0f;
 		Image.draw(Properties.X, Properties.Y);
 	}
@@ -950,20 +952,20 @@ function DrawUICategories() {
 			Icon.Height 	-= UICONST.IcoUnselMod * easing;
 			Icon.Tint		 = (anim.Running) ? interpolateColorObj(UICONST.Category.IconSelectedColor, UICONST.Category.IconUnselectedColor, anim.Progress) : UICONST.Category.IconSelectedColor;
 			Text.Color		 = (anim.Running) ? interpolateColorObj(UICONST.TextSelectedColor, UICONST.TextUnselectedColor, anim.Progress) : UICONST.TextSelectedColor;
-			Text.Color.A 	 = 128 + (-120 * easing);
+			Text.Alpha 	     = 128 + (-120 * easing);
 			Text.Position.X  = Text.Position.X - (92 * easing * nextDif);
 
 			if (subMod) {
 				Icon.X 			-= (subSelXmod + subLevelXmod);
 				Icon.Alpha 		-= (128 * subfadeProgress) * DashUI.SubMenu.Level;
 				Text.Position.X -= (subSelXmod + subLevelXmod);
-				Text.Color.A 	-= subSelAmod;
-				Text.Color.A 	-= (128 * DashUI.SubMenu.Level)
+				Text.Alpha 	    -= subSelAmod;
+				Text.Alpha 	    -= (128 * DashUI.SubMenu.Level);
 			}
 
 			if (contextMod) {
 				Icon.Tint		 = interpolateColorObj(UICONST.Category.IconSelectedColor, UICONST.Category.IconUnselectedColor, contextfadeProgress);
-				Text.Color.A 	-= ~~(128 * contextfadeProgress); ;
+				Text.Alpha 	    -= ~~(128 * contextfadeProgress); ;
 				if (subMod) { Icon.X -= contextX; }
 			}
 		}
@@ -975,7 +977,7 @@ function DrawUICategories() {
 			Icon.Tint		 = interpolateColorObj(UICONST.Category.IconUnselectedColor, UICONST.Category.IconSelectedColor, anim.Progress);
 			Text.Position.X  = Text.Position.X + (((nextDif < 0) ? 88 : 92) * (1 - easing) * nextDif);
 			Text.Color		 = interpolateColorObj(UICONST.TextUnselectedColor, UICONST.TextSelectedColor, anim.Progress);
-			Text.Color.A 	 = 128 - (110 * (1 - easing));
+			Text.Alpha 	     = 128 - (110 * (1 - easing));
 		}
 		else {
 			const baseX = (dif < 0) ? dif * 81 : (dif * 81 + 21);
@@ -1013,7 +1015,7 @@ function DrawUICategories() {
             Icon.Y += offsetY;
 
             if (isSelected) {
-                Text.Color.A = ~~(Text.Color.A * fadeProgress);
+                Text.Alpha = ~~(Text.Alpha * fadeProgress);
                 Text.Position.X += offsetX;
                 Text.Position.Y += offsetY;
             }
@@ -1175,12 +1177,11 @@ function DrawUICategoryItems_Work(items, current, x) {
 
 		if ('CustomIcon' in info) { Icon.CustomIcon = info.CustomIcon; }
 		else if ('CustomIcon' in Icon) { delete Icon.CustomIcon; }
-
+        if ('Color' in Name) { delete Name.Color; }
         Name.Text 		= [ getLocalText(info.Name) ];
 		Name.Position 	= { X:UICONST.CatItems.TextX, Y: UICONST.CatItems.TextY };
 		Name.Scale 		= FontObj.SizeL;
-		Name.Color 		= UICONST.TextUnselectedColor;
-		Name.Color.A 	= 128;
+		Name.Alpha 	    = 128;
 		Name.Glow   	= false;
 
         if (i === current) {
@@ -1191,9 +1192,9 @@ function DrawUICategoryItems_Work(items, current, x) {
             Name.Position.Y += modCurrY - (9 * easing);
             Name.Glow   	= !anim.Running && !contextMod && !faderunning && !subMod && !swipe.Running;
 			Name.Color 		= (anim.Running) ? interpolateColorObj(UICONST.TextSelectedColor, UICONST.TextUnselectedColor, anim.Progress) : UICONST.TextSelectedColor;
-			Name.Color.A 	= 128;
+			Name.Alpha 	    = 128;
 
-			if (Name.Glow) { if ('CustomBG' in info) { DashUI.ItemBG.Image = info.CustomBG; } }
+            if (Name.Glow) { if (('CustomBG' in info) && (!('Image' in DashUI.ItemBG))) { DashUI.ItemBG.Image = info.CustomBG; } }
 
 			Desc = {
                 Text: [ getLocalText(info.Description) ],
@@ -1202,14 +1203,14 @@ function DrawUICategoryItems_Work(items, current, x) {
                     X: Name.Position.X,
                     Y: Name.Position.Y + 18
                 },
-                Color: { R:128, G:128, B:128, A: ~~(128 - (128 * easing)) }
+                Alpha: ~~(128 - (128 * easing))
             };
 
 			if (subMod) {
 				Icon.X 			-= (subSelXmod + subLevelXmod);
 				Icon.Alpha 		-= subSelAFadeMod;
-				Name.Color.A 	+= subSelAmod;
-				Desc.Color.A 	+= subSelAmod;
+				Name.Alpha 	    += subSelAmod;
+				Desc.Alpha 	    += subSelAmod;
 				Name.Position.X -= subSelXmod;
                 Desc.Position.X -= subSelXmod;
                 if (contextMod) { Icon.X -= contextX; }
@@ -1219,8 +1220,8 @@ function DrawUICategoryItems_Work(items, current, x) {
                 Icon.Y -= contextX;
                 Icon.Width += UICONST.IcoUnselMod * contextfadeProgress;
                 Icon.Height += UICONST.IcoUnselMod * contextfadeProgress;
-                Name.Color.A += ~~(-90 * contextfadeProgress);
-                Desc.Color.A += ~~(-90 * contextfadeProgress);
+                Name.Alpha += ~~(-90 * contextfadeProgress);
+                Desc.Alpha += ~~(-90 * contextfadeProgress);
                 Name.Position.X += contextX;
                 Desc.Position.X += contextX;
 			}
@@ -1247,7 +1248,7 @@ function DrawUICategoryItems_Work(items, current, x) {
                 Icon.Y       	+= modYNext;
                 Name.Position.Y += modYNext - (3 * easing);
 				Name.Color 		= interpolateColorObj(UICONST.TextUnselectedColor, UICONST.TextSelectedColor, anim.Progress);
-				Name.Color.A 	= 128;
+				Name.Alpha 	    = 128;
 
 				Desc = {
                     Text: [ getLocalText(info.Description) ],
@@ -1256,7 +1257,7 @@ function DrawUICategoryItems_Work(items, current, x) {
                         X: Name.Position.X,
                         Y: Name.Position.Y + 18
                     },
-                    Color: { R:128, G:128, B:128, A: ~~(128 * easing) }
+                    Alpha: ~~(128 * easing)
                 };
             }
 
@@ -1265,7 +1266,7 @@ function DrawUICategoryItems_Work(items, current, x) {
 				Icon.X 			-= subNoSelXmod;
 				Icon.Y 			+= (subNoSelYmod + (((diff > 0) ? -8 : 8) * DashUI.SubMenu.Level));
 				Icon.Alpha 		+= subNoSelAmod;
-				Name.Color.A 	+= subNoSelTextAmod;
+				Name.Alpha 	    += subNoSelTextAmod;
 				Name.Position.X -= subNoSelXmod;
                 Name.Position.Y += subNoSelYmod;
                 if (contextMod) {
@@ -1276,14 +1277,14 @@ function DrawUICategoryItems_Work(items, current, x) {
 				const ctxNoSelYmod = ((diff > 0) ? 10 : -10) * contextfadeProgress;
 				Icon.Y 			+= ctxNoSelYmod;
 				Icon.Alpha 		+= ~~(-98 * contextfadeProgress);
-				Name.Color.A 	+= ~~(-128 * contextfadeProgress);
+				Name.Alpha 	    += ~~(-128 * contextfadeProgress);
 				Name.Position.Y += ctxNoSelYmod;
 			}
         }
 
 		if (faderunning) {
-			Icon.Alpha 		= ~~(Icon.Alpha * fadeProgress);
-			Name.Color.A 	= ~~(Name.Color.A * fadeProgress);
+			Icon.Alpha 	= ~~(Icon.Alpha * fadeProgress);
+			Name.Alpha 	= ~~(Name.Alpha * fadeProgress);
 
 			const rel = i - current;
 			let offsetX = -5 * (1 - fadeProgress);
@@ -1297,18 +1298,18 @@ function DrawUICategoryItems_Work(items, current, x) {
 			Name.Position.Y += offsetY;
 
 			if (Desc) {
-				Desc.Color.A 	= ~~(Desc.Color.A * fadeProgress);
+				Desc.Alpha 	= ~~(Desc.Alpha * fadeProgress);
 				Desc.Position.X += offsetX;
 				Desc.Position.Y += offsetY;
 			}
 		}
 		else if (swipe.Running) {
 			Icon.Alpha 		= ~~(Icon.Alpha * swipeProgress);
-			Name.Color.A 	= ~~(Name.Color.A * swipeProgress);
+			Name.Alpha 	    = ~~(Name.Alpha * swipeProgress);
 			Icon.X 			+= swipeoffsetX;
 			Name.Position.X += swipeoffsetX;
 
-			if (Desc) { Desc.Color.A = Name.Color.A; Desc.Position.X = Name.Position.X; }
+			if (Desc) { Desc.Alpha = Name.Alpha; Desc.Position.X = Name.Position.X; }
 		}
 
         if (Icon.Y < -UICONST.ScreenDrawLimit) continue;
@@ -1318,7 +1319,7 @@ function DrawUICategoryItems_Work(items, current, x) {
 		if ((DashUI.SubMenu.Level < 1) && (DashElements.ItemFocus) && (i === current || i === next) && Desc) {
 			let FocusX = Icon.X - 5;
 			let FocusY = Icon.Y + 2;
-			let FocusA = (subMod) ? Desc.Color.A : (contextMod ? ~~(128 * (1 - contextfadeProgress)) : Desc.Color.A);
+			let FocusA = (subMod) ? Desc.Alpha : (contextMod ? ~~(128 * (1 - contextfadeProgress)) : Desc.Alpha);
 			let focus = DashElements.ItemFocus;
 
 			let isCurrent = (i === current);
@@ -1533,15 +1534,16 @@ function DrawUISubMenuPreviousLevel() {
 
 	DashElements.Arrow.width  = 20;
 	DashElements.Arrow.height = 20;
-	DashElements.Arrow.color  = Color.new(128,128,128,ArrowA);
+    DashElements.Arrow.color  = Color.setA(DashElements.Arrow.color, ArrowA);
 	DashElements.Arrow.draw(UICONST.SubItems.ArrowX - (80 * fadeProgress), UICONST.SubItems.ArrowY);
 
-	let Icon = {}, Name = {}, Desc = null;
+    let Icon = {}, Name = {}, Desc = false, Ctxt = {};
+    Ctxt.Alignment = "RIGHT";
 
 	// Context Modifiers
 	const contextMod = DashUI.Context.Display;
 	const contextfade = DashUI.Context.Fade;
-	const contextfadeProgress = contextfade.Running ? (contextfade.In ? cubicEaseOut(contextfade.Progress) : cubicEaseIn(contextfade.Progress)) : 1;
+    const contextfadeProgress = getFadeProgress(contextfade);
 
 	const contextX = halfMod * contextfadeProgress;
 
@@ -1562,20 +1564,20 @@ function DrawUISubMenuPreviousLevel() {
 		if ('CustomIcon' in info) { Icon.CustomIcon = info.CustomIcon; }
 		else if ('CustomIcon' in Icon) { delete Icon.CustomIcon; }
 
+        if ('Color' in Name) { delete Name.Color; }
 		Name.Text     = [ getLocalText(info.Name) ];
 		Name.Position = { X: UICONST.SubItems.TextX, Y: UICONST.SubItems.TextY };
 		Name.Scale    = FontObj.SizeL;
-		Name.Color    = UICONST.TextUnselectedColor;
-		Name.Color.A  = baseA;
+		Name.Alpha    = baseA;
 		Name.Glow     = false;
 
-		let CtxtName = (info.Type === "CONTEXT") ? {} : false;
+        const CtxtName = info.Type === "CONTEXT";
 
 		if (i === current) {
 			Icon.X 			-= SelModX;
 			Name.Position.X -= SelModX;
 			Name.Color   	 = UICONST.TextSelectedColor;
-			Name.Color.A 	 = baseA;
+			Name.Alpha 	     = baseA;
 
 			Desc = {
 				Text: [ getLocalText(info.Description) ],
@@ -1583,8 +1585,8 @@ function DrawUISubMenuPreviousLevel() {
 				Position: {
 					X: Name.Position.X,
 					Y: Name.Position.Y + 18
-				},
-				Color: { R:128, G:128, B:128, A: baseA }
+                },
+                Alpha: baseA
 			};
 
 			if (contextMod)	{ Icon.X -= contextX; }
@@ -1612,24 +1614,22 @@ function DrawUISubMenuPreviousLevel() {
 		if ((Icon.Y < -UICONST.ScreenDrawLimit) || (Icon.Y > UICONST.ScrLowerLimit)) continue;
 		if (Desc) TxtPrint(Desc);
 		if (CtxtName) {
-			const modX = (i === current) ? SelModX : noSelModX;
-			CtxtName.Text	= [ info.Value.Items[info.Value.Default].Name ];
-			CtxtName.Alignment = "RIGHT";
-			CtxtName.Position = { X: -40 - modX , Y: Name.Position.Y };
-			CtxtName.Color = UICONST.TextUnselectedColor;
-			CtxtName.Color.A = Name.Color.A;
-			TxtPrint(CtxtName);
+			const modX      = (i === current) ? SelModX : noSelModX;
+			Ctxt.Text	    = [ info.Value.Items[info.Value.Default].Name ];
+            Ctxt.Position   = { X: -40 - modX , Y: Name.Position.Y };
+            Ctxt.Alpha      = Name.Alpha;
+            TxtPrint(Ctxt);
 		}
 
 		// Draw Focus
 		if ((DashElements.ItemFocus) && Desc) {
 			let FocusX = Icon.X - 5;
 			let FocusY = Icon.Y + 2;
-			let FocusA = Desc.Color.A;
+			let FocusA = Desc.Alpha;
 			let focus = DashElements.ItemFocus;
 			focus.width = 82;
 			focus.height = 72;
-			focus.color = Color.new(128, 128, 128, FocusA);
+            focus.color = Color.setA(focus.color, FocusA);
 			focus.draw(FocusX, FocusY);
 		}
 
@@ -1646,8 +1646,8 @@ function DrawUISubMenu() {
 	const Name 		= {};
     const Icon      = {};
     const Ctxt      = {};
-    Ctxt.Alignment  = "RIGHT";
-    Ctxt.Color = { R: UICONST.TextUnselectedColor.R, G: UICONST.TextUnselectedColor.G, B: UICONST.TextUnselectedColor.B, A: 128 };
+    Ctxt.Alignment = "RIGHT";
+    Ctxt.Color      = { R: UICONST.TextUnselectedColor.R, G: UICONST.TextUnselectedColor.G, B: UICONST.TextUnselectedColor.B };
 
 	const items 	= DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items;
 	const current 	= DashUI.SubMenu.Items.Current;
@@ -1689,8 +1689,7 @@ function DrawUISubMenu() {
 		Name.Text 		= [ getLocalText(XMBLANG.MSG_SUBMENU_EMPTY) ];
 		Name.Position 	= { X: UICONST.SubItems.TextX, Y:UICONST.SubItems.TextY + 5 };
 		Name.Scale 		= FontObj.SizeM;
-		Name.Color 		= { R:128, G:128, B:128, A:baseA };
-		Name.Glow   	= false;
+        Name.Alpha 		= baseA;
 		if (fade.Running) Name.Position.X -= xFadeMod;
 
         TxtPrint(Name);
@@ -1717,12 +1716,11 @@ function DrawUISubMenu() {
 
 		if ('CustomIcon' in info) { Icon.CustomIcon = info.CustomIcon; }
 		else if ('CustomIcon' in Icon) { delete Icon.CustomIcon; }
-
+        if ('Color' in Name) { delete Name.Color; }
         Name.Text 		= [ getLocalText(info.Name) ];
 		Name.Position 	= { X: UICONST.SubItems.TextX, Y:UICONST.SubItems.TextY };
 		Name.Scale 		= FontObj.SizeL;
-		Name.Color 		= UICONST.TextUnselectedColor;
-		Name.Color.A 	= baseA;
+		Name.Alpha 	    = baseA;
 		Name.Glow   	= false;
 
         let CtxtName = (info.Type === "CONTEXT") ? getLocalText(info.Value.Items[info.Value.Default].Name) : false;
@@ -1735,16 +1733,16 @@ function DrawUISubMenu() {
             Icon.Height 	-= UICONST.IcoUnselMod * easing;
             Name.Position.Y += modCurrY - (11 * easing);
 			Name.Color 		 = (anim.Running) ? interpolateColorObj(UICONST.TextSelectedColor, UICONST.TextUnselectedColor, anim.Progress) : UICONST.TextSelectedColor;
-			Name.Color.A 	 = baseA;
+			Name.Alpha 	     = baseA;
 			Name.Glow   	 = (baseA === 128) && (!anim.Running) && (!contextMod);
 
-			if (Name.Glow) { if ('CustomBG' in info) { DashUI.ItemBG.Image = info.CustomBG; } }
+			if (Name.Glow) { if (('CustomBG' in info) && (!('Image' in DashUI.ItemBG))) { DashUI.ItemBG.Image = info.CustomBG; } }
 
 			Desc = {
 				Text: 		[ getLocalText(info.Description) ],
 				Scale:		FontObj.SizeM,
 				Position:	{ X:Name.Position.X, Y:Name.Position.Y + 18 },
-				Color: 		{ R:128, G:128, B:128, A:~~(baseA - (128 * easing)) }
+                Alpha:      ~~(baseA - (128 * easing))
 			};
 
 			if (fade.Running) {
@@ -1758,8 +1756,8 @@ function DrawUISubMenu() {
 				Icon.Y      	-= halfMod * contextfadeProgress;
 				Icon.Width  	+= UICONST.IcoUnselMod * contextfadeProgress;
 				Icon.Height 	+= UICONST.IcoUnselMod * contextfadeProgress;
-				Name.Color.A 	+= ~~(-90 * contextfadeProgress);
-				Desc.Color.A 	+= ~~(-90 * contextfadeProgress);
+				Name.Alpha 	+= ~~(-90 * contextfadeProgress);
+				Desc.Alpha 	+= ~~(-90 * contextfadeProgress);
 				Name.Position.X += halfMod * contextfadeProgress;
 				Desc.Position.X += halfMod * contextfadeProgress;
 			}
@@ -1782,15 +1780,15 @@ function DrawUISubMenu() {
                 Icon.Y       -= halfMod * easing;
                 Icon.Y       += modYNext;
 
-				Name.Color 		 = interpolateColorObj(UICONST.TextUnselectedColor, UICONST.TextSelectedColor, anim.Progress);
-				Name.Color.A 	 = baseA;
+				Name.Color 	    = interpolateColorObj(UICONST.TextUnselectedColor, UICONST.TextSelectedColor, anim.Progress);
+				Name.Alpha 	    = baseA;
                 Name.Position.Y += modYNext;
 
 				Desc = {
 					Text: 		[ getLocalText(info.Description) ],
 					Scale:		FontObj.SizeM,
 					Position:	{ X:Name.Position.X, Y:Name.Position.Y + 18 },
-					Color: 		{ R:128, G:128, B:128, A:~~(128 * easing) }
+                    Alpha:      ~~(128 * easing)
 				};
             }
 
@@ -1806,7 +1804,7 @@ function DrawUISubMenu() {
 				const ctxNoSelYmod = ((diff > 0) ? 10 : -10) * contextfadeProgress;
 				Icon.Y 			+= ctxNoSelYmod;
 				Icon.Alpha 		+= ~~(-98 * contextfadeProgress);
-				Name.Color.A 	+= ~~(-128 * contextfadeProgress);
+				Name.Alpha 	    += ~~(-128 * contextfadeProgress);
 				Name.Position.Y += ctxNoSelYmod;
 			}
 		}
@@ -1820,7 +1818,7 @@ function DrawUISubMenu() {
 		if ((DashElements.ItemFocus) && (i === current || i === next) && Desc) {
 			let FocusX = Icon.X - 5;
 			let FocusY = Icon.Y + 2;
-			let FocusA = contextMod ? ~~(128 * (1 - contextfadeProgress)) : Desc.Color.A;
+			let FocusA = contextMod ? ~~(128 * (1 - contextfadeProgress)) : Desc.Alpha;
 			FocusA = (DashUI.Dialog.Fade.Running && !DashUI.Dialog.Fade.In) ? ~~(128 * fadeProgress) : (DashUI.Dialog.Fade.Running ? 0 : FocusA);
 			let focus = DashElements.ItemFocus;
 
@@ -1842,7 +1840,7 @@ function DrawUISubMenu() {
 				focus.height = 72;
 			}
 
-			focus.color = Color.new(128, 128, 128, FocusA);
+            focus.color = Color.setA(focus.color, FocusA);
 			focus.draw(FocusX, FocusY);
 		}
 
@@ -1852,9 +1850,9 @@ function DrawUISubMenu() {
         // Context Option Selected
         if (CtxtName) {
             Ctxt.Text = CtxtName;
-            Ctxt.Color.A = Name.Color.A;
+            Ctxt.Alpha = Name.Alpha;
             Ctxt.Position = { X: contextNameX, Y: Name.Position.Y - 5 };
-            if (contextMod) Ctxt.Color.A += ~~(-128 * contextfadeProgress);
+            if (contextMod) Ctxt.Alpha += ~~(-128 * contextfadeProgress);
             TxtPrint(Ctxt);
         }
     }
@@ -2098,7 +2096,7 @@ function DrawUIContext() {
     const Names = {
         Text: NameTexts,
         Position: { X: baseX, Y: baseY },
-        Color: { R: UICONST.TextUnselectedColor.R, G: UICONST.TextUnselectedColor.G, B: UICONST.TextUnselectedColor.B, A: baseA }
+        Alpha: baseA
     };
 
     TxtPrint(Names);
@@ -2107,7 +2105,8 @@ function DrawUIContext() {
     const SelName = {
         Text: selico ? [`     ${selText}`] : [selText],
         Position: { X: baseX, Y: baseY + selYmod },
-        Color: { R: UICONST.TextSelectedColor.R, G: UICONST.TextSelectedColor.G, B: UICONST.TextSelectedColor.B, A: baseA },
+        Alpha: baseA,
+        Color: { R: UICONST.TextSelectedColor.R, G: UICONST.TextSelectedColor.G, B: UICONST.TextSelectedColor.B },
         Glow: DashUI.AnimationQueue.length < 1
     };
 
@@ -2119,7 +2118,7 @@ function DrawUIContext() {
 		DashElements.Arrow.angle = -0.5f;
 		DashElements.Arrow.width = 12;
 		DashElements.Arrow.height = 12;
-		DashElements.Arrow.color = Color.new(128,128,128,baseA + arrowA);
+        DashElements.Arrow.color = Color.setA(DashElements.Arrow.color, baseA + arrowA);
 		DashElements.Arrow.draw(baseX, baseY - 6);
 	}
 
@@ -2187,13 +2186,13 @@ function DrawUIOptionBox() {
 
 	const optxt = {
 		Text: [ getLocalText(XMBLANG.OPTIONS) ],
-		Position: { X:UICONST.OptionBox.XTXT, Y:UICONST.OptionBox.YTXT },
-		Color: { R: 128, G: 128, B: 128, A: alpha }
+        Position: { X: UICONST.OptionBox.XTXT, Y: UICONST.OptionBox.YTXT },
+        Alpha: alpha
 	};
 
-	DashElements.OptionBox.width = 80 + Math.fround((optxt.Text[0].length + 6) / 2);
-	DashElements.OptionBox.color = Color.new(128, 128, 128, alpha);
-	DashElements.OptionIco.color = Color.new(128, 128, 128, alpha);
+	DashElements.OptionBox.width = 80 + Math.fround((optxt.Text[0].length + 7) / 2);
+    DashElements.OptionBox.color = Color.setA(DashElements.OptionBox.color, alpha);
+    DashElements.OptionIco.color = Color.setA(DashElements.OptionIco.color, alpha);
 	DashElements.OptionBox.draw(UICONST.OptionBox.XBOX, UICONST.OptionBox.YBOX);
 	DashElements.OptionIco.draw(UICONST.OptionBox.XICO, UICONST.OptionBox.YICO);
 
@@ -2346,8 +2345,8 @@ function DrawUIDialogParentalScreen(data, baseA) {
 	const Message = {
 		Text: getLocalText(data.Text),
 		Alignment: "CENTER",
-		Position: { X: 0, Y: -40 },
-		Color: { R: 128, G: 128, B: 128, A: baseA }
+        Position: { X: 0, Y: -40 },
+        Alpha: baseA
 	};
 
 	TxtPrint(Message);
@@ -2356,8 +2355,8 @@ function DrawUIDialogParentalScreen(data, baseA) {
 		const CodeChar = {
 			Text: (i == data.Selected) ? [ data.TmpCode[i].toString() ] : [ "*" ],
 			Alignment: "CENTER",
-			Position: { X: -48 + (i * 30), Y: 41 },
-			Color: { R: 128, G: 128, B: 128, A: baseA },
+            Position: { X: -48 + (i * 30), Y: 41 },
+            Alpha: baseA,
 			Glow: ((i === data.Selected) && (baseA === 128)),
 		};
 		TxtPrint(CodeChar);
@@ -2369,7 +2368,7 @@ function DrawUIDialogParentalScreen(data, baseA) {
 	DashElements.Arrow.angle = -0.5f;
 	DashElements.Arrow.width = 16;
 	DashElements.Arrow.height = 16;
-	DashElements.Arrow.color = Color.new(128,128,128,baseA);
+    DashElements.Arrow.color = Color.setA(DashElements.Arrow.color,baseA);
 	DashElements.Arrow.draw(arrowX, baseY + 5);
 	DashElements.Arrow.angle = 0.5f;
 	DashElements.Arrow.draw(arrowX, baseY + 31);
@@ -2407,14 +2406,14 @@ function DrawUIDialogInfoScreen(data, baseA) {
         Text: nameTxt,
         Alignment: "RIGHT",
         Position: { X: UICONST.DialogInfo.NameX, Y: nameY },
-        Color: { R: 128, G: 128, B: 128, A: baseA }
+        Alpha: baseA,
     };
 
     const Value = {
         Text: valTxt,
         Alignment: "LEFT",
         Position: { X: UICONST.DialogInfo.DescX, Y: nameY },
-        Color: { R: 128, G: 128, B: 128, A: baseA }
+        Alpha: baseA
     };
 
     TxtPrint(Name);
@@ -2428,7 +2427,7 @@ function DrawUIDialogInfoScreen(data, baseA) {
             Text: [ getLocalText(items[data.Selected].Value[items[data.Selected].Selected]) ],
             Alignment: "LEFT",
             Position: { X: UICONST.DialogInfo.DescX, Y: selYpos },
-            Color: { R: 128, G: 128, B: 128, A: baseA },
+            Alpha: baseA,
             Glow: DashUI.AnimationQueue.length < 1
         };
 
@@ -2438,7 +2437,7 @@ function DrawUIDialogInfoScreen(data, baseA) {
 
 		DashElements.Arrow.width = 16;
 		DashElements.Arrow.height = 16;
-		DashElements.Arrow.color = Color.new(128,128,128,baseA);
+        DashElements.Arrow.color = Color.setA(DashElements.Arrow.color,baseA);
 
 		if (items[data.Selected].Selected > 0) {
 			DashElements.Arrow.angle = 0.0f;
@@ -2458,22 +2457,22 @@ function DrawUIConfirmationScreen(data, txtA) {
 	const Message = {
 		Text: getLocalText(data.Text),
 		Alignment: "CENTER",
-		Position: { X: 0, Y: -40 },
-		Color: { R: 128, G: 128, B: 128, A: txtA }
+        Position: { X: 0, Y: -40 },
+        Alpha: txtA
 	};
 
 	const Yes = {
 		Text: getLocalText(XMBLANG.YES),
 		Alignment: "CENTER",
-		Position: { X: -30, Y: 0 },
-		Color: { R: 128, G: 128, B: 128, A: txtA }
+        Position: { X: -30, Y: 0 },
+        Alpha: txtA
 	};
 
 	const No = {
 		Text: getLocalText(XMBLANG.NO),
 		Alignment: "CENTER",
-		Position: { X: 30, Y: 0 },
-		Color: { R: 128, G: 128, B: 128, A: txtA }
+        Position: { X: 30, Y: 0 },
+        Alpha: txtA
 	};
 
 	if (DashUI.AnimationQueue.length < 1) {
@@ -2490,8 +2489,8 @@ function DrawUITextDialog(data, a) {
 	const TXT = {
 		Text: getLocalText(data.Text),
 		Alignment: "CENTER",
-		Position: { X: 0, Y: 0 },
-		Color: { R: 128, G: 128, B: 128, A: a }
+        Position: { X: 0, Y: 0 },
+        Alpha: a
 	};
 
 	if ('Align' in data) { TXT.Alignment = data.Align; }
@@ -2520,7 +2519,7 @@ function DrawUIDialog() {
 	const cfadProgress = (cfad.Running) ? getFadeProgress(cfad) : (cfad.In ? 1 : 0);
 	const baseA = ~~(128 * fadeProgress);
 	const contentAlpha = ~~(128 * cfadProgress);
-    const lineCol = Color.new(196, 196, 196, baseA);
+    const lineCol = Color.setA(UICONST.DialogInfo.LineCol, baseA);
 	const lineTopY = UICONST.DialogInfo.LineYTop;
 	const lineBottomY = UICONST.DialogInfo.LineYBottom;
 	const iconX = UICONST.DialogInfo.IconX;
@@ -2544,8 +2543,8 @@ function DrawUIDialog() {
     if (('Title' in data) && (data.Title != "")) {
         const Title = {
 			Text: getLocalText(data.Title),
-			Position: { X: iconX + 30, Y: lineTopY - 25 },
-			Color: { R: 128, G: 128, B: 128, A: baseA }
+            Position: { X: iconX + 30, Y: lineTopY - 25 },
+            Alpha: baseA
 		};
 
 		TxtPrint(Title);
@@ -2555,8 +2554,8 @@ function DrawUIDialog() {
         const Back = {
 			Text: `${(UserConfig.ConfirmBtn === 0) ? "O" : "X"}  ${XMBLANG.BACK[0]}`,
 			Alignment: "CENTER",
-			Position: { X: 65, Y: 178 },
-			Color: { R: 128, G: 128, B: 128, A: baseA }
+            Position: { X: 65, Y: 178 },
+            Alpha: baseA
 		};
 
 		TxtPrint(Back);
@@ -2566,8 +2565,8 @@ function DrawUIDialog() {
         const Enter = {
 			Text: `${(UserConfig.ConfirmBtn === 0) ? "X" : "O"}  ${XMBLANG.ENTER[0]}`,
 			Alignment: "CENTER",
-			Position: { X: -70, Y: 178 },
-			Color: { R: 128, G: 128, B: 128, A: baseA }
+            Position: { X: -70, Y: 178 },
+            Alpha: baseA
 		};
 
 		TxtPrint(Enter);

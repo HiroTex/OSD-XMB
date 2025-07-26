@@ -122,7 +122,7 @@
       ]]>
     </Confirm>
   </Option>
-  <Option Type="CONTEXT" Icon="SET_CFG" Default="{UserConfig.BgColor}">
+  <Option Type="CONTEXT" Icon="SET_CFG">
     <Name>
       <String str="Color" />
       <String str="Couleur" />
@@ -165,6 +165,7 @@
     <Component Icon="./XMB/color/ico11.png" />
     <Component Icon="./XMB/color/ico12.png" />
     <Component Icon="./XMB/color/ico13.png" />
+    <Default Variable="UserConfig.BgColor" />
     <Preview>
       <![CDATA[
         function(index, item) {
@@ -208,7 +209,7 @@
       ]]>
     </Cancel>
   </Option>
-  <Option Type="CONTEXT" Icon="SET_CFG" Default="{Number(UserConfig.DisplayBg)}">
+  <Option Type="CONTEXT" Icon="SET_CFG">
     <Name>
       <String str="Background" />
       <String str="Arrière-plan" />
@@ -239,6 +240,7 @@
       </Name>
     </Component>
     <Component Name="{WALLPAPER}" Icon="-1"/>
+    <Default Variable="UserConfig.DisplayBg" />
     <Dialog Icon="9" Title="{WALLPAPER}" BG="true" Type="TEXT" Text="{NOWPP_MSG}" BackBtn="true"/>
     <Confirm>
       <![CDATA[
@@ -257,7 +259,7 @@
       ]]>
     </Confirm>
   </Option>
-  <Option Type="CONTEXT" Icon="SET_CFG" Default="{Number(UserConfig.Waves)}">
+  <Option Type="CONTEXT" Icon="SET_CFG">
     <Name>
       <String str="Waves" />
       <String str="Waves" />
@@ -278,6 +280,7 @@
     </Description>
     <Component Name="{NO}" Icon="-1" />
     <Component Name="{YES}" Icon="-1" />
+    <Default Variable="UserConfig.Waves" />
     <Confirm>
       <![CDATA[
         function(index, item) {

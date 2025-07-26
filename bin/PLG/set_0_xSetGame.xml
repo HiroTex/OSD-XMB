@@ -127,8 +127,8 @@
     <Component Name="{YES}" Icon="-1" />
     <Default>
       <![CDATA[
-		const dev = (os.readdir("mass:/")[0].includes("POPS")) ? "mass" : "hdd";
-		return Number(getPOPSCheat({ cheats: ["480p"], device: dev})[0]);
+		    const dev = (os.readdir("mass:/")[0].includes("POPS")) ? "mass" : "hdd";
+		    return Number(getPOPSCheat({ cheats: ["480p"], device: dev})[0]);
       ]]>
     </Default>
     <Confirm>
@@ -155,8 +155,8 @@
     <Component Name="{YES}" Icon="-1" />
     <Default>
       <![CDATA[
-		const dev = (os.readdir("mass:/")[0].includes("POPS")) ? "mass" : "hdd";
-		return Number(getPOPSCheat({ cheats: ["SMOOTH"], device: dev})[0]);
+		    const dev = (os.readdir("mass:/")[0].includes("POPS")) ? "mass" : "hdd";
+		    return Number(getPOPSCheat({ cheats: ["SMOOTH"], device: dev})[0]);
       ]]>
     </Default>
     <Confirm>
@@ -265,8 +265,8 @@
     <Component Name="{YES}" Icon="-1" />
     <Default>
       <![CDATA[
-		const dev = (os.readdir("mass:/")[0].includes("POPS")) ? "mass" : "hdd";
-		return Number(getPOPSCheat({ cheats: ["HDTVFIX"], device: dev})[0]);
+		    const dev = (os.readdir("mass:/")[0].includes("POPS")) ? "mass" : "hdd";
+		    return Number(getPOPSCheat({ cheats: ["HDTVFIX"], device: dev})[0]);
       ]]>
     </Default>
     <Confirm>
@@ -296,7 +296,7 @@
     <Default>
       <![CDATA[
         const cheats = ["WIDESCREEN", "ULTRA_WIDESCREEN", "EYEFINITY"];
-		const dev = (os.readdir("mass:/")[0].includes("POPS")) ? "mass" : "hdd";
+		    const dev = (os.readdir("mass:/")[0].includes("POPS")) ? "mass" : "hdd";
         const statuses = getPOPSCheat({ cheats: cheats, device: dev });
         let defval = (statuses[0]) ? 1 : 0;
         defval = (statuses[1]) ? 2 : defval;
@@ -322,8 +322,8 @@
     <Component Name="{YES}" Icon="-1" />
     <Default>
       <![CDATA[
-		const dev = (os.readdir("mass:/")[0].includes("POPS")) ? "mass" : "hdd";
-		return Number(getPOPSCheat({ cheats: ["SCANLINES"], device: dev})[0]);
+		    const dev = (os.readdir("mass:/")[0].includes("POPS")) ? "mass" : "hdd";
+		    return Number(getPOPSCheat({ cheats: ["SCANLINES"], device: dev})[0]);
       ]]>
     </Default>
     <Confirm>
