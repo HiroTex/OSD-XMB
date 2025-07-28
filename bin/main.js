@@ -52,7 +52,8 @@ const jsList = [
 	`cdvd`,		// CDVD Functions.
 	`xml`,		// XML Parser.
 	`cfg`,		// Custom User Configurations.
-	`system`,	// Main Constants and Generic Utilities.
+    `system`,	// Main Constants and Generic Utilities.
+    `date`,     // Date and Time Utilities.
 	`audio`,	// Sound Handler.
 	`pads`,		// Pad Action Manager.
 	`bg`,		// Background Graphics.
@@ -69,8 +70,8 @@ jsList.forEach((js) => { std.loadScript(`${PATHS.XMB}js/${js}.js`); });
 //////////////////////////////////////////////////////////////////////////
 
 function main() {
-	// Update Global Variables.
-	gTime 	  = getLocalTime();
+    // Update Global Variables.
+    getLocalTime();
 	ScrCanvas = Screen.getMode();
 
 	// Execute Handlers

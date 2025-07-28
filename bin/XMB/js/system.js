@@ -846,9 +846,9 @@ function getSystemDataPath() {
     }
 }
 function getCurrentDOSDate() {
-    const year = gTime.getFullYear() - 1980; // DOS date starts at 1980
-    const month = gTime.getMonth() + 1; // JS months are 0-based
-    const day = gTime.getDate();
+    const year = gTime.year - 1980; // DOS date starts at 1980
+    const month = gTime.month; // JS months are 0-based
+    const day = gTime.day;
     return (year << 9) | (month << 5) | day;
 }
 function getMcHistoryFilePath() {
@@ -994,32 +994,12 @@ function createFade() {	return { In: false,	Progress: 0.0f, Running: false }; }
 function alphaCap(a) {	if (a < 0) { a = 0; } if (a > 128) { a = 128; }	return a; }
 function getLocalText(t) { return ((Array.isArray(t)) ? t[UserConfig.Language] : t); }
 function getFadeProgress(fade) { return fade.Running ? (fade.In ? cubicEaseOut(fade.Progress) : cubicEaseIn(fade.Progress)) : 1; }
-function npad2(n) { return (n < 10) ? ('0' + n) : ('' + n); }
 function interpolateColorObj(color1, color2, t) {
     return {
         R: Math.fround(color1.R + (color2.R - color1.R) * t),
         G: Math.fround(color1.G + (color2.G - color1.G) * t),
         B: Math.fround(color1.B + (color2.B - color1.B) * t),
     };
-}
-function getLocalTime() {
-	// Athena has a bug where the current time is shifted 12 hours ahead.
-    const date = new Date();
-	date.setTime(date.getTime() - 43200000);
-
-	// Apply Timezone if necessary.
-	let gmtOffset = GetOsdConfig("Timezone");
-	if ((gmtOffset & 0x400) !== 0) {
-		gmtOffset ^= 0x7ff; // Flip bits
-		gmtOffset += 1; 	// Add one
-		gmtOffset *= -1; 	// Make it negative
-		gmtOffset /= 60;	// Get Hours
-	}
-
-	if (gTimezone !== 0) { date.setTime(date.getTime() - ~~(-gTimezone * 3600000)); }
-	else if (gmtOffset !== 0) { date.setTime(date.getTime() - ~~(-gmtOffset * 3600000)); }
-
-    return date;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -1034,7 +1014,7 @@ function PrintDebugInformation() {
 	DebugInfo.push(`${Screen.getFPS(360)}  FPS`);
 	DebugInfo.push(`RAM USAGE: ${Math.floor(mem.used / 1024)}KB / ${Math.floor(ee_info.RAMSize / 1024)}KB`);
 	DebugInfo.push(`WIDTH: ${ScrCanvas.width} HEIGHT: ${ScrCanvas.height}`);
-	DebugInfo.push(`DATE: ${gTime.getDate()}/${gTime.getMonth() + 1}/${gTime.getFullYear()} ${gTime.getHours()}:${gTime.getMinutes()}:${gTime.getSeconds()}`);
+    DebugInfo.push(`DATE: ${gTime.day}/${gTime.month}/${gTime.year} ${gTime.hour}:${gTime.minute}:${gTime.second}`);
 
     TxtPrint({ Text: DebugInfo, Position: { X: 5, Y: ScrCanvas.height - ((DebugInfo.length + 1) * 16)}});
     xlogProcess();
@@ -1042,10 +1022,10 @@ function PrintDebugInformation() {
 function xlog(l) {
 
     // Write line to log file with timestamp.
-    const hours = String(gTime.getHours()).padStart(2, '0');
-    const minutes = String(gTime.getMinutes()).padStart(2, '0');
-    const seconds = String(gTime.getSeconds()).padStart(2, '0');
-    const milliseconds = String(gTime.getMilliseconds()).padStart(3, '0');
+    const hours = String(gTime.hour).padStart(2, '0');
+    const minutes = String(gTime.minute).padStart(2, '0');
+    const seconds = String(gTime.second).padStart(2, '0');
+    const milliseconds = String(gTime.millisecond).padStart(3, '0');
     const line = `[ ${hours}:${minutes}:${seconds}:${milliseconds} ] ${l}\n`;
     console.log(line);
 
@@ -1064,11 +1044,7 @@ function xlogProcess() {
 ///*				   			 Init Work							  *///
 //////////////////////////////////////////////////////////////////////////
 
-let gTimezone = parseInt(GetCfgUserSetting("gTimezone"));
-if (isNaN(gTimezone)) { gTimezone = 0; }
-
 let gExit 		= {};
-let gTime 		= getLocalTime();
 let gThreads 	= false;
 let gDebug      = true;
 let gDbgTxt     = [];

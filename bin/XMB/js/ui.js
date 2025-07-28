@@ -663,15 +663,16 @@ function UIAnimateBootLogo_Work(Alpha) {
 //////////////////////////////////////////////////////////////////////////
 
 function UIClockText(a) {
-    const month = gTime.getMonth() + 1;
-    const day = gTime.getDate();
-    const hours24 = gTime.getHours();
-    const minutes = gTime.getMinutes();
+    const month = String(gTime.month).padStart(2, '0');
+    const day = String(gTime.day).padStart(2, '0');
+    const minutes = String(gTime.minute).padStart(2, '0');
+    const hours24 = gTime.hour;
     const hours12 = (hours24 % 12) || 12;
     const amPm = hours24 >= 12 ? 'PM' : 'AM';
+    const strHour = (UserConfig.HourFormat === 0) ? String(hours12).padStart(2, '0') : String(hours24).padStart(2, '0');
 
-	const date = (UserConfig.DateFormat === 0) ? `${npad2(day)}/${npad2(month)}` : `${npad2(month)}/${npad2(day)}`;
-	const time = (UserConfig.HourFormat === 0) ? `${npad2(hours12)}:${npad2(minutes)} ${amPm}` : `${npad2(hours24)}:${npad2(minutes)}`;
+    const date = (UserConfig.DateFormat === 0) ? `${day}/${month}` : `${month}/${day}`;
+    const time = (UserConfig.HourFormat === 0) ? `${strHour}:${minutes} ${amPm}` : `${strHour}:${minutes}`;
 
 	UICONST.ClockTextObj.Text = [`${date}  ${time}`];
     UICONST.ClockTextObj.Position.X = UICONST.ClockX + 12;

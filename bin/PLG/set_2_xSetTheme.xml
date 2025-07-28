@@ -73,51 +73,53 @@
     <Confirm>
       <![CDATA[
         function(index, item) {
-		  UserConfig.Theme = item.Name;
-		  let config = CfgMan.Get("main.cfg");
-		  config["Theme"] = UserConfig.Theme;
-		  CfgMan.Push("main.cfg", config);
+          if (item.Name === UserConfig.Theme) { return; }
 
-		  const _bg = function() {
-			DisableCustomBgImg();
-			UserConfig.BgColor = 0;
-			BgElements.BgColor.Next = UserConfig.BgColor;
-			BgElements.BgColor.Progress = 0.0f;
-			DashElements.ItemFocus = false;
+		      UserConfig.Theme = item.Name;
+		      let config = CfgMan.Get("main.cfg");
+		      config["Theme"] = UserConfig.Theme;
+		      CfgMan.Push("main.cfg", config);
 
-			for (let i = 0; i < DashIcons.length; i++) {
-				const path = `${PATHS.Theme}${UserConfig.Theme}/icons/${DashIconsInfo[i].path}`;
-				const icn = std.exists(path) ? new Image(path) : new Image(`${PATHS.Theme}Original/icons/${DashIconsInfo[i].path}`);
-				icn.optimize();
-				icn.filter = LINEAR;
-				DashIcons[i] = icn;
-			}
+		      const _bg = function() {
+			    DisableCustomBgImg();
+			    UserConfig.BgColor = 0;
+			    BgElements.BgColor.Next = UserConfig.BgColor;
+			    BgElements.BgColor.Progress = 0.0f;
+			    DashElements.ItemFocus = false;
 
-			let thmival = os.setInterval(() => {
-				FontInit();
-				DashUIConstantsInit();
+			    for (let i = 0; i < DashIcons.length; i++) {
+				    const path = `${PATHS.Theme}${UserConfig.Theme}/icons/${DashIconsInfo[i].path}`;
+				    const icn = std.exists(path) ? new Image(path) : new Image(`${PATHS.Theme}Original/icons/${DashIconsInfo[i].path}`);
+				    icn.optimize();
+				    icn.filter = LINEAR;
+				    DashIcons[i] = icn;
+			    }
 
-				if (std.exists(`${PATHS.Theme}${UserConfig.Theme}/thm.js`))
-				{
-					std.loadScript(`${PATHS.Theme}${UserConfig.Theme}/thm.js`);
-				}
+			    let thmival = os.setInterval(() => {
+				    FontInit();
+				    DashUIConstantsInit();
 
-				os.clearInterval(thmival);
-			}, 0);
+				    if (std.exists(`${PATHS.Theme}${UserConfig.Theme}/thm.js`))
+				    {
+					    std.loadScript(`${PATHS.Theme}${UserConfig.Theme}/thm.js`);
+				    }
 
-			UIAnimationDialogFade_Start(false);
-		  }
+				    os.clearInterval(thmival);
+			    }, 0);
 
-		  const dialog = {
-			Icon: 9,
-			Title: DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Name,
-			BG: false,
-			Type: "TEXT",
-			Text: XMBLANG.WAIT,
-			Fun: _bg,
-		  };
+			    UIAnimationDialogFade_Start(false);
+		      }
 
-		  DashUISetDialog(dialog);
+		      const dialog = {
+			    Icon: 9,
+			    Title: DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Name,
+			    BG: false,
+			    Type: "TEXT",
+			    Text: XMBLANG.WAIT,
+			    Fun: _bg,
+		      };
+
+		      DashUISetDialog(dialog);
         }
       ]]>
     </Confirm>

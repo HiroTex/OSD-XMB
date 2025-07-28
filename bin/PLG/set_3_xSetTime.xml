@@ -127,7 +127,7 @@
     <Component Name="GMT-03:00 - NW Greenland" Icon="-1" Value="-3"/>
     <Component Name="GMT-03:00 - SW Greenland" Icon="-1" Value="-3"/>
     <Component Name="GMT-03:00 - Buenos Aires" Icon="-1" Value="-3"/>
-    <Component Name="GMT-02:00 - E Greenland" Icon="-1" Value="-1"/>
+    <Component Name="GMT-02:00 - E Greenland" Icon="-1" Value="-2"/>
     <Component Name="GMT-01:00 - Praia" Icon="-1" Value="-1"/>
     <Component Name="GMT-01:00 - Tijuana" Icon="-1" Value="-1"/>
     <Component Name="GMT+00:00 - Reykjavik" Icon="-1" Value="0"/>

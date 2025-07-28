@@ -130,12 +130,12 @@ function BgElementsInit() {
 ///*				   		     Drawing							  *///
 //////////////////////////////////////////////////////////////////////////
 function getBgColor(param = UserConfig.BgColor) {
-	if (param === 0) { return monthColors[getLocalTime().getMonth()]; }
+    if (param === 0) { return monthColors[gTime.month - 1]; }
 	else { return monthColors[param - 1]; }
 }
 function getDailyBrightness() {
-    const hour = gTime.getHours();
-    const minutes = gTime.getMinutes();
+    const hour = gTime.hour;
+    const minutes = gTime.minute;
 
 	const DAY_START	  = 6;  // Hour to Start to Decrease Overlay
 	const DAY_PEAK    = 12; // Hour of Zero Overlay
