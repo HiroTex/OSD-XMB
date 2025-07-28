@@ -156,7 +156,7 @@ function getDailyBrightness() {
 function DrawDailyOverlay() {
 	if (BgElements.BgColor.Current !== 0 && BgElements.BgColor.Next !== 0) { /* Apply Custom User Brightness */ return; }
 
-	let daily = 0;//getDailyBrightness();
+	let daily = getDailyBrightness();
 
 	if ((BgElements.BgColor.Current !== 0) && (BgElements.BgColor.Next === 0)) {
 		daily = ~~(daily * BgElements.BgColor.Progress);
