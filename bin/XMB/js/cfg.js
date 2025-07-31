@@ -9,6 +9,7 @@
 /* Handles main User Settings */
 
 const UserConfig = {
+    HDD: System.devices().some(dev => dev.name === "hdd"),
 	Theme: "Original",
 	Language: GetOsdConfig("Language") - 1,
 	ConfirmBtn: 0,

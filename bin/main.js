@@ -78,7 +78,6 @@ function main() {
 	BgHandler();
 	UIHandler();
 	PadsHandler();
-	DiscTray.Process();
 
 	// Threaded Operations
     ImageCache.Process();
@@ -88,6 +87,6 @@ function main() {
 }
 
 Screen.setParam(Screen.DEPTH_TEST_ENABLE, false);
-Screen.setFrameCounter(true);
+if (gDebug) Screen.setFrameCounter(true);
 Screen.setVSync(true);
 Screen.display(main);

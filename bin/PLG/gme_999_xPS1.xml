@@ -1,107 +1,107 @@
 <App Name="Playstation" Icon="FOLDER" Category="5" Type="SUBMENU" Description="$`${this.Value.Items.length} ${XMBLANG.TITLES[UserConfig.Language]}`">
   <Options HideEmpty="true">
     <![CDATA[
-		function SaveLastPlayed() {
-			const cfg = CfgMan.Get("pops.cfg");
-			const value = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Name;
-			cfg["last"] = value;
-			CfgMan.Set("pops.cfg", cfg);
-		}
-
-		function getPOPSElfPath(data) {
-			const prefix = (data.dev === "mass") ? "XX." : "";
-			let path = "mass:/POPS/"
-			if (data.dev === "hdd") {
-				const part = mountHDDPartition("__common");
-				path = `${part}:/POPS/`;
+			function SaveLastPlayed() {
+				const cfg = CfgMan.Get("pops.cfg");
+				const value = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Name;
+				cfg["last"] = value;
+				CfgMan.Set("pops.cfg", cfg);
 			}
 
-			const elfPath = `${path}${prefix}${data.fname.substring(0, data.fname.length - 3)}ELF`;
+			function getPOPSElfPath(data) {
+				const prefix = (data.dev === "mass") ? "XX." : "";
+				let path = "mass:/POPS/"
+				if (data.dev === "hdd") {
+					const part = mountHDDPartition("__common");
+					path = `${part}:/POPS/`;
+				}
 
-			if (!std.exists(elfPath)) { System.copyFile(`${path}POPSTARTER.ELF`, elfPath); }
+				const elfPath = `${path}${prefix}${data.fname.substring(0, data.fname.length - 3)}ELF`;
 
-			return elfPath;
-		}
+				if (!std.exists(elfPath)) { System.copyFile(`${path}POPSTARTER.ELF`, elfPath); }
 
-		function generateVMCs(gameList) {
-			const vmcgrps = CfgMan.Get("PS1VMCGRP.cfg");
-			for (let i = 0; i < gameList.length; i++) {
-				const game = gameList[i];
-				if (game.GameID === "") { continue; }
-				if (!(game.GameID in vmcgrps)) { continue; }
-				const basePath = (game.Data.dev === "mass") ? "mass:/POPS/" : `${mountHDDPartition("__common")}:/POPS/`;
+				return elfPath;
+			}
 
-				// Make Dirs
-				if (!os.readdir(basePath)[0].includes(vmcgrps[game.GameID])) { os.mkdir(`${basePath}${vmcgrps[game.GameID]}`); }
-				if (!os.readdir(basePath)[0].includes(game.Name)) 			 { os.mkdir(`${basePath}${game.Name}`); }
+			function generateVMCs(gameList) {
+				const vmcgrps = CfgMan.Get("PS1VMCGRP.cfg");
+				for (let i = 0; i < gameList.length; i++) {
+					const game = gameList[i];
+					if (game.GameID === "") { continue; }
+					if (!(game.GameID in vmcgrps)) { continue; }
+					const basePath = (game.Data.dev === "mass") ? "mass:/POPS/" : `${mountHDDPartition("__common")}:/POPS/`;
 
-				// Write VMC
-				if (!os.readdir(`${basePath}${game.Name}/`)[0].includes("VMCDIR.TXT")) {
-					ftxtWrite(`${basePath}${game.Name}/VMCDIR.TXT`, vmcgrps[game.GameID]);
+					// Make Dirs
+					if (!os.readdir(basePath)[0].includes(vmcgrps[game.GameID])) { os.mkdir(`${basePath}${vmcgrps[game.GameID]}`); }
+					if (!os.readdir(basePath)[0].includes(game.Name)) 			 { os.mkdir(`${basePath}${game.Name}`); }
+
+					// Write VMC
+					if (!os.readdir(`${basePath}${game.Name}/`)[0].includes("VMCDIR.TXT")) {
+						ftxtWrite(`${basePath}${game.Name}/VMCDIR.TXT`, vmcgrps[game.GameID]);
+					}
 				}
 			}
-		}
 
-		function ScanGames(path, dev) {
-			const items = [];
-			let gameDir = System.listDir(path).filter(item => (item.dir === false) && (getFileExtension(item.name).toLowerCase() === "vcd"));
-			for (let j = 0; j < gameDir.length; j++) {
-				const gameID = getVCDGameID(`${path}${gameDir[j].name}`, gameDir[j].size);
-				let code = gameID.success ? gameID.code : "";
-				items.push({
-					Name: getGameName(gameDir[j].name),
-					Description: code,
-					GameID: code,
-					Icon: "DISC_PS1",
-					Type: "ELF",
-					Data: { path: path, fname: gameDir[j].name, dev: dev }
-				});
+			function ScanGames(path, dev) {
+				const items = [];
+				let gameDir = System.listDir(path).filter(item => (item.dir === false) && (getFileExtension(item.name).toLowerCase() === "vcd"));
+				for (let j = 0; j < gameDir.length; j++) {
+					const gameID = getVCDGameID(`${path}${gameDir[j].name}`, gameDir[j].size);
+					let code = gameID.success ? gameID.code : "";
+					items.push({
+						Name: getGameName(gameDir[j].name),
+						Description: code,
+						GameID: code,
+						Icon: "DISC_PS1",
+						Type: "ELF",
+						Data: { path: path, fname: gameDir[j].name, dev: dev }
+					});
 
-				Object.defineProperty(items[items.length - 1], "Value", {
-					get() {	return { Path: getPOPSElfPath(this.Data), Args: [], Code: SaveLastPlayed }; },
-					enumerable: true
-				});
+					Object.defineProperty(items[items.length - 1], "Value", {
+						get() {	return { Path: getPOPSElfPath(this.Data), Args: [], Code: SaveLastPlayed }; },
+						enumerable: true
+					});
 
-				const ico = gameID.success ? findICO(code) : "";
-				if (ico !== "") { items[items.length - 1].CustomIcon = ico; }
-				const bgFile = gameID.success ? findBG(code) : "";
-				if (bgFile !== "") { items[items.length - 1].CustomBG = bgFile; }
+					const ico = gameID.success ? findICO(code) : "";
+					if (ico !== "") { items[items.length - 1].CustomIcon = ico; }
+					const bgFile = gameID.success ? findBG(code) : "";
+					if (bgFile !== "") { items[items.length - 1].CustomBG = bgFile; }
+				}
+				return items;
 			}
-			return items;
-		}
 
-		const devices = System.devices();
-		let gameList = [];
+			const devices = System.devices();
+			let gameList = [];
 
-    if (devices.some(dev => dev.name === "mass")) {
-			const massDir = os.readdir("mass:/")[0];
-			if (massDir && massDir.includes("POPS")) {
-				const dirFiles = os.readdir("mass:/POPS/")[0];
+			if (devices.some(dev => dev.name === "mass")) {
+				const massDir = os.readdir("mass:/")[0];
+				if (massDir && massDir.includes("POPS")) {
+					const dirFiles = os.readdir("mass:/POPS/")[0];
 
-				// Check if files are present
-				if (dirFiles.includes("POPS_IOX.PAK") && dirFiles.includes("POPSTARTER.ELF")) {
-					gameList = gameList.concat(ScanGames("mass:/POPS/", "mass"));
+					// Check if files are present
+					if (dirFiles.includes("POPS_IOX.PAK") && dirFiles.includes("POPSTARTER.ELF")) {
+						gameList = gameList.concat(ScanGames("mass:/POPS/", "mass"));
+					}
 				}
 			}
-    }
 
-    if (devices.some(dev => dev.name === "hdd")) {
-			const hddDir = os.readdir("hdd0:")[0];
-			if (hddDir && hddDir.includes("__common") && hddDir.includes("__.POPS")) {
-				const commpart = mountHDDPartition("__common");
-				const dirFiles = os.readdir(`${commpart}:/POPS/`)[0];
-				const filesPresent = (dirFiles.includes("POPS.ELF") && dirFiles.includes("IOPRP252.IMG") && dirFiles.includes("POPSTARTER.ELF"));
-				if (filesPresent) {
-					gameList = gameList.concat(ScanGames(`${mountHDDPartition("__.POPS")}:/`, "hdd"));
+			if (devices.some(dev => dev.name === "hdd")) {
+				const hddDir = os.readdir("hdd0:")[0];
+				if (hddDir && hddDir.includes("__common") && hddDir.includes("__.POPS")) {
+					const commpart = mountHDDPartition("__common");
+					const dirFiles = os.readdir(`${commpart}:/POPS/`)[0];
+					const filesPresent = (dirFiles.includes("POPS.ELF") && dirFiles.includes("IOPRP252.IMG") && dirFiles.includes("POPSTARTER.ELF"));
+					if (filesPresent) {
+						gameList = gameList.concat(ScanGames(`${mountHDDPartition("__.POPS")}:/`, "hdd"));
+					}
 				}
 			}
-    }
 
-		if (gameList.length > 1) { gameList.sort((a, b) => a.Name.localeCompare(b.Name)); }
+			if (gameList.length > 1) { gameList.sort((a, b) => a.Name.localeCompare(b.Name)); }
 
-		generateVMCs(gameList);
+			generateVMCs(gameList);
 
-		return gameList;
+			return gameList;
     ]]>
   </Options>
   <Default>
@@ -109,115 +109,114 @@
 			let val = 0;
 			const cfg = CfgMan.Get("pops.cfg");
 			if ('last' in cfg) {
-			const index = this.Items.findIndex(item => item.Name === cfg["last"]);
-			val = (index > -1) ? index : 0;
+				const index = this.Items.findIndex(item => item.Name === cfg["last"]);
+				val = (index > -1) ? index : 0;
 			}
 			return val;
 		]]>
   </Default>
   <Context Name="OptionContext" Filter="Custom" Condition="('GameID' in item && item.GameID)">
-	<Component Name="{INFO}" Icon="-1">
-	  <Dialog Icon="-1" Title="" BG="false" Type="INFO" BackBtn="true" ConfirmBtn="true" >
-		<Info>
-		  <Item Name="{TITLE}" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Name}" Selectable="false" />
-		  <Item Name="{DEVICE}" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Data.dev.toUpperCase()}" Selectable="false" />
-		  <Item Name="{POPS_OPTIONS.0}" Selectable="true">
-			<Value>
-			  <Option value="{NO}" />
-			  <Option value="1" />
-			  <Option value="2" />
-			  <Option value="3" />
-			  <Option value="4" />
-			  <Option value="5" />
-			  <Option value="6" />
-			  <Option value="7" />
-			</Value>
-		  </Item>
-		  <Item Name="{POPS_OPTIONS.1}" Selectable="true">
-			<Value>
-			  <Option value="{NO}" />
-			  <Option value="{YES}" />
-			</Value>
-		  </Item>
-		  <Item Name="{POPS_OPTIONS.2}" Selectable="true">
-			<Value>
-			  <Option value="{NO}" />
-			  <Option value="{YES}" />
-			</Value>
-		  </Item>
-		  <Item Name="{POPS_OPTIONS.3}" Selectable="true">
-			<Value>
-			  <Option value="{NO}" />
-			  <Option value="{YES}" />
-			</Value>
-		  </Item>
-		  <Item Name="{POPS_OPTIONS.4}" Selectable="true">
-			<Value>
-			  <Option value="{DEFAULT}" />
-			  <Option value="{DISABLED}" />
-			  <Option value="{POPS_SETTINGS.PALPATCHER_2}" />
-			</Value>
-		  </Item>
-		  <Item Name="{POPS_OPTIONS.5}" Selectable="true">
-			<Value>
-			  <Option value="{DEFAULT}" />
-			  <Option value="{POPS_SETTINGS.SOUND_1}" />
-			  <Option value="{POPS_SETTINGS.SOUND_2}" />
-			  <Option value="{POPS_SETTINGS.SOUND_3}" />
-			</Value>
-		  </Item>
-		  <Item Name="{POPS_OPTIONS.6}" Selectable="true">
-			<Value>
-			  <Option value="{DEFAULT}" />
-			  <Option value="{POPS_SETTINGS.DPAD2STICK_1}" />
-			  <Option value="{POPS_SETTINGS.DPAD2STICK_2}" />
-			</Value>
-		  </Item>
-		  <Item Name="{POPS_OPTIONS.7}" Selectable="true">
-			<Value>
-			  <Option value="{DEFAULT}" />
-			  <Option value="{POPS_SETTINGS.NOVMC_1}" />
-			  <Option value="{POPS_SETTINGS.NOVMC_2}" />
-			</Value>
-		  </Item>
-		</Info>
-		<Dialog Name="SaveSettingsDialog" Icon="-1" Title="" BG="false" Type="TEXT" Text="{WAIT}" Align="HCENTER">
-		  <Task>
-		    <![CDATA[
-			  function() {
-				const info = DashUI.Dialog.Data[DashUI.Dialog.Level - 1].Info;
-				const cheats = [];
-				cheats.push({ code: "COMPATIBILITY_0x01", enabled: (info[1].Selected === 1)});
-				cheats.push({ code: "COMPATIBILITY_0x02", enabled: (info[1].Selected === 2)});
-				cheats.push({ code: "COMPATIBILITY_0x03", enabled: (info[1].Selected === 3)});
-				cheats.push({ code: "COMPATIBILITY_0x04", enabled: (info[1].Selected === 4)});
-				cheats.push({ code: "COMPATIBILITY_0x05", enabled: (info[1].Selected === 5)});
-				cheats.push({ code: "COMPATIBILITY_0x06", enabled: (info[1].Selected === 6)});
-				cheats.push({ code: "COMPATIBILITY_0x07", enabled: (info[1].Selected === 7)});
-				cheats.push({ code: "CODECACHE_ADDON_0",  enabled: (info[2].Selected === 1)});
-				cheats.push({ code: "SUBCDSTATUS", 		  enabled: (info[3].Selected === 1)});
-				cheats.push({ code: "FAKELC", 			  enabled: (info[4].Selected === 1)});
-				cheats.push({ code: "NOPAL", 			  enabled: (info[5].Selected === 1)});
-				cheats.push({ code: "FORCEPAL", 		  enabled: (info[5].Selected === 2)});
-				cheats.push({ code: "MUTE_CDDA",		  enabled: (info[6].Selected === 1)});
-				cheats.push({ code: "UNDO_MUTE_CDDA", 	  enabled: (info[6].Selected === 2)});
-				cheats.push({ code: "MUTE_VAB", 		  enabled: (info[6].Selected === 3)});
-				cheats.push({ code: "D2LS", 			  enabled: (info[7].Selected === 1)});
-				cheats.push({ code: "D2LS_ALT", 		  enabled: (info[7].Selected === 2)});
-				cheats.push({ code: "NOVMC0", 			  enabled: (info[8].Selected === 1)});
-				cheats.push({ code: "NOVMC1", 			  enabled: (info[8].Selected === 2)});
+		<Component Name="{INFO}" Icon="-1">
+			<Dialog Icon="-1" Title="" BG="false" Type="INFO" BackBtn="true" ConfirmBtn="true" >
+				<Info>
+					<Item Name="{TITLE}" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Name}" Selectable="false" />
+					<Item Name="{DEVICE}" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Data.dev.toUpperCase()}" Selectable="false" />
+					<Item Name="{POPS_OPTIONS.0}" Selectable="true">
+					<Value>
+						<Option value="{NO}" />
+						<Option value="1" />
+						<Option value="2" />
+						<Option value="3" />
+						<Option value="4" />
+						<Option value="5" />
+						<Option value="6" />
+						<Option value="7" />
+					</Value>
+					</Item>
+					<Item Name="{POPS_OPTIONS.1}" Selectable="true">
+					<Value>
+						<Option value="{NO}" />
+						<Option value="{YES}" />
+					</Value>
+					</Item>
+					<Item Name="{POPS_OPTIONS.2}" Selectable="true">
+					<Value>
+						<Option value="{NO}" />
+						<Option value="{YES}" />
+					</Value>
+					</Item>
+					<Item Name="{POPS_OPTIONS.3}" Selectable="true">
+					<Value>
+						<Option value="{NO}" />
+						<Option value="{YES}" />
+					</Value>
+					</Item>
+					<Item Name="{POPS_OPTIONS.4}" Selectable="true">
+					<Value>
+						<Option value="{DEFAULT}" />
+						<Option value="{DISABLED}" />
+						<Option value="{POPS_SETTINGS.PALPATCHER_2}" />
+					</Value>
+					</Item>
+					<Item Name="{POPS_OPTIONS.5}" Selectable="true">
+					<Value>
+						<Option value="{DEFAULT}" />
+						<Option value="{POPS_SETTINGS.SOUND_1}" />
+						<Option value="{POPS_SETTINGS.SOUND_2}" />
+						<Option value="{POPS_SETTINGS.SOUND_3}" />
+					</Value>
+					</Item>
+					<Item Name="{POPS_OPTIONS.6}" Selectable="true">
+					<Value>
+						<Option value="{DEFAULT}" />
+						<Option value="{POPS_SETTINGS.DPAD2STICK_1}" />
+						<Option value="{POPS_SETTINGS.DPAD2STICK_2}" />
+					</Value>
+					</Item>
+					<Item Name="{POPS_OPTIONS.7}" Selectable="true">
+					<Value>
+						<Option value="{DEFAULT}" />
+						<Option value="{POPS_SETTINGS.NOVMC_1}" />
+						<Option value="{POPS_SETTINGS.NOVMC_2}" />
+					</Value>
+					</Item>
+				</Info>
+				<Dialog Name="SaveSettingsDialog" Icon="-1" Title="" BG="false" Type="TEXT" Text="{WAIT}" Align="HCENTER">
+					<Task>
+						<![CDATA[
+							function() {
+								const info = DashUI.Dialog.Data[DashUI.Dialog.Level - 1].Info;
+								const cheats = [];
+								cheats.push({ code: "COMPATIBILITY_0x01", enabled: (info[1].Selected === 1)});
+								cheats.push({ code: "COMPATIBILITY_0x02", enabled: (info[1].Selected === 2)});
+								cheats.push({ code: "COMPATIBILITY_0x03", enabled: (info[1].Selected === 3)});
+								cheats.push({ code: "COMPATIBILITY_0x04", enabled: (info[1].Selected === 4)});
+								cheats.push({ code: "COMPATIBILITY_0x05", enabled: (info[1].Selected === 5)});
+								cheats.push({ code: "COMPATIBILITY_0x06", enabled: (info[1].Selected === 6)});
+								cheats.push({ code: "COMPATIBILITY_0x07", enabled: (info[1].Selected === 7)});
+								cheats.push({ code: "CODECACHE_ADDON_0",  enabled: (info[2].Selected === 1)});
+								cheats.push({ code: "SUBCDSTATUS", 				enabled: (info[3].Selected === 1)});
+								cheats.push({ code: "FAKELC", 						enabled: (info[4].Selected === 1)});
+								cheats.push({ code: "NOPAL", 							enabled: (info[5].Selected === 1)});
+								cheats.push({ code: "FORCEPAL", 					enabled: (info[5].Selected === 2)});
+								cheats.push({ code: "MUTE_CDDA",					enabled: (info[6].Selected === 1)});
+								cheats.push({ code: "UNDO_MUTE_CDDA", 	  enabled: (info[6].Selected === 2)});
+								cheats.push({ code: "MUTE_VAB", 					enabled: (info[6].Selected === 3)});
+								cheats.push({ code: "D2LS", 							enabled: (info[7].Selected === 1)});
+								cheats.push({ code: "D2LS_ALT", 					enabled: (info[7].Selected === 2)});
+								cheats.push({ code: "NOVMC0", 						enabled: (info[8].Selected === 1)});
+								cheats.push({ code: "NOVMC1", 						enabled: (info[8].Selected === 2)});
 
-				const title = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Name;
-				const dev = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Data.dev;
+								const item = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current];
 
-				setPOPSCheat({ cheats: cheats, game: title, device: dev });
-			  }
-		    ]]>
-		  </Task>
-		</Dialog>
-	    <Event On="Confirm" Type="Transition" To="SaveSettingsDialog"/>
-	  </Dialog>
-	</Component>
+								setPOPSCheat({ cheats: cheats, game: item.Name, device: item.Data.dev });
+							}
+						]]>
+					</Task>
+				</Dialog>
+				<Event On="Confirm" Type="Transition" To="SaveSettingsDialog"/>
+			</Dialog>
+		</Component>
     <Confirm>
       <![CDATA[
         function(index, item) {

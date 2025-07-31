@@ -13,7 +13,7 @@ const Sounds = {
 
 function playSfx(sound) {
     if (!sound) return;
-    sound.play();
+    sound.play(Sound.findChannel());
 }
 function playBgm(sound) {
     if (!sound) return;

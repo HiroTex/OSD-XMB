@@ -81,42 +81,42 @@
 		      CfgMan.Push("main.cfg", config);
 
 		      const _bg = function() {
-			    DisableCustomBgImg();
-			    UserConfig.BgColor = 0;
-			    BgElements.BgColor.Next = UserConfig.BgColor;
-			    BgElements.BgColor.Progress = 0.0f;
-			    DashElements.ItemFocus = false;
+			      DisableCustomBgImg();
+			      UserConfig.BgColor = 0;
+			      BgElements.BgColor.Next = UserConfig.BgColor;
+			      BgElements.BgColor.Progress = 0.0f;
+			      DashElements.ItemFocus = false;
 
-			    for (let i = 0; i < DashIcons.length; i++) {
-				    const path = `${PATHS.Theme}${UserConfig.Theme}/icons/${DashIconsInfo[i].path}`;
-				    const icn = std.exists(path) ? new Image(path) : new Image(`${PATHS.Theme}Original/icons/${DashIconsInfo[i].path}`);
-				    icn.optimize();
-				    icn.filter = LINEAR;
-				    DashIcons[i] = icn;
-			    }
+			      for (let i = 0; i < DashIcons.length; i++) {
+				      const path = `${PATHS.Theme}${UserConfig.Theme}/icons/${DashIconsInfo[i].path}`;
+				      const icn = std.exists(path) ? new Image(path) : new Image(`${PATHS.Theme}Original/icons/${DashIconsInfo[i].path}`);
+				      icn.optimize();
+				      icn.filter = LINEAR;
+				      DashIcons[i] = icn;
+			      }
 
-			    let thmival = os.setInterval(() => {
-				    FontInit();
-				    DashUIConstantsInit();
+			      let thmival = os.setInterval(() => {
+				      FontInit();
+				      DashUIConstantsInit();
 
-				    if (std.exists(`${PATHS.Theme}${UserConfig.Theme}/thm.js`))
-				    {
-					    std.loadScript(`${PATHS.Theme}${UserConfig.Theme}/thm.js`);
-				    }
+				      if (std.exists(`${PATHS.Theme}${UserConfig.Theme}/thm.js`))
+				      {
+					      std.loadScript(`${PATHS.Theme}${UserConfig.Theme}/thm.js`);
+				      }
 
-				    os.clearInterval(thmival);
-			    }, 0);
+				      os.clearInterval(thmival);
+			      }, 0);
 
-			    UIAnimationDialogFade_Start(false);
+			      UIAnimationDialogFade_Start(false);
 		      }
 
 		      const dialog = {
-			    Icon: 9,
-			    Title: DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Name,
-			    BG: false,
-			    Type: "TEXT",
-			    Text: XMBLANG.WAIT,
-			    Fun: _bg,
+			      Icon: 9,
+			      Title: DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Name,
+			      BG: false,
+			      Type: "TEXT",
+			      Text: XMBLANG.WAIT,
+			      Fun: _bg,
 		      };
 
 		      DashUISetDialog(dialog);

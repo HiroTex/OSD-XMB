@@ -13,16 +13,15 @@
 function umountHDD() { if (os.readdir("pfs1:/")[1] === 0) { System.umount("pfs1:"); } }
 
 function mountHDDPartition(partName) {
-	if (!UserConfig.HDD) { return "?"; }
+    if (!UserConfig.HDD) { return "?"; }
 
 	umountHDD();
 	const result = System.mount("pfs1:", `hdd0:${partName}`);
 	xlog(`Partition "${partName}" Mount process finished with result: ${result}`);
 
 	switch (result) {
-		case 0: // This partition is already mounted or was mounted correctly.
-		case -16: break;
-		default: return "pfs0"; // The partition was already mounted on pfs0 probably.
+        case 0: break; // This partition was mounted correctly.
+        case -16: return "pfs0"; // The partition was already mounted on pfs0 probably.
 	}
 
 	return "pfs1";
@@ -410,9 +409,11 @@ function getISOgameArgs(info) {
 	let root 	= getRootName(info.path);
 	let dir 	= getPathWithoutRoot(info.path);
 
+    args.push(`-cwd=${CWD}APPS/neutrino/`);
+
     if (info.dev === "ata") {
 		root = "hdl"; dir = "";
-		args.push(`-bsdfs=${root}`);
+        args.push(`-bsdfs=${root}`);
 	}
 	else {
 		args.push(`-qb`);
@@ -992,6 +993,7 @@ function cubicEaseOut(t) { return 1 - Math.pow(1 - t, 3); }
 function cubicEaseIn(t) { return Math.pow(1 - t, 3); }
 function createFade() {	return { In: false,	Progress: 0.0f, Running: false }; }
 function alphaCap(a) {	if (a < 0) { a = 0; } if (a > 128) { a = 128; }	return a; }
+function getTimerSec(t) { return ~~(Timer.getTime(t) / 100000) }
 function getLocalText(t) { return ((Array.isArray(t)) ? t[UserConfig.Language] : t); }
 function getFadeProgress(fade) { return fade.Running ? (fade.In ? cubicEaseOut(fade.Progress) : cubicEaseIn(fade.Progress)) : 1; }
 function interpolateColorObj(color1, color2, t) {

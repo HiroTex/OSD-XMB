@@ -36,8 +36,8 @@
       <String str="Set the order of display." />
       <String str="Define a ordem de apresentação." />
     </Description>
-    <Component Name="DD-MM-YYYY" Icon="-1"/>
-    <Component Name="MM-DD-YYYY" Icon="-1"/>
+    <Component Name="DD-MM" Icon="-1"/>
+    <Component Name="MM-DD" Icon="-1"/>
     <Confirm>
       <![CDATA[
         function(index, item) {

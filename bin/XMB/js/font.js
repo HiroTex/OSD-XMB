@@ -24,7 +24,7 @@ function FontInit() {
 		if (std.exists(custom_font)) { FontObj.Font = new Font(custom_font); }
 	}
 
-    FontObj.SizeS = 0.5f;
+    FontObj.SizeS = 0.55f;
     FontObj.SizeM = 0.65f;
     FontObj.SizeL = 0.75f;
     FontObj.Font.dropshadow = 1.0f;
@@ -78,16 +78,14 @@ function WrapTextByPixelWidth(line) {
 function PreprocessText(txt) {
 
     FontObj.Font.scale = FontObj.SizeS;
-	let lines = typeof txt === 'string' ? txt.split('\n') : txt;
-	let finalLines = [];
+    let lines = typeof txt === 'string' ? txt.split('\n') : txt;
+    let finalLines = [];
 
-	const limit = ScrCanvas.width - FontObj.Wrap;
-
-	lines.forEach((line) =>
-	{
-		let splitLines = (FontObj.Font.getTextSize(line).width < limit) ? [ line ] : WrapTextByPixelWidth(line);
-		finalLines.push(...splitLines);
-	});
+    const limit = ScrCanvas.width - FontObj.Wrap;
+    for (const line of lines) {
+        let splitLines = (FontObj.Font.getTextSize(line).width < limit) ? [line] : WrapTextByPixelWidth(line);
+        finalLines.push(...splitLines);
+    }
 
 	return finalLines;
 }
@@ -131,8 +129,8 @@ function FontTextPrint(txt, pos) {
 	const lineSize = ~~(FontObj.Font.scale * 32);
     let y = pos.Y;
 
-    for (let i = 0; i < txt.length; i++) {
-        FontObj.Font.print(pos.X, y, txt[i]);
+    for (const t of txt) {
+        FontObj.Font.print(pos.X, y, t);
         y += lineSize;
     }
 }
@@ -140,7 +138,7 @@ function FontTextPrint(txt, pos) {
 function TxtPrint(Obj) {
 	// Validate Object
     if (!Obj.Text || !Obj.Position || !('X' in Obj.Position) || !('Y' in Obj.Position)) {
-        throw new Error("Invalid text object parameters");
+        return;
     }
 
 	// Cap Alpha Value

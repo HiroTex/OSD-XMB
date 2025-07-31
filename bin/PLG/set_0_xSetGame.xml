@@ -62,7 +62,7 @@
     <Description>
       <String str="Show debug colors at the start of PS2 games." />
       <String str="Show debug colors at the start of PS2 games." />
-      <String str="Muestra los colores de depuración al iniciar juegos de PS2." />
+      <String str="Muestra los colores de depuración al iniciar." />
       <String str="Debug-Farben bei digitalen Spielen anzeigen." />
       <String str="Mostra i colori di debug nei PS2 giochi." />
       <String str="Show debug colors at the start of PS2 games." />
@@ -94,7 +94,7 @@
     <Description>
       <String str="Force progressive scan mode on digital games." />
       <String str="Force progressive scan mode on digital games." />
-      <String str="Forzar modo de escaneo progresivo en juegos digitales." />
+      <String str="Forzar modo de escaneo progresivo." />
       <String str="Force progressive scan mode on digital games." />
       <String str="Force progressive scan mode on digital games." />
       <String str="Force progressive scan mode on digital games." />
@@ -136,7 +136,7 @@
         function(index, item) {
           let cheats = []; cheats.push({ code: "480p", enabled: (index === 1) });
           setPOPSCheat({ cheats: cheats });
-          setPOPSCheat({ cheats: cheats, device:"hdd" });
+          if (UserConfig.HDD) setPOPSCheat({ cheats: cheats, device:"hdd" });
         }
       ]]>
     </Confirm>
@@ -164,7 +164,7 @@
         function(index, item) {
           let cheats = []; cheats.push({ code: "SMOOTH", enabled: (index === 1) });
           setPOPSCheat({ cheats: cheats });
-          setPOPSCheat({ cheats: cheats, device:"hdd" });
+          if (UserConfig.HDD) setPOPSCheat({ cheats: cheats, device:"hdd" });
         }
       ]]>
     </Confirm>
@@ -255,7 +255,7 @@
           cheats.push({ code: "IGR5", enabled: (index === 6) });
           cheats.push({ code: "NOIGR", enabled: (index === 7) });
           setPOPSCheat({ cheats: cheats });
-          setPOPSCheat({ cheats: cheats, device:"hdd" });
+          if (UserConfig.HDD) setPOPSCheat({ cheats: cheats, device:"hdd" });
         }
       ]]>
     </Confirm>

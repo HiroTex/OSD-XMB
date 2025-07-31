@@ -7,21 +7,22 @@
 
 const Waves = (() => {
     // Wave constants
-    let screenWidth = ScrCanvas.width;
-    let time = 0;
-    let frame = 0;
-    const step = 6;
-    const data = {};
-    data.Y1 = [];
-    data.Y2 = [];
+    let screenHeight = ScrCanvas.height;
+    let screenWidth  = ScrCanvas.width;
+    let time         = 0;
+    let frame        = 0;
+    const step       = 6;
+    const data       = {};
+    data.Y1          = [];
+    data.Y2          = [];
 
     // Wave constants
     const wave1ColorBottom = Color.new(0, 0, 0, 36);
-    const wave1Amplitude = 30.0f;
-    const wave1Speed = 0.038f;
-    const wave2Amplitude = 32.0f;
-    const waveLength = 0.005f;
-    const wave2Speed = 0.042f;
+    const wave1Amplitude   = 30;
+    const wave1Speed       = 0.038f;
+    const wave2Amplitude   = 32;
+    const waveLength       = 0.005f;
+    const wave2Speed       = 0.042f;
 
     // Precompute x-wave values
     const precomputedXWave = [];
@@ -46,23 +47,19 @@ const Waves = (() => {
     }
 
     function Render() {
-        const width = ScrCanvas.width;
-        const height = ScrCanvas.height;
-        const baseYStart = (height >> 1) + 96;
+        const baseYStart = (screenHeight >> 1) + 96;
 
-        if (width !== screenWidth) {
-            screenWidth = width;
+        if (ScrCanvas.width !== screenWidth) {
+            screenWidth = ScrCanvas.width;
             precomputeValues();
         }
 
         if (frame % 2 !== 0) {
             for (let x = 0; x <= screenWidth; x += step) {
-                const currentY1 = data.Y1[x];
-                const currentY2 = data.Y2[x];
                 const rectW = (x + step > screenWidth) ? screenWidth - x : step;
-                Draw.rect(x, currentY1 + 1, rectW, height, wave1ColorBottom);
-                Draw.rect(x, currentY2 - 1, rectW, 2, wave2ColorTop);
-                Draw.rect(x, currentY2 + 1, rectW, height, wave2ColorBottom);
+                Draw.rect(x, data.Y1[x], rectW, screenHeight, wave1ColorBottom);
+                Draw.rect(x, data.Y2[x] - 1, rectW, 2, wave2ColorTop);
+                Draw.rect(x, data.Y2[x], rectW, screenHeight, wave2ColorBottom);
             }
         }
         else {
@@ -77,16 +74,14 @@ const Waves = (() => {
                 const y1 = Math.sinf(waveX + timeWave1) * wave1Amplitude;
                 const y2 = Math.sinf(waveX + timeWave2) * wave2Amplitude;
 
-                const currentY1 = baseYStart + y1;
-                const currentY2 = baseYStart + y2;
-                data.Y1[x] = currentY1;
-                data.Y2[x] = currentY2;
+                data.Y1[x] = ~~(baseYStart + y1);
+                data.Y2[x] = ~~(baseYStart + y2);
 
                 const rectW = (x + step > screenWidth) ? screenWidth - x : step;
 
-                Draw.rect(x, currentY1 + 1, rectW, height, wave1ColorBottom);
-                Draw.rect(x, currentY2 - 1, rectW, 2, wave2ColorTop);
-                Draw.rect(x, currentY2 + 1, rectW, height, wave2ColorBottom);
+                Draw.rect(x, data.Y1[x], rectW, screenHeight, wave1ColorBottom);
+                Draw.rect(x, data.Y2[x] - 1, rectW, 2, wave2ColorTop);
+                Draw.rect(x, data.Y2[x], rectW, screenHeight, wave2ColorBottom);
             }
 
             time++; if (time === 6284) time = 0;

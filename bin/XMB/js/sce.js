@@ -90,7 +90,6 @@ function getConsoleVersion(rawVersion) {
     // Combine the major and minor versions into the desired format
     return `${majorVersion}.${minorVersion}`;
 }
-
 function getConsoleType(regCode, rawVersion) {
     let consoleType = "Retail";
 
@@ -105,7 +104,6 @@ function getConsoleType(regCode, rawVersion) {
 
     return consoleType;
 }
-
 function getConsoleRegion(regCode) {
     let ConsoleRegion = "";
 
@@ -133,7 +131,6 @@ function getConsoleRegion(regCode) {
 
     return ConsoleRegion;
 }
-
 function getConsoleDate(ROMVER) {
     // Extract the date portion starting from character 6
     const year = ROMVER.substring(6, 10);   // Characters 6-9 are the year
@@ -163,7 +160,6 @@ function getConsoleDate(ROMVER) {
 
     return formattedDate;
 }
-
 function getPS1Ver(ConsoleRegion) {
     let ps1ver = (ConsoleRegion === "Japan") ? "1.01" : "1.10";
 
@@ -184,7 +180,6 @@ function getPS1Ver(ConsoleRegion) {
 
     return ps1ver;
 }
-
 function getModelName(rawVersion) {
     let modelName = "";
 
@@ -203,7 +198,6 @@ function getModelName(rawVersion) {
 
     return modelName;
 }
-
 function getOsdVer() {
     let osdver = "";
     const file = std.open("rom0:PS1ID", "r");
@@ -215,7 +209,6 @@ function getOsdVer() {
 
     return osdver;
 }
-
 function getCdVer() {
     let cdver = "";
     const file = std.open("rom0:OSDVER", "r");
@@ -234,7 +227,6 @@ function getCdVer() {
 
     return cdver;
 }
-
 function CollectRomVerInfo() {
 	const tmp = std.open("rom0:ROMVER", "r");
 	if (!tmp) { return; }
@@ -251,14 +243,12 @@ function CollectRomVerInfo() {
     SCERomVerInfo.OSDVER = getOsdVer();
     SCERomVerInfo.CDVER = getCdVer();
 }
-
 function CollectOsdParams() {
 	const OsdParamsPtr = new ArrayBuffer(4); // Our pointer to store data
 	const GetOsdConfigParamPtr = System.findRelocObject("GetOsdConfigParam");
 	System.nativeCall(GetOsdConfigParamPtr, [{type: System.JS_BUFFER, value: OsdParamsPtr}]);
 	OsdParams = new Uint32Array(OsdParamsPtr)[0];
 }
-
 function GetOsdConfig(param) {
 	let Config = false;
 
