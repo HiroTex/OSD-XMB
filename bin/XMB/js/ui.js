@@ -202,6 +202,8 @@ function DashUIAnimationHandler() {
 	if (result) DashUI.AnimationQueue = [];
 }
 function DashUIObjectHandler(Item) {
+    DashUI.SelectedItem = Item;
+
 	switch (Item.Type) {
 		case "ELF"	  : DashUISetElfExecution(Item.Value); break;
 		case "SUBMENU": DashUISetNewSubMenu(Item.Value); break;
@@ -393,82 +395,53 @@ function DashUIConstantsInit() {
     UICONST.ContextPreviewOptionX = ScrCanvas.width - 75;
     UICONST.ScrLowerLimit = ScrCanvas.height + UICONST.ScreenDrawLimit;
     UICONST.ScrRightLimit = ScrCanvas.width + UICONST.ScreenDrawLimit;
-    UICONST.DefaultIconColor = Color.new(128, 128, 128, 128);
-    UICONST.TextSelectedColor = { R: 128, G: 128, B: 128 };
-    UICONST.TextUnselectedColor = { R: 128, G: 128, B: 128 };
-    UICONST.ClockTextColor = {};
     UICONST.ClockX = ScrCanvas.width - 194;
     UICONST.ClockY = 35;
     UICONST.ClockIcoX = ScrCanvas.width - 24;
-	UICONST.ClockTextObj = {
-		Text: "",
-		Position: { X: 0, Y: 0 },
-        Scale: FontObj.SizeM,
-        Alpha: 128
-	};
-    UICONST.BootInfo = {
-		SfxFrame: 12,
-		StateDurations: [ 63, 127, 29, 127, 63, 119, 127 ]
-    };
+    UICONST.ClockTextObj.Scale = FontObj.SizeM;
+    UICONST.BootInfo.SfxFrame = 12;
+    UICONST.BootInfo.StateDurations = [63, 127, 29, 127, 63, 119, 127];
     UICONST.BootWarningText = {
         Text: PreprocessText(getLocalText(XMBLANG.BOOT_WARNING)),
-		Position: { X: 0, Y: 0 },
 		Alignment: "CENTER",
-        Scale: FontObj.SizeM,
-        Alpha: 0
+        Scale: FontObj.SizeM
 	};
     UICONST.BootLogoY = ~~(ScrCanvas.height / 3) + 20;
     UICONST.BootLogoX = ScrCanvas.width - DashElements.BootLogo.width;
-    UICONST.Category = {
-        IconSelectedColor: { R: 128, G: 128, B: 128 },
-        IconUnselectedColor: { R: 128, G: 128, B: 128 },
-        IconX: (ScrCanvas.width >> 1) - 178,
-        IconY: (ScrCanvas.height >> 1) - 120,
-        SubX: 110
-    };
-	UICONST.CatItems = {
-		IconX: (ScrCanvas.width >> 1) - 178,
-		IconY: (ScrCanvas.height >> 1) - 32,
-		TextX: (ScrCanvas.width >> 1) - 80,
-        TextY: (ScrCanvas.height >> 1) - 16,
-        SubNoSelX: 46
-	};
-	UICONST.Context = {
-		BoxX: 180,
-		BoxA: 116,
-		BaseX: ScrCanvas.width - 164,
-		BaseY: (ScrCanvas.height >> 1) - 15,
-        Tint: false,
-        PreviewImgX: ScrCanvas.width - 450,
-        PreviewImgY: (ScrCanvas.height >> 1) + 60
-    };
-    UICONST.SubItems = {
-		ArrowX: (ScrCanvas.width >> 1) - 204,
-		ArrowY: (ScrCanvas.height >> 1) - 6,
-		IconX: (ScrCanvas.width >> 1) - 174,
-		IconY: (ScrCanvas.height >> 1) - 32,
-		TextX: (ScrCanvas.width >> 1) - 90,
-        TextY: (ScrCanvas.height >> 1) - 16,
-        PrevSelX: 116,
-        PrevUnselX: 70
-    };
-    UICONST.OptionBox = {
-        XBOX: ScrCanvas.width - 100,
-        YBOX: ScrCanvas.height - 70,
-        XICO: ScrCanvas.width - 93,
-        YICO: ScrCanvas.height - 34,
-        XTXT: ScrCanvas.width - 73,
-        YTXT: ScrCanvas.height - 42
-    };
-    UICONST.DialogInfo = {
-        LineCol: Color.new(196, 196, 196, 128),
-        LineYTop: (ScrCanvas.height >> 1) - 160,
-        LineYBottom: (ScrCanvas.height >> 1) + 170,
-        IconX: (ScrCanvas.width >> 1) - 280,
-        NameX: - (ScrCanvas.width >> 1) - 15,
-        NameY: (ScrCanvas.height >> 1),
-        DescX: (ScrCanvas.width >> 1),
-    };
+    UICONST.Category.IconX = (ScrCanvas.width >> 1) - 178;
+    UICONST.Category.IconY = (ScrCanvas.height >> 1) - 120;
+    UICONST.Category.SubX = 110;
+    UICONST.CatItems.IconX = (ScrCanvas.width >> 1) - 178;
+    UICONST.CatItems.IconY = (ScrCanvas.height >> 1) - 32;
+    UICONST.CatItems.TextX = (ScrCanvas.width >> 1) - 80;
+    UICONST.CatItems.TextY = (ScrCanvas.height >> 1) - 16;
+    UICONST.CatItems.SubNoSelX = 46;
+    UICONST.Context.BoxX = 180;
+    UICONST.Context.BoxA = 116;
+    UICONST.Context.BaseX = ScrCanvas.width - 164;
+    UICONST.Context.BaseY = (ScrCanvas.height >> 1) - 15;
+    UICONST.Context.PreviewImgX = ScrCanvas.width - 450;
+    UICONST.Context.PreviewImgY = (ScrCanvas.height >> 1) + 60;
+    UICONST.SubItems.ArrowX = (ScrCanvas.width >> 1) - 204;
+    UICONST.SubItems.ArrowY = (ScrCanvas.height >> 1) - 6;
+    UICONST.SubItems.IconX = (ScrCanvas.width >> 1) - 174;
+    UICONST.SubItems.IconY = (ScrCanvas.height >> 1) - 32;
+    UICONST.SubItems.TextX = (ScrCanvas.width >> 1) - 90;
+    UICONST.SubItems.TextY = (ScrCanvas.height >> 1) - 16;
+    UICONST.SubItems.PrevSelX = 116;
+    UICONST.SubItems.PrevUnselX = 70;
+    UICONST.OptionBox.XBOX = ScrCanvas.width - 100;
+    UICONST.OptionBox.YBOX = ScrCanvas.height - 70;
+    UICONST.OptionBox.XICO = ScrCanvas.width - 93;
+    UICONST.OptionBox.YICO = ScrCanvas.height - 34;
+    UICONST.OptionBox.XTXT = ScrCanvas.width - 73;
+    UICONST.OptionBox.YTXT = ScrCanvas.height - 42;
+    UICONST.DialogInfo.LineYTop = (ScrCanvas.height >> 1) - 160;
+    UICONST.DialogInfo.LineYBottom = (ScrCanvas.height >> 1) + 170;
+    UICONST.DialogInfo.IconX = (ScrCanvas.width >> 1) - 280;
+    UICONST.DialogInfo.NameX = - (ScrCanvas.width >> 1) - 15;
+    UICONST.DialogInfo.NameY = (ScrCanvas.height >> 1);
+    UICONST.DialogInfo.DescX = (ScrCanvas.width >> 1);
     UICONST.Fun = {
         SubMenuFade: () => UIAnimationCommon_Work(DashUI.SubMenu.Animation.Fade, 0.04f),
         SubMenuPrevFade: () => UIAnimationCommon_Work(DashUI.SubMenu.PrevAnimation.Fade, 0.04f),
@@ -476,7 +449,29 @@ function DashUIConstantsInit() {
         DialogAnimation: () => UIAnimationCommon_Work(DashUI.Dialog.Animation, 0.15f)
     };
 }
+function DashUICustomizationInit() {
+    UICONST.ClockTextColor = {};
+    UICONST.DefaultIconColor = Color.new(128, 128, 128, 128);
+    UICONST.TextSelectedColor = { R: 128, G: 128, B: 128 };
+    UICONST.TextUnselectedColor = { R: 128, G: 128, B: 128 };
+    UICONST.Category.IconSelectedColor = { R: 128, G: 128, B: 128 };
+    UICONST.Category.IconUnselectedColor = { R: 128, G: 128, B: 128 };
+    UICONST.Context.Tint = false;
+    UICONST.DialogInfo.LineCol = Color.new(196, 196, 196, 128);
+}
 function DashUInit() {
+    // Constant Objects
+    UICONST.ClockTextObj = {};
+    UICONST.BootInfo = {};
+    UICONST.BootWarningText = {};
+    UICONST.Category = {};
+    UICONST.CatItems = {};
+    UICONST.Context = {};
+    UICONST.SubItems = {};
+    UICONST.OptionBox = {};
+    UICONST.DialogInfo = {};
+    UICONST.Fun = {};
+
     // Common Parameters
     DashUI.LoadedPlugins = false;
 	DashUI.LoadSpinning = 0.0f;
@@ -663,8 +658,7 @@ function UIClockText(a) {
     const time = (UserConfig.HourFormat === 0) ? `${Hstr}:${mm} ${amPm}` : `${Hstr}:${mm}`;
 
     obj.Text = [`${date}  ${time}`];
-    obj.Position.X = UICONST.ClockX + 12;
-    obj.Position.Y = UICONST.ClockY - 1;
+    obj.Position = { X: UICONST.ClockX + 12, Y: UICONST.ClockY - 1 };
     obj.Alpha = a;
     if ('R' in UICONST.ClockTextColor) { obj.Color = UICONST.ClockTextColor; }
 
@@ -2042,7 +2036,8 @@ function DrawUIContext() {
 		const item = items[i];
 		let icomodX = false;
 		if (('Icon' in item) && (item.Icon !== -1))
-		{
+        {
+            selico = (i === current);
             icomodX = true;
 
 			Icon.ID 		= item.Icon;
@@ -2050,10 +2045,9 @@ function DrawUIContext() {
 
 			if (typeof item.Icon === "string") { Icon.CustomIcon = item.Icon; }
 
-            if (!fade.Running && i === current) {
-                selico = true;
+            if (selico && !fade.Running) {
                 DashElements.CtxIco.color = Color.setA(DashElements.CtxIco.color, FontObj.Glow.Value + 64);
-				DashElements.CtxIco.draw(Icon.X - 6, Icon.Y - 6);
+                DashElements.CtxIco.draw(Icon.X - 6, Icon.Y - 6);
 			}
 
 			DrawDashIcon(Icon);
@@ -2437,26 +2431,47 @@ function DrawUIConfirmationScreen(data, txtA) {
 		Alignment: "CENTER",
         Position: { X: 0, Y: -40 },
         Alpha: txtA
-	};
+    };
+
+    let modY = 0;
+
+    if ('Timer' in data) {
+        modY = 100;
+
+        const timerText = {
+            Text: `${getLocalText(XMBLANG.REMTIME)}\n${data.Timer} ${getLocalText(XMBLANG.SECONDS)}`,
+            Alignment: "HCENTER",
+            Position: { X: 0, Y: 40 },
+            Alpha: txtA
+        };
+
+        TxtPrint(timerText);
+    }
 
 	const Yes = {
 		Text: getLocalText(XMBLANG.YES),
 		Alignment: "CENTER",
-        Position: { X: -30, Y: 0 },
+        Position: { X: -30, Y: 0 + modY },
         Alpha: txtA
 	};
 
 	const No = {
 		Text: getLocalText(XMBLANG.NO),
 		Alignment: "CENTER",
-        Position: { X: 30, Y: 0 },
+        Position: { X: 30, Y: 0 + modY },
         Alpha: txtA
 	};
 
 	if (DashUI.AnimationQueue.length < 1) {
 		if (!('Selected' in data)) { data.Selected = 1; }
-		else if (data.Selected === 0) { Yes.Glow = true; }
-		else { No.Glow = true; }
+        else if (data.Selected === 0) {
+            Yes.Color = UICONST.TextSelectedColor;
+            Yes.Glow = true;
+        }
+        else {
+            No.Color = UICONST.TextSelectedColor;
+            No.Glow = true;
+        }
 	}
 
 	TxtPrint(Message);
@@ -2505,8 +2520,11 @@ function DrawUIDialog() {
 	Draw.line(0, lineTopY, ScrCanvas.width, lineTopY, lineCol);
     Draw.line(0, lineBottomY, ScrCanvas.width, lineBottomY, lineCol);
 
-	if (('Icon' in data) && (data.Icon !== -1)) {
-		const Icon = {
+    if (('Icon' in data) && (data.Icon !== -1)) {
+
+        if (typeof data.Icon === "string") { data.Icon = FindDashIcon(data.Icon); }
+
+        const Icon = {
 			ID: 	data.Icon,
 			Alpha:	baseA,
 			Width: 	24,
@@ -2569,5 +2587,6 @@ DashCatInit();
 DashUInit();
 DashElementsInit();
 DashUIConstantsInit();
+DashUICustomizationInit();
 DashBackgroundLoad();
 console.log("INIT LIB: UI COMPLETE");

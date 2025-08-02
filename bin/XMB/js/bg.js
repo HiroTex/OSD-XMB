@@ -63,10 +63,14 @@ function BgImageHandler() {
     if ((!UserConfig.DisplayBg || !UserConfig.CustomBgImg) && !tmpImage) { return; }
 
     if ((UserConfig.DisplayBg && UserConfig.CustomBgImg) && usrImage && usrImage.ready()) {
+        usrImage.width = ScrCanvas.width;
+        usrImage.height = ScrCanvas.height;
         usrImage.color = Color.setA(usrImage.color, usrAlpha);
         usrImage.draw(0, 0);
     }
     if (tmpImage && tmpImage.ready()) {
+        tmpImage.width = ScrCanvas.width;
+        tmpImage.height = ScrCanvas.height;
         tmpImage.color = Color.setA(tmpImage.color, tmpAlpha);
         tmpImage.draw(0, 0);
     }

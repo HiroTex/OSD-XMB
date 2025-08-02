@@ -122,63 +122,63 @@
 					<Item Name="{TITLE}" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Name}" Selectable="false" />
 					<Item Name="{DEVICE}" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Data.dev.toUpperCase()}" Selectable="false" />
 					<Item Name="{POPS_OPTIONS.0}" Selectable="true">
-					<Value>
-						<Option value="{NO}" />
-						<Option value="1" />
-						<Option value="2" />
-						<Option value="3" />
-						<Option value="4" />
-						<Option value="5" />
-						<Option value="6" />
-						<Option value="7" />
-					</Value>
+						<Value>
+							<Option value="{NO}" />
+							<Option value="1" />
+							<Option value="2" />
+							<Option value="3" />
+							<Option value="4" />
+							<Option value="5" />
+							<Option value="6" />
+							<Option value="7" />
+						</Value>
 					</Item>
 					<Item Name="{POPS_OPTIONS.1}" Selectable="true">
-					<Value>
-						<Option value="{NO}" />
-						<Option value="{YES}" />
-					</Value>
+						<Value>
+							<Option value="{NO}" />
+							<Option value="{YES}" />
+						</Value>
 					</Item>
 					<Item Name="{POPS_OPTIONS.2}" Selectable="true">
-					<Value>
-						<Option value="{NO}" />
-						<Option value="{YES}" />
-					</Value>
+						<Value>
+							<Option value="{NO}" />
+							<Option value="{YES}" />
+						</Value>
 					</Item>
 					<Item Name="{POPS_OPTIONS.3}" Selectable="true">
-					<Value>
-						<Option value="{NO}" />
-						<Option value="{YES}" />
-					</Value>
+						<Value>
+							<Option value="{NO}" />
+							<Option value="{YES}" />
+						</Value>
 					</Item>
 					<Item Name="{POPS_OPTIONS.4}" Selectable="true">
-					<Value>
-						<Option value="{DEFAULT}" />
-						<Option value="{DISABLED}" />
-						<Option value="{POPS_SETTINGS.PALPATCHER_2}" />
-					</Value>
+						<Value>
+							<Option value="{DEFAULT}" />
+							<Option value="{DISABLED}" />
+							<Option value="{POPS_SETTINGS.PALPATCHER_2}" />
+						</Value>
 					</Item>
 					<Item Name="{POPS_OPTIONS.5}" Selectable="true">
-					<Value>
-						<Option value="{DEFAULT}" />
-						<Option value="{POPS_SETTINGS.SOUND_1}" />
-						<Option value="{POPS_SETTINGS.SOUND_2}" />
-						<Option value="{POPS_SETTINGS.SOUND_3}" />
-					</Value>
+						<Value>
+							<Option value="{DEFAULT}" />
+							<Option value="{POPS_SETTINGS.SOUND_1}" />
+							<Option value="{POPS_SETTINGS.SOUND_2}" />
+							<Option value="{POPS_SETTINGS.SOUND_3}" />
+						</Value>
 					</Item>
 					<Item Name="{POPS_OPTIONS.6}" Selectable="true">
-					<Value>
-						<Option value="{DEFAULT}" />
-						<Option value="{POPS_SETTINGS.DPAD2STICK_1}" />
-						<Option value="{POPS_SETTINGS.DPAD2STICK_2}" />
-					</Value>
+						<Value>
+							<Option value="{DEFAULT}" />
+							<Option value="{POPS_SETTINGS.DPAD2STICK_1}" />
+							<Option value="{POPS_SETTINGS.DPAD2STICK_2}" />
+						</Value>
 					</Item>
 					<Item Name="{POPS_OPTIONS.7}" Selectable="true">
-					<Value>
-						<Option value="{DEFAULT}" />
-						<Option value="{POPS_SETTINGS.NOVMC_1}" />
-						<Option value="{POPS_SETTINGS.NOVMC_2}" />
-					</Value>
+						<Value>
+							<Option value="{DEFAULT}" />
+							<Option value="{POPS_SETTINGS.NOVMC_1}" />
+							<Option value="{POPS_SETTINGS.NOVMC_2}" />
+						</Value>
 					</Item>
 				</Info>
 				<Dialog Name="SaveSettingsDialog" Icon="-1" Title="" BG="false" Type="TEXT" Text="{WAIT}" Align="HCENTER">
@@ -220,61 +220,61 @@
     <Confirm>
       <![CDATA[
         function(index, item) {
-			const items = item.Dialog.Info;
-			const title = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Name;
-			let dev = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Data.dev;
+					const items = item.Dialog.Info;
+					const title = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Name;
+					let dev = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Data.dev;
 
-			const cheats = [
-				"COMPATIBILITY_0x01",
-				"COMPATIBILITY_0x02",
-				"COMPATIBILITY_0x03",
-				"COMPATIBILITY_0x04",
-				"COMPATIBILITY_0x05",
-				"COMPATIBILITY_0x06",
-				"COMPATIBILITY_0x07",
-				"CODECACHE_ADDON_0",
-				"SUBCDSTATUS",
-				"FAKELC",
-				"NOPAL",
-				"FORCEPAL",
-				"MUTE_CDDA",
-				"UNDO_MUTE_CDDA",
-				"MUTE_VAB",
-				"D2LS",
-				"D2LS_ALT",
-				"NOVMC0",
-				"NOVMC1",
-			];
+					const cheats = [
+						"COMPATIBILITY_0x01",
+						"COMPATIBILITY_0x02",
+						"COMPATIBILITY_0x03",
+						"COMPATIBILITY_0x04",
+						"COMPATIBILITY_0x05",
+						"COMPATIBILITY_0x06",
+						"COMPATIBILITY_0x07",
+						"CODECACHE_ADDON_0",
+						"SUBCDSTATUS",
+						"FAKELC",
+						"NOPAL",
+						"FORCEPAL",
+						"MUTE_CDDA",
+						"UNDO_MUTE_CDDA",
+						"MUTE_VAB",
+						"D2LS",
+						"D2LS_ALT",
+						"NOVMC0",
+						"NOVMC1",
+					];
 
-			let statuses = getPOPSCheat({ cheats: cheats, game: title, device: dev });
+					let statuses = getPOPSCheat({ cheats: cheats, game: title, device: dev });
 
-			const settings = [ 0, 0, 0, 0, 0, 0, 0, 0 ];
-			settings[0] = (statuses[0]) ? 1 : 0;
-			settings[0] = (statuses[1]) ? 2 : settings[0];
-			settings[0] = (statuses[2]) ? 3 : settings[0];
-			settings[0] = (statuses[3]) ? 4 : settings[0];
-			settings[0] = (statuses[4]) ? 5 : settings[0];
-			settings[0] = (statuses[5]) ? 6 : settings[0];
-			settings[0] = (statuses[6]) ? 7 : settings[0];
-			settings[1] = (statuses[7]) ? 1 : 0;
-			settings[2] = (statuses[8]) ? 1 : 0;
-			settings[3] = (statuses[9]) ? 1 : 0;
-			settings[4] = (statuses[10]) ? 1 : 0;
-			settings[4] = (statuses[11]) ? 2 : settings[4];
-			settings[5] = (statuses[12]) ? 1 : 0;
-			settings[5] = (statuses[13]) ? 2 : settings[5];
-			settings[5] = (statuses[14]) ? 3 : settings[5];
-			settings[6] = (statuses[15]) ? 1 : 0;
-			settings[6] = (statuses[16]) ? 2 : settings[6];
-			settings[7] = (statuses[17]) ? 1 : 0;
-			settings[7] = (statuses[18]) ? 2 : settings[7];
+					const settings = [ 0, 0, 0, 0, 0, 0, 0, 0 ];
+					settings[0] = (statuses[0]) ? 1 : 0;
+					settings[0] = (statuses[1]) ? 2 : settings[0];
+					settings[0] = (statuses[2]) ? 3 : settings[0];
+					settings[0] = (statuses[3]) ? 4 : settings[0];
+					settings[0] = (statuses[4]) ? 5 : settings[0];
+					settings[0] = (statuses[5]) ? 6 : settings[0];
+					settings[0] = (statuses[6]) ? 7 : settings[0];
+					settings[1] = (statuses[7]) ? 1 : 0;
+					settings[2] = (statuses[8]) ? 1 : 0;
+					settings[3] = (statuses[9]) ? 1 : 0;
+					settings[4] = (statuses[10]) ? 1 : 0;
+					settings[4] = (statuses[11]) ? 2 : settings[4];
+					settings[5] = (statuses[12]) ? 1 : 0;
+					settings[5] = (statuses[13]) ? 2 : settings[5];
+					settings[5] = (statuses[14]) ? 3 : settings[5];
+					settings[6] = (statuses[15]) ? 1 : 0;
+					settings[6] = (statuses[16]) ? 2 : settings[6];
+					settings[7] = (statuses[17]) ? 1 : 0;
+					settings[7] = (statuses[18]) ? 2 : settings[7];
 
-			for (let i = 2; i < items.length; i++) {
-				items[i].Selected = settings[i - 2];
-			}
+					for (let i = 2; i < items.length; i++) {
+						items[i].Selected = settings[i - 2];
+					}
 
-			DashUISetDialog(item.Dialog);
-		}
+					DashUISetDialog(item.Dialog);
+				}
       ]]>
     </Confirm>
   </Context>

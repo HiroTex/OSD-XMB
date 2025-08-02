@@ -29,7 +29,6 @@ function FontInit() {
     FontObj.SizeL = 0.75f;
     FontObj.Font.dropshadow = 1.0f;
 }
-
 function WrapTextByPixelWidth(line) {
 	const limit = (ScrCanvas.width - FontObj.Wrap);
 
@@ -74,7 +73,6 @@ function WrapTextByPixelWidth(line) {
 
 	return lines;
 }
-
 function PreprocessText(txt) {
 
     FontObj.Font.scale = FontObj.SizeS;
@@ -89,13 +87,11 @@ function PreprocessText(txt) {
 
 	return finalLines;
 }
-
 function FontGlowUpdate() {
 	if (FontObj.Glow.Value == FontObj.Glow.Max) { FontObj.Glow.Dir = -1; }
 	if (FontObj.Glow.Value == FontObj.Glow.Min) { FontObj.Glow.Dir = 1; }
 	FontObj.Glow.Value = FontObj.Glow.Value + FontObj.Glow.Dir;
 }
-
 function FontAlignPos(Text, Alignment = "LEFT", Position) {
 	switch(Alignment) {
 		case "LEFT":
@@ -124,7 +120,6 @@ function FontAlignPos(Text, Alignment = "LEFT", Position) {
 
 	return Position;
 }
-
 function FontTextPrint(txt, pos) {
 	const lineSize = ~~(FontObj.Font.scale * 32);
     let y = pos.Y;
@@ -134,7 +129,6 @@ function FontTextPrint(txt, pos) {
         y += lineSize;
     }
 }
-
 function TxtPrint(Obj) {
 	// Validate Object
     if (!Obj.Text || !Obj.Position || !('X' in Obj.Position) || !('Y' in Obj.Position)) {

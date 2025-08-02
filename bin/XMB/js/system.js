@@ -1052,7 +1052,9 @@ let gDebug      = true;
 let gDbgTxt     = [];
 let gArtPaths   = getArtPaths();
 let ScrCanvas 	= Screen.getMode();
+let TmpCanvas 	= Screen.getMode();
 const ee_info   = System.getCPUInfo();
+const vmodes    = [ Screen.NTSC, Screen.PAL, Screen.DTV_480p ];
 
 ftxtWrite(`${PATHS.XMB}log.txt`, ""); // Init Log File.
 console.log("INIT LIB: SYSTEM COMPLETE");

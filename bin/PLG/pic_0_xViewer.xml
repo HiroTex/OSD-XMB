@@ -10,7 +10,7 @@
   </Name>
   <Options Type="Explorer" ExtensionFilter="png, jpg, bmp" DeviceFilter="Memory Card" />
   <Context Name="OptionContext" Filter="File">
-	<Component Name="{SETASBG}" Icon="-1" />
+	  <Component Name="{SETASBG}" Icon="-1" />
     <Confirm>
       <![CDATA[
         function(index, item)	{

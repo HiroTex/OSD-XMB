@@ -96,8 +96,8 @@
       <String str="Systeeminformatie" />
       <String str="Informação do Sistema" />
     </Name>
-	<Dialog Icon="8" BG="false" Type="INFO" BackBtn="true" ConfirmBtn="false">
-	  <Title>
+	  <Dialog Icon="8" BG="false" Type="INFO" BackBtn="true" ConfirmBtn="false">
+	    <Title>
         <String str="System Information" />
         <String str="Informations système" />
         <String str="Información del Sistema" />
@@ -106,66 +106,66 @@
         <String str="Systeeminformatie" />
         <String str="Informação do Sistema" />
       </Title>
-	  <Info>
-		<Item Value="{SCERomVerInfo.Model}" Selectable="false">
-		  <Name>
-			<String str="Model" />
-			<String str="Model" />
-			<String str="Modelo" />
-			<String str="Model" />
-			<String str="Model" />
-			<String str="Model" />
-			<String str="Model" />
-		  </Name>
-		</Item>
-		<Item Name="ROMVER" Value="{SCERomVerInfo.VersionFormatted}" Selectable="false" />
-		<Item Value="{SCERomVerInfo.VersionFormatted}" Selectable="false">
-		  <Name>
-			<String str="Browser" />
-			<String str="Browser" />
-			<String str="Navegador" />
-			<String str="Browser" />
-			<String str="Browser" />
-			<String str="Browser" />
-			<String str="Browser" />
-		  </Name>
-		</Item>
-		<Item Value="{SCERomVerInfo.CDVER}" Selectable="false">
-		  <Name>
-			<String str="CD Player" />
-			<String str="CD Player" />
-			<String str="Reproductor de CD" />
-			<String str="CD Player" />
-			<String str="CD Player" />
-			<String str="CD Player" />
-			<String str="CD Player" />
-		  </Name>
-		</Item>
-		<Item Name="Playstation Driver" Value="{SCERomVerInfo.PS1VER}" Selectable="false" />
-		<Item Name="Region" Value="{SCERomVerInfo.Region}" Selectable="false" />
-		<Item Value="{SCERomVerInfo.Hardware}" Selectable="false">
-		  <Name>
-			<String str="Console Type" />
-			<String str="Console Type" />
-			<String str="Tipo de Consola" />
-			<String str="Console Type" />
-			<String str="Console Type" />
-			<String str="Console Type" />
-			<String str="Console Type" />
-		  </Name>
-		</Item>
-		<Item Value="{SCERomVerInfo.Date}" Selectable="false">
-		  <Name>
-			<String str="Build Date" />
-			<String str="Build Date" />
-			<String str="Fecha" />
-			<String str="Build Date" />
-			<String str="Build Date" />
-			<String str="Build Date" />
-			<String str="Build Date" />
-		  </Name>
-		</Item>
-	  </Info>
-	</Dialog>
+	    <Info>
+		    <Item Value="{SCERomVerInfo.Model}" Selectable="false">
+		      <Name>
+			      <String str="Model" />
+			      <String str="Model" />
+			      <String str="Modelo" />
+			      <String str="Model" />
+			      <String str="Model" />
+			      <String str="Model" />
+			      <String str="Model" />
+		      </Name>
+		    </Item>
+		    <Item Name="ROMVER" Value="{SCERomVerInfo.VersionFormatted}" Selectable="false" />
+		    <Item Value="{SCERomVerInfo.VersionFormatted}" Selectable="false">
+		      <Name>
+			      <String str="Browser" />
+			      <String str="Browser" />
+			      <String str="Navegador" />
+			      <String str="Browser" />
+			      <String str="Browser" />
+			      <String str="Browser" />
+			      <String str="Browser" />
+		      </Name>
+		    </Item>
+		    <Item Value="{SCERomVerInfo.CDVER}" Selectable="false">
+		      <Name>
+			      <String str="CD Player" />
+			      <String str="CD Player" />
+			      <String str="Reproductor de CD" />
+			      <String str="CD Player" />
+			      <String str="CD Player" />
+			      <String str="CD Player" />
+			      <String str="CD Player" />
+		      </Name>
+		    </Item>
+		    <Item Name="Playstation Driver" Value="{SCERomVerInfo.PS1VER}" Selectable="false" />
+		    <Item Name="Region" Value="{SCERomVerInfo.Region}" Selectable="false" />
+		    <Item Value="{SCERomVerInfo.Hardware}" Selectable="false">
+		      <Name>
+			      <String str="Console Type" />
+			      <String str="Console Type" />
+			      <String str="Tipo de Consola" />
+			      <String str="Console Type" />
+			      <String str="Console Type" />
+			      <String str="Console Type" />
+			      <String str="Console Type" />
+		      </Name>
+		    </Item>
+		    <Item Value="{SCERomVerInfo.Date}" Selectable="false">
+		      <Name>
+			      <String str="Build Date" />
+			      <String str="Build Date" />
+			      <String str="Fecha" />
+			      <String str="Build Date" />
+			      <String str="Build Date" />
+			      <String str="Build Date" />
+			      <String str="Build Date" />
+		      </Name>
+		    </Item>
+	    </Info>
+	  </Dialog>
   </Option>
 </App>

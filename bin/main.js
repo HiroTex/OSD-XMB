@@ -72,7 +72,6 @@ jsList.forEach((js) => { std.loadScript(`${PATHS.XMB}js/${js}.js`); });
 function main() {
     // Update Global Variables.
     getLocalTime();
-	ScrCanvas = Screen.getMode();
 
 	// Execute Handlers
 	BgHandler();
@@ -85,6 +84,7 @@ function main() {
 	// Show Debug Information at bottom.
 	PrintDebugInformation();
 }
+
 
 Screen.setParam(Screen.DEPTH_TEST_ENABLE, false);
 if (gDebug) Screen.setFrameCounter(true);

@@ -1,74 +1,68 @@
 <App Name="Apps" Icon="FOLDER" Category="5" Type="SUBMENU">
   <Options HideEmpty="true">
     <![CDATA[
-		function parseAppTitleCfg(path)
-		{
-			// Scan directory for title.cfg
-			if (!std.exists(`${path}title.cfg`)) { return {}; }
+			function parseAppTitleCfg(path) {
+				// Scan directory for title.cfg
+				if (!std.exists(`${path}title.cfg`)) { return {}; }
 
-			// Parse the Title CFG file.
-			let data = ReadCFG(`${path}title.cfg`);
-			let AppName = "";
-			let Desc = "";
-			let ELFPath = "";
+				// Parse the Title CFG file.
+				let data = ReadCFG(`${path}title.cfg`);
+				let AppName = "";
+				let Desc = "";
+				let ELFPath = "";
 
-			// Get Title
-			if ('Title' in data) { AppName = data['Title'];	}
-			else if ('title' in data) {	AppName = data['title']; }
+				// Get Title
+				if ('Title' in data) { AppName = data['Title'];	}
+				else if ('title' in data) {	AppName = data['title']; }
 
-			// Get ELF Path
-			if ('boot' in data) { ELFPath = `${path}${data['boot']}`; }
+				// Get ELF Path
+				if ('boot' in data) { ELFPath = `${path}${data['boot']}`; }
 
-			// Get Version for Description
-			if ('Version' in data) { Desc = "Version " + data['Version']; }
+				// Get Version for Description
+				if ('Version' in data) { Desc = "Version " + data['Version']; }
 
-			if ((AppName !== "") && (ELFPath != ""))
-			{
-				// Return the App object
-				return {
-					Name: AppName,
-					Description: Desc,
-					Icon: 27,
-					Type: "ELF",
-					Value: { Path: ELFPath, Args: [], }
-				};
+				if ((AppName !== "") && (ELFPath != "")) {
+					return {
+						Name: AppName,
+						Description: Desc,
+						Icon: 27,
+						Type: "ELF",
+						Value: { Path: ELFPath, Args: [], }
+					};
+				}
+				else { return {}; }
 			}
-			else { return {}; }
-		}
 
-		function GetSasApps(path)
-		{
-			const options = [];
-			const dir = System.listDir(path);
-			for (let i = 0; i < dir.length; i++)
-			{
-				const item = dir[i];
-				if (!item.dir || item.name === "." || item.name === ".." || !item.name.includes('_')) { continue; }
-				const app = parseAppTitleCfg(`${path}${item.name}/`);
-				if ('Name' in app) { options.push(app); }
+			function GetSasApps(path) {
+				const options = [];
+				const dir = System.listDir(path);
+				for (let i = 0; i < dir.length; i++) {
+					const item = dir[i];
+					if (!item.dir || item.name === "." || item.name === ".." || !item.name.includes('_')) { continue; }
+					const app = parseAppTitleCfg(`${path}${item.name}/`);
+					if ('Name' in app) { options.push(app); }
+				}
+				return options;
 			}
+			const devices = System.devices();
+			let options = [];
+
+			// Read Memory Card Directories
+			if (devices.some(dev => dev.name === "mc")) {
+				for (let i = 0; i < 2; i++)	{ options = options.concat(GetSasApps(`mc${i.toString()}:/`)); }
+			}
+
+			// Read HDD Common Directory
+			if (devices.some(dev => dev.name === "hdd")) {
+				const hdd = os.readdir("hdd0:")[0];
+				if (hdd && hdd.includes("__common")) {
+					const part = mountHDDPartition("__common");
+					options = options.concat(GetSasApps(`${part}:APPS/`));
+				}
+			}
+
+			if (options.length > 1) { options.sort((a, b) => a.Name.localeCompare(b.Name)); }
 			return options;
-		}
-		const devices = System.devices();
-		let options = [];
-
-		// Read Memory Card Directories
-    if (devices.some(dev => dev.name === "mc")) {
-			for (let i = 0; i < 2; i++)	{ options = options.concat(GetSasApps(`mc${i.toString()}:/`)); }
-    }
-
-		// Read HDD Common Directory
-    if (devices.some(dev => dev.name === "hdd")) {
-			const hdd = os.readdir("hdd0:")[0];
-			if (hdd && hdd.includes("__common"))
-			{
-				const part = mountHDDPartition("__common");
-				options = options.concat(GetSasApps(`${part}:APPS/`));
-			}
-    }
-
-		if (options.length > 1) { options.sort((a, b) => a.Name.localeCompare(b.Name)); }
-		return options;
     ]]>
   </Options>
 </App>

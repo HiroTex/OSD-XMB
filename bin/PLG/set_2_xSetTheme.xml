@@ -97,13 +97,9 @@
 
 			      let thmival = os.setInterval(() => {
 				      FontInit();
-				      DashUIConstantsInit();
-
-				      if (std.exists(`${PATHS.Theme}${UserConfig.Theme}/thm.js`))
-				      {
-					      std.loadScript(`${PATHS.Theme}${UserConfig.Theme}/thm.js`);
-				      }
-
+				      DashUICustomizationInit();
+              const thm = `${PATHS.Theme}${UserConfig.Theme}/thm.js`;
+				      if (std.exists(thm)) { std.loadScript(thm); }
 				      os.clearInterval(thmival);
 			      }, 0);
 
@@ -171,42 +167,41 @@
     <Preview>
       <![CDATA[
         function(index, item) {
-			const ival = os.setInterval(() => {
-				if (DashUI.State.Current !== 3) { os.clearInterval(ival); }
-				else if (BgElements.BgColor.Next === BgElements.BgColor.Current)
-				{
-					BgElements.BgColor.Next = index;
-					BgElements.BgColor.Progress = 0.0f;
-					os.clearInterval(ival);
-				}
-			}, 0);
+			    const ival = os.setInterval(() => {
+				    if (DashUI.State.Current !== 3) { os.clearInterval(ival); }
+				    else if (BgElements.BgColor.Next === BgElements.BgColor.Current) {
+					    BgElements.BgColor.Next = index;
+					    BgElements.BgColor.Progress = 0.0f;
+					    os.clearInterval(ival);
+				    }
+			    }, 0);
         }
       ]]>
     </Preview>
     <Confirm>
       <![CDATA[
         function(index, item) {
-			if ((BgElements.BgColor.Next === BgElements.BgColor.Current) && (BgElements.BgColor.Next !== index)) {
-				BgElements.BgColor.Current = BgElements.BgColor.Next;
-				BgElements.BgColor.Next = index;
-				BgElements.BgColor.Progress = 0.0f;
-			}
-			BgElements.BgColor.Previous = index;
-			UserConfig.BgColor = index;
-            let config = CfgMan.Get("main.cfg");
-            config["BgColor"] = index.toString();
-            CfgMan.Push("main.cfg", config);
+			    if ((BgElements.BgColor.Next === BgElements.BgColor.Current) && (BgElements.BgColor.Next !== index)) {
+				    BgElements.BgColor.Current = BgElements.BgColor.Next;
+				    BgElements.BgColor.Next = index;
+				    BgElements.BgColor.Progress = 0.0f;
+			    }
+			    BgElements.BgColor.Previous = index;
+			    UserConfig.BgColor = index;
+          let config = CfgMan.Get("main.cfg");
+          config["BgColor"] = index.toString();
+          CfgMan.Push("main.cfg", config);
         }
       ]]>
     </Confirm>
     <Cancel>
       <![CDATA[
         function(index, item) {
-			if (BgElements.BgColor.Next !== BgElements.BgColor.Previous) {
-				BgElements.BgColor.Current = BgElements.BgColor.Next;
-				BgElements.BgColor.Next = BgElements.BgColor.Previous;
-				BgElements.BgColor.Progress = 0.0f;
-			}
+			    if (BgElements.BgColor.Next !== BgElements.BgColor.Previous) {
+				    BgElements.BgColor.Current = BgElements.BgColor.Next;
+				    BgElements.BgColor.Next = BgElements.BgColor.Previous;
+				    BgElements.BgColor.Progress = 0.0f;
+			    }
         }
       ]]>
     </Cancel>
@@ -248,8 +243,7 @@
       <![CDATA[
         function(index, item) {
           UserConfig.DisplayBg = false;
-          if ((index == 1) && (!UserConfig.CustomBgImg))
-          {
+          if ((index == 1) && (!UserConfig.CustomBgImg)) {
               DashUISetDialog(DashUI.Context.ItemCollection[DashUI.Context.Level].Dialog);
               return false;
           }

@@ -1,87 +1,87 @@
 <App Name="Playstation 2" Icon="FOLDER" Category="5" Type="SUBMENU" Description="$`${this.Value.Items.length} ${XMBLANG.TITLES[UserConfig.Language]}`">
   <Options HideEmpty="true">
     <![CDATA[
-		function SaveLastPlayed() {
-			const cfg = CfgMan.Get("neutrino.cfg");
-			const value = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Name;
-			cfg["last"] = value;
-			CfgMan.Set("neutrino.cfg", cfg);
-			setHistoryEntry(DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].GameID.toUpperCase());
-		}
-
-		function ScanGames(path, device, media) {
-			const items = [];
-			let gameDir = System.listDir(path).filter(item => (item.dir === false) && (getFileExtension(item.name).toLowerCase() === "iso"));
-			for (let j = 0; j < gameDir.length; j++) {
-				const gameID = getISOgameID(`${path}${gameDir[j].name}`, gameDir[j].size);
-				let code = gameID.success ? gameID.code : "";
-				items.push({
-					Name: getGameName(gameDir[j].name),
-					Description: code,
-					GameID: code,
-					Icon: "DISC_PS2",
-					Type: "ELF",
-					Data: { path: path, fname: gameDir[j].name, id: code, dev: device, mt: media }
-				});
-
-				Object.defineProperty(items[items.length - 1], "Value", {
-					get() {	return { Path: `${PATHS.Neutrino}neutrino.elf`, Args: getISOgameArgs(this.Data), Code: SaveLastPlayed }; },
-					enumerable: true
-				});
-
-				const ico = gameID.success ? findICO(code) : "";
-				if (ico !== "") { items[items.length - 1].CustomIcon = ico; }
-				const bgFile = gameID.success ? findBG(code) : "";
-				if (bgFile !== "") { items[items.length - 1].CustomBG = bgFile; }
+			function SaveLastPlayed() {
+				const cfg = CfgMan.Get("neutrino.cfg");
+				const value = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Name;
+				cfg["last"] = value;
+				CfgMan.Set("neutrino.cfg", cfg);
+				setHistoryEntry(DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].GameID.toUpperCase());
 			}
-			return items;
-		}
-		const devices = System.devices();
-		const bsd = [];
 
-		if (devices.some(dev => dev.name === "mass")) { bsd.push({ root: "mass", count: 10, device: "usb"  }); }
-		if (devices.some(dev => dev.name === "hdd"))  { bsd.push({ root: "hdd",  count: 1,  device: "ata"  }); }
-		if (devices.some(dev => dev.name === "mmce")) { bsd.push({ root: "mmce", count: 2,  device: "mmce" }); }
+			function ScanGames(path, device, media) {
+				const items = [];
+				let gameDir = System.listDir(path).filter(item => (item.dir === false) && (getFileExtension(item.name).toLowerCase() === "iso"));
+				for (let j = 0; j < gameDir.length; j++) {
+					const gameID = getISOgameID(`${path}${gameDir[j].name}`, gameDir[j].size);
+					let code = gameID.success ? gameID.code : "";
+					items.push({
+						Name: getGameName(gameDir[j].name),
+						Description: code,
+						GameID: code,
+						Icon: "DISC_PS2",
+						Type: "ELF",
+						Data: { path: path, fname: gameDir[j].name, id: code, dev: device, mt: media }
+					});
 
-		let gameList = [];
-		for (let i = 0; i < bsd.length; i++) {
-			const b = bsd[i];
-      for (let i = 0; i < b.count; i++) {
-				const path = `${b.root}${i.toString()}:`;
-				let dev = b.device;
-				if (b.root === "mass") {
-					const bdmInfo = System.getBDMInfo(path);
-					if (!bdmInfo) { break; }
-					switch (bdmInfo.name) {
-						case "ata":
-						case "usb": dev = bdmInfo.name; break;
-						case "sdc": dev = "mx4sio"; 	break;
-						case "sd" : dev = "ilink"; 		break;
-						case "udp": dev = "udpbd"; 		break;
+					Object.defineProperty(items[items.length - 1], "Value", {
+						get() {	return { Path: `${PATHS.Neutrino}neutrino.elf`, Args: getISOgameArgs(this.Data), Code: SaveLastPlayed }; },
+						enumerable: true
+					});
+
+					const ico = gameID.success ? findICO(code) : "";
+					if (ico !== "") { items[items.length - 1].CustomIcon = ico; }
+					const bgFile = gameID.success ? findBG(code) : "";
+					if (bgFile !== "") { items[items.length - 1].CustomBG = bgFile; }
+				}
+				return items;
+			}
+			const devices = System.devices();
+			const bsd = [];
+
+			if (devices.some(dev => dev.name === "mass")) { bsd.push({ root: "mass", count: 10, device: "usb"  }); }
+			if (devices.some(dev => dev.name === "hdd"))  { bsd.push({ root: "hdd",  count: 1,  device: "ata"  }); }
+			if (devices.some(dev => dev.name === "mmce")) { bsd.push({ root: "mmce", count: 2,  device: "mmce" }); }
+
+			let gameList = [];
+			for (let i = 0; i < bsd.length; i++) {
+				const b = bsd[i];
+				for (let i = 0; i < b.count; i++) {
+					const path = `${b.root}${i.toString()}:`;
+					let dev = b.device;
+					if (b.root === "mass") {
+						const bdmInfo = System.getBDMInfo(path);
+						if (!bdmInfo) { break; }
+						switch (bdmInfo.name) {
+							case "ata":
+							case "usb": dev = bdmInfo.name; break;
+							case "sdc": dev = "mx4sio"; 	break;
+							case "sd" : dev = "ilink"; 		break;
+							case "udp": dev = "udpbd"; 		break;
+						}
+						console.log(`BDM device ${bdmInfo.index} type: ${dev}`);
 					}
-					console.log(`BDM device ${bdmInfo.index} type: ${dev}`);
-				}
-        else if (b.root === "hdd") {
-					gameList = gameList.concat(ScanGames(path, dev, ""));
-          continue;
-        }
+					else if (b.root === "hdd") {
+						gameList = gameList.concat(ScanGames(path, dev, ""));
+						continue;
+					}
 
-				const directory = os.readdir(path)[0];
-				if (!directory) { return; }
+					const directory = os.readdir(path)[0];
+					if (!directory) { return; }
 
-				if (directory.includes("DVD")) 	{ gameList = gameList.concat(ScanGames(`${path}/DVD/`, dev, "dvd")); }
-				if (directory.includes("CD")) 	{ gameList = gameList.concat(ScanGames(`${path}/CD/`, dev, "cd")); }
-				if (directory.includes("PS2")) 	{
-					const subdir = os.readdir(`${path}PS2/`)[0];
-					if 	   (subdir.includes("DVD")) { gameList = gameList.concat(ScanGames(`${path}PS2/DVD/`, dev, "dvd")); }
-					else if (subdir.includes("CD")) { gameList = gameList.concat(ScanGames(`${path}PS2/CD/`, dev, "cd")); }
+					if (directory.includes("DVD")) 	{ gameList = gameList.concat(ScanGames(`${path}/DVD/`, dev, "dvd")); }
+					if (directory.includes("CD")) 	{ gameList = gameList.concat(ScanGames(`${path}/CD/`, dev, "cd")); }
+					if (directory.includes("PS2")) 	{
+						const subdir = os.readdir(`${path}PS2/`)[0];
+						if 	   (subdir.includes("DVD")) { gameList = gameList.concat(ScanGames(`${path}PS2/DVD/`, dev, "dvd")); }
+						else if (subdir.includes("CD")) { gameList = gameList.concat(ScanGames(`${path}PS2/CD/`, dev, "cd")); }
+					}
 				}
 			}
-    }
 
-		if (gameList.length > 1) { gameList.sort((a, b) => a.Name.localeCompare(b.Name)); }
+			if (gameList.length > 1) { gameList.sort((a, b) => a.Name.localeCompare(b.Name)); }
 
-		return gameList;
+			return gameList;
     ]]>
   </Options>
   <Default>
@@ -89,152 +89,152 @@
 			let val = 0;
 			const cfg = CfgMan.Get("neutrino.cfg");
 			if ('last' in cfg) {
-			const index = this.Items.findIndex(item => item.Name === cfg["last"]);
-			val = (index > -1) ? index : 0;
+				const index = this.Items.findIndex(item => item.Name === cfg["last"]);
+				val = (index > -1) ? index : 0;
 			}
 			return val;
 		]]>
   </Default>
-  <Context Name="OptionContext" Filter="Custom" Condition="('GameID' in item && item.GameID)">
+  <Context Name="OptionContext" Filter="Custom" Condition="item.GameID">
 		<Component Name="{INFO}" Icon="-1">
-	  <Dialog Icon="-1" Title="" BG="false" Type="INFO" BackBtn="true" ConfirmBtn="true" >
-			<Info>
-				<Item Name="{TITLE}" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Name}" Selectable="false" />
-				<Item Name="{DEVICE}" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Data.dev.toUpperCase()}" Selectable="false" />
-				<Item Name="{VMC1}" Selectable="true">
-				<Value>
-					<Option value="{NO}" />
-					<Option value="{YES}" />
-				</Value>
-				</Item>
-				<Item Name="{VMC2}" Selectable="true">
-				<Value>
-					<Option value="{NO}" />
-					<Option value="{YES}" />
-				</Value>
-				</Item>
-				<Item Name="{GC_0}" Selectable="true">
-				<Value>
-					<Option value="{NO}" />
-					<Option value="{YES}" />
-				</Value>
-				</Item>
-				<Item Name="{GC_2}" Selectable="true">
-				<Value>
-					<Option value="{NO}" />
-					<Option value="{YES}" />
-				</Value>
-				</Item>
-				<Item Name="{GC_5}" Selectable="true">
-				<Value>
-					<Option value="{NO}" />
-					<Option value="{YES}" />
-				</Value>
-				</Item>
-				<Item Name="{GC_7}" Selectable="true">
-				<Value>
-					<Option value="{NO}" />
-					<Option value="{YES}" />
-				</Value>
-				</Item>
-				<Item Name="{GC_3}" Selectable="true">
-				<Value>
-					<Option value="{NO}" />
-					<Option value="{YES}" />
-				</Value>
-				</Item>
-			</Info>
-			<Dialog Name="SaveSettingsDialog" Icon="-1" Title="" BG="false" Type="TEXT" Text="{WAIT}" Align="HCENTER">
-				<Task>
-					<![CDATA[
-						function() {
-							let fdSrc = false;
-							let fdDst = false;
+			<Dialog Icon="-1" Title="" BG="false" Type="INFO" BackBtn="true" ConfirmBtn="true" >
+				<Info>
+					<Item Name="{TITLE}" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Name}" Selectable="false" />
+					<Item Name="{DEVICE}" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Data.dev.toUpperCase()}" Selectable="false" />
+					<Item Name="{VMC1}" Selectable="true">
+						<Value>
+							<Option value="{NO}" />
+							<Option value="{YES}" />
+						</Value>
+					</Item>
+					<Item Name="{VMC2}" Selectable="true">
+						<Value>
+							<Option value="{NO}" />
+							<Option value="{YES}" />
+						</Value>
+					</Item>
+					<Item Name="{GC_0}" Selectable="true">
+						<Value>
+							<Option value="{NO}" />
+							<Option value="{YES}" />
+						</Value>
+					</Item>
+					<Item Name="{GC_2}" Selectable="true">
+						<Value>
+							<Option value="{NO}" />
+							<Option value="{YES}" />
+						</Value>
+					</Item>
+					<Item Name="{GC_5}" Selectable="true">
+						<Value>
+							<Option value="{NO}" />
+							<Option value="{YES}" />
+						</Value>
+					</Item>
+					<Item Name="{GC_7}" Selectable="true">
+						<Value>
+							<Option value="{NO}" />
+							<Option value="{YES}" />
+						</Value>
+					</Item>
+					<Item Name="{GC_3}" Selectable="true">
+						<Value>
+							<Option value="{NO}" />
+							<Option value="{YES}" />
+						</Value>
+					</Item>
+				</Info>
+				<Dialog Name="SaveSettingsDialog" Icon="-1" Title="" BG="false" Type="TEXT" Text="{WAIT}" Align="HCENTER">
+					<Task>
+						<![CDATA[
+							function() {
+								let fdSrc = false;
+								let fdDst = false;
 
-							try {
-								const gameID = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].GameID.toUpperCase();
-								const config = CfgMan.Get(`${gameID}.cfg`);
-								const vmcgroups = CfgMan.Get("PS2VMCGRP.cfg");
-								let vmcgameid = gameID;
-								if (gameID in vmcgroups) { vmcgameid = vmcgroups[gameID]; }
+								try {
+									const gameID = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].GameID.toUpperCase();
+									const config = CfgMan.Get(`${gameID}.cfg`);
+									const vmcgroups = CfgMan.Get("PS2VMCGRP.cfg");
+									let vmcgameid = gameID;
+									if (gameID in vmcgroups) { vmcgameid = vmcgroups[gameID]; }
 
-								const info = DashUI.Dialog.Data[DashUI.Dialog.Level - 1].Info;
+									const info = DashUI.Dialog.Data[DashUI.Dialog.Level - 1].Info;
 
-								let gcModes = "";
-								if (info[4].Selected === 1) { gcModes += "0"; }
-								if (info[5].Selected === 1) { gcModes += "2"; }
-								if (info[6].Selected === 1) { gcModes += "5"; }
-								if (info[7].Selected === 1) { gcModes += "7"; }
-								if (info[8].Selected === 1) { gcModes += "3"; }
-								if (gcModes) { config["gc"] = gcModes; }
-								else if ('gc' in config) { delete config.gc; }
+									let gcModes = "";
+									if (info[4].Selected === 1) { gcModes += "0"; }
+									if (info[5].Selected === 1) { gcModes += "2"; }
+									if (info[6].Selected === 1) { gcModes += "5"; }
+									if (info[7].Selected === 1) { gcModes += "7"; }
+									if (info[8].Selected === 1) { gcModes += "3"; }
+									if (gcModes) { config["gc"] = gcModes; }
+									else if ('gc' in config) { delete config.gc; }
 
-								if (info[2].Selected === 1) { config["VMC0"] = vmcgameid; }
-								else if ('VMC0' in config) { delete config.VMC0; }
-								if (info[3].Selected === 1) { config["VMC1"] = vmcgameid; }
-								else if ('VMC1' in config) { delete config.VMC1; }
+									if (info[2].Selected === 1) { config["VMC0"] = vmcgameid; }
+									else if ('VMC0' in config) { delete config.VMC0; }
+									if (info[3].Selected === 1) { config["VMC1"] = vmcgameid; }
+									else if ('VMC1' in config) { delete config.VMC1; }
 
-								for(let i = 0; i < 2; i++) {
-									const vmcpath = `${PATHS.VMC}${vmcgameid}_${i.toString()}.vmc`;
-									if ((info[2 + i].Selected !== 1) || (std.exists(vmcpath))) { continue; }
+									for(let i = 0; i < 2; i++) {
+										const vmcpath = `${PATHS.VMC}${vmcgameid}_${i.toString()}.vmc`;
+										if ((info[2 + i].Selected !== 1) || (std.exists(vmcpath))) { continue; }
 
-									xlog("VMC COPY OPERATION STARTED");
+										xlog("VMC COPY OPERATION STARTED");
 
-									const waitTxt = XMBLANG.WAIT[UserConfig.Language];
-									const mcTxt = `${XMBLANG.COPY_VMC_MSG[UserConfig.Language]} ${(i + 1).toString()}`;
+										const waitTxt = XMBLANG.WAIT[UserConfig.Language];
+										const mcTxt = `${XMBLANG.COPY_VMC_MSG[UserConfig.Language]} ${(i + 1).toString()}`;
 
-									const src = `${PATHS.VMC}blank.vmc`;
-									const BLOCK_SIZE = 64 * 1024;
-									const buffer = new ArrayBuffer(BLOCK_SIZE);
+										const src = `${PATHS.VMC}blank.vmc`;
+										const BLOCK_SIZE = 64 * 1024;
+										const buffer = new ArrayBuffer(BLOCK_SIZE);
 
-									const fdSrc = os.open(src, os.O_RDONLY, 0);
-									const fdDst = os.open(vmcpath, os.O_WRONLY | os.O_CREAT | os.O_TRUNC);
-									const totalSize = 8 * 1024 * 1024;
-									let copied = 0;
+										const fdSrc = os.open(src, os.O_RDONLY, 0);
+										const fdDst = os.open(vmcpath, os.O_WRONLY | os.O_CREAT | os.O_TRUNC);
+										const totalSize = 8 * 1024 * 1024;
+										let copied = 0;
 
-									while (true) {
-										const toRead = Math.min(BLOCK_SIZE, totalSize - copied);
-										if (toRead <= 0) break;
+										while (true) {
+											const toRead = Math.min(BLOCK_SIZE, totalSize - copied);
+											if (toRead <= 0) break;
 
-										const bytesRead = os.read(fdSrc, buffer, 0, toRead);
-										if (bytesRead <= 0) break;
+											const bytesRead = os.read(fdSrc, buffer, 0, toRead);
+											if (bytesRead <= 0) break;
 
-										let written = 0;
-										while (written < bytesRead) {
-											const bw = os.write(fdDst, buffer, written, bytesRead - written);
-											if (bw < 0) throw new Error("Error writing VMC");
-											written += bw;
+											let written = 0;
+											while (written < bytesRead) {
+												const bw = os.write(fdDst, buffer, written, bytesRead - written);
+												if (bw < 0) throw new Error("Error writing VMC");
+												written += bw;
+											}
+
+											copied += bytesRead;
+
+											const percent = ~~((copied / totalSize) * 100);
+											DashUI.Dialog.Data[DashUI.Dialog.Level].Text = `${mcTxt}\n\n${waitTxt}\n\n${percent}%`;
 										}
 
-										copied += bytesRead;
+										xlog("VMC COPY OPERATION FINISHED");
 
-										const percent = ~~((copied / totalSize) * 100);
-										DashUI.Dialog.Data[DashUI.Dialog.Level].Text = `${mcTxt}\n\n${waitTxt}\n\n${percent}%`;
+										os.close(fdSrc);
+										os.close(fdDst);
+
+										DashUI.Dialog.Data[DashUI.Dialog.Level].Text = `${XMBLANG.WAIT[UserConfig.Language]}`;
 									}
 
-									xlog("VMC COPY OPERATION FINISHED");
-
-									os.close(fdSrc);
-									os.close(fdDst);
-
-									DashUI.Dialog.Data[DashUI.Dialog.Level].Text = `${XMBLANG.WAIT[UserConfig.Language]}`;
+									CfgMan.Set(`${gameID}.cfg`, config);
+									UIAnimationDialogFade_Start(false);
+								} catch (e) {
+									xlog(e);
+								} finally {
+									if (fdSrc) { os.close(fdSrc); }
+									if (fdDst) { os.close(fdDst); }
 								}
-
-								CfgMan.Set(`${gameID}.cfg`, config);
-								UIAnimationDialogFade_Start(false);
-							} catch (e) {
-								xlog(e);
-							} finally {
-								if (fdSrc) { os.close(fdSrc); }
-								if (fdDst) { os.close(fdDst); }
 							}
-						}
-					]]>
-				</Task>
+						]]>
+					</Task>
+				</Dialog>
+				<Event On="Confirm" Type="Transition" To="SaveSettingsDialog"/>
 			</Dialog>
-	    <Event On="Confirm" Type="Transition" To="SaveSettingsDialog"/>
-	  </Dialog>
-	</Component>
+		</Component>
     <Confirm>
       <![CDATA[
         function(index, item) {
