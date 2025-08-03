@@ -183,8 +183,6 @@
 
 								CfgMan.Push(`${gameID}.cfg`, config);
 
-                xlog("Saved Settings for " + gameID);
-
 								let vmcCount = 1;
 								const vmcs = [];
 
@@ -194,16 +192,12 @@
                   vmcs.push(vmcpath);
 								}
 
-                xlog("Checked VMCs");
-
                 const vmcLength = vmcs.length;
 
                 if (vmcLength < 1) {
 									UIAnimationDialogFade_Start(false);
 									return;
 								}
-
-                xlog("Initialize Copy VMCs");
 
 								const waitTxt = getLocalText(XMBLANG.WAIT);
 								let mcTxt = `${getLocalText(XMBLANG.COPY_VMC_MSG)} ${vmcCount}/${vmcLength}`;
@@ -222,14 +216,10 @@
 								const totalSize = 8 * 1024 * 1024;
 								let copied = 0;
 
-                xlog("Initialize Copy Interval");
-
 								const CopIval = os.setInterval(() => {
-                    xlog("Executing Copy Interval");
 										const toRead = Math.min(BLOCK_SIZE, totalSize - copied);
 										if (toRead <= 0) {
                       if (vmcs.length > 0) {
-                        xlog("Switching to new VMC Copy 2");
 												vmcCount++;
 												mcTxt = `${getLocalText(XMBLANG.COPY_VMC_MSG)} ${vmcCount}/${vmcLength}`;
                         os.seek(fdSrc, 0, std.SEEK_SET);
@@ -238,7 +228,6 @@
 												copied = 0;
                       }
                       else {
-                        xlog("Finished VMC Copy");
 												DashUI.Dialog.Data[DashUI.Dialog.Level].Text = waitTxt;
 												os.close(fdSrc);
 												os.close(fdDst);
@@ -261,9 +250,6 @@
 										const percent = ~~((copied / totalSize) * 100);
 										DashUI.Dialog.Data[DashUI.Dialog.Level].Text = `${mcTxt}\n\n${waitTxt}\n\n${percent}%`;
                 }, 0);
-
-                if (!CopIval) { throw new Error("Error setting up copy interval"); }
-                xlog("Finished Task");
 							}
 						]]>
 					</Task>
