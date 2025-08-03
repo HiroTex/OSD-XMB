@@ -191,15 +191,11 @@ function ExitErrorHandler() {
 	else { DashUI.ExitState = 5; } 		// Fade Back In
 }
 function DashUIAnimationHandler() {
-	let result = true;
-	for (let i = 0; i < DashUI.AnimationQueue.length; i++)
-	{
-		const f = DashUI.AnimationQueue[i];
-		const thisResult = f();
-		if ((result) && (thisResult)) { result = true; }
-		else { result = false; }
-	}
-	if (result) DashUI.AnimationQueue = [];
+    let length = DashUI.AnimationQueue.length;
+    for (let i = 0; i < length; i++) {
+        const f = DashUI.AnimationQueue.shift();
+        if (!f()) { DashUI.AnimationQueue.push(f); }
+    }
 }
 function DashUIObjectHandler(Item) {
     DashUI.SelectedItem = Item;
@@ -319,7 +315,7 @@ const ImageCache = (() => {
 			const itemsToLoad = queue.splice(0, queue.length); // Shallow copy
 			isLoading = true;
 			if (!gThreads) { loadImages(itemsToLoad); }
-			else { const thread = Threads.new(() => loadImages(itemsToLoad)); thread.start(); }
+			else { Threads.new(() => loadImages(itemsToLoad)).start(); }
         },
 
         Clear: function() {
@@ -800,11 +796,10 @@ function UIAnimationCommonFade_Start(element, work, isIn) {
 	});
 }
 function UIAnimationCommon_Work(anim, progress) {
-	if (!anim.Running) { return true; }
+
 	anim.Progress += progress;
 
-	if (anim.Progress >= 1.0f)
-	{
+	if (anim.Progress >= 1.0f) {
 		anim.Progress = 1.0f;
 		anim.Running = false;
 		return true;
@@ -1335,12 +1330,13 @@ function DrawUICategoryItems_Work(items, current, x) {
 //////////////////////////////////////////////////////////////////////////
 
 function DashUISetNewSubMenu(SubMenu) {
+    if ('Init' in SubMenu) { SubMenu.Init(SubMenu); }
 	PlayCursorSfx();
 	DashUI.SubMenu.Items.Current = SubMenu.Default;
 	DashUI.SubMenu.Items.Next = SubMenu.Default;
 	DashUI.SubMenu.Level++;
 	DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level] = SubMenu;
-	DashUI.State.Next = 2;
+    DashUI.State.Next = 2;
 	UIAnimateSubMenuItemsFade_Start(true);
 }
 function DashUIBackFromSubMenu() {
@@ -2493,10 +2489,7 @@ function DrawUITextDialog(data, a) {
 	TxtPrint(TXT);
 
 	if ((DashUI.AnimationQueue.length < 1) && ('Fun' in data)) {
-		if (gThreads) {
-			const thread = Threads.new(data.Fun);
-			thread.start();
-		}
+		if (gThreads) { Threads.new(data.Fun).start(); }
 		else { data.Fun(); }
 		delete data.Fun;
 	}
@@ -2568,7 +2561,7 @@ function DrawUIDialog() {
 		TxtPrint(Enter);
     }
 
-	if (contentAlpha < 1) { return; }
+    if (contentAlpha < 1) { return; }
 
 	switch (data.Type) {
 		case "TEXT":            DrawUITextDialog(data, contentAlpha); break;

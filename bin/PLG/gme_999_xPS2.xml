@@ -11,28 +11,39 @@
 
 			function ScanGames(path, device, media) {
 				const items = [];
-				let gameDir = System.listDir(path).filter(item => (item.dir === false) && (getFileExtension(item.name).toLowerCase() === "iso"));
+				let gameDir = System.listDir(path);
 				for (let j = 0; j < gameDir.length; j++) {
-					const gameID = getISOgameID(`${path}${gameDir[j].name}`, gameDir[j].size);
-					let code = gameID.success ? gameID.code : "";
+					if (gameDir[j].dir || (getFileExtension(gameDir[j].name).toLowerCase() !== "iso")) { continue; }
 					items.push({
 						Name: getGameName(gameDir[j].name),
-						Description: code,
-						GameID: code,
-						Icon: "DISC_PS2",
 						Type: "ELF",
-						Data: { path: path, fname: gameDir[j].name, id: code, dev: device, mt: media }
+						Data: { path: path, fname: gameDir[j].name, dev: device, mt: media }
+					});
+
+          Object.defineProperty(items[items.length - 1], "Icon", {
+						get() {
+							const gameID = getISOgameID(`${path}${gameDir[j].name}`, gameDir[j].size);
+              this.GameID = gameID.success ? gameID.code : "";
+              this.Description = this.GameID;
+              this.Data.id = this.GameID;
+              delete this.Icon;
+              this.Icon = "DISC_PS2";
+
+							const ico = gameID.success ? findICO(this.GameID) : "";
+							if (ico !== "") { this.CustomIcon = ico; }
+							const bgFile = gameID.success ? findBG(this.GameID) : "";
+							if (bgFile !== "") { this.CustomBG = bgFile; }
+
+              return this.GameID;
+            },
+						enumerable: true,
+            configurable: true
 					});
 
 					Object.defineProperty(items[items.length - 1], "Value", {
 						get() {	return { Path: `${PATHS.Neutrino}neutrino.elf`, Args: getISOgameArgs(this.Data), Code: SaveLastPlayed }; },
 						enumerable: true
 					});
-
-					const ico = gameID.success ? findICO(code) : "";
-					if (ico !== "") { items[items.length - 1].CustomIcon = ico; }
-					const bgFile = gameID.success ? findBG(code) : "";
-					if (bgFile !== "") { items[items.length - 1].CustomBG = bgFile; }
 				}
 				return items;
 			}
@@ -148,86 +159,111 @@
 					<Task>
 						<![CDATA[
 							function() {
-								let fdSrc = false;
-								let fdDst = false;
+								const gameID = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].GameID.toUpperCase();
+								const config = CfgMan.Get(`${gameID}.cfg`);
+								const vmcgroups = CfgMan.Get("PS2VMCGRP.cfg");
+								let vmcgameid = gameID;
+								if (gameID in vmcgroups) { vmcgameid = vmcgroups[gameID]; }
 
-								try {
-									const gameID = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].GameID.toUpperCase();
-									const config = CfgMan.Get(`${gameID}.cfg`);
-									const vmcgroups = CfgMan.Get("PS2VMCGRP.cfg");
-									let vmcgameid = gameID;
-									if (gameID in vmcgroups) { vmcgameid = vmcgroups[gameID]; }
+								const info = DashUI.Dialog.Data[DashUI.Dialog.Level - 1].Info;
 
-									const info = DashUI.Dialog.Data[DashUI.Dialog.Level - 1].Info;
+								let gcModes = "";
+								if (info[4].Selected === 1) { gcModes += "0"; }
+								if (info[5].Selected === 1) { gcModes += "2"; }
+								if (info[6].Selected === 1) { gcModes += "5"; }
+								if (info[7].Selected === 1) { gcModes += "7"; }
+								if (info[8].Selected === 1) { gcModes += "3"; }
+								if (gcModes) { config["gc"] = gcModes; }
+								else if ('gc' in config) { delete config.gc; }
 
-									let gcModes = "";
-									if (info[4].Selected === 1) { gcModes += "0"; }
-									if (info[5].Selected === 1) { gcModes += "2"; }
-									if (info[6].Selected === 1) { gcModes += "5"; }
-									if (info[7].Selected === 1) { gcModes += "7"; }
-									if (info[8].Selected === 1) { gcModes += "3"; }
-									if (gcModes) { config["gc"] = gcModes; }
-									else if ('gc' in config) { delete config.gc; }
+								if (info[2].Selected === 1) { config["VMC0"] = vmcgameid; }
+								else if ('VMC0' in config) { delete config.VMC0; }
+								if (info[3].Selected === 1) { config["VMC1"] = vmcgameid; }
+								else if ('VMC1' in config) { delete config.VMC1; }
 
-									if (info[2].Selected === 1) { config["VMC0"] = vmcgameid; }
-									else if ('VMC0' in config) { delete config.VMC0; }
-									if (info[3].Selected === 1) { config["VMC1"] = vmcgameid; }
-									else if ('VMC1' in config) { delete config.VMC1; }
+								CfgMan.Push(`${gameID}.cfg`, config);
 
-									for(let i = 0; i < 2; i++) {
-										const vmcpath = `${PATHS.VMC}${vmcgameid}_${i.toString()}.vmc`;
-										if ((info[2 + i].Selected !== 1) || (std.exists(vmcpath))) { continue; }
+                xlog("Saved Settings for " + gameID);
 
-										xlog("VMC COPY OPERATION STARTED");
+								let vmcCount = 1;
+								const vmcs = [];
 
-										const waitTxt = XMBLANG.WAIT[UserConfig.Language];
-										const mcTxt = `${XMBLANG.COPY_VMC_MSG[UserConfig.Language]} ${(i + 1).toString()}`;
+								for(let i = 0; i < 2; i++) {
+									const vmcpath = `${PATHS.VMC}${vmcgameid}_${i.toString()}.vmc`;
+									if ((info[2 + i].Selected !== 1) || (std.exists(vmcpath))) { continue; }
+                  vmcs.push(vmcpath);
+								}
 
-										const src = `${PATHS.VMC}blank.vmc`;
-										const BLOCK_SIZE = 64 * 1024;
-										const buffer = new ArrayBuffer(BLOCK_SIZE);
+                xlog("Checked VMCs");
 
-										const fdSrc = os.open(src, os.O_RDONLY, 0);
-										const fdDst = os.open(vmcpath, os.O_WRONLY | os.O_CREAT | os.O_TRUNC);
-										const totalSize = 8 * 1024 * 1024;
-										let copied = 0;
+                const vmcLength = vmcs.length;
 
-										while (true) {
-											const toRead = Math.min(BLOCK_SIZE, totalSize - copied);
-											if (toRead <= 0) break;
+                if (vmcLength < 1) {
+									UIAnimationDialogFade_Start(false);
+									return;
+								}
 
-											const bytesRead = os.read(fdSrc, buffer, 0, toRead);
-											if (bytesRead <= 0) break;
+                xlog("Initialize Copy VMCs");
 
-											let written = 0;
-											while (written < bytesRead) {
-												const bw = os.write(fdDst, buffer, written, bytesRead - written);
-												if (bw < 0) throw new Error("Error writing VMC");
-												written += bw;
-											}
+								const waitTxt = getLocalText(XMBLANG.WAIT);
+								let mcTxt = `${getLocalText(XMBLANG.COPY_VMC_MSG)} ${vmcCount}/${vmcLength}`;
 
-											copied += bytesRead;
+								const src = `${PATHS.VMC}blank.vmc`;
+								const BLOCK_SIZE = 64 * 1024;
+								const buffer = new ArrayBuffer(BLOCK_SIZE);
 
-											const percent = ~~((copied / totalSize) * 100);
-											DashUI.Dialog.Data[DashUI.Dialog.Level].Text = `${mcTxt}\n\n${waitTxt}\n\n${percent}%`;
+                let fdSrc = os.open(src, os.O_RDONLY);
+								let fdDst = os.open(vmcs.shift(), os.O_WRONLY | os.O_CREAT | os.O_TRUNC);
+
+								if (fdSrc < 0 || fdDst < 0) {
+									throw new Error("Error opening VMC source or destination file");
+                }
+
+								const totalSize = 8 * 1024 * 1024;
+								let copied = 0;
+
+                xlog("Initialize Copy Interval");
+
+								const CopIval = os.setInterval(() => {
+                    xlog("Executing Copy Interval");
+										const toRead = Math.min(BLOCK_SIZE, totalSize - copied);
+										if (toRead <= 0) {
+                      if (vmcs.length > 0) {
+                        xlog("Switching to new VMC Copy 2");
+												vmcCount++;
+												mcTxt = `${getLocalText(XMBLANG.COPY_VMC_MSG)} ${vmcCount}/${vmcLength}`;
+                        os.seek(fdSrc, 0, std.SEEK_SET);
+												os.close(fdDst);
+                        fdDst = os.open(vmcs.shift(), os.O_WRONLY | os.O_CREAT | os.O_TRUNC);
+												copied = 0;
+                      }
+                      else {
+                        xlog("Finished VMC Copy");
+												DashUI.Dialog.Data[DashUI.Dialog.Level].Text = waitTxt;
+												os.close(fdSrc);
+												os.close(fdDst);
+												os.clearInterval(CopIval);
+												UIAnimationDialogFade_Start(false);
+												return;
+                      }
+                    }
+
+										const bytesRead = os.read(fdSrc, buffer, 0, toRead);
+										let written = 0;
+										while (written < bytesRead) {
+											const bw = os.write(fdDst, buffer, written, bytesRead - written);
+											if (bw < 0) throw new Error("Error writing VMC");
+											written += bw;
 										}
 
-										xlog("VMC COPY OPERATION FINISHED");
+										copied += bytesRead;
 
-										os.close(fdSrc);
-										os.close(fdDst);
+										const percent = ~~((copied / totalSize) * 100);
+										DashUI.Dialog.Data[DashUI.Dialog.Level].Text = `${mcTxt}\n\n${waitTxt}\n\n${percent}%`;
+                }, 0);
 
-										DashUI.Dialog.Data[DashUI.Dialog.Level].Text = `${XMBLANG.WAIT[UserConfig.Language]}`;
-									}
-
-									CfgMan.Set(`${gameID}.cfg`, config);
-									UIAnimationDialogFade_Start(false);
-								} catch (e) {
-									xlog(e);
-								} finally {
-									if (fdSrc) { os.close(fdSrc); }
-									if (fdDst) { os.close(fdDst); }
-								}
+                if (!CopIval) { throw new Error("Error setting up copy interval"); }
+                xlog("Finished Task");
 							}
 						]]>
 					</Task>
@@ -240,8 +276,8 @@
         function(index, item) {
 					const items = item.Dialog.Info;
 					const config = CfgMan.Get(`${DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].GameID.toUpperCase()}.cfg`);
-					items[2].Selected = ('VNC0' in config) ? 1 : 0;
-					items[2].Selected = ('VNC1' in config) ? 1 : 0;
+          items[2].Selected = ('VMC0' in config) ? 1 : 0;
+					items[3].Selected = ('VMC1' in config) ? 1 : 0;
 					if ("gc" in config)	{
 						const gc = config["gc"];
 						items[4].Selected = /0/.test(gc) ? 1 : 0;

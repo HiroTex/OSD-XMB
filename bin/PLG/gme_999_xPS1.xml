@@ -23,49 +23,57 @@
 				return elfPath;
 			}
 
-			function generateVMCs(gameList) {
+			function generateVMC(game) {
 				const vmcgrps = CfgMan.Get("PS1VMCGRP.cfg");
-				for (let i = 0; i < gameList.length; i++) {
-					const game = gameList[i];
-					if (game.GameID === "") { continue; }
-					if (!(game.GameID in vmcgrps)) { continue; }
-					const basePath = (game.Data.dev === "mass") ? "mass:/POPS/" : `${mountHDDPartition("__common")}:/POPS/`;
+				if (game.GameID === "") { return; }
+				if (!(game.GameID in vmcgrps)) { return; }
+				const basePath = (game.Data.dev === "mass") ? "mass:/POPS/" : `${mountHDDPartition("__common")}:/POPS/`;
 
-					// Make Dirs
-					if (!os.readdir(basePath)[0].includes(vmcgrps[game.GameID])) { os.mkdir(`${basePath}${vmcgrps[game.GameID]}`); }
-					if (!os.readdir(basePath)[0].includes(game.Name)) 			 { os.mkdir(`${basePath}${game.Name}`); }
+				// Make Dirs
+				if (!os.readdir(basePath)[0].includes(vmcgrps[game.GameID])) { os.mkdir(`${basePath}${vmcgrps[game.GameID]}`); }
+				if (!os.readdir(basePath)[0].includes(game.Name)) 			 { os.mkdir(`${basePath}${game.Name}`); }
 
-					// Write VMC
-					if (!os.readdir(`${basePath}${game.Name}/`)[0].includes("VMCDIR.TXT")) {
-						ftxtWrite(`${basePath}${game.Name}/VMCDIR.TXT`, vmcgrps[game.GameID]);
-					}
+				// Write VMC
+				if (!os.readdir(`${basePath}${game.Name}/`)[0].includes("VMCDIR.TXT")) {
+					ftxtWrite(`${basePath}${game.Name}/VMCDIR.TXT`, vmcgrps[game.GameID]);
 				}
 			}
 
 			function ScanGames(path, dev) {
 				const items = [];
-				let gameDir = System.listDir(path).filter(item => (item.dir === false) && (getFileExtension(item.name).toLowerCase() === "vcd"));
+				let gameDir = System.listDir(path);
 				for (let j = 0; j < gameDir.length; j++) {
-					const gameID = getVCDGameID(`${path}${gameDir[j].name}`, gameDir[j].size);
-					let code = gameID.success ? gameID.code : "";
+          if (gameDir[j].dir || getFileExtension(gameDir[j].name).toLowerCase() !== "vcd") { continue; }
 					items.push({
 						Name: getGameName(gameDir[j].name),
-						Description: code,
-						GameID: code,
-						Icon: "DISC_PS1",
 						Type: "ELF",
 						Data: { path: path, fname: gameDir[j].name, dev: dev }
+					});
+
+					Object.defineProperty(items[items.length - 1], "Icon", {
+						get() {
+							const gameID = getVCDGameID(`${path}${gameDir[j].name}`, gameDir[j].size);
+              this.GameID = gameID.success ? gameID.code : "";
+              this.Description = this.GameID;
+              delete this.Icon;
+              this.Icon = "DISC_PS1";
+
+							const ico = gameID.success ? findICO(this.GameID) : "";
+							if (ico !== "") { this.CustomIcon = ico; }
+							const bgFile = gameID.success ? findBG(this.GameID) : "";
+							if (bgFile !== "") { this.CustomBG = bgFile; }
+
+              generateVMC(this);
+              return this.GameID;
+            },
+						enumerable: true,
+            configurable: true
 					});
 
 					Object.defineProperty(items[items.length - 1], "Value", {
 						get() {	return { Path: getPOPSElfPath(this.Data), Args: [], Code: SaveLastPlayed }; },
 						enumerable: true
 					});
-
-					const ico = gameID.success ? findICO(code) : "";
-					if (ico !== "") { items[items.length - 1].CustomIcon = ico; }
-					const bgFile = gameID.success ? findBG(code) : "";
-					if (bgFile !== "") { items[items.length - 1].CustomBG = bgFile; }
 				}
 				return items;
 			}
@@ -99,8 +107,6 @@
 
 			if (gameList.length > 1) { gameList.sort((a, b) => a.Name.localeCompare(b.Name)); }
 
-			generateVMCs(gameList);
-
 			return gameList;
     ]]>
   </Options>
@@ -115,7 +121,7 @@
 			return val;
 		]]>
   </Default>
-  <Context Name="OptionContext" Filter="Custom" Condition="('GameID' in item && item.GameID)">
+  <Context Name="OptionContext" Filter="Custom" Condition="item.GameID">
 		<Component Name="{INFO}" Icon="-1">
 			<Dialog Icon="-1" Title="" BG="false" Type="INFO" BackBtn="true" ConfirmBtn="true" >
 				<Info>

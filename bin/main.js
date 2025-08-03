@@ -82,9 +82,8 @@ function main() {
     ImageCache.Process();
 
 	// Show Debug Information at bottom.
-	PrintDebugInformation();
+    PrintDebugInformation();
 }
-
 
 Screen.setParam(Screen.DEPTH_TEST_ENABLE, false);
 if (gDebug) Screen.setFrameCounter(true);

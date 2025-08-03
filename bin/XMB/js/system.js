@@ -1028,7 +1028,7 @@ function xlog(l) {
     const minutes = String(gTime.minute).padStart(2, '0');
     const seconds = String(gTime.second).padStart(2, '0');
     const milliseconds = String(gTime.millisecond).padStart(3, '0');
-    const line = `[ ${hours}:${minutes}:${seconds}:${milliseconds} ] ${l}\n`;
+    const line = `[ ${hours}:${minutes}:${seconds}:${milliseconds} ] ${l}`;
     console.log(line);
 
     if (!gDebug) { return; }
@@ -1038,8 +1038,8 @@ function xlog(l) {
 function xlogProcess() {
     // Extract lines of gDbgTxt Var
     if (gDbgTxt.length < 1) { return; }
-    let lines = gDbgTxt.splice(0, gDbgTxt.length).join('\n'); // Get all lines and clear the array
-    ftxtWrite(`${PATHS.XMB}log.txt`, lines, "a+"); // Write to file
+    const lines = gDbgTxt.splice(0, gDbgTxt.length).join('\n'); // Get all lines and clear the array
+    ftxtWrite(`${PATHS.XMB}log.txt`, lines, "a"); // Write to file
 }
 
 //////////////////////////////////////////////////////////////////////////

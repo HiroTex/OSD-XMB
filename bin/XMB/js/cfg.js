@@ -175,7 +175,7 @@ const CfgMan = {
         }
         else {
             // Add a new item to the queue
-            this.queue.push({ path, config: newConfig });
+            this.queue.push({ path: path, config: newConfig });
         }
     },
 

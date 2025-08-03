@@ -311,15 +311,16 @@ function xmlParseDialogTag(element) {
 							}
                             else {
                                 UIAnimationDialogContentFade_Start(false);
-                                let ival = os.setInterval(() => {
+                                DashUI.AnimationQueue.push(() => {
                                     if (!DashUI.Dialog.ContentFade.Running) {
                                         const prevData = DashUI.Dialog.Data[DashUI.Dialog.Level];
                                         DashUI.Dialog.Data.push({ ...prevData[child.attributes.To] });
                                         DashUI.Dialog.Level++;
                                         UIAnimationDialogContentFade_Start(true);
-                                        os.clearInterval(ival);
+                                        return true;
                                     }
-                                }, 0);
+                                    return false;
+                                });
 							}
 						}
 						break;
