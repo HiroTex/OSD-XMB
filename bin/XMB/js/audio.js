@@ -12,6 +12,7 @@ const Sounds = {
 };
 
 function playSfx(sound) {
+    if (CWD.startWith("mmce")) { return; } // Do not play Sounds from MMCE.
     if (!sound) return;
     sound.play();
 }
@@ -27,7 +28,7 @@ function playBgm(sound) {
     }, 0);
 }
 
-const PlayBootSfx   = () => playBgm(false);
+const PlayBootSfx   = () => playBgm(Sounds.BOOT);
 const PlayCursorSfx = () => playSfx(false);
 const PlayCancelSfx = () => playSfx(false);
 

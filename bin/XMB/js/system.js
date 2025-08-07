@@ -765,24 +765,17 @@ function parseIconSysTitle(path, name) {
     os.seek(file, 0, std.SEEK_SET);
     os.read(file, magic.buffer, 0, 4);
 
-    if (magic.length === code.length)
-    {
-        for (let i = 0; i < code.length; i++)
-        {
-            if (magic[i] !== code.charCodeAt(i))
-            {
+    if (magic.length === code.length) {
+        for (let i = 0; i < code.length; i++) {
+            if (magic[i] !== code.charCodeAt(i)) {
                 match = false;
                 break;
             }
         }
     }
-    else
-    {
-        match = false;
-    }
+    else { match = false; }
 
-    if (match)
-    {
+    if (match) {
         const linebreak = new Uint8Array(2);
         os.seek(file, 6, std.SEEK_SET);
         os.read(file, linebreak.buffer, 0, 2);
