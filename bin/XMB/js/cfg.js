@@ -13,7 +13,7 @@ const UserConfig = {
 	Theme: "Original",
 	Language: GetOsdConfig("Language") - 1,
 	ConfirmBtn: 0,
-	Aspect: 0,
+    Aspect: (GetOsdConfig("Aspect") === 2) ? 1 : 0,
 	BgColor: 0,
 	DisplayBg: false,
 	CustomBgImg: false,
@@ -48,13 +48,11 @@ function GetNeutrinoArgs(GAMEID = false) {
 
 	return Args;
 }
-
 function GetCfgUserSetting(setting) {
 	const config = CfgMan.Get("main.cfg");
 	if (setting in config) { return config[setting]; }
 	return false;
 }
-
 function ReadUserSettings() {
 
     const neut = CfgMan.Get("neutrino.cfg");
@@ -67,6 +65,8 @@ function ReadUserSettings() {
 
 	if ('lang'		 in config) { UserConfig.Language 	  = parseInt(config["lang"]); 		}
 	if ('btnType'	 in config) { UserConfig.ConfirmBtn   = parseInt(config["btnType"]); 	}
+    if ('aspect'	 in config) { UserConfig.Aspect       = parseInt(config["aspect"]); 	}
+    if ('vmode'	     in config) { UserConfig.Vmode        = parseInt(config["vmode"]); 	    }
 	if ('dateFormat' in config) { UserConfig.DateFormat   = parseInt(config["dateFormat"]); }
 	if ('hourFormat' in config) { UserConfig.HourFormat   = parseInt(config["hourFormat"]); }
 	if ('timezone'	 in config) { UserConfig.Timezone	  = parseInt(config["timezone"]); 	}
@@ -79,7 +79,6 @@ function ReadUserSettings() {
 	if (!os.readdir(PATHS.Theme)[0].includes(UserConfig.Theme)) { UserConfig.Theme = "Original"; }
 
 }
-
 function ReadCFG(fullPath) {
 	// Read each line for config.
 	let config = {};

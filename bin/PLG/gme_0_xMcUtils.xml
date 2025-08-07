@@ -4,7 +4,7 @@
     <String str="Utilitaire de Memory Card" />
     <String str="Herramienta de Memory Card" />
     <String str="Memory Card-Dienstprogramm" />
-    <String str="Utilité della Memory Card" />
+    <String str="Utilità della Memory Card" />
     <String str="Diensten voor Memory Card" />
     <String str="Utilitário do Memory Card" />
   </Name>
@@ -28,7 +28,11 @@
 				}
 			}
 
-			directories.sort((a, b) => a.Name.localeCompare(b.Name));
+			directories.sort((a, b) => {
+				const nameA = a.Name.toLowerCase();
+				const nameB = b.Name.toLowerCase();
+				return nameA < nameB ? -1 : nameA > nameB ? 1 : 0;
+			});
 
 			return { Items: directories, Default: 0 };
 		}

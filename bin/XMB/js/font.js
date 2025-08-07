@@ -25,7 +25,7 @@ function FontInit() {
 	}
 
     FontObj.SizeS = 0.55f;
-    FontObj.SizeM = 0.65f;
+    FontObj.SizeM = 0.63f;
     FontObj.SizeL = 0.75f;
     FontObj.Font.dropshadow = 1.0f;
 }

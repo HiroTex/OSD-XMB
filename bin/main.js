@@ -2,36 +2,68 @@
 ///*				   		Initialize Modules						  *///
 //////////////////////////////////////////////////////////////////////////
 
+os.sleep(1000); // Wait for modules to load.
+
 function InitCWD() {
-	// Try OS Current Working Directory.
-	if (os.readdir(os.getcwd()[0])[0].includes("XMB")) {
-		return ((os.getcwd()[0].endsWith('/')) ? os.getcwd()[0] : (os.getcwd()[0] + "/"));
-	}
 
-	// Try MMCE directories
-	for (let i = 0; i < 2; i++) {
-		let tmp = `mmce${i.toString()}:/`;
-		if (os.readdir(tmp)[0].includes("XMB")) { return; }
-		else if (os.readdir(tmp).includes("OSDXMB")) { return tmp + "OSDXMB/"; }
-	}
+    // Try OS Current Working Directory.
+    const oscwd = os.getcwd()[0];
+    if (os.readdir(oscwd)[0].includes("XMB")) {
+        return ((oscwd.endsWith('/')) ? oscwd : (oscwd + "/"));
+    }
 
-	// Try Mass Directories
-	for (let i = 0; i < 10; i++) {
-		let tmp = `mass${i.toString()}:/`;
-		if (os.readdir(tmp)[0].includes("XMB")) { return; }
-		else if (os.readdir(tmp).includes("OSDXMB")) { return tmp + "OSDXMB/"; }
-	}
+    const devices = System.devices();
 
-	// Try ATA HDD "hdd0:/__common/OSDXMB/" directory
-	if (os.readdir("hdd0")[0].includes("__common"))	{
-        System.mount("pfs0:", "hdd0:__common");
-		if (os.readdir("pfs0:/").includes("OSDXMB")) { return "pfs0:/OSDXMB/"; }
-		System.umount("pfs0:");
-	}
+    for (let i = 0; i < devices.length; i++) {
+        const device = devices[i];
+        switch (device.name) {
+            case "mass":
+                for (let j = 0; j < 10; j++) {
+                    const root = `mass${j.toString()}:`;
+                    const bdm = System.getBDMInfo(root);
+                    if (!bdm) { break; }
+                    const dir = os.readdir(root)[0];
+                    if (dir.includes("XMB")) {
+                        return root;
+                    } else if (dir.includes("OSDXMB")) {
+                        if (os.readdir(`${root}OSDXMB/`)[0].includes("XMB")) {
+                            return `${root}OSDXMB/`;
+                        }
+                    }
+                }
+                break;
+            case "mmce":
+                for (let j = 0; j < 2; j++) {
+                    const root = `mmce${j.toString()}:/`;
+                    const dir = os.readdir(root)[0];
+                    if (dir.includes("XMB")) {
+                        return root;
+                    } else if (dir.includes("OSDXMB")) {
+                        if (os.readdir(`${root}OSDXMB/`)[0].includes("XMB")) {
+                            return `${root}OSDXMB/`;
+                        }
+                    }
+                }
+                break;
+            case "hdd":
+                System.mount("pfs0:", "hdd0:__common");
+                if (os.readdir("pfs0:/").includes("OSDXMB")) { return "pfs0:/OSDXMB/"; }
+                System.umount("pfs0:");
+                break;
+        }
+    }
 
-	// Lastly, try MC directories.
-	if (os.readdir("mc0:/")[0].includes("OSDXMB")) { return "mc0:/OSDXMB/"; }
-	else if (os.readdir("mc1:/")[0].includes("OSDXMB")) { return "mc1:/OSDXMB/"; }
+	// Lastly, try MC directories as last resource.
+    if (os.readdir("mc0:/")[0].includes("OSDXMB")) {
+        if (os.readdir("mc0:/OSDXMB/")[0].includes("XMB")) {
+            return "mc0:/OSDXMB/";
+        }
+    }
+    else if (os.readdir("mc1:/")[0].includes("OSDXMB")) {
+        if (os.readdir("mc1:/OSDXMB/")[0].includes("XMB")) {
+            return "mc1:/OSDXMB/";
+        }
+    }
 
 	throw new Error("System Assets not Found.");
 	return "./";

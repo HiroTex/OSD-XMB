@@ -119,7 +119,7 @@
 		      </Name>
 		    </Item>
 		    <Item Name="ROMVER" Value="{SCERomVerInfo.VersionFormatted}" Selectable="false" />
-		    <Item Value="{SCERomVerInfo.VersionFormatted}" Selectable="false">
+		    <Item Value="{SCERomVerInfo.OSDVER}" Selectable="false">
 		      <Name>
 			      <String str="Browser" />
 			      <String str="Browser" />
@@ -142,6 +142,17 @@
 		      </Name>
 		    </Item>
 		    <Item Name="Playstation Driver" Value="{SCERomVerInfo.PS1VER}" Selectable="false" />
+        <Item Value="{SCERomVerInfo.DVDVER}" Selectable="false">
+          <Name>
+            <String str="DVD Player" />
+            <String str="DVD Player" />
+            <String str="Reproductor de DVD" />
+            <String str="DVD Player" />
+            <String str="DVD Player" />
+            <String str="DVD Player" />
+            <String str="DVD Player" />
+          </Name>
+        </Item>
 		    <Item Name="Region" Value="{SCERomVerInfo.Region}" Selectable="false" />
 		    <Item Value="{SCERomVerInfo.Hardware}" Selectable="false">
 		      <Name>

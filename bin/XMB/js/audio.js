@@ -13,7 +13,7 @@ const Sounds = {
 
 function playSfx(sound) {
     if (!sound) return;
-    sound.play(Sound.findChannel());
+    sound.play();
 }
 function playBgm(sound) {
     if (!sound) return;
@@ -27,7 +27,7 @@ function playBgm(sound) {
     }, 0);
 }
 
-const PlayBootSfx   = () => playBgm(Sounds.BOOT);
+const PlayBootSfx   = () => playBgm(false);
 const PlayCursorSfx = () => playSfx(false);
 const PlayCancelSfx = () => playSfx(false);
 

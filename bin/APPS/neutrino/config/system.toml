@@ -12,7 +12,6 @@ default_dvd = "no"
 #default_mc0 = "mass:mymc0.bin"
 #default_mc1 = "mass:mymc1.bin"
 default_elf = "auto"
-#default_mt = "dvd"
 #default_gc = "12"
 #default_gsm = "fp"
 #default_cfg = ""
@@ -20,30 +19,7 @@ default_dbc = false
 default_logo = false
 
 # EE_CORE configuration
-eecore_elf = "ee_core.elf"
-eecore_mod_base = 0x95000
-#eecore_mod_base = 0xA7000
-
-# Select the number of sectors for the FS buffer
-# A small value can increase game compatibility
-# A large value can increase performce
-# Min=2, Max=128, Default=8
-cdvdman_fs_sectors = 8
-
-# Override the 8-byte string returned by:
-# - sceCdRI
-# This string is also used by:
-# - sceCdReadGUID
-# - sceCdReadModelID
-#
-# This string is used (for instance) by the sony network configuration
-# to verify if the config belongs to the specific console.
-#
-#ilink_id = [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
-
-# Use the 5-byte string returned by:
-# - sceCdReadDiskID
-#disk_id = [0x00, 0x00, 0x00, 0x00, 0x00]
+eecore.elf = "ee_core.elf"
 
 # Modules to load in emulation environment
 [[module]]

@@ -7,14 +7,14 @@
 
 let OsdParams = 0;
 const SCEConfigParamTable = {
-    SPDIF_MODE: 		{ Mask: 0x00000001, Shift: 00 },
-    SCREEN_TYPE: 		{ Mask: 0x00000006, Shift: 01 },
-    VIDEO_OUTPUT: 		{ Mask: 0x00000008, Shift: 03 },
-    JAP_LANGUAGE: 		{ Mask: 0x00000010, Shift: 04 },
-    PS1DRV_CONFIG: 		{ Mask: 0x00000FE0, Shift: 05 },
-    VERSION: 			{ Mask: 0x00007000, Shift: 13 },
-    LANGUAGE: 			{ Mask: 0x001F0000, Shift: 16 },
-    TIMEZONE_OFFSET: 	{ Mask: 0xFFE00000, Shift: 21 }
+    SPDIF_MODE: 		{ Mask: 0x00000001, Shift: 0x00 },
+    SCREEN_TYPE: 		{ Mask: 0x00000006, Shift: 0x01 },
+    VIDEO_OUTPUT: 		{ Mask: 0x00000008, Shift: 0x03 },
+    JAP_LANGUAGE: 		{ Mask: 0x00000010, Shift: 0x04 },
+    PS1DRV_CONFIG: 		{ Mask: 0x00000FE0, Shift: 0x05 },
+    VERSION: 			{ Mask: 0x00007000, Shift: 0x0D },
+    LANGUAGE: 			{ Mask: 0x001F0000, Shift: 0x10 },
+    TIMEZONE_OFFSET: 	{ Mask: 0xFFE00000, Shift: 0x15 }
 };
 const SCERomVerInfo = {};
 
@@ -82,6 +82,9 @@ function readFileAsUtf8(filepath) {
 	return result;
 }
 
+//////////////////////////////////////////////////////////////////////////
+///*				   			  ROMVER							  *///
+//////////////////////////////////////////////////////////////////////////
 function getConsoleVersion(rawVersion) {
     // Split the version into major and minor parts
     const majorVersion = rawVersion.slice(0, 2).replace(/^0/, ''); // Remove leading zero from the major version
@@ -115,18 +118,6 @@ function getConsoleRegion(regCode) {
         case 'A': ConsoleRegion = "America"; break;
         case 'T':
         case 'J': ConsoleRegion = "Japan"; break;
-    }
-
-    // rom1:DVDID (example 3.10M)
-    const dvdId = std.open("rom1:DVDID", "r");
-    if (dvdId) {
-        const id = dvdId.readAsString();
-        dvdId.close();
-        switch (id[4]) {
-            case 'O': ConsoleRegion = "Oceania"; break;
-            case 'R': ConsoleRegion = "Russia"; break;
-            case 'M': ConsoleRegion = "Mexico"; break;
-        }
     }
 
     return ConsoleRegion;
@@ -227,6 +218,27 @@ function getCdVer() {
 
     return cdver;
 }
+function getDvdVer() {
+    let id = "";
+    const dvdVer = std.open("rom0:DVDVER", "r");
+    if (dvdVer) {
+        id = dvdVer.readAsString();
+        dvdVer.close();
+    }
+
+    // rom1:DVDID (example 3.10M)
+    const dvdId = std.open("rom1:DVDID", "r");
+    if (dvdId) {
+        id = dvdId.readAsString();
+        dvdId.close();
+        switch (id[4]) {
+            case 'O': SCERomVerInfo.Region = "Oceania"; break;
+            case 'R': SCERomVerInfo.Region = "Russia"; break;
+            case 'M': SCERomVerInfo.Region = "Mexico"; break;
+        }
+    }
+    return id;
+}
 function CollectRomVerInfo() {
 	const tmp = std.open("rom0:ROMVER", "r");
 	if (!tmp) { return; }
@@ -242,7 +254,12 @@ function CollectRomVerInfo() {
     SCERomVerInfo.Model = getModelName(SCERomVerInfo.VersionRaw);
     SCERomVerInfo.OSDVER = getOsdVer();
     SCERomVerInfo.CDVER = getCdVer();
+    SCERomVerInfo.DVDVER = getDvdVer();
 }
+
+//////////////////////////////////////////////////////////////////////////
+///*				   			OSD Config							  *///
+//////////////////////////////////////////////////////////////////////////
 function CollectOsdParams() {
 	const OsdParamsPtr = new ArrayBuffer(4); // Our pointer to store data
 	const GetOsdConfigParamPtr = System.findRelocObject("GetOsdConfigParam");

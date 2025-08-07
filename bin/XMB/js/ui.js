@@ -177,14 +177,32 @@ function ExitErrorHandler() {
 	let result = true; // No problems found
 
 	if ('Elf' in gExit)	{
-		// Check if File Exists.
-		const elfExists = std.exists(gExit.Elf.Path);
-		if (!elfExists) {
-			result = false; // An Error has been encountered
+        // Check if File Exists.
+        if (Array.isArray(gExit.Elf.Path)) {
+            result = false;
+            for (let i = 0; i < gExit.Elf.Path.length; i++) {
+                gExit.Elf.Path[i] = resolveFilePath(gExit.Elf.Path[i]);
+                if (std.exists(gExit.Elf.Path[i])) {
+                    gExit.Elf.Path = gExit.Elf.Path[i];
+                    result = true; // File Found
+                    break;
+                }
+            }
+            if (!result) {
+                // Show new Error Message
+                OpenDialogErrorMsg(XMBLANG.ERROR.ELF_NOT_FOUND);
+            }
+        }
+        else {
+            gExit.Elf.Path = resolveFilePath(gExit.Elf.Path);
+            const elfExists = std.exists(gExit.Elf.Path);
+            if (!elfExists) {
+                result = false; // An Error has been encountered
 
-			// Show new Error Message
-			OpenDialogErrorMsg(XMBLANG.ERROR.ELF_NOT_FOUND);
-		}
+                // Show new Error Message
+                OpenDialogErrorMsg(XMBLANG.ERROR.ELF_NOT_FOUND);
+            }
+        }
 	}
 
 	if (result) { DashUI.ExitState++; } // Continue
@@ -412,12 +430,6 @@ function DashUIConstantsInit() {
     UICONST.CatItems.TextX = (ScrCanvas.width >> 1) - 80;
     UICONST.CatItems.TextY = (ScrCanvas.height >> 1) - 16;
     UICONST.CatItems.SubNoSelX = 46;
-    UICONST.Context.BoxX = 180;
-    UICONST.Context.BoxA = 116;
-    UICONST.Context.BaseX = ScrCanvas.width - 164;
-    UICONST.Context.BaseY = (ScrCanvas.height >> 1) - 15;
-    UICONST.Context.PreviewImgX = ScrCanvas.width - 450;
-    UICONST.Context.PreviewImgY = (ScrCanvas.height >> 1) + 60;
     UICONST.SubItems.ArrowX = (ScrCanvas.width >> 1) - 204;
     UICONST.SubItems.ArrowY = (ScrCanvas.height >> 1) - 6;
     UICONST.SubItems.IconX = (ScrCanvas.width >> 1) - 174;
@@ -432,6 +444,12 @@ function DashUIConstantsInit() {
     UICONST.OptionBox.YICO = ScrCanvas.height - 34;
     UICONST.OptionBox.XTXT = ScrCanvas.width - 73;
     UICONST.OptionBox.YTXT = ScrCanvas.height - 42;
+    UICONST.Context.BoxX = 180;
+    UICONST.Context.BoxA = 116;
+    UICONST.Context.BaseX = ScrCanvas.width - 164;
+    UICONST.Context.BaseY = (ScrCanvas.height >> 1) - 15;
+    UICONST.Context.PreviewImgX = ScrCanvas.width - 450;
+    UICONST.Context.PreviewImgY = (ScrCanvas.height >> 1) + 60;
     UICONST.DialogInfo.LineYTop = (ScrCanvas.height >> 1) - 160;
     UICONST.DialogInfo.LineYBottom = (ScrCanvas.height >> 1) + 170;
     UICONST.DialogInfo.IconX = (ScrCanvas.width >> 1) - 280;
@@ -603,11 +621,15 @@ function DashPluginsInit() {
 
         xlog(`DashPluginsInit(): Loaded Plugin: ${plugins[i].name}`);
     }
-
-    DashUI.LoadedPlugins = true;
 }
 function DashPluginsProcess() {
-    while (DashPluginData.length > 0) {
+    const plgIval = os.setInterval(() => {
+        if (DashPluginData.length < 1) {
+            DashUI.LoadedPlugins = true;
+            os.clearInterval(plgIval);
+            return;
+        }
+
         const plg = DashPluginData.shift();
         let Plugin = false;
 
@@ -617,7 +639,7 @@ function DashPluginsProcess() {
         }
 
         if (Plugin) { AddNewPlugin(Plugin); }
-    }
+    }, 0);
 }
 function DashBackgroundLoad() {
     if (gThreads) { Threads.new(DashPluginsInit).start(); }
@@ -769,7 +791,7 @@ function DashUISetSpecialExit(type) {
 }
 function DashUISetElfExecution(Data) {
 	gExit = {};
-	gExit.Elf = { Path: resolveFilePath(Data.Path) };
+    gExit.Elf = { Path: Data.Path };
 	if ('Args' in Data) 	 { gExit.Elf.Args = Data.Args; }
 	if ('RebootIOP' in Data) { gExit.Elf.RebootIOP = Data.RebootIOP === "true"; }
 	if ('Code' in Data)		 { gExit.Elf.Code = Data.Code; }
@@ -813,53 +835,58 @@ function UIAnimationCommon_Work(anim, progress) {
 //////////////////////////////////////////////////////////////////////////
 
 function UIAnimationCategoryMove_Start(delta) {
-	const next = DashUI.Category.Next + delta;
+    const obj = DashUI.Category;
+    const next = obj.Next + delta;
 	const run = next >= 0 && next < CATNAME.length;
-	if ((run) && (DashUI.Category.Current === DashUI.Category.Next)) {
+    if ((run) && (obj.Current === obj.Next)) {
 		DashUIResetBg();
 		PlayCursorSfx();
-		DashUI.Category.Next = next;
-		DashUI.Category.Animation.Running = true;
-		DashUI.Category.Animation.Progress = 0.0f;
+        obj.Next = next;
+        obj.Animation.Running = true;
+        obj.Animation.Progress = 0.0f;
 		DashUI.AnimationQueue.push(UIAnimationCategoryMove_Work);
 		UIAnimationItemCollectionMove_Start();
 	}
 }
 function UIAnimationCategoryMove_Work() {
-	if (!DashUI.Category.Animation.Running) { return true; }
-	DashUI.Category.Animation.Progress += 0.075f;
-	if (DashUI.Category.Animation.Progress < 1.0f) {
+    const anim = DashUI.Category.Animation;
+    if (!anim.Running) { return true; }
+    anim.Progress += 0.075f;
+    if (anim.Progress < 1.0f) {
 		const l = pad.pressed(Pads.LEFT) || (pad.lx < -64);
 		const r = pad.pressed(Pads.RIGHT) || (pad.lx > 64);
-		if ((DashUI.Category.Animation.Progress > 0.6f) && (l || r)) {
+        if ((anim.Progress > 0.6f) && (l || r)) {
 			const delta = l ? -1 : 1;
 			UIAnimationCategoryMove_Reset(delta)
 		}
 		return false;
 	}
 
+    anim.Progress = 0.0f;
+    anim.Running = false;
 	DashUI.Category.Current = DashUI.Category.Next;
-	DashUI.Category.Animation.Progress = 0.0f;
-	DashUI.Category.Animation.Running = false;
 
 	return true;
 }
 function UIAnimationCategoryMove_Reset(delta) {
-	const next = DashUI.Category.Next + delta;
+    const catObj = DashUI.Category;
+    const next = catObj.Next + delta;
 	const run = next >= 0 && next < CATNAME.length;
 	if (!run) { return }
 
 	DashUIResetBg();
-	PlayCursorSfx();
-	DashUI.Category.Current = DashUI.Category.Next;
-	DashUI.ItemCollection.Current = DashUI.ItemCollection.Next;
-	DashUI.Items.Current = DashCatItems[DashUI.Category.Next].Default;
-	DashUI.Items.Next = DashUI.Items.Current;
-	DashUI.Category.Next = next;
-	DashUI.ItemCollection.Swipe.Dir = DashUI.Category.Next - DashUI.Category.Current;
-	DashUI.ItemCollection.Next = DashCatItems[DashUI.Category.Next].Items;
-	DashUI.Category.Animation.Progress = 0.0f;
-	DashUI.ItemCollection.Swipe.Progress = 0.0f;
+    PlayCursorSfx();
+    const collObj = DashUI.ItemCollection;
+
+	DashUI.Items.Current        = DashCatItems[catObj.Next].Default;
+	DashUI.Items.Next           = DashUI.Items.Current;
+    catObj.Current              = catObj.Next;
+    catObj.Next                 = next;
+    catObj.Animation.Progress   = 0.0f;
+    collObj.Swipe.Dir           = catObj.Next - catObj.Current;
+    collObj.Current             = collObj.Next;
+    collObj.Next                = DashCatItems[catObj.Next].Items;
+    collObj.Swipe.Progress      = -0.075f;
 }
 function DrawUICategories() {
 	if ((!DashUI.Category.Display) || (DashUI.SubMenu.Level > 1)) { return; }
@@ -1012,64 +1039,70 @@ function DrawUICategories() {
 //////////////////////////////////////////////////////////////////////////
 
 function UIAnimationCategoryItemsMove_Start(delta) {
-	const next = DashUI.Items.Next + delta;
+    const obj = DashUI.Items;
+    const next = obj.Next + delta;
 	const run = next >= 0 && next < DashUI.ItemCollection.Current.length;
-	if ((run) && (DashUI.Items.Current === DashUI.Items.Next)) {
+    if ((run) && (obj.Current === obj.Next)) {
 		DashUIResetBg();
 		PlayCursorSfx();
-		DashUI.Items.Next = next;
+        obj.Next = next;
+        obj.Animation.Running = true;
+        obj.Animation.Progress = 0.0f;
 		DashCatItems[DashUI.Category.Current].Default = next;
-		DashUI.Items.Animation.Running = true;
-		DashUI.Items.Animation.Progress = 0.0f;
 		DashUI.AnimationQueue.push(UIAnimationCategoryItemsMove_Work);
 	}
 }
 function UIAnimationCategoryItemsMove_Work() {
-	if (!DashUI.Items.Animation.Running) { return true; }
+    const anim = DashUI.Items.Animation;
+    if (!anim.Running) { return true; }
 
-	DashUI.Items.Animation.Progress += 0.07f;
-	if (DashUI.Items.Animation.Progress < 1.0f) {
+    anim.Progress += 0.07f;
+    if (anim.Progress < 1.0f) {
 		const u = pad.pressed(Pads.UP) || (pad.ly < -64);
 		const d = pad.pressed(Pads.DOWN) || (pad.ly > 64);
-		if ((DashUI.Items.Animation.Progress > 0.6f) && (u || d)) {
+        if ((anim.Progress > 0.6f) && (u || d)) {
 			const delta = u ? -1 : 1;
 			UIAnimationCategoryItemsMove_Reset(delta)
 		}
 		return false;
 	}
 
+    anim.Progress = 0.0f;
+    anim.Running = false;
 	DashUI.Items.Current = DashUI.Items.Next;
-	DashUI.Items.Animation.Progress = 0.0f;
-	DashUI.Items.Animation.Running = false;
 
 	return true;
 }
 function UIAnimationCategoryItemsMove_Reset(delta) {
-	const next = DashUI.Items.Next + delta;
+    const obj = DashUI.Items;
+    const next = obj.Next + delta;
 	const run = next >= 0 && next < DashUI.ItemCollection.Current.length;
 	if (!run) { return; }
 
 	PlayCursorSfx();
 	DashUIResetBg();
-	DashUI.Items.Animation.Progress = 0.0f;
-	DashUI.Items.Current = DashUI.Items.Next;
-	DashUI.Items.Next = next;
+    obj.Animation.Progress = 0.0f;
+    obj.Current = obj.Next;
+    obj.Next = next;
 	DashCatItems[DashUI.Category.Current].Default = next;
 }
 function UIAnimationItemCollectionMove_Start() {
-	DashUI.ItemCollection.Swipe.Running = true;
-	DashUI.ItemCollection.Swipe.Progress = 0.0f;
-	DashUI.ItemCollection.Swipe.Dir = DashUI.Category.Next - DashUI.Category.Current;
+    const swipe = DashUI.ItemCollection.Swipe;
+    swipe.Running = true;
+    swipe.Progress = 0.0f;
+    swipe.Dir = DashUI.Category.Next - DashUI.Category.Current;
 	DashUI.ItemCollection.Next = DashCatItems[DashUI.Category.Next].Items;
 	DashUI.AnimationQueue.push(UIAnimationItemCollectionMove_Work);
 }
 function UIAnimationItemCollectionMove_Work() {
-	if (!DashUI.ItemCollection.Swipe.Running) { return true; }
-	DashUI.ItemCollection.Swipe.Progress += 0.075f;
-	if (DashUI.ItemCollection.Swipe.Progress < 1.0f) { return false; }
+    const swipe = DashUI.ItemCollection.Swipe;
+    if (!swipe.Running) { return true; }
+    swipe.Progress += 0.075f;
+    if (swipe.Progress < 1.0f) { return false; }
 
-	DashUI.ItemCollection.Swipe.Progress = 0.0f;
-	DashUI.ItemCollection.Swipe.Running = false;
+    swipe.Progress = 0.0f;
+    swipe.Running = false;
+
 	DashUI.ItemCollection.Current = DashUI.ItemCollection.Next;
 	DashUI.Items.Current = DashCatItems[DashUI.Category.Next].Default;
 	DashUI.Items.Next = DashUI.Items.Current;
@@ -1079,7 +1112,7 @@ function UIAnimationItemCollectionMove_Work() {
 function DrawUICategoryItems() {
 	DrawUICategoryItems_Work(DashUI.ItemCollection.Current, DashUI.Items.Current, 0)
 	if (DashUI.ItemCollection.Swipe.Running) {
-		DrawUICategoryItems_Work(DashUI.ItemCollection.Next, DashCatItems[DashUI.Category.Next].Default, 90 * DashUI.ItemCollection.Swipe.Dir);
+		DrawUICategoryItems_Work(DashUI.ItemCollection.Next, DashCatItems[DashUI.Category.Next].Default, 92 * DashUI.ItemCollection.Swipe.Dir);
 	}
 }
 function DrawUICategoryItems_Work(items, current, x) {
@@ -1096,7 +1129,7 @@ function DrawUICategoryItems_Work(items, current, x) {
 		: 1;
 
 	const swipeConst = swipe.Running ? cubicEaseOut(swipe.Progress) : 0;
-	const swipeoffsetX = x + 90 * swipeConst * -swipe.Dir;
+	const swipeoffsetX = x + 92 * swipeConst * -swipe.Dir;
 
     const fade          = DashUI.Items.Fade;
     const dialogBg      = (DashUI.Dialog.Display && (!DashUI.Dialog.Data[DashUI.Dialog.Level].BG));
@@ -1182,7 +1215,7 @@ function DrawUICategoryItems_Work(items, current, x) {
                 Scale: FontObj.SizeM,
                 Position: {
                     X: Name.Position.X,
-                    Y: Name.Position.Y + 18
+                    Y: Name.Position.Y + 20
                 },
                 Alpha: ~~(128 - (128 * easing))
             };
@@ -1231,7 +1264,7 @@ function DrawUICategoryItems_Work(items, current, x) {
                     Scale: FontObj.SizeM,
                     Position: {
                         X: Name.Position.X,
-                        Y: Name.Position.Y + 18
+                        Y: Name.Position.Y + 20
                     },
                     Alpha: ~~(128 * easing)
                 };
@@ -1281,7 +1314,7 @@ function DrawUICategoryItems_Work(items, current, x) {
 		}
 		else if (swipe.Running) {
 			Icon.Alpha 		= ~~(Icon.Alpha * swipeProgress);
-			Name.Alpha 	    = ~~(Name.Alpha * swipeProgress);
+			Name.Alpha 	    = (x !== 0) ? ~~(Name.Alpha * swipeProgress) : ~~((Name.Alpha - 64) * swipeProgress);
 			Icon.X 			+= swipeoffsetX;
 			Name.Position.X += swipeoffsetX;
 
@@ -1331,11 +1364,12 @@ function DrawUICategoryItems_Work(items, current, x) {
 
 function DashUISetNewSubMenu(SubMenu) {
     if ('Init' in SubMenu) { SubMenu.Init(SubMenu); }
-	PlayCursorSfx();
-	DashUI.SubMenu.Items.Current = SubMenu.Default;
-	DashUI.SubMenu.Items.Next = SubMenu.Default;
-	DashUI.SubMenu.Level++;
-	DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level] = SubMenu;
+    PlayCursorSfx();
+    const obj = DashUI.SubMenu;
+    obj.Items.Current = SubMenu.Default;
+    obj.Items.Next = SubMenu.Default;
+    obj.Level++;
+    obj.ItemCollection[obj.Level] = SubMenu;
     DashUI.State.Next = 2;
 	UIAnimateSubMenuItemsFade_Start(true);
 }
@@ -1362,49 +1396,53 @@ function UIAnimateSubMenuItemsFade_Start(isIn) {
     DashUI.AnimationQueue.push(UICONST.Fun.SubMenuFade);
 }
 function UIAnimateSubMenuItemsFade_Work() {
-	if (!DashUI.SubMenu.Fade.Running) { return true; }
-	DashUI.SubMenu.Fade.Progress += 0.04f;
+    const fade = DashUI.SubMenu.Fade;
+    if (!fade.Running) { return true; }
+    fade.Progress += 0.04f;
+    if (fade.Progress < 1.0f) { return false; }
 
-	if (DashUI.SubMenu.Fade.Progress >= 1.0f) {
-		DashUI.SubMenu.Fade.Progress = 1.0f;
-		DashUI.SubMenu.Fade.Running = false;
-		if (!DashUI.SubMenu.Fade.In) {
-			DashUI.SubMenu.Level--;
-			DashUI.SubMenu.Display = (DashUI.SubMenu.Level > -1);
-			if (DashUI.SubMenu.Level > -1) {
-				const next = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Default;
-				DashUI.SubMenu.Items.Current = next;
-				DashUI.SubMenu.Items.Next = next;
-			}
-			else {
-				DashUI.State.Next = 1;
-			}
-		}
-		return true;
-	}
+    if (!fade.In) {
+        const submenu = DashUI.SubMenu;
+        submenu.Level--;
+        submenu.Display = (submenu.Level > -1);
+        if (submenu.Level > -1) {
+            const next = submenu.ItemCollection[submenu.Level].Default;
+            submenu.Items.Current = next;
+            submenu.Items.Next = next;
+        }
+        else {
+            DashUI.State.Next = 1;
+        }
+    }
 
-	return false;
+    fade.Progress = 1.0f;
+    fade.Running = false;
+
+    return true;
 }
 function UIAnimationSubMenuItemsMove_Start(delta) {
-	const next = DashUI.SubMenu.Items.Next + delta;
-	const run = next >= 0 && next < DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items.length;
-	if ((run) && (DashUI.SubMenu.Items.Current === DashUI.SubMenu.Items.Next)) {
+    const obj = DashUI.SubMenu;
+    const objItems = obj.Items;
+    const next = objItems.Next + delta;
+    const run = next >= 0 && next < obj.ItemCollection[obj.Level].Items.length;
+    if ((run) && (objItems.Current === objItems.Next)) {
 		DashUIResetBg();
 		PlayCursorSfx();
-		DashUI.SubMenu.Items.Next = next;
-		DashUI.SubMenu.Animation.Running = true;
-		DashUI.SubMenu.Animation.Progress = 0.0f;
+        objItems.Next = next;
+        obj.Animation.Running = true;
+        obj.Animation.Progress = 0.0f;
 		DashUI.AnimationQueue.push(UIAnimationSubMenuItemsMove_Work);
 	}
 }
 function UIAnimationSubMenuItemsMove_Work() {
-	if (!DashUI.SubMenu.Animation.Running) { return true; }
+    const anim = DashUI.SubMenu.Animation;
+    if (!anim.Running) { return true; }
 
-	DashUI.SubMenu.Animation.Progress += 0.07f;
-	if (DashUI.SubMenu.Animation.Progress < 1.0f) {
+    anim.Progress += 0.07f;
+    if (anim.Progress < 1.0f) {
 		const u = pad.pressed(Pads.UP) || (pad.ly < -64);
 		const d = pad.pressed(Pads.DOWN) || (pad.ly > 64);
-		if ((DashUI.SubMenu.Animation.Progress > 0.6f) && (u || d)) {
+        if ((anim.Progress > 0.6f) && (u || d)) {
 			const delta = u ? -1 : 1;
 			UIAnimationSubMenuItemsMove_Reset(delta)
 		}
@@ -1414,28 +1452,31 @@ function UIAnimationSubMenuItemsMove_Work() {
 
 	DashUI.SubMenu.Items.Current = DashUI.SubMenu.Items.Next;
 	DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Default = DashUI.SubMenu.Items.Current;
-	DashUI.SubMenu.Animation.Progress = 0.0f;
-	DashUI.SubMenu.Animation.Running = false;
+    anim.Progress = 0.0f;
+    anim.Running = false;
 
 	return true;
 }
 function UIAnimationSubMenuItemsMove_Reset(delta) {
-	const next = DashUI.SubMenu.Items.Next + delta;
-	const run = next >= 0 && next < DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items.length;
+    const obj = DashUI.SubMenu;
+    const objitems = obj.Items;
+    const next = objitems.Next + delta;
+    const run = next >= 0 && next < obj.ItemCollection[obj.Level].Items.length;
 	if (!run) { return; }
 
 	PlayCursorSfx();
 	DashUIResetBg();
-	DashUI.SubMenu.Items.Current = DashUI.SubMenu.Items.Next;
-	DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Default = DashUI.SubMenu.Items.Current;
-	DashUI.SubMenu.Items.Next = next;
-	DashUI.SubMenu.Animation.Progress = 0.0f;
+    objitems.Current = objitems.Next;
+    objitems.Next = next;
+    obj.ItemCollection[obj.Level].Default = objitems.Current;
+    obj.Animation.Progress = 0.0f;
 }
 function DrawUISubMenuFadingInitialLevel() {
 	if ((DashUI.SubMenu.Level < 2) || (!DashUI.SubMenu.Fade.Running)) return;
 
-	const items   = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level - 2].Items;
-	const current = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level - 2].Default;
+    const mainObj = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level - 2];
+	const items   = mainObj.Items;
+    const current = mainObj.Default;
     const fadeProgress = getFadeProgress(DashUI.SubMenu.Fade);
 
 	const halfMod    = UICONST.IcoUnselMod >> 1;
@@ -1490,8 +1531,9 @@ function DrawUISubMenuFadingInitialLevel() {
 function DrawUISubMenuPreviousLevel() {
     if (DashUI.SubMenu.Level < 1) return;
 
-	const items   = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level - 1].Items;
-	const current = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level - 1].Default;
+    const mainObj = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level - 1];
+	const items   = mainObj.Items;
+    const current = mainObj.Default;
 	const fade    = DashUI.SubMenu.Fade;
 	const fadeProgress = getFadeProgress(fade);
 
@@ -1560,7 +1602,7 @@ function DrawUISubMenuPreviousLevel() {
 				Scale: FontObj.SizeM,
 				Position: {
 					X: Name.Position.X,
-					Y: Name.Position.Y + 18
+					Y: Name.Position.Y + 20
                 },
                 Alpha: baseA
 			};
@@ -1729,7 +1771,7 @@ function DrawUISubMenu() {
             Desc = {
                 Text: [ getLocalText(info.Description) ],
                 Scale: FontObj.SizeM,
-                Position: { X: Name.Position.X, Y: Name.Position.Y + 18 },
+                Position: { X: Name.Position.X, Y: Name.Position.Y + 20 },
                 Alpha: (contextMod) ? Name.Alpha : ~~(baseA - (128 * easing))
             };
 		}
@@ -1743,7 +1785,7 @@ function DrawUISubMenu() {
             Desc = {
                 Text: [ getLocalText(info.Description) ],
                 Scale: FontObj.SizeM,
-                Position: { X: Name.Position.X, Y: Name.Position.Y + 18 },
+                Position: { X: Name.Position.X, Y: Name.Position.Y + 20 },
                 Alpha: ~~(128 * easing)
             };
         }
@@ -1864,61 +1906,58 @@ function UIAnimateContextMenuItemsFade_Start(isIn) {
 function UIAnimateContextMenuItemsFade_Work() {
     const obj = DashUI.Context;
     const fade = obj.Fade;
-
     if (!fade.Running) { return true; }
     fade.Progress += 0.04f;
+    if (fade.Progress < 1.0f) { return false; }
 
-    if (fade.Progress >= 1.0f) {
-        fade.Progress = 1.0f;
-        fade.Running = false;
-        if (!fade.In) {
-            obj.Level--;
-            obj.Display = (obj.Level > -1);
-            if (obj.Display)	{
-                const next = obj.ItemCollection[obj.Level].Default;
-                obj.Items.Current = next;
-                obj.Items.Next = next;
-			}
-            else if (DashUI.State.Next === DashUI.State.Current) {
-                Timer.destroy(obj.Timer);
-				DashUI.State.Next = DashUI.State.Previous;
-			}
-		}
-		return true;
-	}
+    if (!fade.In) {
+        obj.Level--;
+        obj.Display = (obj.Level > -1);
+        if (obj.Display) {
+            const next = obj.ItemCollection[obj.Level].Default;
+            obj.Items.Current = next;
+            obj.Items.Next = next;
+        }
+        else if (DashUI.State.Next === DashUI.State.Current) {
+            Timer.destroy(obj.Timer);
+            DashUI.State.Next = DashUI.State.Previous;
+        }
+    }
 
-	return false;
+    fade.Progress = 1.0f;
+    fade.Running = false;
+    return true;
 }
 function UIAnimationContextMenuItemsMove_Start(delta) {
-	const next = DashUI.Context.Items.Current + delta;
-	const run = next >= 0 && next < DashUI.Context.ItemCollection[DashUI.Context.Level].Items.length;
+    const obj = DashUI.Context;
+    const objitems = obj.Items;
+    const next = objitems.Current + delta;
+    const run = next >= 0 && next < obj.ItemCollection[obj.Level].Items.length;
 	if (!run) { return; }
 
 	PlayCursorSfx();
-	if (next >= DashUI.Context.Items.LowerLimit) {
-		DashUI.Context.Items.UpperLimit++;
-		DashUI.Context.Items.LowerLimit++;
+    if (next >= objitems.LowerLimit) {
+        objitems.UpperLimit++;
+        objitems.LowerLimit++;
 	}
-	else if (next < DashUI.Context.Items.UpperLimit) {
-		DashUI.Context.Items.UpperLimit--;
-		DashUI.Context.Items.LowerLimit--;
+    else if (next < objitems.UpperLimit) {
+        objitems.UpperLimit--;
+        objitems.LowerLimit--;
 	}
 
-	DashUI.Context.Items.Next = next;
-	DashUI.Context.Animation.Running = true;
-	DashUI.Context.Animation.Progress = 0.0f;
+    objitems.Next = next;
+    obj.Animation.Running = true;
+    obj.Animation.Progress = 0.0f;
 	DashUI.AnimationQueue.push(UIAnimationContextMenuItemsMove_Work);
 }
 function UIAnimationContextMenuItemsMove_Work() {
-	if (!DashUI.Context.Animation.Running) { return true; }
-
-	DashUI.Context.Animation.Progress += 0.2f;
-	if (DashUI.Context.Animation.Progress < 1.0f) { return false; }
-
-	DashUI.Context.Items.Current = DashUI.Context.Items.Next;
-	DashUI.Context.Animation.Progress = 0.0f;
-	DashUI.Context.Animation.Running = false;
-
+    const anim = DashUI.Context.Animation;
+    if (!anim.Running) { return true; }
+    anim.Progress += 0.2f;
+    if (anim.Progress < 1.0f) { return false; }
+    anim.Progress = 0.0f;
+    anim.Running = false;
+    DashUI.Context.Items.Current = DashUI.Context.Items.Next;
 	return true;
 }
 function DashUISelectContextItem() {
@@ -2027,12 +2066,10 @@ function DrawUIContext() {
     let selYmod = 0;
 	let slotPos = 0;
 
-	for (let i = first; i < last; i++)
-	{
+	for (let i = first; i < last; i++) {
 		const item = items[i];
 		let icomodX = false;
-		if (('Icon' in item) && (item.Icon !== -1))
-        {
+		if (('Icon' in item) && (item.Icon !== -1)) {
             selico = (i === current);
             icomodX = true;
 
@@ -2143,17 +2180,18 @@ function OpenOptionBox() {
 	if (context) { DashUISetNewContextMenu(context); }
 }
 function DrawUIOptionBox() {
+    const box = DashElements.OptionBox;
 	if ((DashUI.AnimationQueue.length > 0) || (DashUI.State.Next > 2) || (DashUI.State.Current < 1))
-	{ DashUI.OptionBox.Progress = 0.0f; return; }
+    { box.Progress = 0.0f; return; }
 
 	const context = GetOptionContext();
 
 	if (!context) { return; }
 
-	DashUI.OptionBox.Progress += 0.05f;
-	if (DashUI.OptionBox.Progress >= 1.0f) { DashUI.OptionBox.Progress = 1.0f; }
+    box.Progress += 0.05f;
+    if (box.Progress >= 1.0f) { box.Progress = 1.0f; }
 
-	const alpha = ~~(DashUI.OptionBox.Progress * 128);
+    const alpha = ~~(box.Progress * 128);
 
 	const optxt = {
 		Text: [ getLocalText(XMBLANG.OPTIONS) ],
@@ -2161,11 +2199,13 @@ function DrawUIOptionBox() {
         Alpha: alpha
 	};
 
-	DashElements.OptionBox.width = 80 + Math.fround((optxt.Text[0].length + 7) / 2);
-    DashElements.OptionBox.color = Color.setA(DashElements.OptionBox.color, alpha);
-    DashElements.OptionIco.color = Color.setA(DashElements.OptionIco.color, alpha);
-	DashElements.OptionBox.draw(UICONST.OptionBox.XBOX, UICONST.OptionBox.YBOX);
-	DashElements.OptionIco.draw(UICONST.OptionBox.XICO, UICONST.OptionBox.YICO);
+    const elementBox = DashElements.OptionBox;
+    const elementIco = DashElements.OptionIco;
+    elementBox.width = 80 + Math.fround((optxt.Text[0].length + 7) / 2);
+    elementBox.color = Color.setA(elementBox.color, alpha);
+    elementIco.color = Color.setA(elementIco.color, alpha);
+    elementBox.draw(UICONST.OptionBox.XBOX, UICONST.OptionBox.YBOX);
+    elementIco.draw(UICONST.OptionBox.XICO, UICONST.OptionBox.YICO);
 
 	TxtPrint(optxt);
 }
@@ -2335,15 +2375,15 @@ function DrawUIDialogParentalScreen(data, baseA) {
 
 	let baseY = (ScrCanvas.height >> 1) + 20;
 	let arrowX = (ScrCanvas.width >> 1) - 56 + (data.Selected * 30);
-
-	DashElements.Arrow.angle = -0.5f;
-	DashElements.Arrow.width = 16;
-	DashElements.Arrow.height = 16;
-    DashElements.Arrow.color = Color.setA(DashElements.Arrow.color,baseA);
-	DashElements.Arrow.draw(arrowX, baseY + 5);
-	DashElements.Arrow.angle = 0.5f;
-	DashElements.Arrow.draw(arrowX, baseY + 31);
-	DashElements.Arrow.angle = 0.0f;
+    const arrowElement = DashElements.Arrow;
+    arrowElement.angle = -0.5f;
+    arrowElement.width = 16;
+    arrowElement.height = 16;
+    arrowElement.color = Color.setA(arrowElement.color,baseA);
+    arrowElement.draw(arrowX, baseY + 5);
+    arrowElement.angle = 0.5f;
+    arrowElement.draw(arrowX, baseY + 31);
+    arrowElement.angle = 0.0f;
 }
 function DrawUIDialogInfoScreen(data, baseA) {
 	if (!('Processed' in data)) {
@@ -2403,20 +2443,22 @@ function DrawUIDialogInfoScreen(data, baseA) {
 
         TxtPrint(SelValue);
 
-		DashElements.Arrow.width = 16;
-		DashElements.Arrow.height = 16;
-        DashElements.Arrow.color = Color.setA(DashElements.Arrow.color,baseA);
+        const arrowElement = DashElements.Arrow;
+
+        arrowElement.width = 16;
+        arrowElement.height = 16;
+        arrowElement.color = Color.setA(arrowElement.color,baseA);
 
 		if (items[data.Selected].Selected > 0) {
-			DashElements.Arrow.angle = 0.0f;
-			DashElements.Arrow.draw(UICONST.DialogInfo.DescX - 16, selYpos + 7);
+            arrowElement.angle = 0.0f;
+            arrowElement.draw(UICONST.DialogInfo.DescX - 16, selYpos + 7);
 		}
 		if (items[data.Selected].Selected < (items[data.Selected].Value.length - 1)) {
-			DashElements.Arrow.angle = 1.0f;
-			DashElements.Arrow.draw(UICONST.DialogInfo.DescX + seltxtSize, selYpos + 7);
+            arrowElement.angle = 1.0f;
+            arrowElement.draw(UICONST.DialogInfo.DescX + seltxtSize, selYpos + 7);
 		}
 
-		DashElements.Arrow.angle = 0.0f;
+        arrowElement.angle = 0.0f;
 	}
 }
 function DrawUIConfirmationScreen(data, txtA) {

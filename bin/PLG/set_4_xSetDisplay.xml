@@ -33,6 +33,11 @@
               Screen.setParam(Screen.DEPTH_TEST_ENABLE, false);
               DashUIConstantsInit();
             }
+            else {
+              let config = CfgMan.Get("main.cfg");
+              config["vmode"] = DashUI.SelectedItem.Value.Default.toString();
+              CfgMan.Push("main.cfg", config);
+            }
             UIAnimationDialogFade_Start(false);
           }
         ]]>

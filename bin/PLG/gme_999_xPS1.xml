@@ -1,26 +1,11 @@
 <App Name="Playstation" Icon="FOLDER" Category="5" Type="SUBMENU" Description="$`${this.Value.Items.length} ${XMBLANG.TITLES[UserConfig.Language]}`">
   <Options HideEmpty="true">
     <![CDATA[
+    	const PopsCFG = CfgMan.Get("pops.cfg");
+
 			function SaveLastPlayed() {
-				const cfg = CfgMan.Get("pops.cfg");
-				const value = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Name;
-				cfg["last"] = value;
-				CfgMan.Set("pops.cfg", cfg);
-			}
-
-			function getPOPSElfPath(data) {
-				const prefix = (data.dev === "mass") ? "XX." : "";
-				let path = "mass:/POPS/"
-				if (data.dev === "hdd") {
-					const part = mountHDDPartition("__common");
-					path = `${part}:/POPS/`;
-				}
-
-				const elfPath = `${path}${prefix}${data.fname.substring(0, data.fname.length - 3)}ELF`;
-
-				if (!std.exists(elfPath)) { System.copyFile(`${path}POPSTARTER.ELF`, elfPath); }
-
-				return elfPath;
+				PopsCFG["last"] = DashUI.SelectedItem.Name;
+				CfgMan.Set("pops.cfg", PopsCFG);
 			}
 
 			function generateVMC(game) {
@@ -39,6 +24,31 @@
 				}
 			}
 
+      function getGameID(game) {
+        if (game.Name in PopsCFG) {
+					game.GameID = PopsCFG[game.Name];
+				}
+        else {
+					let path = game.Data.path;
+					if (game.Data.dev === "hdd") { path = mountHDDPartition("__.POPS") + ":/"; }
+					const gameID = getVCDGameID(`${path}${game.Data.fname}`, game.Data.size);
+					game.GameID = gameID.success ? gameID.code : "";
+          if (game.GameID !== "") {
+          	PopsCFG[game.Name] = game.GameID;
+            CfgMan.Push("pops.cfg", PopsCFG);
+          }
+        }
+
+				game.Description = game.GameID;
+
+				const ico = (game.GameID !== "") ? findICO(game.GameID) : "";
+				if (ico !== "") { game.CustomIcon = ico; }
+				const bgFile = (game.GameID !== "") ? findBG(game.GameID) : "";
+				if (bgFile !== "") { game.CustomBG = bgFile; }
+
+				generateVMC(game);
+      }
+
 			function ScanGames(path, dev) {
 				const items = [];
 				let gameDir = System.listDir(path);
@@ -47,24 +57,15 @@
 					items.push({
 						Name: getGameName(gameDir[j].name),
 						Type: "ELF",
-						Data: { path: path, fname: gameDir[j].name, dev: dev }
+						Data: { path: path, fname: gameDir[j].name, size: gameDir[j].size, dev: dev }
 					});
 
 					Object.defineProperty(items[items.length - 1], "Icon", {
 						get() {
-							const gameID = getVCDGameID(`${path}${gameDir[j].name}`, gameDir[j].size);
-              this.GameID = gameID.success ? gameID.code : "";
-              this.Description = this.GameID;
+              getGameID(this);
               delete this.Icon;
               this.Icon = "DISC_PS1";
-
-							const ico = gameID.success ? findICO(this.GameID) : "";
-							if (ico !== "") { this.CustomIcon = ico; }
-							const bgFile = gameID.success ? findBG(this.GameID) : "";
-							if (bgFile !== "") { this.CustomBG = bgFile; }
-
-              generateVMC(this);
-              return this.GameID;
+              return this.Icon;
             },
 						enumerable: true,
             configurable: true

@@ -11,7 +11,6 @@
 //////////////////////////////////////////////////////////////////////////
 
 function umountHDD() { if (os.readdir("pfs1:/")[1] === 0) { System.umount("pfs1:"); } }
-
 function mountHDDPartition(partName) {
     if (!UserConfig.HDD) { return "?"; }
 
@@ -26,7 +25,6 @@ function mountHDDPartition(partName) {
 
 	return "pfs1";
 }
-
 function getDevicesAsItems(params = {}) {
 	const Items = [];
 	const devices = System.devices();
@@ -75,7 +73,7 @@ function getDevicesAsItems(params = {}) {
 				count = 10;
 				basepath = "mass";
                 for (let j = 0; j < count; j++) {
-                    const info = System.getBDMInfo(`mass${j.toString()}:/`);
+                    const info = System.getBDMInfo(`mass${j.toString()}:`);
                     if (!info) { count = j; break; }
 					nameList.push(XMBLANG.MASS_DIR_NAME);
 					iconList.push(21);
@@ -120,7 +118,6 @@ function getDevicesAsItems(params = {}) {
 	}
 	return Items;
 }
-
 function exploreDir(params) {
 	const fileFilters = ('fileFilters' in params) ? params.fileFilters : false;
 	const fileoptions = ('fileoptions' in params) ? params.fileoptions : false;
@@ -134,8 +131,11 @@ function exploreDir(params) {
     let files = dirItems.filter(item => !item.dir); // All files
 
     // Sort directories and files alphabetically by name
-    directories.sort((a, b) => a.name.localeCompare(b.name));
-    files.sort((a, b) => a.name.localeCompare(b.name));
+    files.sort((a, b) => {
+        const nameA = a.name.toLowerCase();
+        const nameB = b.name.toLowerCase();
+        return nameA < nameB ? -1 : nameA > nameB ? 1 : 0;
+    });
 
 	const defGetter = function() { return exploreDir({ dir: this.FullPath, fileFilters: fileFilters, fileoptions: fileoptions }); };
 	const hddGetter = function() { const part = mountHDDPartition(this.Name); return exploreDir({ dir:`${part}:/`, fileFilters: fileFilters, fileoptions: fileoptions}); };
@@ -154,7 +154,11 @@ function exploreDir(params) {
         Object.defineProperty(collection[collection.length - 1], "Value", { get: getter });
 	}
 
-	collection.sort((a, b) => a.Name.localeCompare(b.Name));
+    collection.sort((a, b) => {
+        const nameA = a.Name.toLowerCase();
+        const nameB = b.Name.toLowerCase();
+        return nameA < nameB ? -1 : nameA > nameB ? 1 : 0;
+    });
 
 	for (let i = 0; i < files.length; i++) {
 		let item = files[i];
@@ -171,7 +175,6 @@ function exploreDir(params) {
 
 	return { Items: collection, Default: 0 };
 }
-
 function getFileAsItem(params) {
     const item = {
         Name: getFileName(params.path),
@@ -279,6 +282,7 @@ function formatFileSize(size) {
 
 function resolveFilePath(filePath) {
     filePath = filePath.replace("{cwd}", CWD);
+    filePath = filePath.replace("{bootpath}", System.boot_path);
     filePath = filePath.replace("//", "/");
     if (!filePath.includes('?')) return filePath; // Literal path, return as is
 
@@ -323,33 +327,30 @@ function ftxtWrite(path, txt, mode = "w+") {
 //////////////////////////////////////////////////////////////////////////
 
 function getGameName(path) {
-	// Regular expression to match the identifier and game name
-    let match = path.match(/[A-Z]{4}[-_][0-9]{3}\.[0-9]{2}\.(.+)\.[^/]+$/);
-    if (match && match[1]) { return match[1].trim(); }
 
-    // Check for "PP.HDL." format
-    let ppHdlMatch = path.match(/^PP\.HDL\.(.+)\.[^/.]+$/);
-    if (ppHdlMatch && ppHdlMatch[1]) { return ppHdlMatch[1].trim(); }
-
-    // Check for "PP.Game-ID.." format
-    let ppGameIdMatch = path.match(/^PP\.[A-Z]{4}[-_][0-9]+\.\.(.+)\.[^/]+$/);
-    if (ppGameIdMatch && ppGameIdMatch[1]) { return ppGameIdMatch[1].trim(); }
-
-    // Extract file name without the extension
-    let fileNameMatch = path.match(/([^/]+)\.[^/.]+$/);
-    if (fileNameMatch && fileNameMatch[1]) { return fileNameMatch[1].trim(); }
-
-    // Return the full path as a fallback
-    return path.trim();
+    const noExt = path.replace(/\.[^/.]+$/, "");
+    const lastDot = noExt.lastIndexOf(".");
+    if (lastDot === -1 || lastDot === noExt.length - 1) return noExt.trim();
+    return noExt.slice(lastDot + 1);
 }
-
-/*	Parses a Path to extract the Game Code in case of Old Format naming conventions	*/
 function getGameCodeFromOldFormatName(path) {
-    // Regular expression to match the "code" part
-    const match = path.match(/[A-Z]{4}[-_][0-9]{3}\.[0-9]{2}/);
-    return match ? match[0] : "";
-}
 
+    // Check for Pfs BatchKit Manager Pattern (PP.Game-ID..GameName.iso)
+    let match = path.match(/[A-Z]{4}-\d{5}/);
+    if (match) {
+        const parts = match[0].split('-'); // ['SLPS', '12345']
+        const gameCode = parts[0] + '_' + parts[1].slice(0, 3) + '.' + parts[1].slice(3);
+        return gameCode;
+    }
+
+    // Check for old format pattern
+    match = path.match(/[A-Z]{4}[-_]\d{3}\.\d{2}/);
+    if (match) {
+        return match[0].replace('-', '_');
+    }
+
+    return "";
+}
 function getISOgameID(isoPath, isoSize) {
 
 	const RET = { success: false, code: "ERR" };
@@ -402,32 +403,37 @@ function getISOgameID(isoPath, isoSize) {
 
     return RET;
 }
-
 function getISOgameArgs(info) {
-	let args = [];
-
-	let root 	= getRootName(info.path);
-	let dir 	= getPathWithoutRoot(info.path);
-
-    args.push(`-cwd=${CWD}APPS/neutrino/`);
-
-    if (info.dev === "ata") {
-		root = "hdl"; dir = "";
-        args.push(`-bsdfs=${root}`);
-	}
-	else {
-		args.push(`-qb`);
-	}
-
+    let args = [];
+    args.push(`-cwd=${PATHS.Neutrino}`);
     args.push(`-bsd=${info.dev}`);
-    args.push(`-dvd=${root}:${dir}${info.fname}`);
 
+    switch (info.dev) {
+        case "ata":
+            args.push(`-bsdfs=hdl`);
+            args.push(`-dvd=hdl:${info.fname.slice(0, -4)}`); // Remove .iso extension
+            break;
+        default:
+            let root = getRootName(info.path);
+            let dir = getPathWithoutRoot(info.path);
+
+            args.push(`-dvd=${root}:${dir}${info.fname}`);
+            args.push(`-qb`);
+            break;
+    }
+
+	// UPDATE: it's now a per game compatibility setting
     // Specify media type if available
-    if (info.mt !== "") { args.push(`-mt=${info.mt}`); }
+    //if (info.mt !== "") { args.push(`-mt=${info.mt}`); }
 
 	// Additional Main/Per-Game Settings.
 	const ID = (info.id !== "") ? info.id : false;
-	args = args.concat(GetNeutrinoArgs(ID));
+    args = args.concat(GetNeutrinoArgs(ID));
+
+    if (info.dev === "ata" && args.includes("-logo")) {
+        // Remove -logo if using ata device
+        args = args.filter(arg => arg !== "-logo");
+    }
 
 	return args;
 }
@@ -602,6 +608,21 @@ function setPOPSCheat(params) {
     }
 }
 
+function getPOPSElfPath(data) {
+    const prefix = (data.dev === "mass") ? "XX." : "";
+    let path = "mass:/POPS/";
+    if (data.dev === "hdd") {
+        const part = mountHDDPartition("__common");
+        path = `${part}:/POPS/`;
+    }
+
+    const elfPath = `${path}${prefix}${data.fname.substring(0, data.fname.length - 3)}ELF`;
+
+    if (!std.exists(elfPath)) { System.copyFile(`${path}POPSTARTER.ELF`, elfPath); }
+
+    return elfPath;
+}
+
 //////////////////////////////////////////////////////////////////////////
 ///*				   			    ART								  *///
 //////////////////////////////////////////////////////////////////////////
@@ -702,7 +723,7 @@ function FindDashIcon(targetName) {
 function ExecuteItem(Item) {
 	if (!Item) { return; }
 	if (DashUI.SubMenu.Level < 0) {
-		const safe = ((UserConfig.ParentalSet === 0) || (('Safe' in Item) && (Item.Safe)));
+		const safe = ((UserConfig.ParentalSet === 0) || (('Safe' in Item) && (Item.Safe === "true")));
 		if (!safe) { OpenDialogParentalCheck(Item); return; }
 	}
 	DashUIObjectHandler(Item);
@@ -1048,13 +1069,22 @@ function xlogProcess() {
 
 let gExit 		= {};
 let gThreads 	= false;
-let gDebug      = true;
+let gDebug      = false;
 let gDbgTxt     = [];
 let gArtPaths   = getArtPaths();
 let ScrCanvas 	= Screen.getMode();
-let TmpCanvas 	= Screen.getMode();
 const ee_info   = System.getCPUInfo();
+
 const vmodes    = [ Screen.NTSC, Screen.PAL, Screen.DTV_480p ];
+ScrCanvas.width = (UserConfig.Aspect === 0) ? 640 : 704;
+if ('Vmode' in UserConfig) {
+    ScrCanvas.height    = (UserConfig.Vmode === 1) ? 512 : 480;
+    ScrCanvas.interlace = (UserConfig.Vmode === 2) ? Screen.PROGRESSIVE : Screen.INTERLACED;
+    ScrCanvas.field     = (UserConfig.Vmode === 2) ? Screen.FRAME : Screen.FIELD;
+    ScrCanvas.mode      = vmodes[UserConfig.Vmode];
+}
+Screen.setMode(ScrCanvas);
+let TmpCanvas = Screen.getMode();
 
 ftxtWrite(`${PATHS.XMB}log.txt`, ""); // Init Log File.
 console.log("INIT LIB: SYSTEM COMPLETE");

@@ -13,7 +13,7 @@
   "Category": 0,
   "Type": "ELF",
   "Value": {
-    "Path": "{cwd}/OSDXMB.ELF",
+    "Path": "{bootpath}/OSDXMB.ELF",
     "Args": [ "main.js" ]
   }
 }
