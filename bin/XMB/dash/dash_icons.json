@@ -28,5 +28,6 @@
   { "id": "26", "path": "ic_game_ps2.png", "name": "DISC_PS2" },
   { "id": "27", "path": "ic_x_tool.png", "name": "TOOL" },
   { "id": "28", "path": "ic_set_net.png", "name": "SET_NET" },
-  { "id": "29", "path": "ic_x_mass.png", "name": "MASS" }
+  { "id": "29", "path": "ic_x_mass.png", "name": "MASS" },
+  { "id": "30", "path": "ic_x_osd.png", "name": "OSD" }
 ]
