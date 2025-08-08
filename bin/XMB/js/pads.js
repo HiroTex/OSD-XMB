@@ -115,19 +115,19 @@ function SetPadEvents_Information() {
     PADEVENTS.RIGHT 	= () => UIAnimationDialogInfoMove_Start(1);
     PADEVENTS.UP 		= () => {
 		const data = DashUI.Dialog.Data[DashUI.Dialog.Level];
-		let next = 0;
+		let next = -1;
 		for (let i = data.Selected - 1; i > -1; i--) {
 			if (data.Info[i].Selectable) { next = i; break; }
 		}
-		if (next !== 0) { UIAnimationDialogMove_Start(next - data.Selected, data.Info.length); }
+		if (next !== -1) { UIAnimationDialogMove_Start(next - data.Selected, data.Info.length); }
 	}
     PADEVENTS.DOWN 		= () => {
 		const data = DashUI.Dialog.Data[DashUI.Dialog.Level];
-		let next = 0;
+		let next = -1;
 		for (let i = data.Selected + 1; i < data.Info.length; i++) {
 			if (data.Info[i].Selectable) { next = i; break; }
 		}
-		if (next !== 0) { UIAnimationDialogMove_Start(next - data.Selected, data.Info.length); }
+		if (next !== -1) { UIAnimationDialogMove_Start(next - data.Selected, data.Info.length); }
 	}
 }
 

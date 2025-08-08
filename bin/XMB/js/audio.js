@@ -11,6 +11,16 @@ const Sounds = {
     CANCEL: Sound.Sfx(`${PATHS.Theme}Original/sound/cancel.adp`)
 };
 
+let CurrentBGM = false; // Current BGM Playing.
+
+function SoundHandler() {
+    // This function is called every frame to handle audio.
+    if (CurrentBGM && !CurrentBGM.playing()) {
+        CurrentBGM.free();
+        CurrentBGM = false;
+    }
+ }
+
 function playSfx(sound) {
     if (!sound) return;
     sound.play();
@@ -20,12 +30,7 @@ function playBgm(sound) {
     if (CWD.substring(0, 4) === "mmce") { return; } // Do not play Sounds from MMCE.
     const bgm = Sound.Stream(sound);
     bgm.play();
-    let ival = os.setInterval(() => {
-        if (!bgm.playing()) {
-            bgm.free();
-            os.clearInterval(ival);
-        }
-    }, 0);
+    CurrentBGM = bgm; // Set the current BGM to the one playing.
 }
 
 const PlayBootSfx   = () => playBgm(Sounds.BOOT);

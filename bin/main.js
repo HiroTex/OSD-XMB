@@ -108,7 +108,8 @@ function main() {
 	// Execute Handlers
 	BgHandler();
 	UIHandler();
-	PadsHandler();
+    PadsHandler();
+    SoundHandler();
 
 	// Threaded Operations
     ImageCache.Process();

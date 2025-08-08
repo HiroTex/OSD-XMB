@@ -86,6 +86,38 @@
       ]]>
     </Confirm>
   </Option>
+  <Option Type="CONTEXT" Icon="15" Default="{UserConfig.Warning}">
+    <Name>
+      <String str="Warning Message" />
+      <String str="Warning Message" />
+      <String str="Mensaje de Advertencia" />
+      <String str="Warning Message" />
+      <String str="Warning Message" />
+      <String str="Warning Message" />
+      <String str="Warning Message" />
+    </Name>
+    <Description>
+      <String str="Show the Epilepsy Warning message." />
+      <String str="Show the Epilepsy Warning message." />
+      <String str="Muestra la advertencia de epilepsia inicial." />
+      <String str="Show the Epilepsy Warning message." />
+      <String str="Show the Epilepsy Warning message." />
+      <String str="Show the Epilepsy Warning message." />
+      <String str="Show the Epilepsy Warning message." />
+    </Description>
+    <Component Name="{NO}" Icon="-1"/>
+    <Component Name="{YES}" Icon="-1"/>
+    <Confirm>
+      <![CDATA[
+        function(index, item) {
+            UserConfig.Warning = index;
+            let config = CfgMan.Get("main.cfg");
+            config["warn"] = index.toString();
+            CfgMan.Push("main.cfg", config);
+        }
+      ]]>
+    </Confirm>
+  </Option>
   <Option Type="DIALOG" Icon="15">
     <Name>
       <String str="System Information" />

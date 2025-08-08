@@ -12,7 +12,8 @@ const UserConfig = {
     HDD: System.devices().some(dev => dev.name === "hdd"),
 	Theme: "Original",
 	Language: GetOsdConfig("Language") - 1,
-	ConfirmBtn: 0,
+    ConfirmBtn: 0,
+    Warning: 1,
     Aspect: (GetOsdConfig("Aspect") === 2) ? 1 : 0,
 	BgColor: 0,
 	DisplayBg: false,
@@ -66,6 +67,7 @@ function ReadUserSettings() {
 	if ('lang'		 in config) { UserConfig.Language 	  = parseInt(config["lang"]); 		}
 	if ('btnType'	 in config) { UserConfig.ConfirmBtn   = parseInt(config["btnType"]); 	}
     if ('aspect'	 in config) { UserConfig.Aspect       = parseInt(config["aspect"]); 	}
+    if ('warn'	     in config) { UserConfig.Warning      = parseInt(config["warn"]); 	    }
     if ('vmode'	     in config) { UserConfig.Vmode        = parseInt(config["vmode"]); 	    }
 	if ('dateFormat' in config) { UserConfig.DateFormat   = parseInt(config["dateFormat"]); }
 	if ('hourFormat' in config) { UserConfig.HourFormat   = parseInt(config["hourFormat"]); }

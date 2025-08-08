@@ -206,12 +206,12 @@ function SetNewCustomBgImg(Path) {
     BgImage.Progress = 0.0f;
 
 	// Animation to make it appear.
-	let ival = os.setInterval(() => {
+    const bgImgIval = os.setInterval(() => {
         if (BgImage.TmpImage) { BgImage.TmpAlpha = 128 - ~~(128 * BgImage.Progress); }
-        BgImage.Alpha = ~~(128 * BgImage.Progress);
         BgImage.Progress += 0.1f;
+        BgImage.Alpha = ~~(128 * BgImage.Progress);
 
-        if (BgImage.Progress >= 1.0)	{
+        if (BgImage.Progress >= 1.0) {
             BgImage.Progress = 0.0f;
             BgImage.Alpha = 128;
 
@@ -220,7 +220,7 @@ function SetNewCustomBgImg(Path) {
                 BgImage.TmpImage = false;
 			}
 
-			os.clearInterval(ival);
+            os.clearInterval(bgImgIval);
 		}
 	}, 0);
 }

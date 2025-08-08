@@ -119,13 +119,13 @@
     "Desativado"
   ],
   "DEFAULT": [
-	"Default",
-	"Default",
-	"Por Defecto",
-	"Default",
-	"Default",
-	"Default",
-	"Default"
+    "Default",
+    "Default",
+    "Por Defecto",
+    "Default",
+    "Default",
+    "Default",
+    "Default"
   ],
   "INFO": [
     "Information",
@@ -155,13 +155,13 @@
     "Não há elementos."
   ],
   "PLEASE_RESTART": [
-	"Please restart the system for the changes to take effect.",
-	"Please restart the system for the changes to take effect.",
-	"Reinicie el sistema para que los cambios surtan efecto.",
-	"Please restart the system for the changes to take effect.",
-	"Please restart the system for the changes to take effect.",
-	"Please restart the system for the changes to take effect.",
-	"Please restart the system for the changes to take effect."
+    "Please restart the system for the changes to take effect.",
+    "Please restart the system for the changes to take effect.",
+    "Reinicie el sistema para que los cambios surtan efecto.",
+    "Please restart the system for the changes to take effect.",
+    "Please restart the system for the changes to take effect.",
+    "Please restart the system for the changes to take effect.",
+    "Please restart the system for the changes to take effect."
   ],
   "BACK": [
     "Back",
@@ -238,7 +238,7 @@
   "MMCE_DESC": [
     "Multi-Purpose Memory Card Emulation",
     "Multi-Purpose Memory Card Emulation",
-	"Emulacion de Tarjeta de Memoria Multi-proposito",
+    "Emulacion de Tarjeta de Memoria Multi-proposito",
     "Multi-Purpose Memory Card Emulation",
     "Multi-Purpose Memory Card Emulation",
     "Multi-Purpose Memory Card Emulation",
@@ -252,6 +252,24 @@
     "Device",
     "Device",
     "Device"
+  ],
+  "SIZE": [
+    "Size",
+    "Size",
+    "Tamaño",
+    "Size",
+    "Size",
+    "Size",
+    "Size"
+  ],
+  "MEDIA": [
+    "Media",
+    "Media",
+    "Media",
+    "Media",
+    "Media",
+    "Media",
+    "Media"
   ],
   "ERROR": {
     "ELF_NOT_FOUND": [

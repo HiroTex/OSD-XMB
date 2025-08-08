@@ -86,8 +86,7 @@ const DiscTray = (() => {
 
 		return true;
 	}
-
-	function PS2Disc() {
+    function PS2Disc() {
 		const systemcnf = GetSystemCNF();
 
 		// Do not add item if System.CNF data was not found.
@@ -126,27 +125,23 @@ const DiscTray = (() => {
 
 		return true;
 	}
-
-	function GetSystemCNF() {
+    function GetSystemCNF() {
 		const files 	= os.readdir("cdfs:/")[0]; if (files.length < 1) { return false; }
 		const index 	= files.findIndex(file => file.toLowerCase() === 'system.cnf');
 		return ReadCFG(`cdfs:/${files[index]}`);
 	}
-
-	function GoToNewItem() {
+    function GoToNewItem() {
 		if ((DashUI.AnimationQueue.length < 1) && (DashUI.State.Current === 1) && (DashUI.Category.Current === 5)) {
 			DashUI.Items.Current = DashCatItems[5].Items.length - 2;
 			DashUI.Items.Next = DashCatItems[5].Items.length - 2;
 			UIAnimationCategoryItemsMove_Start(1);
 		}
 	}
-
-	function AddItem(item) {
+    function AddItem(item) {
 		// Set new Item in Dashboard
 		DashCatItems[5].Items.push(item);
 		GoToNewItem();
 	}
-
     function RemoveItem() {
         if (!item) { return; }
 
@@ -164,7 +159,6 @@ const DiscTray = (() => {
         }
 		item = false;
 	}
-
     function ProcessItem() {
 		const oldDisc = disc;
 		disc = System.getDiscType();

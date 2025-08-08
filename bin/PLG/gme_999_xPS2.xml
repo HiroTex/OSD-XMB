@@ -22,7 +22,7 @@
           }
         }
 
-				obj.Description = obj.GameID;
+				obj.Description = obj.GameID + " \u{B7} " + obj.Data.dev.toUpperCase();
 				obj.Data.id = obj.GameID;
 
 				const ico = (obj.GameID !== "") ? findICO(obj.GameID) : "";
@@ -40,7 +40,7 @@
 					items.push({
 						Name: getGameName(gameDir[j].name),
 						Type: "ELF",
-						Data: { path: path, fname: gameDir[j].name, size: gameDir[j].size, dev: device, mt: media }
+						Data: { path: path, fname: gameDir[j].name, size: gameDir[j].size, fsize: formatFileSize(gameDir[j].size), dev: device, mt: media }
 					});
 
           Object.defineProperty(items[items.length - 1], "Icon", {
@@ -119,56 +119,92 @@
   </Default>
   <Context Name="OptionContext" Filter="Custom" Condition="item.GameID">
 		<Component Name="{INFO}" Icon="-1">
-			<Dialog Icon="-1" Title="" BG="false" Type="INFO" BackBtn="true" ConfirmBtn="true" >
+      <Confirm>
+        <![CDATA[
+        function(index, item) {
+					DashUISetDialog(item.Dialog);
+				}
+      ]]>
+      </Confirm>
+			<Dialog Icon="-1" Title="" BG="false" Type="INFO" BackBtn="true" >
 				<Info>
 					<Item Name="{TITLE}" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Name}" Selectable="false" />
 					<Item Name="{DEVICE}" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Data.dev.toUpperCase()}" Selectable="false" />
-					<Item Name="{VMC1}" Selectable="true">
-						<Value>
-							<Option value="{NO}" />
-							<Option value="{YES}" />
-						</Value>
-					</Item>
-					<Item Name="{VMC2}" Selectable="true">
-						<Value>
-							<Option value="{NO}" />
-							<Option value="{YES}" />
-						</Value>
-					</Item>
-					<Item Name="{GC_0}" Selectable="true">
-						<Value>
-							<Option value="{NO}" />
-							<Option value="{YES}" />
-						</Value>
-					</Item>
-					<Item Name="{GC_2}" Selectable="true">
-						<Value>
-							<Option value="{NO}" />
-							<Option value="{YES}" />
-						</Value>
-					</Item>
-					<Item Name="{GC_5}" Selectable="true">
-						<Value>
-							<Option value="{NO}" />
-							<Option value="{YES}" />
-						</Value>
-					</Item>
-					<Item Name="{GC_7}" Selectable="true">
-						<Value>
-							<Option value="{NO}" />
-							<Option value="{YES}" />
-						</Value>
-					</Item>
-					<Item Name="{GC_3}" Selectable="true">
-						<Value>
-							<Option value="{NO}" />
-							<Option value="{YES}" />
-						</Value>
-					</Item>
+          <Item Name="{SIZE}" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Data.fsize}" Selectable="false" />
+          <Item Name="{MEDIA}" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Data.mt.toUpperCase()}" Selectable="false" />
 				</Info>
-				<Dialog Name="SaveSettingsDialog" Icon="-1" Title="" BG="false" Type="TEXT" Text="{WAIT}" Align="HCENTER">
-					<Task>
-						<![CDATA[
+			</Dialog>
+    </Component>
+    <Component Name="{CATEGORY.SETTINGS}" Icon="-1">
+      <Confirm>
+        <![CDATA[
+        function(index, item) {
+					const items = item.Dialog.Info;
+					const config = CfgMan.Get(`${DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].GameID.toUpperCase()}.cfg`);
+          items[0].Selected = ('VMC0' in config) ? 1 : 0;
+					items[1].Selected = ('VMC1' in config) ? 1 : 0;
+					if ("gc" in config)	{
+						const gc = config["gc"];
+						items[2].Selected = /0/.test(gc) ? 1 : 0;
+						items[3].Selected = /2/.test(gc) ? 1 : 0;
+						items[4].Selected = /5/.test(gc) ? 1 : 0;
+						items[5].Selected = /7/.test(gc) ? 1 : 0;
+						items[6].Selected = /3/.test(gc) ? 1 : 0;
+					}
+					else { for (let i = 2; i < items.length; i++) { items[i].Selected = 0; } }
+
+					DashUISetDialog(item.Dialog);
+				}
+      ]]>
+      </Confirm>
+      <Dialog Icon="-1" Title="" BG="false" Type="INFO" BackBtn="true" ConfirmBtn="true" >
+        <Info>
+          <Item Name="{VMC1}" Selectable="true">
+            <Value>
+              <Option value="{NO}" />
+              <Option value="{YES}" />
+            </Value>
+          </Item>
+          <Item Name="{VMC2}" Selectable="true">
+            <Value>
+              <Option value="{NO}" />
+              <Option value="{YES}" />
+            </Value>
+          </Item>
+          <Item Name="{GC_0}" Selectable="true">
+            <Value>
+              <Option value="{NO}" />
+              <Option value="{YES}" />
+            </Value>
+          </Item>
+          <Item Name="{GC_2}" Selectable="true">
+            <Value>
+              <Option value="{NO}" />
+              <Option value="{YES}" />
+            </Value>
+          </Item>
+          <Item Name="{GC_5}" Selectable="true">
+            <Value>
+              <Option value="{NO}" />
+              <Option value="{YES}" />
+            </Value>
+          </Item>
+          <Item Name="{GC_7}" Selectable="true">
+            <Value>
+              <Option value="{NO}" />
+              <Option value="{YES}" />
+            </Value>
+          </Item>
+          <Item Name="{GC_3}" Selectable="true">
+            <Value>
+              <Option value="{NO}" />
+              <Option value="{YES}" />
+            </Value>
+          </Item>
+        </Info>
+        <Dialog Name="SaveSettingsDialog" Icon="-1" Title="" BG="false" Type="TEXT" Text="{WAIT}" Align="HCENTER">
+          <Task>
+            <![CDATA[
 							function() {
 								const gameID = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].GameID.toUpperCase();
 								const config = CfgMan.Get(`${gameID}.cfg`);
@@ -179,17 +215,17 @@
 								const info = DashUI.Dialog.Data[DashUI.Dialog.Level - 1].Info;
 
 								let gcModes = "";
-								if (info[4].Selected === 1) { gcModes += "0"; }
-								if (info[5].Selected === 1) { gcModes += "2"; }
-								if (info[6].Selected === 1) { gcModes += "5"; }
-								if (info[7].Selected === 1) { gcModes += "7"; }
-								if (info[8].Selected === 1) { gcModes += "3"; }
+								if (info[2].Selected === 1) { gcModes += "0"; }
+								if (info[3].Selected === 1) { gcModes += "2"; }
+								if (info[4].Selected === 1) { gcModes += "5"; }
+								if (info[5].Selected === 1) { gcModes += "7"; }
+								if (info[6].Selected === 1) { gcModes += "3"; }
 								if (gcModes) { config["gc"] = gcModes; }
 								else if ('gc' in config) { delete config.gc; }
 
-								if (info[2].Selected === 1) { config["VMC0"] = vmcgameid; }
+								if (info[0].Selected === 1) { config["VMC0"] = vmcgameid; }
 								else if ('VMC0' in config) { delete config.VMC0; }
-								if (info[3].Selected === 1) { config["VMC1"] = vmcgameid; }
+								if (info[1].Selected === 1) { config["VMC1"] = vmcgameid; }
 								else if ('VMC1' in config) { delete config.VMC1; }
 
 								CfgMan.Push(`${gameID}.cfg`, config);
@@ -199,7 +235,7 @@
 
 								for(let i = 0; i < 2; i++) {
 									const vmcpath = `${PATHS.VMC}${vmcgameid}_${i.toString()}.vmc`;
-									if ((info[2 + i].Selected !== 1) || (std.exists(vmcpath))) { continue; }
+									if ((info[i].Selected !== 1) || (std.exists(vmcpath))) { continue; }
                   vmcs.push(vmcpath);
 								}
 
@@ -263,31 +299,10 @@
                 }, 0);
 							}
 						]]>
-					</Task>
-				</Dialog>
-				<Event On="Confirm" Type="Transition" To="SaveSettingsDialog"/>
-			</Dialog>
-		</Component>
-    <Confirm>
-      <![CDATA[
-        function(index, item) {
-					const items = item.Dialog.Info;
-					const config = CfgMan.Get(`${DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].GameID.toUpperCase()}.cfg`);
-          items[2].Selected = ('VMC0' in config) ? 1 : 0;
-					items[3].Selected = ('VMC1' in config) ? 1 : 0;
-					if ("gc" in config)	{
-						const gc = config["gc"];
-						items[4].Selected = /0/.test(gc) ? 1 : 0;
-						items[5].Selected = /2/.test(gc) ? 1 : 0;
-						items[6].Selected = /5/.test(gc) ? 1 : 0;
-						items[7].Selected = /7/.test(gc) ? 1 : 0;
-						items[8].Selected = /3/.test(gc) ? 1 : 0;
-					}
-					else { for (let i = 4; i < items.length; i++) { items[i].Selected = 0; } }
-
-					DashUISetDialog(item.Dialog);
-				}
-      ]]>
-    </Confirm>
+          </Task>
+        </Dialog>
+        <Event On="Confirm" Type="Transition" To="SaveSettingsDialog"/>
+      </Dialog>
+    </Component>
   </Context>
 </App>

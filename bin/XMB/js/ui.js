@@ -86,12 +86,21 @@ function BootSequenceHandler() {
 			break;
 		case 3: // Fade Out Boot Logo
 			UIAnimateBootLogo_Work(128 - DashUI.BootFrame);
-			if (DashUI.BootFrame > StateDuration) { DashUI.OverlayState = 1; DashUI.BootState++; DashUI.BootFrame = 0; }
+            if (DashUI.BootFrame > StateDuration) {
+                if (UserConfig.Warning === 1) {
+                    DashUI.OverlayState = 1;
+                    DashUI.BootState++;
+                }
+                else {
+                    DashUI.BootState = 7;
+                }
+                DashUI.BootFrame = 0;
+            }
 			break;
 		case 4: // Fade In Epilepsy Warning Message
 			DashUI.Overlay.Alpha++;
 			DashUI.BootWarningAlpha+=2;
-            if (DashUI.BootFrame > StateDuration) { DashPluginsProcess(); DashUI.BootState++; DashUI.BootFrame = 0; }
+            if (DashUI.BootFrame > StateDuration) { DashUI.BootState++; DashUI.BootFrame = 0; }
 			break;
 		case 5: // Show Epilepsy Warning Message
             if ((DashUI.BootFrame > StateDuration) && (DashUI.LoadedPlugins)) { DashUI.BootState++; DashUI.BootFrame = 0; }
@@ -621,6 +630,8 @@ function DashPluginsInit() {
 
         xlog(`DashPluginsInit(): Loaded Plugin: ${plugins[i].name}`);
     }
+
+    DashPluginsProcess();
 }
 function DashPluginsProcess() {
     const plgIval = os.setInterval(() => {
@@ -2201,7 +2212,7 @@ function DrawUIOptionBox() {
 
     const elementBox = DashElements.OptionBox;
     const elementIco = DashElements.OptionIco;
-    elementBox.width = 80 + Math.fround((optxt.Text[0].length + 7) / 2);
+    elementBox.width = 25 + FontObj.Font.getTextSize(optxt.Text[0]).width;
     elementBox.color = Color.setA(elementBox.color, alpha);
     elementIco.color = Color.setA(elementIco.color, alpha);
     elementBox.draw(UICONST.OptionBox.XBOX, UICONST.OptionBox.YBOX);
