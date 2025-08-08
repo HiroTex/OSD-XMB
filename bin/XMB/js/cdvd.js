@@ -10,7 +10,8 @@ const DiscTray = (() => {
 	let disc = 0;
 	let oldDisc = 0;
 	let item = false;
-	let processed = false;
+    let processed = false;
+    let frame = 0;
 
 	// Disc Types Table
 	const Type = [];
@@ -34,8 +35,8 @@ const DiscTray = (() => {
 
 	function PS1Disc() {
 		const systemcnf = GetSystemCNF();
-		let bootpath = "???";
-		let ver = "???";
+		let ps1drv_boot = "???";
+		let ps1drv_ver = "???";
 
 		if (systemcnf.length < 1) {
 			// Identify Special PS1 cases.
@@ -46,7 +47,7 @@ const DiscTray = (() => {
 				const _f = std.open(value, "r");
 				if (_f) {
 					_f.close();
-					bootpath = key;
+					ps1drv_boot = key;
 					return;
 				}
 			});
@@ -54,15 +55,15 @@ const DiscTray = (() => {
 		else {
 			if ("BOOT" in systemcnf) {
 				const match = systemcnf["BOOT"].match(/cdrom:\\([^;]+)/);
-				bootpath = (match) ? match[1] : bootpath;
+				ps1drv_boot = (match) ? match[1] : ps1drv_boot;
 			}
 			if ("VER" in systemcnf) {
-				ver = systemcnf["VER"];
+                ps1drv_ver = systemcnf["VER"];
 			}
 		}
 
 		// If everything failed, check if the disc has PSX.EXE, do not add an item if not.
-		if (bootpath === "???") {
+		if (ps1drv_boot === "???") {
 			const files = os.readdir("cdfs:/")[0];
 			const index = files.findIndex(file => file.toUpperCase() === 'PSX.EXE');
 			if (index === -1) { return false; }
@@ -70,7 +71,7 @@ const DiscTray = (() => {
 
 		// Get Game Title if available
 		let name = (disc === 7) ? "Playstation 1 CD" : "Playstation 1 CDDA";
-		const gmecfg = CfgMan.Get(`${bootpath.toUpperCase()}.cfg`);
+		const gmecfg = CfgMan.Get(`${ps1drv_boot.toUpperCase()}.cfg`);
 		if ("Title" in gmecfg) { name = gmecfg["Title"]; }
 
 		// Set new Item in Dashboard
@@ -80,7 +81,7 @@ const DiscTray = (() => {
 			Description: "",
 			Icon: 25,
 			Type: "ELF",
-			Value: { Path: "rom0:PS1DRV", Args: [bootpath, ver] }
+			Value: { Path: "rom0:PS1DRV", Args: [ps1drv_boot, ps1drv_ver] }
 		});
 
 		return true;
@@ -100,8 +101,8 @@ const DiscTray = (() => {
 		if (ELFName === "") { return false; }
 
 		// Set ELF Info
-		let ELFPath = `cdfs:/${ELFName}`;
-		let ELFArgs = [];
+		let ELFPath = "rom0:PS2LOGO";
+        let ELFArgs = [ ELFName ];
 
 		// Get Game Title if available
 		let name = (disc === 11) ? "Playstation 2 DVD" : "Playstation 2 CD";
@@ -112,7 +113,7 @@ const DiscTray = (() => {
 		if ((std.exists(`${PATHS.Neutrino}neutrino.elf`)) && (os.readdir(PATHS.Neutrino)[0].includes("modules"))) {
 			ELFPath = `${PATHS.Neutrino}neutrino.elf`;
 			ELFArgs = GetNeutrinoArgs(ELFName.toUpperCase);
-		}
+        }
 
 		AddItem({
 			Disctray: true,
@@ -147,6 +148,8 @@ const DiscTray = (() => {
 	}
 
     function RemoveItem() {
+        if (!item) { return; }
+
 		for (let i = 0; i < DashCatItems[5].Items.length; i++)
         {
 			if (!DashCatItems[5].Items[i].hasOwnProperty("Disctray")) { continue; }
@@ -168,17 +171,18 @@ const DiscTray = (() => {
 		if (disc !== oldDisc) { processed = false; }
 		if (('Function' in Type[disc]) && !processed) {
 			processed = true;
-			const thread = Threads.new(() => { item = Type[disc].Function(); });
-			thread.start();
-		}
+			Threads.new(() => { item = Type[disc].Function(); }).start();
+        }
 	}
 
     return {
-        Process: function() {
+        Process: function () {
+            if (frame !== 4) { frame++; return; }       // Avoid calling Check Disc Tray every frame.
 			stat = System.checkDiscTray();
 
 			if (stat !== 0 && item)  { RemoveItem(); 	} // Disctray has been opened
 			if (stat === 0 && !item) { ProcessItem(); 	} // Disctray is closed and needs processing
+            frame = 0;
 		},
     };
 })();

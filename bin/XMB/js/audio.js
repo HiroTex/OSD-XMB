@@ -12,12 +12,12 @@ const Sounds = {
 };
 
 function playSfx(sound) {
-    if (CWD.startWith("mmce")) { return; } // Do not play Sounds from MMCE.
     if (!sound) return;
     sound.play();
 }
 function playBgm(sound) {
     if (!sound) return;
+    if (CWD.substring(0, 4) === "mmce") { return; } // Do not play Sounds from MMCE.
     const bgm = Sound.Stream(sound);
     bgm.play();
     let ival = os.setInterval(() => {
