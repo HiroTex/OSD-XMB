@@ -620,7 +620,7 @@ function DashPluginsInit() {
                 case "JSON": data = plg.readAsString(); break;
                 case "XML": data = xmlParseElement(plg.readAsString()); break;
             }
-            DashPluginData.push({ Data: data, Type: type });
+            DashPluginData.push({ Name: plugins[i].name, Data: data, Type: type });
         } catch (e) {
             xlog(e);
             continue;
@@ -643,13 +643,17 @@ function DashPluginsProcess() {
 
         const plg = DashPluginData.shift();
         let Plugin = false;
+        xlog(`DashPluginsProcess(): Processing Plugin: ${plg.Name}.`);
 
         switch (plg.Type) {
             case "JSON": Plugin = JSON.parse(plg.Data); break;
             case "XML": Plugin = parseXmlPlugin(plg.Data); break;
         }
 
-        if (Plugin) { AddNewPlugin(Plugin); }
+        if (Plugin) {
+            xlog(`DashPluginsProcess(): Plugin ${plg.Name} Succesfully processed.`);
+            AddNewPlugin(Plugin);
+        }
     }, 0);
 }
 function DashBackgroundLoad() {
