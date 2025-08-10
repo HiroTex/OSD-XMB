@@ -784,8 +784,9 @@ function DrawDashLoadIcon(Properties) {
 function DrawDashIcon(Properties) {
 	let Image = false;
 	let Ready = false;
-    let regex = /^(.*?)\/ART\/(.*?)_ICO(.*?)/g;
-	Properties.Alpha = alphaCap(Properties.Alpha);
+  let regex = /^(.*?)\/ART\/(.*?)_ICO(.*?)/g;
+	
+  Properties.Alpha = alphaCap(Properties.Alpha);
 	if (Properties.Alpha < 1) { return; }
 
 	if (('CustomIcon' in Properties) && (typeof Properties.CustomIcon === "string")) {
@@ -802,17 +803,19 @@ function DrawDashIcon(Properties) {
 	if (Ready) {
         if ('Tint' in Properties) { Image.color = Color.new(Properties.Tint.R, Properties.Tint.G, Properties.Tint.B, Properties.Alpha); }
         else { Image.color = Color.setA(UICONST.DefaultIconColor, Properties.Alpha); }
+
 		if (Image != DashIcons[Properties.ID] && regex.test(Properties.CustomIcon)){
             Image.width  = (Properties.Width*57)/100;
             Image.height = (Properties.Height*57)/100;
             Properties.X = Properties.X + (Properties.Width*21)/100;
             Properties.Y = Properties.Y + (Properties.Height*21)/100;
         }
-        else{
+    else{
             Image.width  = Properties.Width;
             Image.height = Properties.Height;
         }
-        Image.angle  = ('Rotation' in Properties) ? Properties.Rotation : 0.0f;
+    Image.angle  = ('Rotation' in Properties) ? Properties.Rotation : 0
+    
 		Image.draw(Properties.X, Properties.Y);
 	}
 	else { DrawDashLoadIcon(Properties); }
