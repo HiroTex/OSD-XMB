@@ -1,0 +1,96 @@
+<App Icon="GAME_MCTOOLS" Category="5" Type="SUBMENU">
+  <Name>
+    <String str="Memory Card Utility" />
+    <String str="Utilitaire de Memory Card" />
+    <String str="Herramienta de Memory Card" />
+    <String str="Memory Card-Dienstprogramm" />
+    <String str="Utilità della Memory Card" />
+    <String str="Diensten voor Memory Card" />
+    <String str="Utilitário do Memory Card" />
+  </Name>
+  <Options>
+    <![CDATA[
+		function ReadMCDir(slot) {
+			// Initialize an empty array to hold the items
+			const directories = [];
+			const dir = System.listDir(`mc${slot.toString()}:/`);
+
+			// Loop through dir and collect directories into the desired structure
+			for (let i = 0; i < dir.length; i++) {
+				const item = dir[i];
+				if ((item.dir) && (item.name !== ".") && (item.name !== "..")) {
+					directories.push({
+						Name: parseIconSysTitle(`mc${slot.toString()}:/`, item.name),
+						Description: "",
+						Icon: 14,
+						FullPath: `mc${slot.toString()}:/${item.name}/`
+					});
+				}
+			}
+
+			directories.sort((a, b) => {
+				const nameA = a.Name.toLowerCase();
+				const nameB = b.Name.toLowerCase();
+				return nameA < nameB ? -1 : nameA > nameB ? 1 : 0;
+			});
+
+			return { Items: directories, Default: 0 };
+		}
+
+		const Items = [];
+
+		for (let j = 0; j < 2; j++)	{
+			if (os.readdir(`mc${j.toString()}:/`)[1] > -1) {
+				let mcInfo = System.getMCInfo(j);
+				let used = 8000 - mcInfo.freemem;
+				Items.push({
+					Name: `Memory Card ${(j + 1).toString()}`,
+					Description: `${used} / 8000 Kb`,
+					Icon: 16 + j,
+					Type: "SUBMENU",
+					Value: ReadMCDir(j)
+				});
+			}
+		}
+
+		return Items;
+    ]]>
+  </Options>
+  <Context Name="OptionContext" Filter="SubDeviceOnly">
+		<Component Name="{DELETE}" Icon="-1">
+			<Dialog Icon="-1" Title="" BG="false" Type="CONFIRMATION" BackBtn="true" ConfirmBtn="true">
+				<Text>
+					<String str="Do you want to delete the selected item?" />
+					<String str="Do you want to delete the selected item?" />
+					<String str="¿Seguro que deseas eliminar el objeto seleccionado?" />
+					<String str="Do you want to delete the selected item?" />
+					<String str="Do you want to delete the selected item?" />
+					<String str="Do you want to delete the selected item?" />
+					<String str="Do you want to delete the selected item?" />
+				</Text>
+				<Dialog Name="DeleteItemDialogTask" Icon="-1" Title="" BG="false" Type="TEXT" Text="{WAIT}">
+					<Task>
+						<![CDATA[
+							function() {
+								const collection = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items;
+								const item = collection[DashUI.SubMenu.Items.Current];
+								const path = item.FullPath;
+								(path.endsWith('/')) ? System.removeDirectory(path) : os.remove(path);
+								collection.splice(DashUI.SubMenu.Items.Current, 1);
+								if (collection.length < 1) { DashUI.SubMenu.Items.Current = -1; }
+								else if (DashUI.SubMenu.Items.Current >= collection.length) { DashUI.SubMenu.Items.Current = collection.length - 1; }
+								UIAnimationDialogFade_Start(false);
+							}
+						]]>
+					</Task>
+				</Dialog>
+					<Event On="Confirm" Type="Transition" To="DeleteItemDialogTask" Condition="DashUI.Dialog.Data[DashUI.Dialog.Level].Selected === 0" Exit="true"/>
+			</Dialog>
+		</Component>
+    <Confirm>
+      <![CDATA[
+        function(index, item) { DashUISetDialog(item.Dialog); }
+      ]]>
+    </Confirm>
+  </Context>
+</App>

@@ -1,0 +1,150 @@
+{
+	"POPS_OPTIONS": {
+		"0": [
+			"Compatibility Mode",
+			"Compatibility Mode",
+			"Modo de Compatibilidad",
+			"Compatibility Mode",
+			"Compatibility Mode",
+			"Compatibility Mode",
+			"Compatibility Mode"
+		],
+		"1": [
+			"Code Cache Addon",
+			"Code Cache Addon",
+			"Extension de codigo caché",
+			"Code Cache Addon",
+			"Code Cache Addon",
+			"Code Cache Addon",
+			"Code Cache Addon"
+		],
+		"2": [
+			"Sub CD Status",
+			"Sub CD Status",
+			"Estado Sub CD",
+			"Sub CD Status",
+			"Sub CD Status",
+			"Sub CD Status",
+			"Sub CD Status"
+		],
+		"3": [
+			"Fake Lybcript",
+			"Fake Lybcript",
+			"Lybcript Falso",
+			"Fake Lybcript",
+			"Fake Lybcript",
+			"Fake Lybcript",
+			"Fake Lybcript"
+		],
+		"4": [
+			"PAL Patcher",
+			"PAL Patcher",
+			"Parcheador PAL",
+			"PAL Patcher",
+			"PAL Patcher",
+			"PAL Patcher",
+			"PAL Patcher"
+		],
+		"5": [
+			"Sound Mode",
+			"Sound Mode",
+			"Modo de Sonido",
+			"Sound Mode",
+			"Sound Mode",
+			"Sound Mode",
+			"Sound Mode"
+		],
+		"6": [
+			"DPAD to Left Stick",
+			"DPAD to Left Stick",
+			"DPAD a Analogo Izquierdo",
+			"DPAD to Left Stick",
+			"DPAD to Left Stick",
+			"DPAD to Left Stick",
+			"DPAD to Left Stick"
+		],
+		"7": [
+			"Virtual Memory Cards",
+			"Virtual Memory Cards",
+			"Tarjetas de Memoria Virtuales",
+			"Virtual Memory Cards",
+			"Virtual Memory Cards",
+			"Virtual Memory Cards",
+			"Virtual Memory Cards"
+		]
+	},
+	"POPS_SETTINGS": {
+		"PALPATCHER_2": [
+			"Forced",
+			"Forced",
+			"Forzado",
+			"Forced",
+			"Forced",
+			"Forced",
+			"Forced"
+		],
+		"SOUND_1": [
+			"Mute CDDA",
+			"Mute CDDA",
+			"Mutear CDDA",
+			"Mute CDDA",
+			"Mute CDDA",
+			"Mute CDDA",
+			"Mute CDDA"
+		],
+		"SOUND_2": [
+			"Unmute CDDA",
+			"Unmute CDDA",
+			"Desmutear CDDA",
+			"Unmute CDDA",
+			"Unmute CDDA",
+			"Unmute CDDA",
+			"Unmute CDDA"
+		],
+		"SOUND_3": [
+			"Mute VAB",
+			"Mute VAB",
+			"Mutear VAB",
+			"Mute VAB",
+			"Mute VAB",
+			"Mute VAB",
+			"Mute VAB"
+		],
+		"DPAD2STICK_1": [
+			"Force Digital Mode",
+			"Force Digital Mode",
+			"Forzar Modo Digital",
+			"Force Digital Mode",
+			"Force Digital Mode",
+			"Force Digital Mode",
+			"Force Digital Mode"
+		],
+		"DPAD2STICK_2": [
+			"Force Analog Mode",
+			"Force Analog Mode",
+			"Forzar Modo Analogico",
+			"Force Analog Mode",
+			"Force Analog Mode",
+			"Force Analog Mode",
+			"Force Analog Mode"
+		],
+		"NOVMC_1": [
+			"Slot 2 Only",
+			"Slot 2 Only",
+			"Solo Slot 2",
+			"Slot 2 Only",
+			"Slot 2 Only",
+			"Slot 2 Only",
+			"Slot 2 Only"
+		],
+		"NOVMC_2": [
+			"Slot 1 Only",
+			"Slot 1 Only",
+			"Solo Slot 1",
+			"Slot 1 Only",
+			"Slot 1 Only",
+			"Slot 1 Only",
+			"Slot 1 Only"
+		]
+	}
+}

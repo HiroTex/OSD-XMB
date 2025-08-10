@@ -1,0 +1,18 @@
+{
+  "Name": [
+    "Turn Off System",
+    "Eteindre le système",
+    "Apagar sistema",
+    "System ausschalten",
+    "Spegni sistema",
+    "Schakel systeem uit", 
+    "Desligue"
+  ],
+  "Description": "",
+  "Icon": "POWEROFF",
+  "Category": 0,
+  "Type": "ELF",
+  "Value": {
+    "Path": "{cwd}/APPS/POWEROFF/POWEROFF.ELF"
+  }
+}

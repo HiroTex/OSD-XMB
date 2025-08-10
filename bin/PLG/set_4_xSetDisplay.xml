@@ -1,4 +1,4 @@
-<App Icon="#SET_DISPLAY" Category="1" Type="SUBMENU">
+<App Icon="SET_DISPLAY" Category="1" Type="SUBMENU">
   <Name>
     <String str="Display Settings" />
     <String str="Paramètres affichage" />
@@ -17,5 +17,100 @@
     <String str="Pas de instellingen voor video-uitvoer aan." />
     <String str="Ajuste as configurações de saída de vídeo." />
   </Description>
-  <Options filepath="./PLG/xSettings/xDisplayOpts.xml"/>
+  <Option Name="{DISPLAYSET1.NAME}" Description="{DISPLAYSET1.DESC}" Type="CONTEXT" Icon="15">
+    <Component Name="NTSC" Icon="-1"/>
+    <Component Name="PAL" Icon="-1"/>
+    <Component Name="DTV 480p" Icon="-1"/>
+    <Dialog Icon="SET_DISPLAY" Title="{DISPLAYSET1.NAME}" BG="false" Type="CONFIRMATION" ConfirmBtn="true" Text="{VMODE_MSG}">
+      <Confirm>
+        <![CDATA[
+          function() {
+            const sel = DashUI.Dialog.Data[DashUI.Dialog.Level].Selected;
+            if (sel === 1) {
+              ScrCanvas = TmpCanvas;
+              DashUI.SelectedItem.Value.Default = vmodes.findIndex((mode) => mode === ScrCanvas.mode);
+              Screen.setMode(ScrCanvas);
+              Screen.setParam(Screen.DEPTH_TEST_ENABLE, false);
+              DashUIConstantsInit();
+            }
+            else {
+              let config = CfgMan.Get("main.cfg");
+              config["vmode"] = DashUI.SelectedItem.Value.Default.toString();
+              CfgMan.Push("main.cfg", config);
+            }
+            UIAnimationDialogFade_Start(false);
+          }
+        ]]>
+      </Confirm>
+    </Dialog>
+    <Default>
+      <![CDATA[
+        switch(ScrCanvas.mode) {
+            case Screen.NTSC: return 0; break;
+            case Screen.PAL: return 1; break;
+            case Screen.DTV_480p: return 2; break;
+        }
+      ]]>
+    </Default>
+    <Confirm>
+      <![CDATA[
+        function(index, item) {
+          if (ScrCanvas.mode === vmodes[index]) { return; }
+
+          TmpCanvas = Screen.getMode();
+          ScrCanvas.height = (index === 1) ? 512 : 480;
+          ScrCanvas.interlace = (index === 2) ? Screen.PROGRESSIVE : Screen.INTERLACED;
+          ScrCanvas.field = (index === 2) ? Screen.FRAME : Screen.FIELD;
+          ScrCanvas.mode = vmodes[index];
+          Screen.setMode(ScrCanvas);
+          Screen.setParam(Screen.DEPTH_TEST_ENABLE, false);
+          DashUIConstantsInit();
+          DashUISetDialog(DashUI.Context.ItemCollection[DashUI.Context.Level].Dialog);
+          const defText = PreprocessText(DashUI.Dialog.Data[DashUI.Dialog.Level].Text);
+          globalThis.vmodeTmr = Timer.new();
+          Timer.reset(vmodeTmr);
+          Timer.resume(vmodeTmr);
+          let ival = os.setInterval(() => {
+            const elapsed = getTimerSec(vmodeTmr);
+            if (elapsed > 200) {
+              ScrCanvas = TmpCanvas;
+              DashUI.SelectedItem.Value.Default = vmodes.findIndex((mode) => mode === ScrCanvas.mode);
+              Timer.destroy(vmodeTmr);
+              Screen.setMode(ScrCanvas);
+              Screen.setParam(Screen.DEPTH_TEST_ENABLE, false);
+              DashUIConstantsInit();
+              os.clearInterval(ival);
+              UIAnimationDialogFade_Start(false);
+            }
+            else if (DashUI.Dialog.Level < 0) {
+              Timer.destroy(vmodeTmr);
+              os.clearInterval(ival);
+            }
+            else {
+              DashUI.Dialog.Data[DashUI.Dialog.Level].Timer = (25 -  ~~(elapsed / 8)).toString();
+            }
+          }, 0);
+        }
+      ]]>
+    </Confirm>
+  </Option>
+  <Option Name="{DISPLAYSET2.NAME}" Description="{DISPLAYSET2.DESC}" Type="CONTEXT" Icon="15" Default="{UserConfig.Aspect}">
+    <Component Name="4:3" Icon="-1"/>
+    <Component Name="16:9" Icon="-1"/>
+    <Confirm>
+      <![CDATA[
+        function(index, item) {
+            UserConfig.Aspect = index;
+			      ScrCanvas.width = (index === 0) ? 640 : 704;
+            Screen.setMode(ScrCanvas);
+            Screen.setParam(Screen.DEPTH_TEST_ENABLE, false);
+            DashUIConstantsInit();
+
+            let config = CfgMan.Get("main.cfg");
+            config["aspect"] = index.toString();
+            CfgMan.Push("main.cfg", config);
+        }
+      ]]>
+    </Confirm>
+  </Option>
 </App>

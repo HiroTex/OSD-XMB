@@ -1,0 +1,49 @@
+<App Icon="SET_PARENTALCTRL" Category="1" Type="SUBMENU">
+  <Name>
+    <String str="Security Settings" />
+    <String str="Paramètres sécurité" />
+    <String str="Ajustes de Seguridad" />
+    <String str="Sicherheits-Einstellungen" />
+    <String str="Impostazioni di sicurezza" />
+    <String str="Beveiligingsinstellingen" />
+    <String str="Definições de Segurança" />
+  </Name>
+  <Description>
+    <String str="Adjusts parental control settings." />
+    <String str="Réglez les paramètres de contrôle parental." />
+    <String str="Ajusta la configuración de control parental." />
+    <String str="Einstellungen für die Kindersicherung anpassen." />
+    <String str="Regola le impostazioni di controllo parentale." />
+    <String str="Pas de instellingen voor ouderlijk toezicht aan." />
+    <String str="Ajuste as configurações de controle parental." />
+  </Description>
+  <Option Name="{PASS_CHANGE}" Type="DIALOG" Icon="15">
+		<Dialog Icon="12" Title="{PASS_CHANGE}" Text="{PASS_NEW_MSG}" BG="false" Type="PARENTAL_SET" BackBtn="true" ConfirmBtn="true">
+			<Confirm>
+				<![CDATA[
+	  			function() {
+						UserConfig.ParentalCode = DashUI.Dialog.Data[DashUI.Dialog.Level].TmpCode;
+						let config = CfgMan.Get("main.cfg");
+						config["prntcode"] = `[ ${UserConfig.ParentalCode[0].toString()}, ${UserConfig.ParentalCode[1].toString()}, ${UserConfig.ParentalCode[2].toString()}, ${UserConfig.ParentalCode[3].toString()} ]`;
+						CfgMan.Push("main.cfg", config);
+						UIAnimationDialogFade_Start(false);
+					}
+			]]>
+			</Confirm>
+		</Dialog>
+  </Option>
+  <Option Name="{PARENTAL_CONTROL}" Type="CONTEXT" Icon="15" Default="{UserConfig.ParentalSet}">
+		<Component Name="{NO}" Icon="-1"/>
+		<Component Name="{YES}" Icon="-1"/>
+		<Confirm>
+			<![CDATA[
+				function(index, item) {
+					UserConfig.ParentalSet = index;
+					let config = CfgMan.Get("main.cfg");
+					config["parental"] = index.toString();
+					CfgMan.Push("main.cfg", config);
+				}
+			]]>
+		</Confirm>
+  </Option>
+</App>

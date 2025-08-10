@@ -1,4 +1,4 @@
-<App Icon="#SET_TIME" Category="1" Type="SUBMENU">
+<App Icon="SET_TIME" Category="1" Type="SUBMENU">
   <Name>
     <String str="Date and Time Settings" />
     <String str="Paramètres date et heure" />
@@ -17,7 +17,7 @@
     <String str="Pas de instellingen voor datum en tijd aan." />
     <String str="Ajuste as configurações de data e hora." />
   </Description>
-  <Option Type="CONTEXT" Icon="#SET_CFG">
+  <Option Type="CONTEXT" Icon="SET_CFG" Default="{UserConfig.DateFormat}">
     <Name>
       <String str="Date Format" />
       <String str="Affichage de la date" />
@@ -36,21 +36,20 @@
       <String str="Set the order of display." />
       <String str="Define a ordem de apresentação." />
     </Description>
-    <Component Name="DD-MM-YYYY" Icon="-1"/>
-    <Component Name="MM-DD-YYYY" Icon="-1"/>
-    <Default Variable="DATA.DATE_FORMAT"/>
+    <Component Name="DD-MM" Icon="-1"/>
+    <Component Name="MM-DD" Icon="-1"/>
     <Confirm>
       <![CDATA[
-        function(DATA, val) {
-            DATA.DATE_FORMAT = val;
-            let config = DATA.CONFIG.Get("main.cfg");
-            config["dateFormat"] = val.toString();
-            DATA.CONFIG.Push("main.cfg", config);
+        function(index, item) {
+            UserConfig.DateFormat = index;
+            let config = CfgMan.Get("main.cfg");
+            config["dateFormat"] = index.toString();
+            CfgMan.Push("main.cfg", config);
         }
       ]]>
     </Confirm>
   </Option>
-  <Option Type="CONTEXT" Icon="#SET_CFG">
+  <Option Type="CONTEXT" Icon="SET_CFG" Default="{UserConfig.HourFormat}">
     <Name>
       <String str="Time Format" />
       <String str="Affichage de l'heure" />
@@ -91,19 +90,18 @@
         <String str="24 horas" />
       </Name>
     </Component>
-    <Default Variable="DATA.HOUR_FORMAT"/>
     <Confirm>
       <![CDATA[
-        function(DATA, val) {
-            DATA.HOUR_FORMAT = val;
-            let config = DATA.CONFIG.Get("main.cfg");
-            config["hourFormat"] = val.toString();
-            DATA.CONFIG.Push("main.cfg", config);
+        function(index, item) {
+            UserConfig.HourFormat = index;
+            let config = CfgMan.Get("main.cfg");
+            config["hourFormat"] = index.toString();
+            CfgMan.Push("main.cfg", config);
         }
       ]]>
     </Confirm>
   </Option>
-  <Option Type="CONTEXT" Icon="#SET_CFG">
+  <Option Type="CONTEXT" Icon="SET_CFG" Default="{UserConfig.Timezone}">
     <Name>
       <String str="Time Zone" />
       <String str="Fuseau horaire" />
@@ -113,6 +111,7 @@
       <String str="Tijdzone" />
       <String str="Fuso Horário" />
     </Name>
+    <Component Name="Default" Icon="-1" Value="0"/>
     <Component Name="GMT-11:00 - Midway Islands" Icon="-1" Value="-11"/>
     <Component Name="GMT-08:00 - Pacific (Can)" Icon="-1" Value="-8"/>
     <Component Name="GMT-08:00 - Tijuana" Icon="-1" Value="-8"/>
@@ -128,7 +127,7 @@
     <Component Name="GMT-03:00 - NW Greenland" Icon="-1" Value="-3"/>
     <Component Name="GMT-03:00 - SW Greenland" Icon="-1" Value="-3"/>
     <Component Name="GMT-03:00 - Buenos Aires" Icon="-1" Value="-3"/>
-    <Component Name="GMT-02:00 - E Greenland" Icon="-1" Value="-1"/>
+    <Component Name="GMT-02:00 - E Greenland" Icon="-1" Value="-2"/>
     <Component Name="GMT-01:00 - Praia" Icon="-1" Value="-1"/>
     <Component Name="GMT-01:00 - Tijuana" Icon="-1" Value="-1"/>
     <Component Name="GMT+00:00 - Reykjavik" Icon="-1" Value="0"/>
@@ -189,16 +188,15 @@
     <Component Name="GMT+11:00 - New Caledonia" Icon="-1" Value="11"/>
     <Component Name="GMT+12:00 - Suva" Icon="-1" Value="12"/>
     <Component Name="GMT+13:00 - Wellington" Icon="-1" Value="13"/>
-    <Default Variable="DATA.TIMEZONEVAL" />
     <Confirm>
       <![CDATA[
-        function(DATA, val) {
-            DATA.TIMEZONEVAL = val;
-            DATA.TIME_ZONE = DASH_CTX[DATA.DASH_CURCTXLVL].Options[DASH_CTX[DATA.DASH_CURCTXLVL].Selected].Value;
-            let config = DATA.CONFIG.Get("main.cfg");
-            config["timezoneVal"] = val.toString();
-            config["timezone"] = DATA.TIME_ZONE.toString();
-            DATA.CONFIG.Push("main.cfg", config);
+        function(index, item) {
+            UserConfig.Timezone = index;
+            gTimezone = item.Value;
+            let config = CfgMan.Get("main.cfg");
+            config["timezone"] = index.toString();
+            config["gTimezone"] = gTimezone.toString();
+            CfgMan.Push("main.cfg", config);
         }
       ]]>
     </Confirm>
