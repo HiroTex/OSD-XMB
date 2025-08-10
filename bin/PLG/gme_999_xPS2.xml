@@ -246,7 +246,7 @@
 									return;
 								}
 
-								const waitTxt = getLocalText(XMBLANG.WAIT);
+								DashUI.Dialog.Data[DashUI.Dialog.Level].Y = -60;
 								let mcTxt = `${getLocalText(XMBLANG.COPY_VMC_MSG)} ${vmcCount}/${vmcLength}`;
 
 								const src = `${PATHS.VMC}blank.vmc`;
@@ -262,6 +262,12 @@
 
 								const totalSize = 8 * 1024 * 1024;
 								let copied = 0;
+                const PbarAFade = createFade();
+                UICONST.LayersFg.push(() => {
+                  if (DashUI.PbarAlpha < 1) { PbarAFade.Progress = 0.1f; DashUI.AnimationQueue.push(() => UIAnimationCommon_Work(PbarAFade, 0.1f)); }
+									DashUI.PbarAlpha = ~~(128 * PbarAFade.Progress);
+                  DrawProgressBar({X: 0, Y: 0}, ~~((copied / totalSize) * 100), mcTxt);
+                });
 
 								const CopIval = os.setInterval(() => {
 										const toRead = Math.min(BLOCK_SIZE, totalSize - copied);
@@ -275,7 +281,7 @@
 												copied = 0;
                       }
                       else {
-												DashUI.Dialog.Data[DashUI.Dialog.Level].Text = waitTxt;
+												UICONST.LayersFg.pop();
 												os.close(fdSrc);
 												os.close(fdDst);
 												os.clearInterval(CopIval);
@@ -293,9 +299,6 @@
 										}
 
 										copied += bytesRead;
-
-										const percent = ~~((copied / totalSize) * 100);
-										DashUI.Dialog.Data[DashUI.Dialog.Level].Text = `${mcTxt}\n\n${waitTxt}\n\n${percent}%`;
                 }, 0);
 							}
 						]]>
