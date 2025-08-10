@@ -29,6 +29,7 @@ function UIHandler() {
 		case 2: // Sub Menu Interface
 		case 3: // Context Interface
         case 4: // Message Interface
+            DrawLayersBg();
             DrawUIObjectBg();
             DiscTray.Process();
 			break;
@@ -64,6 +65,8 @@ function OvHandler() {
             DrawUIDialog();
             break;
     }
+
+    DrawLayersFg();
 
 }
 function BootSequenceHandler() {
@@ -390,7 +393,9 @@ function DashElementsInit() {
 	DashElements.OptionIco.width = 14;
 	DashElements.OptionIco.height = 14;
 
-	DashElements.Arrow = new Image(`${PATHS.XMB}dash/dash_submenu.png`);
+    DashElements.Arrow = new Image(`${PATHS.XMB}dash/dash_submenu.png`);
+
+    DashElements.Pbar = new Image(`${PATHS.XMB}dash/dash_pbar.png`);
 
 	Object.values(DashElements).forEach((dashElem) => {
 		dashElem.optimize();
@@ -481,6 +486,8 @@ function DashUICustomizationInit() {
     UICONST.Category.IconUnselectedColor = { R: 128, G: 128, B: 128 };
     UICONST.Context.Tint = false;
     UICONST.DialogInfo.LineCol = Color.new(196, 196, 196, 128);
+    UICONST.LayersBg = [];
+    UICONST.LayersFg = [];
 }
 function DashUInit() {
     // Constant Objects
@@ -507,7 +514,8 @@ function DashUInit() {
 	DashUI.ExitState = 0;
 	DashUI.BootState = 0;
 	DashUI.BootFrame = 0;
-	DashUI.OverlayState = 0;
+    DashUI.OverlayState = 0;
+    DashUI.PbarAlpha = 0;
 	DashUI.AnimationQueue = [];
 
 	// Overlay Object
@@ -620,7 +628,7 @@ function DashPluginsInit() {
                 case "JSON": data = plg.readAsString(); break;
                 case "XML": data = xmlParseElement(plg.readAsString()); break;
             }
-            DashPluginData.push({ Data: data, Type: type });
+            DashPluginData.push({ Name: plugins[i].name, Data: data, Type: type });
         } catch (e) {
             xlog(e);
             continue;
@@ -633,9 +641,7 @@ function DashPluginsInit() {
 
     DashPluginsProcess();
 }
-
 function DashPluginsProcess() {
-    plgCount = 0
     const plgIval = os.setInterval(() => {
         if (DashPluginData.length < 1) {
             DashUI.LoadedPlugins = true;
@@ -645,17 +651,19 @@ function DashPluginsProcess() {
 
         const plg = DashPluginData.shift();
         let Plugin = false;
+        xlog(`DashPluginsProcess(): Processing Plugin: ${plg.Name}.`);
 
-        plgCount++
         switch (plg.Type) {
             case "JSON": Plugin = JSON.parse(plg.Data); break;
             case "XML": Plugin = parseXmlPlugin(plg.Data); break;
         }
 
-        if (Plugin) { AddNewPlugin(Plugin); }
+        if (Plugin) {
+            xlog(`DashPluginsProcess(): Plugin ${plg.Name} Succesfully processed.`);
+            AddNewPlugin(Plugin);
+        }
     }, 0);
 }
-
 function DashBackgroundLoad() {
     if (gThreads) { Threads.new(DashPluginsInit).start(); }
     else { DashPluginsInit(); }
@@ -808,6 +816,83 @@ function DrawDashIcon(Properties) {
 		Image.draw(Properties.X, Properties.Y);
 	}
 	else { DrawDashLoadIcon(Properties); }
+}
+function DrawLayersBg() {
+    for (let i = 0; i < UICONST.LayersBg.length; i++) {
+        if (typeof UICONST.LayersBg[i] === "function") {
+            UICONST.LayersBg[i]();
+        }
+    }
+}
+function DrawLayersFg() {
+    for (let i = 0; i < UICONST.LayersFg.length; i++) {
+        if (typeof UICONST.LayersFg[i] === "function") {
+            UICONST.LayersFg[i]();
+        }
+    }
+}
+function DrawProgressBar(Pos, progress, label = "") {
+    const bar = DashElements.Pbar;
+    const x = 60 + Pos.X;
+    const y = (ScrCanvas.height / 2) + Pos.Y;
+    const centerWidth = ScrCanvas.width - 120;
+    const pColor = Color.new(192, 255, 0, (DashUI.PbarAlpha * 2) - 1);
+
+    // Draw Plate
+    bar.color = Color.new(128, 128, 128, DashUI.PbarAlpha);
+    bar.startx = 0;
+    bar.endx = 9;
+    bar.width = 10;
+    bar.draw(x, y);
+    bar.startx = 10;
+    bar.endx = 22;
+    bar.width = centerWidth;
+    bar.draw(x + 9, y);
+    bar.startx = 23;
+    bar.endx = 32;
+    bar.width = 10;
+    bar.draw(x + 9 + centerWidth, y);
+
+    // Draw Progress
+    bar.color = pColor;
+    if (progress > 0) {
+        bar.startx = 0;
+        bar.endx = 9;
+        bar.width = 10;
+        bar.draw(x, y);
+
+        bar.startx = 10;
+        bar.endx = 22;
+        bar.width = centerWidth * (progress / 102);
+        bar.draw(x + 9, y);
+
+        if (progress > 99) {
+            bar.startx = 23;
+            bar.endx = 32;
+            bar.width = 10;
+            bar.draw(x + 9 + centerWidth, y);
+        }
+    }
+
+    const pTxt = {
+        Text: [`${progress.toString()}%`],
+        Alignment: "CENTER",
+        Position: { X: Pos.X, Y: Pos.Y + 22 },
+        Alpha: DashUI.PbarAlpha
+    }
+
+    TxtPrint(pTxt);
+
+    if (label) {
+        const pLabel = {
+            Text: [ label ],
+            Alignment: "CENTER",
+            Position: { X: Pos.X, Y: Pos.Y - 18 },
+            Alpha: DashUI.PbarAlpha
+        };
+
+        TxtPrint(pLabel);
+    }
 }
 function DashUISetSpecialExit(type) {
 	gExit = { Type: type };
@@ -2483,7 +2568,7 @@ function DrawUIDialogInfoScreen(data, baseA) {
 		}
 
         arrowElement.angle = 0.0f;
-	}
+    }
 }
 function DrawUIConfirmationScreen(data, txtA) {
 	if (DashUI.AnimationQueue.length < 1) { SetPadEvents_Confirmation(); }

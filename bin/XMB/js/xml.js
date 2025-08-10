@@ -500,7 +500,7 @@ function parseXmlPlugin(parsedData) {
                             plugin.Value = {};
                             plugin.Value.Items = std.loadScript(fpath);
                             xmlDefineDefaultProperty(plugin.Value, parsedData);
-                            if (('HideEmpty' in optionsTag.attributes) && (optionsTag.attributes.HideEmpty === "true") && (plugin.Value.Items.length < 1)) { return {}; }
+                            if (('HideEmpty' in optionsTag.attributes) && (optionsTag.attributes.HideEmpty === "true") && (plugin.Value.Items.length < 1)) { return false; }
                         }
                     }
                     else if ('Type' in optionsTag.attributes) {
@@ -542,7 +542,7 @@ function parseXmlPlugin(parsedData) {
                         plugin.Value = {};
                         plugin.Value.Items = std.evalScript(`(() => { ${optionsTag.cdata} })();`);
                         xmlDefineDefaultProperty(plugin.Value, parsedData);
-                        if (('HideEmpty' in optionsTag.attributes) && (optionsTag.attributes.HideEmpty === "true") && (plugin.Value.Items.length < 1)) { return {}; }
+                        if (('HideEmpty' in optionsTag.attributes) && (optionsTag.attributes.HideEmpty === "true") && (plugin.Value.Items.length < 1)) { return false; }
                     }
                 }
                 else { plugin.Value = xmlParseSubMenu(parsedData); }
@@ -557,7 +557,7 @@ function parseXmlPlugin(parsedData) {
         return plugin;
     } catch (e) {
         xlog(`parseXmlPlugin(): Error parsing XML: ${e.message}`);
-        return {};
+        return false;
     }
 }
 
