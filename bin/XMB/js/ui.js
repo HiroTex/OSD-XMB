@@ -420,6 +420,8 @@ function DashUIConstantsInit() {
     UICONST.IcoUnselMod = 24;
     UICONST.SubItemSlotSize = 52;
     UICONST.ScreenDrawLimit = 64;
+    UICONST.PbarBaseX = 60;
+    UICONST.PbarCenterWidth = ScrCanvas.width - 120;
     UICONST.ContextPreviewOptionX = ScrCanvas.width - 75;
     UICONST.ScrLowerLimit = ScrCanvas.height + UICONST.ScreenDrawLimit;
     UICONST.ScrRightLimit = ScrCanvas.width + UICONST.ScreenDrawLimit;
@@ -479,6 +481,8 @@ function DashUIConstantsInit() {
 }
 function DashUICustomizationInit() {
     UICONST.ClockTextColor = {};
+    UICONST.PBarPlateColor = Color.new(128, 128, 128, 128);
+    UICONST.PBarProgressColor = Color.new(192, 255, 0, 128);
     UICONST.DefaultIconColor = Color.new(128, 128, 128, 128);
     UICONST.TextSelectedColor = { R: 128, G: 128, B: 128 };
     UICONST.TextUnselectedColor = { R: 128, G: 128, B: 128 };
@@ -824,44 +828,27 @@ function DrawLayersFg() {
 }
 function DrawProgressBar(Pos, progress, label = "") {
     const bar = DashElements.Pbar;
-    const x = 60 + Pos.X;
-    const y = (ScrCanvas.height / 2) + Pos.Y;
-    const centerWidth = ScrCanvas.width - 120;
-    const pColor = Color.new(192, 255, 0, (DashUI.PbarAlpha * 2) - 1);
+    const x1 = UICONST.PbarBaseX + Pos.X;
+    const x2 = x1 + 10;
+    const x3 = x2 + UICONST.PbarCenterWidth;
+    const y = (ScrCanvas.height >> 1) + Pos.Y;
+    const pColor = Color.setA(UICONST.PBarProgressColor, (DashUI.PbarAlpha * 2) - 1);
 
     // Draw Plate
-    bar.color = Color.new(128, 128, 128, DashUI.PbarAlpha);
-    bar.startx = 0;
-    bar.endx = 9;
-    bar.width = 10;
-    bar.draw(x, y);
-    bar.startx = 10;
-    bar.endx = 22;
-    bar.width = centerWidth;
-    bar.draw(x + 9, y);
-    bar.startx = 23;
-    bar.endx = 32;
-    bar.width = 10;
-    bar.draw(x + 9 + centerWidth, y);
+    bar.color = Color.setA(UICONST.PBarPlateColor, DashUI.PbarAlpha);
+    bar.startx = 0;  bar.endx = 9;  bar.width = 10; bar.draw(x1, y);
+    bar.startx = 10; bar.endx = 22; bar.width = UICONST.PbarCenterWidth; bar.draw(x2, y);
+    bar.startx = 23; bar.endx = 32; bar.width = 10; bar.draw(x3, y);
 
     // Draw Progress
     bar.color = pColor;
     if (progress > 0) {
-        bar.startx = 0;
-        bar.endx = 9;
-        bar.width = 10;
-        bar.draw(x, y);
+        bar.startx = 0; bar.endx = 9; bar.width = 10; bar.draw(x1, y);
 
-        bar.startx = 10;
-        bar.endx = 22;
-        bar.width = centerWidth * (progress / 102);
-        bar.draw(x + 9, y);
+        bar.startx = 10; bar.endx = 22; bar.width = UICONST.PbarCenterWidth * (progress / 100); bar.draw(x2, y);
 
         if (progress > 99) {
-            bar.startx = 23;
-            bar.endx = 32;
-            bar.width = 10;
-            bar.draw(x + 9 + centerWidth, y);
+            bar.startx = 23; bar.endx = 32; bar.width = 10; bar.draw(x3, y);
         }
     }
 
