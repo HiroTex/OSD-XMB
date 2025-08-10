@@ -814,7 +814,7 @@ function DrawDashIcon(Properties) {
             Image.width  = Properties.Width;
             Image.height = Properties.Height;
         }
-    Image.angle  = ('Rotation' in Properties) ? Properties.Rotation : 0
+    Image.angle  = ('Rotation' in Properties) ? Properties.Rotation : 0.0f;
     
 		Image.draw(Properties.X, Properties.Y);
 	}
