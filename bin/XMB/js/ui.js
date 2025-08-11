@@ -41,7 +41,8 @@ function UIHandler() {
 	DashUIAnimationHandler();
 	DrawUICategoryItems();
 	DrawUICategories();
-	DrawUISubMenu();
+    DrawUISubMenu();
+    DrawUIPIC2();
     DrawUIClock();
     DrawUIOptionBox();
 	DrawUIContext();
@@ -420,6 +421,8 @@ function DashUIConstantsInit() {
     UICONST.IcoUnselMod = 24;
     UICONST.SubItemSlotSize = 52;
     UICONST.ScreenDrawLimit = 64;
+    UICONST.PIC2X = (ScrCanvas.width >> 1) - 90;
+    UICONST.PIC2Y = (ScrCanvas.height >> 1) - 30;
     UICONST.PbarBaseX = 60;
     UICONST.PbarCenterWidth = ScrCanvas.width - 120;
     UICONST.ContextPreviewOptionX = ScrCanvas.width - 75;
@@ -533,7 +536,13 @@ function DashUInit() {
 	DashUI.Clock.Fade = createFade();
 
 	// Init Item Backgroud Object
-	DashUI.ItemBG = {};
+    DashUI.ItemBG = {};
+
+    // PIC2 Item
+    DashUI.PIC2 = {};
+    DashUI.PIC2.Display = false;
+    DashUI.PIC2.Fade = createFade();
+    DashUI.PIC2.A = 0;
 
 	// Init Categories Object
 	DashUI.Category = {};
@@ -871,6 +880,26 @@ function DrawProgressBar(Pos, progress, label = "") {
 
         TxtPrint(pLabel);
     }
+}
+function DrawUIPIC2() {
+    const obj = DashUI.PIC2;
+    if ((DashUI.State.Next > 2) || (DashUI.State.Current < 1)) { obj.A = 0; obj.Fade.Progress = 0.0f; return; }
+    const mainItem = DashUI.ItemCollection.Current[DashUI.Items.Current];
+    const item = (DashUI.SubMenu.Level > -1) ? DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current] : mainItem;
+    if (!item || !('PIC2' in item)) { return; }
+    item.PIC2 = resolveFilePath(item.PIC2);
+    let time = getTimerSec(DashUI.ItemBG.Timer);
+    if (time < 8) { obj.A = 0; return; }
+    const PIC2 = ImageCache.Get(item.PIC2);
+    const Ready = PIC2 && PIC2.ready();
+    if (!Ready) { obj.A = 0; return; }
+
+    if (obj.A === 0) { obj.Fade.Progress = 0.1f; DashUI.AnimationQueue.push(() => UIAnimationCommon_Work(obj.Fade, 0.1f)); }
+
+    obj.A = ~~(128 * obj.Fade.Progress);
+    PIC2.filter = NEAREST;
+    PIC2.color = Color.setA(PIC2.color, obj.A);
+    PIC2.draw(UICONST.PIC2X, UICONST.PIC2Y);
 }
 function DashUISetSpecialExit(type) {
 	gExit = { Type: type };
@@ -1421,7 +1450,7 @@ function DrawUICategoryItems_Work(items, current, x) {
                 let isCurrent = (i === current);
                 let isNext = (i === next);
                 focus.width = 82;
-                focus.height = 72;
+                focus.height = 82;
 
                 if (anim.Running) {
                     const mod = 24 * (isNext ? (1 - easing) : easing);
@@ -1435,10 +1464,15 @@ function DrawUICategoryItems_Work(items, current, x) {
                 }
 
                 focus.color = Color.setA(focus.color, FocusA);
-                focus.draw(Icon.X - 5, Icon.Y + 2);
+                focus.draw(Icon.X - 5, Icon.Y - 5);
             }
 		}
 
+        if (DashUI.PIC2.A > 0) {
+            Name.Glow = false;
+            Name.Alpha -= DashUI.PIC2.A;
+            if (Desc) { Desc.Alpha = Name.Alpha; }
+        }
         DrawDashIcon(Icon);
         TxtPrint(Name);
 		if (Desc) { TxtPrint(Desc); }
@@ -1729,9 +1763,9 @@ function DrawUISubMenuPreviousLevel() {
 		if ((DashElements.ItemFocus) && Desc) {
 			let focus = DashElements.ItemFocus;
 			focus.width = 82;
-			focus.height = 72;
+			focus.height = 82;
             focus.color = Color.setA(focus.color, Desc.Alpha);
-            focus.draw(Icon.X - 5, Icon.Y + 1);
+            focus.draw(Icon.X - 5, Icon.Y - 6);
 		}
 
 		TxtPrint(Name);
@@ -1895,8 +1929,6 @@ function DrawUISubMenu() {
         if (Icon.Y < -UICONST.ScreenDrawLimit) continue;
         if (Icon.Y > UICONST.ScrLowerLimit) break;
 
-		if (Desc) { TxtPrint(Desc); }
-
 		// Draw Focus
 		if ((DashElements.ItemFocus) && (i === current || i === next) && Desc) {
 			let FocusA = contextMod ? ~~(128 * (1 - contextfadeProgress)) : Desc.Alpha;
@@ -1907,7 +1939,7 @@ function DrawUISubMenu() {
                 let isCurrent = (i === current);
                 let isNext = (i === next);
                 focus.width = 82;
-                focus.height = 72;
+                focus.height = 82;
 
                 if (anim.Running) {
                     const mod = isNext ? UICONST.IcoUnselMod * (1 - easing) : UICONST.IcoUnselMod * easing;
@@ -1920,12 +1952,18 @@ function DrawUISubMenu() {
                 }
 
                 focus.color = Color.setA(focus.color, FocusA);
-                focus.draw(Icon.X - 5, Icon.Y + 1);
+                focus.draw(Icon.X - 5, Icon.Y - 6);
             }
 		}
 
+        if (DashUI.PIC2.A > 0) {
+            Name.Glow = false;
+            Name.Alpha -= DashUI.PIC2.A;
+            if (Desc) { Desc.Alpha = Name.Alpha; }
+        }
         TxtPrint(Name);
         DrawDashIcon(Icon);
+		if (Desc) { TxtPrint(Desc); }
 
         // Context Option Selected
         if (CtxtName) {

@@ -8,5 +8,6 @@
     "Path": "{cwd}/APPS/retroarch/raboot.elf",
     "Args": []
   },
-  "CustomIcon": "{cwd}/APPS/retroarch/ico.png"
+  "CustomIcon": "{cwd}/APPS/retroarch/ico.png",
+  "PIC2": "{cwd}/APPS/retroarch/PIC2.png"
 }
