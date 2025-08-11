@@ -75,7 +75,8 @@ globalThis.PATHS = {
 	Plugins: `${CWD}PLG/`,
 	Theme: `${CWD}THM/`,
 	Config: `${CWD}CFG/`,
-	VMC: `${CWD}VMC/`,
+    VMC: `${CWD}VMC/`,
+    Art: `${CWD}ART/`,
 	Neutrino: `${CWD}APPS/neutrino/`
 };
 

@@ -39,7 +39,7 @@
           }
         }
 
-				game.Description = game.GameID + " \u{B7} " + game.Data.dev.toUpperCase();;
+				game.Description = game.GameID + " \u{B7} " + game.Data.fdev;
 
 				const ico = (game.GameID !== "") ? findICO(game.GameID) : "";
 				if (ico !== "") { game.CustomIcon = ico; }
@@ -57,7 +57,7 @@
 					items.push({
 						Name: getGameName(gameDir[j].name),
 						Type: "ELF",
-						Data: { path: path, fname: gameDir[j].name, size: gameDir[j].size, fsize: formatFileSize(gameDir[j].size), dev: dev }
+						Data: { path: path, fname: gameDir[j].name, size: gameDir[j].size, fsize: formatFileSize(gameDir[j].size), dev: dev, fdev: (dev === "mass") ? "USB" : dev.toUpperCase() }
 					});
 
 					Object.defineProperty(items[items.length - 1], "Icon", {
@@ -134,7 +134,7 @@
       <Dialog Icon="-1" Title="" BG="false" Type="INFO" BackBtn="true" >
         <Info>
           <Item Name="{TITLE}" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Name}" Selectable="false" />
-          <Item Name="{DEVICE}" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Data.dev.toUpperCase()}" Selectable="false" />
+          <Item Name="{DEVICE}" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Data.fdev}" Selectable="false" />
           <Item Name="{SIZE}" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Data.fsize}" Selectable="false" />
         </Info>
       </Dialog>

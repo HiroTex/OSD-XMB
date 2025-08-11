@@ -28,6 +28,10 @@ function PadsHandler() {
     else if ((PADEVENTS.RIGHT) 		&& (checkStates(Pads.RIGHT))) 						{ PADEVENTS.RIGHT(); }
     else if ((PADEVENTS.UP) 		&& (checkStates(Pads.UP))) 							{ PADEVENTS.UP(); }
     else if ((PADEVENTS.DOWN) 		&& (checkStates(Pads.DOWN))) 						{ PADEVENTS.DOWN(); }
+    else if ((PADEVENTS.L1) 		&& (checkStates(Pads.L1))) 						    { PADEVENTS.L1(); }
+    else if ((PADEVENTS.R1) 		&& (checkStates(Pads.R1))) 						    { PADEVENTS.R1(); }
+    else if ((PADEVENTS.L2) 		&& (checkStates(Pads.L2))) 						    { PADEVENTS.L2(); }
+    else if ((PADEVENTS.R2) 		&& (checkStates(Pads.R2))) 						    { PADEVENTS.R2(); }
 
 		 if ((pad.lx < -64) && (PADEVENTS.LEFT)) 	{ PADEVENTS.LEFT(); }
 	else if ((pad.lx >  64) && (PADEVENTS.RIGHT)) 	{ PADEVENTS.RIGHT(); }

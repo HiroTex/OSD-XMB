@@ -88,8 +88,8 @@ function PreprocessText(txt) {
 	return finalLines;
 }
 function FontGlowUpdate() {
-	if (FontObj.Glow.Value == FontObj.Glow.Max) { FontObj.Glow.Dir = -1; }
-	if (FontObj.Glow.Value == FontObj.Glow.Min) { FontObj.Glow.Dir = 1; }
+	if (FontObj.Glow.Value == FontObj.Glow.Max) { FontObj.Glow.Dir = -2; }
+	if (FontObj.Glow.Value == FontObj.Glow.Min) { FontObj.Glow.Dir = 2; }
 	FontObj.Glow.Value = FontObj.Glow.Value + FontObj.Glow.Dir;
 }
 function FontAlignPos(Text, Alignment = "LEFT", Position) {

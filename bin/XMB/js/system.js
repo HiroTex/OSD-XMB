@@ -629,65 +629,36 @@ function getPOPSElfPath(data) {
 
 /* Get Available Art Paths */
 function getArtPaths() {
-    const devices = System.devices();
-    const paths = [CWD];
-    let art = "";
+    const IDs = System.listDir(PATHS.Art);
+    if (IDs.length === 0) { return []; }
+    return IDs.map(id => (id.dir && id.name !== "." && id.name !== "..") ? id.name : "").filter(name => name !== "");
+}
 
-    if (devices.some(dev => dev.name === "mmce")) {
-        let dir0 = os.readdir("mmce0:/")[0];
-        let dir1 = os.readdir("mmce1:/")[0];
-        dir0 && dir0.length > 0 && paths.push("mmce0:/");
-        dir1 && dir1.length > 0 && paths.push("mmce1:/");
-    }
+function findArt(baseFilename, type) {
+    if (!baseFilename || !gArt.includes(baseFilename)) { return ""; }
+    const namePattern = type;
+    const artPath = `${PATHS.Art}/${baseFilename}/`;
+    const files = os.readdir(artPath)[0];
 
-    if (devices.some(dev => dev.name === "mass")) {
-        for (let i = 0; i < 10; i++) {
-            const dir = os.readdir(`mass${i.toString()}:/`)[0];
-            if (!dir || dir.length < 1) { break; }
-            paths.push(`mass${i.toString()}:/`);
+    // Search for the file in the ART Folder case-insensitively
+    for (let i = 0; i < files.length; i++) {
+        let item = files[i];
+        if (item.length === namePattern.length && item.toLowerCase() === namePattern) {
+            return `${artPath}${item}`;
         }
     }
 
-    return paths;
-}
-
-/*	Scans a Directory Art Folder looking for a match	*/
-function scanArtFolder(baseDir, baseFilename, suffix) {
-    const dirPath = `${baseDir}ART/`;
-    const extensions = [`_${suffix.toUpperCase()}.png`, `_${suffix.toUpperCase()}.jpg`];
-    const dirFiles = os.readdir(dirPath)[0];
-	if (dirFiles.length < 1) { return ""; }
-
-    for (const ext of extensions) {
-        const fileCandidates = [
-            `${baseFilename}${ext}`,
-            `${baseFilename}${ext}`.toLowerCase(),
-            `${baseFilename}${ext}`.toUpperCase()
-        ];
-
-        for (const filePath of fileCandidates) { if (dirFiles.includes(filePath)) { return `${dirPath}${filePath}`; } }
-    }
-
+    // No Art was found.
     return "";
-}
-
-/*	Searchs for an Image file either in PNG or JPG Format following a name pattern.	*/
-function findArt(baseFilename, suffix) {
-    for (let i = 0; i < gArtPaths.length; i++) {
-        art = scanArtFolder(gArtPaths[i], baseFilename, suffix);
-        if (art !== "") { break; }
-    }
-
-    return art; // Return empty string if no matching file is found
 }
 
 /*	Searchs for a matching ICO file in the ART folder for a specified string	*/
 /*	Returns empty string if not found.											*/
-function findICO(baseFilename) { return findArt(baseFilename, "ICO"); }
+function findICO(baseFilename) { return findArt(baseFilename, "icon0.png"); }
 
 /*	Searchs for a matching BG file in the ART folder for a specified string	*/
 /*	Returns empty string if not found.											*/
-function findBG(baseFilename) { return findArt(baseFilename, "BG"); }
+function findBG(baseFilename) { return findArt(baseFilename, "pic1.png"); }
 
 //////////////////////////////////////////////////////////////////////////
 ///*				   		   Plugin System						  *///
@@ -1064,7 +1035,7 @@ let gExit 		= {};
 let gThreads 	= false;
 let gDebug      = false;
 let gDbgTxt     = [];
-let gArtPaths   = getArtPaths();
+let gArt     	= getArtPaths();
 let ScrCanvas 	= Screen.getMode();
 const ee_info   = System.getCPUInfo();
 
