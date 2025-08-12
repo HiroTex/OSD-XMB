@@ -886,7 +886,7 @@ function DrawUIPIC2() {
     if ((DashUI.State.Next > 2) || (DashUI.State.Current < 1)) { obj.A = 0; obj.Fade.Progress = 0.0f; return; }
     const mainItem = DashUI.ItemCollection.Current[DashUI.Items.Current];
     const item = (DashUI.SubMenu.Level > -1) ? DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current] : mainItem;
-    if (!item || !('PIC2' in item)) { return; }
+    if (!item || !('PIC2' in item)) { obj.A = 0; obj.Fade.Progress = 0.0f; return; }
     item.PIC2 = resolveFilePath(item.PIC2);
     let time = getTimerSec(DashUI.ItemBG.Timer);
     if (time < 8) { obj.A = 0; return; }

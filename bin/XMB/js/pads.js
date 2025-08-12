@@ -68,9 +68,10 @@ function SetDashPadEvents(MODE) {
     }
 }
 function SetPadEvents_Main() {
-	PADEVENTS.ACCEPT 	= () => {
-		if (DashUI.Items.Current >= DashUI.ItemCollection.length) { return; }
-		ExecuteItem(DashUI.ItemCollection.Current[DashUI.Items.Current]);
+    PADEVENTS.ACCEPT = () => {
+        const current = DashUI.Items.Current;
+        if (current >= DashUI.ItemCollection.length) { return; }
+		ExecuteItem(DashUI.ItemCollection.Current[current]);
 	};
 
 	PADEVENTS.TRIANGLE  = () => { OpenOptionBox(DashUI.ItemCollection.Current[DashUI.Items.Current]) };
@@ -79,12 +80,46 @@ function SetPadEvents_Main() {
 	PADEVENTS.RIGHT 	= () => UIAnimationCategoryMove_Start(1);
 	PADEVENTS.UP 		= () => UIAnimationCategoryItemsMove_Start(-1);
 	PADEVENTS.DOWN 		= () => UIAnimationCategoryItemsMove_Start(1);
+
+    const obj = DashUI.Items;
+
+    PADEVENTS.L2 = () => {
+        if (obj.Current !== 0) {
+            obj.Current = 1;
+            obj.Next = obj.Current;
+            UIAnimationCategoryItemsMove_Start(-1);
+        }
+    };
+    PADEVENTS.R2 = () => {
+        const total = (DashUI.ItemCollection.Current.length - 1);
+        if (obj.Current !== total) {
+            obj.Current = total - 1;
+            obj.Next = obj.Current;
+            UIAnimationCategoryItemsMove_Start(1);
+        }
+    };
+
+    PADEVENTS.L1 = () => {
+        let delta = (obj.Current - 5 < 0) ? obj.Current : 5;
+        obj.Current = (obj.Current - delta) + 1;
+        obj.Next = obj.Current;
+        UIAnimationCategoryItemsMove_Start(-1);
+    };
+
+    PADEVENTS.R1 = () => {
+        const total = (DashUI.ItemCollection.Current.length - 1);
+        let delta = (obj.Current + 5 > total) ? total - obj.Current : 5;
+        obj.Current = (obj.Current + delta) - 1;
+        obj.Next = obj.Current;
+        UIAnimationCategoryItemsMove_Start(1);
+    };
 }
 function SetPadEvents_Sub() {
 	PADEVENTS.ACCEPT 	= () => {
+        const current = DashUI.SubMenu.Items.Current;
 		const Items = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items;
-		if (DashUI.SubMenu.Items.Current >= Items.length) { return; }
-		ExecuteItem(Items[DashUI.SubMenu.Items.Current]);
+        if (current >= Items.length) { return; }
+        ExecuteItem(Items[current]);
 	};
 
 	PADEVENTS.TRIANGLE  = () => { OpenOptionBox(DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current]) };
@@ -92,7 +127,42 @@ function SetPadEvents_Sub() {
 	PADEVENTS.CANCEL 	= () => DashUIBackFromSubMenu();
 	PADEVENTS.LEFT  	= () => DashUIBackFromSubMenu();
 	PADEVENTS.UP 		= () => UIAnimationSubMenuItemsMove_Start(-1);
-	PADEVENTS.DOWN 		= () => UIAnimationSubMenuItemsMove_Start(1);
+    PADEVENTS.DOWN      = () => UIAnimationSubMenuItemsMove_Start(1);
+
+    const obj = DashUI.SubMenu.Items;
+
+    PADEVENTS.L2 = () => {
+        if (obj.Current !== 0) {
+            obj.Current = 1;
+            obj.Next = obj.Current;
+            UIAnimationSubMenuItemsMove_Start(-1);
+        }
+    };
+    PADEVENTS.R2 = () => {
+        const sub = DashUI.SubMenu;
+        const total = (sub.ItemCollection[sub.Level].Items.length - 1);
+        if (obj.Current !== total) {
+            obj.Current = total - 1;
+            obj.Next = obj.Current;
+            UIAnimationSubMenuItemsMove_Start(1);
+        }
+    };
+
+    PADEVENTS.L1 = () => {
+        let delta = (obj.Current - 5 < 0) ? obj.Current : 5;
+        obj.Current = (obj.Current - delta) + 1;
+        obj.Next = obj.Current;
+        UIAnimationSubMenuItemsMove_Start(-1);
+    };
+
+    PADEVENTS.R1 = () => {
+        const sub = DashUI.SubMenu;
+        const total = (sub.ItemCollection[sub.Level].Items.length - 1);
+        let delta = (obj.Current + 5 > total) ? total - obj.Current : 5;
+        obj.Current = (obj.Current + delta) - 1;
+        obj.Next = obj.Current;
+        UIAnimationSubMenuItemsMove_Start(1);
+    };
 }
 function SetPadEvents_Context() {
 	PADEVENTS.ACCEPT	= () => DashUISelectContextItem();
