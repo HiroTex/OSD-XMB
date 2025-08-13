@@ -76,8 +76,14 @@ function getDevicesAsItems(params = {}) {
                     const info = System.getBDMInfo(`mass${j.toString()}:`);
                     if (!info) { count = j; break; }
 					nameList.push(XMBLANG.MASS_DIR_NAME);
-					iconList.push(21);
-                    descList.push(`${info.name.toUpperCase()} ${(info.index + 1).toString()}`);
+                    iconList.push(21);
+                    const bdmName = info.name;
+                    switch (info.name) {
+                        case "sdc": bdmName = "mx4sio"; break;
+                        case "sd": bdmName = "ilink"; break;
+                        case "udp": bdmName = "udpbd"; break;
+                    }
+                    descList.push(`${bdmName.toUpperCase()} ${(info.index + 1).toString()}`);
 				}
 				break;
 			case "hdd":

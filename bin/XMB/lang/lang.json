@@ -218,13 +218,13 @@
     "Diretório principal"
   ],
   "MASS_DIR_NAME": [
-    "USB Drive",
-    "Périphérique USB",
-    "Dispositivo USB",
-    "USB-Gerät",
-    "Dispositivo USB",
-    "USB-apparaat",
-    "Dispositivo USB"
+    "Mass Storage Device",
+    "Support de Stockage",
+    "Dispositivo de Almacenamiento",
+    "Massenspeichergeräten",
+    "Dispositivi di Archiviazione",
+    "Apparaten voor massaopslag",
+    "Dispositivo de armazenamento"
   ],
   "HDD_DIR_NAME": [
     "Internal Hard Disk Drive",
