@@ -19,6 +19,11 @@ dashboard by Howling Wolf & Chelsea.
     - Games installed with HD Loader will be automatically listed on the "Playstation 2" folder. 
     - You can set their Game IDs manually on the "neutrino.cfg" file, or by following the naming pattern "PP.Game-ID..GameName".
 
+    
+> [!IMPORTANT]  
+> Make sure to have the necessary files on the `POPS` folder.  
+Read [PS1 POPS Games are not being scanned](#troubleshooting).
+
 - **Launch PS1 games from USB Drive or HDD**:
     - The app will automatically scan your POPS folder on the root of your USB Drive (and the "__.POPS" partition if present) to list all the .VCD files on the "Playstation 1" Plugin folder in the "Game" Category.
 	- The name of the VCD will be the game's name.
@@ -26,19 +31,15 @@ dashboard by Howling Wolf & Chelsea.
 	- You can set several POPS special settings the same way the PS2 per-game settings are set, by using the Options Menu for each game.
 	- More global options (Cheats) are set on the "Game Settings" Plugin in the	"Settings" Category.
     
-> [!IMPORTANT]  
-> Make sure to have the necessary files on the `POPS` folder.  
-Read [PS1 POPS Games are not being scanned](#ps1-pops-games-are-not-being-scanned).
+> [!WARNING]  
+> If your PS2 has an uncompatible modchip, the next feature must be disabled or else it will crash after the boot sequence.  
+Read [The App freezes exactly after the Boot sequence](#troubleshooting).
 
 - **Launch PS1 and PS2 games from Discs**:
     - The App will automatically recognize if there is a PS1 CD/CDDA or PS2 CD/CDDA/DVD
   	in the disctray	and highlight it automatically if you're idle on the "Game" category.
 	- You can add "(Game-ID).cfg" files on the "CFG" folder with the Item "Title=Game Name"
 	to display Customized Game Titles for this Item.
-    
-> [!WARNING]  
-> If your PS2 has an uncompatible modchip, this feature must be disabled or else it will crash after the boot sequence.  
-Read [Troubleshooting](#the-app-freezes-exactly-after-the-boot-sequence).
 
 - **Execute ELFs**:
     - You can execute custom ELFs by the use of Plugins, or using the File Explorer. The File Explorer will launch any ELF without arguments, but you can make custom plugins to launch Elfs with custom arguments.
@@ -68,13 +69,11 @@ Read [Troubleshooting](#the-app-freezes-exactly-after-the-boot-sequence).
     - 	hdd:__common:/OSDXMB/
     - 	Path where OSDXMB.ELF was launched from.
 
-## Trubleshooting
+## Troubleshooting
 If you have problems running the App, please follow the instructions below:
 
 <details>
 <summary>The App does not launch / Black Screen at boot</summary>
-
-#### <ins>The App does not launch / Black Screen at boot<ins>:
 
 - If using wLauncherElf, please switch your wLE version for an older one or use uLE, current wLE versions have problems running Athena.
 - If FMCB is available, consider using FMCB to launch the App directly from the Browser or by Auto-boot/hotkey.
@@ -84,16 +83,14 @@ If you have problems running the App, please follow the instructions below:
 <details>
 <summary>The App freezes exactly after the Boot sequence</summary>
 
-#### <ins>The App freezes exactly after the Boot sequence<ins>:
 - On your Assets folder, go to `CFG/main.js` (If the file is not there, create it as a text file), and add an entry `cdvd=false`.  
-  If this fixes the issue, your PS2 has an uncompatible modchip ad won't read CD/DVDs from the disc tray while on the App.
+  If this fixes the issue, your PS2 has an uncompatible modchip and won't read CD/DVDs from the disc tray while on the App.
 
 </details>
 
 <details>
 <summary>MX4SIO is not available</summary>
 
-#### <ins>MX4SIO is not available<ins>:
 - In order to enable MX4SIO, MMCE must be disabled. In order to do this, open the `athena.ini` file as a text file, and swap `true` and `false` on the lines:
 ```
 mmceman = true
@@ -105,7 +102,6 @@ mx4sio_bd = false
 <details>
 <summary>PS1 POPS Games are not being scanned</summary>
 
-#### <ins>PS1 POPS Games are not being scanned<ins>:
 - Make sure to have the necessary files inside the POPS Folder:
     - If using USB, make sure to have the files `POPSTARTER.ELF` and `POPS_IOX.PAK` on the POPS Folder.  
     - If using HDD, make sure to have the files `POPS.ELF`, `POPSTARTER.ELF` and `IOPRP252.IMG` on the POPS folder inside the `__common` partition.  
