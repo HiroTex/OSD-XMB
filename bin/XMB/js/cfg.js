@@ -10,11 +10,12 @@
 
 const UserConfig = {
     HDD: System.devices().some(dev => dev.name === "hdd"),
-	Theme: "Original",
+    Disctray: true,
 	Language: GetOsdConfig("Language") - 1,
     ConfirmBtn: 0,
     Warning: 1,
     Aspect: (GetOsdConfig("Aspect") === 2) ? 1 : 0,
+    Theme: "Original",
 	BgColor: 0,
 	DisplayBg: false,
 	CustomBgImg: false,
@@ -63,12 +64,13 @@ function ReadUserSettings() {
 
 	const config = CfgMan.Get("main.cfg");
 	if (config.length < 1) { return; }
-
+    
+    if ('cdvd'	     in config) { UserConfig.Disctray     = (config["cdvd"] === "true");    }
 	if ('lang'		 in config) { UserConfig.Language 	  = parseInt(config["lang"]); 		}
 	if ('btnType'	 in config) { UserConfig.ConfirmBtn   = parseInt(config["btnType"]); 	}
-    if ('aspect'	 in config) { UserConfig.Aspect       = parseInt(config["aspect"]); 	}
     if ('warn'	     in config) { UserConfig.Warning      = parseInt(config["warn"]); 	    }
     if ('vmode'	     in config) { UserConfig.Vmode        = parseInt(config["vmode"]); 	    }
+    if ('aspect'	 in config) { UserConfig.Aspect       = parseInt(config["aspect"]); 	}
 	if ('dateFormat' in config) { UserConfig.DateFormat   = parseInt(config["dateFormat"]); }
 	if ('hourFormat' in config) { UserConfig.HourFormat   = parseInt(config["hourFormat"]); }
 	if ('timezone'	 in config) { UserConfig.Timezone	  = parseInt(config["timezone"]); 	}

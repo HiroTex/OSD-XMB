@@ -171,6 +171,7 @@ const DiscTray = (() => {
 
     return {
         Process: function () {
+            if (!UserConfig.Disctray) { return; }
             if (frame !== 4) { frame++; return; }       // Avoid calling Check Disc Tray every frame.
 			stat = System.checkDiscTray();
 

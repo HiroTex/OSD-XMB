@@ -118,6 +118,38 @@
       ]]>
     </Confirm>
   </Option>
+  <Option Type="CONTEXT" Icon="15" Default="{Number(UserConfig.Disctray)}">
+    <Name>
+      <String str="Disc Tray Reading" />
+      <String str="Disc Tray Reading" />
+      <String str="Lectura de Bandeja de Disco" />
+      <String str="Disc Tray Reading" />
+      <String str="Disc Tray Reading" />
+      <String str="Disc Tray Reading" />
+      <String str="Disc Tray Reading" />
+    </Name>
+    <Description>
+      <String str="Enable physical disc reading." />
+      <String str="Enable physical disc reading." />
+      <String str="Habilita la lectura de discos en la bandeja." />
+      <String str="Enable physical disc reading." />
+      <String str="Enable physical disc reading." />
+      <String str="Enable physical disc reading." />
+      <String str="Enable physical disc reading." />
+    </Description>
+    <Component Name="{NO}" Icon="-1"/>
+    <Component Name="{YES}" Icon="-1"/>
+    <Confirm>
+      <![CDATA[
+        function(index, item) {
+            UserConfig.Disctray = index === 1;
+            let config = CfgMan.Get("main.cfg");
+            config["cdvd"] = UserConfig.Disctray.toString();
+            CfgMan.Push("main.cfg", config);
+        }
+      ]]>
+    </Confirm>
+  </Option>
   <Option Type="DIALOG" Icon="15">
     <Name>
       <String str="System Information" />

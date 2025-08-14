@@ -77,7 +77,7 @@ function getDevicesAsItems(params = {}) {
                     if (!info) { count = j; break; }
 					nameList.push(XMBLANG.MASS_DIR_NAME);
                     iconList.push(21);
-                    const bdmName = info.name;
+                    let bdmName = info.name;
                     switch (info.name) {
                         case "sdc": bdmName = "mx4sio"; break;
                         case "sd": bdmName = "ilink"; break;
