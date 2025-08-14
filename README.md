@@ -26,9 +26,9 @@ dashboard by Howling Wolf & Chelsea.
 	- You can set several POPS special settings the same way the PS2 per-game settings are set, by using the Options Menu for each game.
 	- More global options (Cheats) are set on the "Game Settings" Plugin in the	"Settings" Category.
     
-        > [!IMPORTANT]  
-        > Make sure to have the necessary files on the `POPS` folder.  
-          Read [PS1 POPS Games are not being scanned](#ps1-pops-games-are-not-being-scanned).
+> [!IMPORTANT]  
+> Make sure to have the necessary files on the `POPS` folder.  
+Read [PS1 POPS Games are not being scanned](#ps1-pops-games-are-not-being-scanned).
 
 - **Launch PS1 and PS2 games from Discs**:
     - The App will automatically recognize if there is a PS1 CD/CDDA or PS2 CD/CDDA/DVD
@@ -36,9 +36,9 @@ dashboard by Howling Wolf & Chelsea.
 	- You can add "(Game-ID).cfg" files on the "CFG" folder with the Item "Title=Game Name"
 	to display Customized Game Titles for this Item.
     
-        > [!WARNING]  
-        > If your PS2 has an uncompatible modchip, this feature must be disabled or else it will crash after the boot sequence.  
-          Read [Troubleshooting](#the-app-freezes-exactly-after-the-boot-sequence).
+> [!WARNING]  
+> If your PS2 has an uncompatible modchip, this feature must be disabled or else it will crash after the boot sequence.  
+Read [Troubleshooting](#the-app-freezes-exactly-after-the-boot-sequence).
 
 - **Execute ELFs**:
     - You can execute custom ELFs by the use of Plugins, or using the File Explorer. The File Explorer will launch any ELF without arguments, but you can make custom plugins to launch Elfs with custom arguments.
