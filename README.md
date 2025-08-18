@@ -70,7 +70,7 @@ Read [The App freezes exactly after the Boot sequence](#troubleshooting).
     - 	Path where OSDXMB.ELF was launched from.
 
 ## Troubleshooting
-If you have problems running the App, please follow the instructions below:
+These are common expected issues, please follow the instructions below to fix them:
 
 <details>
 <summary>The App does not launch / Black Screen at boot</summary>
@@ -79,7 +79,6 @@ If you have problems running the App, please follow the instructions below:
 - If FMCB is available, consider using FMCB to launch the App directly from the Browser or by Auto-boot/hotkey.
 - If using PS2BBL, try enabling the config `KEY_READ_WAIT_TIME = 2000`.
 </details>
-
 <details>
 <summary>The App freezes exactly after the Boot sequence</summary>
 
@@ -87,18 +86,36 @@ If you have problems running the App, please follow the instructions below:
   If this fixes the issue, your PS2 has an uncompatible modchip and won't read CD/DVDs from the disc tray while on the App.
 
 </details>
+<details>
+<summary>After creating a VMC the game does not start</summary>
 
+- If you are trying to create a VMC on a MX4SIO or MMCE device and you have an USB plugged in, un-plug it from the console before booting OSD-XMB.
+</details>
 <details>
 <summary>MX4SIO is not available</summary>
 
-- In order to enable MX4SIO, MMCE must be disabled. In order to do this, open the `athena.ini` file as a text file, and swap `true` and `false` on the lines:
+- In order to enable MX4SIO, MMCE must be disabled.  
+To do this, open the `athena.ini` file as a text file, and swap `true` and `false` on the lines:
 ```
 mmceman = true
 mx4sio_bd = false
 ```
 
 </details>
+<details>
+<summary>The App is not reading exfat HDD</summary>
 
+> [!WARNING]  
+> This is an untested feature.
+
+- In order to enable exfat HDD support, PFS must be disabled.  
+To do this, open the `athena.ini` file as a text file, and swap `true` and `false` on the lines:
+```
+ps2fs = true
+ata_bd = false
+```
+
+</details>
 <details>
 <summary>PS1 POPS Games are not being scanned</summary>
 
@@ -106,6 +123,11 @@ mx4sio_bd = false
     - If using USB, make sure to have the files `POPSTARTER.ELF` and `POPS_IOX.PAK` on the POPS Folder.  
     - If using HDD, make sure to have the files `POPS.ELF`, `POPSTARTER.ELF` and `IOPRP252.IMG` on the POPS folder inside the `__common` partition.  
     
+</details>
+<details>
+<summary>The UI keeps moving to the left</summary>
+
+- If you are using an 8bitdo adapter, disconnect it and plug a PS2 Joystick.
 </details>
 
 ## Credits and Special Thanks
