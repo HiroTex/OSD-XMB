@@ -13,7 +13,7 @@ UICONST.Category.IconSelectedColor = { R: 160, G: 140, B: 50 };
 UICONST.TextSelectedColor = { R: 180, G: 120, B: 0 };
 UICONST.Context.Tint = { R: 40, G: 96, B: 220 };
 
-const thm_GameBG = {};
+let thm_GameBG = {};
 thm_GameBG.Image = new Image(`${PATHS.Theme}${UserConfig.Theme}/bg/game_bg.png`);
 thm_GameBG.Image.optimize();
 thm_GameBG.Image.filter = LINEAR;
