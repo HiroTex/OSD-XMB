@@ -4,8 +4,9 @@
 			const NeutrinoCFG = CfgMan.Get("neutrino.cfg");
 
 			function SaveLastPlayed() {
-				NeutrinoCFG["last"] = DashUI.SelectedItem.Name;
-				CfgMan.Set("neutrino.cfg", NeutrinoCFG);
+        const ncfg = CfgMan.Get("neutrino.cfg");
+				ncfg["last"] = DashUI.SelectedItem.Name;
+				CfgMan.Set("neutrino.cfg", ncfg);
 				setHistoryEntry(DashUI.SelectedItem.GameID.toUpperCase());
 			}
 

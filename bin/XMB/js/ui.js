@@ -800,7 +800,8 @@ function DrawDashIcon(Properties) {
 	Properties.Alpha = alphaCap(Properties.Alpha);
 	if (Properties.Alpha < 1) { return; }
 
-	if (('CustomIcon' in Properties) && (typeof Properties.CustomIcon === "string")) {
+    if (('CustomIcon' in Properties) && (typeof Properties.CustomIcon === "string")) {
+        Properties.CustomIcon = resolveFilePath(Properties.CustomIcon);
 		const customImg = ImageCache.Get(Properties.CustomIcon);
 		Ready = customImg && customImg.ready();
 		if (Ready) { Image = customImg; }

@@ -150,19 +150,19 @@
         <String str="Original" />
       </Name>
     </Component>
-    <Component Icon="./XMB/color/ico1.png" />
-    <Component Icon="./XMB/color/ico2.png" />
-    <Component Icon="./XMB/color/ico3.png" />
-    <Component Icon="./XMB/color/ico4.png" />
-    <Component Icon="./XMB/color/ico5.png" />
-    <Component Icon="./XMB/color/ico6.png" />
-    <Component Icon="./XMB/color/ico7.png" />
-    <Component Icon="./XMB/color/ico8.png" />
-    <Component Icon="./XMB/color/ico9.png" />
-    <Component Icon="./XMB/color/ico10.png" />
-    <Component Icon="./XMB/color/ico11.png" />
-    <Component Icon="./XMB/color/ico12.png" />
-    <Component Icon="./XMB/color/ico13.png" />
+    <Component Icon="{cwd}XMB/color/ico1.png" />
+    <Component Icon="{cwd}XMB/color/ico2.png" />
+    <Component Icon="{cwd}XMB/color/ico3.png" />
+    <Component Icon="{cwd}XMB/color/ico4.png" />
+    <Component Icon="{cwd}XMB/color/ico5.png" />
+    <Component Icon="{cwd}XMB/color/ico6.png" />
+    <Component Icon="{cwd}XMB/color/ico7.png" />
+    <Component Icon="{cwd}XMB/color/ico8.png" />
+    <Component Icon="{cwd}XMB/color/ico9.png" />
+    <Component Icon="{cwd}XMB/color/ico10.png" />
+    <Component Icon="{cwd}XMB/color/ico11.png" />
+    <Component Icon="{cwd}XMB/color/ico12.png" />
+    <Component Icon="{cwd}XMB/color/ico13.png" />
     <Default Variable="UserConfig.BgColor" />
     <Preview>
       <![CDATA[

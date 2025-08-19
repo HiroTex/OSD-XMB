@@ -315,16 +315,20 @@ function resolveFilePath(filePath) {
  * Write all text on 'txt' to 'path' file
  * @param {String} path The path to write the text file.
  * @param {String} txt The text to write to the file.
+ * @param {String} mode The file mode (w, r, a, etc...).
  */
 function ftxtWrite(path, txt, mode = "w+") {
-    let errObj = {};
-    const file = std.open(path, mode, errObj);
-    if (file) {
+    let file = false;
+    try {
+        let errObj = {};
+        file = std.open(path, mode, errObj);
+        if (!file) { throw new Error(`ftxtWrite(): IO ERROR - ${std.strerror(errObj.errno)}`); }
         file.puts(txt);
         file.flush();
-        file.close();
-    } else {
-		xlog(`IO ERROR: ${std.strerror(errObj.errno)}`);
+    } catch (e) {
+        xlog(e);
+    } finally {
+        if (file) { file.close(); }
     }
 }
 
@@ -680,13 +684,6 @@ function validatePlugin(plg) {
 }
 function AddNewPlugin(Plugin) {
     if (!validatePlugin(Plugin)) { return false; }
-
-	if (("CustomIcon" in Plugin) && (typeof Plugin.CustomIcon === "string"))
-    {
-		Plugin.CustomIcon = resolveFilePath(Plugin.CustomIcon);
-		if (!std.exists(Plugin.CustomIcon)) { delete Plugin.CustomIcon; }
-    }
-
     const item = DashCatItems[Plugin.Category].Items.length;
     DashCatItems[Plugin.Category].Items[item] = Plugin;
 }
