@@ -7,7 +7,8 @@
       "Benutzer",
       "Utente",
       "Gebruiker",
-      "Usuário"
+      "Usuário",
+	  "ユーザー"
     ],
     "SETTINGS": [
       "Settings",
@@ -16,7 +17,8 @@
       "Optionen",
       "Opzioni",
       "Opties",
-      "Opções"
+      "Opções",
+	  "設定"
     ],
     "PHOTO": [
       "Photo",
@@ -25,7 +27,8 @@
       "Foto",
       "Foto",
       "Foto",
-      "Fotografia"
+      "Fotografia",
+	  "写真"
     ],
     "MUSIC": [
       "Music",
@@ -34,7 +37,8 @@
       "Musik",
       "Musica",
       "Muziek",
-      "Música"
+      "Música",
+	  "音楽"
     ],
     "VIDEO": [
       "Video",
@@ -43,7 +47,8 @@
       "Video",
       "Video",
       "Video",
-      "Video"
+      "Video",
+	  "動画"
     ],
     "GAME": [
       "Game",
@@ -52,7 +57,8 @@
       "Spiel",
       "Giochi",
       "Spel",
-      "Jogo"
+      "Jogo",
+	  "ゲーム"
     ],
     "NETWORK": [
       "Network",
@@ -61,7 +67,8 @@
       "Netzwerk",
       "Rete",
       "Netwerk",
-      "Rede"
+      "Rede",
+	  "ネットワーク"
     ]
   },
   "BOOT_WARNING": [
@@ -71,7 +78,8 @@
     "FOTOSENSITIVE EPILEPSIE\nWENN SIE EINE VORGESCHICHTE MIT EPILEPSIE ODER KRAMPFANFÄLLEN HABEN, KONSULTIEREN SIE VOR DER VERWENDUNG EINEN ARZT. BESTIMMTE MUSTER KÖNNEN ANFÄLLE AUSLÖSEN, AUCH OHNE FRÜHERE VORGESCHICHTE. LESEN SIE VOR DER VERWENDUNG DIE BEDIENUNGSANLEITUNG SORGFÄLTIG DURCH.",
     "EPILESSIA FOTOSENSIBILE\nSE SI SOFFRE DI CRISI EPILETTICHE O DI DISTURBI ASSOCIATI, CONSULTARE UN MEDICO PRIMA DELL'USO. ALCUNI EFFETTI POSSONO CAUSARE CRISI EPILETTICHE ANCHE IN ASSENZA DI EPISODI PREGRESSI. PRIMA DI UTILIZZARE IL PRODOTTO, LEGGERE ATTENTAMENTE IL MANUALE DI ISTRUZIONI.",
     "FOTOSENSITIEVE EPILEPSIE\nALS U EEN GESCHIEDENIS HEEFT VAN EPILEPSIE OF AANVALLEN, RAADPLEEG DAN EEN ARTS VOORDAT U HET PRODUCT GEBRUIKT. BEPAALDE PATRONEN KUNNEN AANVALLEN VEROORZAKEN ZONDER EERDERE VOORGESCHIEDENIS. LEES VOORDAT U DIT PRODUCT GEBRUIKT ZORGVULDIG DE HANDLEIDING.",
-    "EPILEPSIA FOTOSSENSÍVEL\nSE VOCÊ TEM HISTÓRICO DE EPILEPSIA OU CONVULSÕES, CONSULTE UM MÉDICO ANTES DE USAR. CERTOS PADRÕES PODEM DESENCADEAR CONVULSÕES SEM HISTÓRICO PRÉVIO. ANTES DE USAR ESTE PRODUTO, LEIA ATENTAMENTE O MANUAL DE INSTRUÇÕES."
+    "EPILEPSIA FOTOSSENSÍVEL\nSE VOCÊ TEM HISTÓRICO DE EPILEPSIA OU CONVULSÕES, CONSULTE UM MÉDICO ANTES DE USAR. CERTOS PADRÕES PODEM DESENCADEAR CONVULSÕES SEM HISTÓRICO PRÉVIO. ANTES DE USAR ESTE PRODUTO, LEIA ATENTAMENTE O MANUAL DE INSTRUÇÕES.",
+	"光感受性てんかん\nてんかんやけいれんの既往歴がある場合は、使用前に医師に相談してください。 特定のパターンが、既往歴のない場合でもけいれんを引き起こす可能性があります。 この製品を使用する前に、取扱説明書を必ずお読みください。"
   ],
   "WAIT": [
     "Please wait...",
@@ -80,7 +88,8 @@
     "Bitte warten...",
     "Attendere prego...",
     "Even geduld...",
-    "Aguarde..."
+    "Aguarde...",
+	"お待ちください..."
   ],
   "YES": [
     "Yes",
@@ -89,7 +98,8 @@
     "Ja",
     "Sì",
     "Ja",
-    "Sim"
+    "Sim",
+	"はい"
   ],
   "NO": [
     "No",
@@ -98,7 +108,8 @@
     "Nein",
     "No",
     "Nee",
-    "Não"
+    "Não",
+	"いいえ"
   ],
   "ENABLED": [
     "Enabled",
@@ -107,7 +118,8 @@
     "Aktiviert",
     "Abilitato",
     "Ingeschakeld",
-    "Ativado"
+    "Ativado",
+	"有効"
   ],
   "DISABLED": [
     "Disabled",
@@ -116,7 +128,8 @@
     "Deaktiviert",
     "Disabilitato",
     "Uitgeschakeld",
-    "Desativado"
+    "Desativado",
+	"無効"
   ],
   "DEFAULT": [
     "Default",
@@ -125,7 +138,8 @@
     "Default",
     "Default",
     "Default",
-    "Default"
+    "Default",
+	"初期状態"
   ],
   "INFO": [
     "Information",
@@ -134,7 +148,8 @@
     "Information",
     "Informazioni",
     "Informatie",
-    "Informação"
+    "Informação",
+	"情報"
   ],
   "DELETE": [
     "Delete",
@@ -143,7 +158,8 @@
     "Löschen",
     "Elimina",
     "Verwijderen",
-    "Eliminar"
+    "Eliminar",
+	"削除"
   ],
   "MSG_SUBMENU_EMPTY": [
     "There are no elements.",
@@ -152,7 +168,8 @@
     "Es gibt keine Elemente.",
     "Non ci sono elementi.",
     "Er zijn geen elementen.",
-    "Não há elementos."
+    "Não há elementos.",
+	"要素はありません。"
   ],
   "PLEASE_RESTART": [
     "Please restart the system for the changes to take effect.",
@@ -161,7 +178,8 @@
     "Please restart the system for the changes to take effect.",
     "Please restart the system for the changes to take effect.",
     "Please restart the system for the changes to take effect.",
-    "Please restart the system for the changes to take effect."
+    "Please restart the system for the changes to take effect.",
+	"変更を適用するためには、システムを再起動してください。"
   ],
   "BACK": [
     "Back",
@@ -170,7 +188,8 @@
     "Zurück",
     "Indietro",
     "Terug",
-    "Voltar"
+    "Voltar",
+	"戻る"
   ],
   "ENTER": [
     "Enter",
@@ -179,7 +198,8 @@
     "Akzeptieren",
     "Accetta",
     "Accepteren",
-    "Aceitar"
+    "Aceitar",
+	"エンター"
   ],
   "TITLE": [
     "Title",
@@ -188,7 +208,8 @@
     "Titel",
     "Titoli",
     "Titel",
-    "Titulo"
+    "Titulo",
+	"タイトル"
   ],
   "TITLES": [
     "Titles",
@@ -197,7 +218,8 @@
     "Titel",
     "Titoli",
     "Titels",
-    "Títulos"
+    "Títulos",
+	"タイトル"
   ],
   "OPTIONS": [
     "Options",
@@ -206,7 +228,8 @@
     "Options",
     "Opzioni",
     "Options",
-    "Options"
+    "Options",
+	"オプション"
   ],
   "WORK_DIR_NAME": [
     "Main Directory",
@@ -215,7 +238,8 @@
     "Hauptverzeichnis",
     "Directory principale",
     "Hoofdmap",
-    "Diretório principal"
+    "Diretório principal",
+	"メインフォルダ"
   ],
   "MASS_DIR_NAME": [
     "Mass Storage Device",
@@ -224,7 +248,8 @@
     "Massenspeichergeräten",
     "Dispositivi di Archiviazione",
     "Apparaten voor massaopslag",
-    "Dispositivo de armazenamento"
+    "Dispositivo de armazenamento",
+	"USBデバイス"
   ],
   "HDD_DIR_NAME": [
     "Internal Hard Disk Drive",
@@ -233,7 +258,8 @@
     "Interne Festplatte",
     "Disco Rigido Interno",
     "Internal Hard Disk Drive",
-    "Disco Rígido Interno"
+    "Disco Rígido Interno",
+	"内蔵HDD"
   ],
   "MMCE_DESC": [
     "Multi-Purpose Memory Card Emulation",
@@ -242,7 +268,8 @@
     "Multi-Purpose Memory Card Emulation",
     "Multi-Purpose Memory Card Emulation",
     "Multi-Purpose Memory Card Emulation",
-    "Multi-Purpose Memory Card Emulation"
+    "Multi-Purpose Memory Card Emulation",
+	"多目的メモリカードエミュレーション"
   ],
   "DEVICE": [
     "Device",
@@ -251,7 +278,8 @@
     "Device",
     "Device",
     "Device",
-    "Device"
+    "Device",
+	"デバイス"
   ],
   "SIZE": [
     "Size",
@@ -260,7 +288,8 @@
     "Size",
     "Size",
     "Size",
-    "Size"
+    "Size",
+	"容量"
   ],
   "MEDIA": [
     "Media",
@@ -269,7 +298,8 @@
     "Media",
     "Media",
     "Media",
-    "Media"
+    "Media",
+	"メディア"
   ],
   "ERROR": {
     "ELF_NOT_FOUND": [
@@ -279,7 +309,8 @@
       "ELF file not found.",
       "ELF file not found.",
       "ELF file not found.",
-      "ELF file not found."
+      "ELF file not found.",
+	  "ELFファイルが見つかりませんでした。"
     ]
   }
 }

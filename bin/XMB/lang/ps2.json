@@ -6,7 +6,8 @@
     "Virtual Memory Card 1",
     "Virtual Memory Card 1",
     "Virtual Memory Card 1",
-    "Virtual Memory Card 1"
+    "Virtual Memory Card 1",
+	"仮想メモリーカード1"
   ],
   "VMC2": [
     "Virtual Memory Card 2",
@@ -15,7 +16,8 @@
     "Virtual Memory Card 2",
     "Virtual Memory Card 2",
     "Virtual Memory Card 2",
-    "Virtual Memory Card 2"
+    "Virtual Memory Card 2",
+	"仮想メモリーカード2"
   ],
   "COPY_VMC_MSG": [
     "Creating Virtual Memory Card",
@@ -24,7 +26,8 @@
     "Creating Virtual Memory Card",
     "Creating Virtual Memory Card",
     "Creating Virtual Memory Card",
-    "Creating Virtual Memory Card"
+    "Creating Virtual Memory Card",
+	"仮想メモリーカードを作成中"
   ],
   "GC_0": [
 	"IOP: Fast reads",
@@ -33,7 +36,8 @@
 	"IOP: Fast reads",
 	"IOP: Fast reads",
 	"IOP: Fast reads",
-	"IOP: Fast reads"
+	"IOP: Fast reads",
+	"IOP: 高速読み取り"
   ],
   "GC_2": [
 	"IOP: Sync reads",
@@ -42,7 +46,8 @@
 	"IOP: Sync reads",
 	"IOP: Sync reads",
 	"IOP: Sync reads",
-	"IOP: Sync reads"
+	"IOP: Sync reads",
+	"IOP: 同期読み取り"
   ],
   "GC_3": [
 	"EE : Unhook syscalls",
@@ -51,7 +56,8 @@
 	"EE : Unhook syscalls",
 	"EE : Unhook syscalls",
 	"EE : Unhook syscalls",
-	"EE : Unhook syscalls"
+	"EE : Unhook syscalls",
+	"EE : システムコールの解除"
   ],
   "GC_5": [
 	"IOP: Emulate DVD-DL",
@@ -60,7 +66,8 @@
 	"IOP: Emulate DVD-DL",
 	"IOP: Emulate DVD-DL",
 	"IOP: Emulate DVD-DL",
-	"IOP: Emulate DVD-DL"
+	"IOP: Emulate DVD-DL",
+	"IOP: DVD-DLをエミュレートする"
   ],
   "GC_7": [
 	"IOP: Fix game buffer overrun",
@@ -69,6 +76,7 @@
 	"IOP: Fix game buffer overrun",
 	"IOP: Fix game buffer overrun",
 	"IOP: Fix game buffer overrun",
-	"IOP: Fix game buffer overrun"
+	"IOP: Fix game buffer overrun",
+	"IOP: ゲームバッファのオーバーランを修正する"
   ]
 }

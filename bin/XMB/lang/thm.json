@@ -6,7 +6,8 @@
     "Kein Hintergrundbild gesetzt. \nNavigiere zu [Foto], öffne ein Bild und wähle [Als Hintergrundbild festlegen].",
     "Nessuno sfondo impostato. \nVai in [Foto], apri un'immagine e seleziona [Imposta come sfondo].",
     "Geen achtergrond ingesteld. \nGa naar [Foto], open een afbeelding en kies [Instellen als achtergrond].",
-    "Nenhum papel de parede definido. \nVá para [Foto], abra uma imagem e escolha [Definir como papel de parede]."
+    "Nenhum papel de parede definido. \nVá para [Foto], abra uma imagem e escolha [Definir como papel de parede].",
+	"壁紙セットは存在しません。 \n[写真] を開き、画像を選択し、コントロールパネルから [壁紙として設定] を選択して画像を保存してください。"
   ],
   "SETASBG": [
     "Set as Wallpaper",
@@ -15,7 +16,8 @@
     "Als Hintergrundbild festlegen",
     "Imposta come sfondo",
     "Instellen als achtergrond",
-    "Definir como papel de parede"
+    "Definir como papel de parede",
+	"壁紙として設定する"
   ],
   "WALLPAPER": [
     "Wallpaper",
@@ -24,6 +26,7 @@
     "Hintergrundbild",
     "Sfondo personalizzato",
     "Achtergrondafbeelding",
-    "Fundo personalizado"
+    "Fundo personalizado",
+	"壁紙"
   ]
 }

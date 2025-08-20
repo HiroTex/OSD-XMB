@@ -7,7 +7,8 @@
       "Anzeigemodus",
       "Impostazioni video",
       "Instellingen video-uitvoer",
-      "Definições de Saída de Vídeo"
+      "Definições de Saída de Vídeo",
+	  "ビデオ出力モード"
     ],
     "DESC": [
       "Set the video output display mode.",
@@ -16,7 +17,8 @@
       "Setze den Anzeigemodus.",
       "Seleziona la modalità dell'uscita video.",
       "Stel de video-uitvoermodus in.",
-      "Definir o modo de exibição de saída de vídeo."
+      "Definir o modo de exibição de saída de vídeo.",
+	  "ビデオ出力の表示モードを設定します。"
     ]
   },
   "DISPLAYSET2": {
@@ -27,7 +29,8 @@
       "Typ des TV",
       "Tipo di TV",
       "TV-type",
-      "Tipo de TV"
+      "Tipo de TV",
+	  "テレビの種類"
     ],
     "DESC": [
       "Select the type of TV in use.",
@@ -36,7 +39,8 @@
       "Wähle den Typ des genutzten TV.",
       "Seleziona il tipo di TV utilizzata.",
       "Selecteer het type TV dat wordt gebruikt.",
-      "Seleccione o tipo de TV utilizada."
+      "Seleccione o tipo de TV utilizada.",
+	  "使用中のテレビの種類を選択してください。"
     ]
   },
   "SECONDS": [
@@ -46,7 +50,8 @@
     "sekunden",
     "secondi",
     "seconds",
-    "seconds"
+    "seconds",
+	"秒"
   ],
   "REMTIME": [
     "Remaining time",
@@ -55,7 +60,8 @@
     "Verbleibende Zeit",
     "Tempo rimanente",
     "Resterende tijd",
-    "Tempo restante"
+    "Tempo restante",
+	"残り時間"
   ],
   "VMODE_MSG": [
     "Can you read this screen?\nSelect [Yes] if you can.\nIf you do not press any buttons, the system will automatically go back to the previous setting.",
@@ -64,6 +70,7 @@
     "Kannst Du das hier lesen?\nWähle [Ja], wenn dem so ist.\nWenn du keine Tasten drückst, wechselt das System automatisch zur vorherigen Einstellung.",
     "Questo testo è visibile?\nSeleziona [Si] per mantenere l'impostazione altrimenti il sistema tornerà automaticamente all'impostazione precedente.",
     "Kun je dit scherm lezen?\nSelecteer [Ja] als je dat kunt.\nAls je geen knoppen indrukt, gaat het systeem automatisch terug naar de vorige instelling.",
-    "Você consegue ler esta tela?\nSelecione [Sim] se puder.\nSe você não pressionar nenhum botão, o sistema voltará automaticamente à configuração anterior."
+    "Você consegue ler esta tela?\nSelecione [Sim] se puder.\nSe você não pressionar nenhum botão, o sistema voltará automaticamente à configuração anterior.",
+	"この画面は読めますか？\n読めます場合は[はい]を選択してください。\nボタンを押さない場合、システムは自動的に前の設定に戻ります。"
   ]
 }

@@ -7,7 +7,8 @@
 			"Compatibility Mode",
 			"Compatibility Mode",
 			"Compatibility Mode",
-			"Compatibility Mode"
+			"Compatibility Mode",
+			"互換性モード"
 		],
 		"1": [
 			"Code Cache Addon",
@@ -16,7 +17,8 @@
 			"Code Cache Addon",
 			"Code Cache Addon",
 			"Code Cache Addon",
-			"Code Cache Addon"
+			"Code Cache Addon",
+			"コードキャッシュアドオン"
 		],
 		"2": [
 			"Sub CD Status",
@@ -25,7 +27,8 @@
 			"Sub CD Status",
 			"Sub CD Status",
 			"Sub CD Status",
-			"Sub CD Status"
+			"Sub CD Status",
+			"サブCDの状態"
 		],
 		"3": [
 			"Fake Lybcript",
@@ -34,7 +37,8 @@
 			"Fake Lybcript",
 			"Fake Lybcript",
 			"Fake Lybcript",
-			"Fake Lybcript"
+			"Fake Lybcript",
+			"偽のLybcript"
 		],
 		"4": [
 			"PAL Patcher",
@@ -43,7 +47,8 @@
 			"PAL Patcher",
 			"PAL Patcher",
 			"PAL Patcher",
-			"PAL Patcher"
+			"PAL Patcher",
+			"PAL パッチャー"
 		],
 		"5": [
 			"Sound Mode",
@@ -52,7 +57,8 @@
 			"Sound Mode",
 			"Sound Mode",
 			"Sound Mode",
-			"Sound Mode"
+			"Sound Mode",
+			"サウンドモード"
 		],
 		"6": [
 			"DPAD to Left Stick",
@@ -61,7 +67,8 @@
 			"DPAD to Left Stick",
 			"DPAD to Left Stick",
 			"DPAD to Left Stick",
-			"DPAD to Left Stick"
+			"DPAD to Left Stick",
+			"Dパッドを左スティックに設定"
 		],
 		"7": [
 			"Virtual Memory Cards",
@@ -70,7 +77,8 @@
 			"Virtual Memory Cards",
 			"Virtual Memory Cards",
 			"Virtual Memory Cards",
-			"Virtual Memory Cards"
+			"Virtual Memory Cards",
+			"仮想メモリーカード"
 		]
 	},
 	"POPS_SETTINGS": {
@@ -81,7 +89,8 @@
 			"Forced",
 			"Forced",
 			"Forced",
-			"Forced"
+			"Forced",
+			"強制"
 		],
 		"SOUND_1": [
 			"Mute CDDA",
@@ -90,7 +99,8 @@
 			"Mute CDDA",
 			"Mute CDDA",
 			"Mute CDDA",
-			"Mute CDDA"
+			"Mute CDDA",
+			"CDDAをミュートする"
 		],
 		"SOUND_2": [
 			"Unmute CDDA",
@@ -99,7 +109,8 @@
 			"Unmute CDDA",
 			"Unmute CDDA",
 			"Unmute CDDA",
-			"Unmute CDDA"
+			"Unmute CDDA",
+			"CDDAのミュートを解除する"
 		],
 		"SOUND_3": [
 			"Mute VAB",
@@ -108,7 +119,8 @@
 			"Mute VAB",
 			"Mute VAB",
 			"Mute VAB",
-			"Mute VAB"
+			"Mute VAB",
+			"VABをミュートする"
 		],
 		"DPAD2STICK_1": [
 			"Force Digital Mode",
@@ -117,7 +129,8 @@
 			"Force Digital Mode",
 			"Force Digital Mode",
 			"Force Digital Mode",
-			"Force Digital Mode"
+			"Force Digital Mode",
+			"デジタルモードを強制的に設定する"
 		],
 		"DPAD2STICK_2": [
 			"Force Analog Mode",
@@ -126,7 +139,8 @@
 			"Force Analog Mode",
 			"Force Analog Mode",
 			"Force Analog Mode",
-			"Force Analog Mode"
+			"Force Analog Mode",
+			"アナログモードを強制的に有効にする"
 		],
 		"NOVMC_1": [
 			"Slot 2 Only",
@@ -135,7 +149,8 @@
 			"Slot 2 Only",
 			"Slot 2 Only",
 			"Slot 2 Only",
-			"Slot 2 Only"
+			"Slot 2 Only",
+			"スロット2のみ"
 		],
 		"NOVMC_2": [
 			"Slot 1 Only",
@@ -144,7 +159,8 @@
 			"Slot 1 Only",
 			"Slot 1 Only",
 			"Slot 1 Only",
-			"Slot 1 Only"
+			"Slot 1 Only",
+			"スロット1のみ"
 		]
 	}
 }

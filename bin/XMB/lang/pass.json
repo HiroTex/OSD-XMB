@@ -7,6 +7,7 @@
     "Modifica la password",
     "Wachtwoord wijzigen",
     "Mudar a palavra-passe"
+	"パスワードを変更する",
   ],
   "PARENTAL_CONTROL": [
     "Parental Control",
@@ -15,7 +16,8 @@
     "Kindersicherung",
     "Filtro contenuti",
     "Ouderlijk toezicht",
-    "Controlo parental"
+    "Controlo parental",
+	"保護者による管理"
   ],
   "PASS_NEW_MSG": [
     "Enter your new password",
@@ -24,7 +26,8 @@
     "Enter your new password",
     "Enter your new password",
     "Enter your new password",
-    "Enter your new password"
+    "Enter your new password",
+	"新しいパスワードを入力してください"
   ],
   "PASS_CUR_MSG": [
     "Enter your four-digir password",
@@ -33,6 +36,7 @@
     "Enter your four-digir password",
     "Enter your four-digir password",
     "Enter your four-digir password",
-    "Enter your four-digir password"
+    "Enter your four-digir password",
+	"4桁のパスワードを入力してください"
   ]
 }
