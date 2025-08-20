@@ -231,13 +231,29 @@ function DashUIAnimationHandler() {
 function DashUIObjectHandler(Item) {
     DashUI.SelectedItem = Item;
 
-	switch (Item.Type) {
-		case "ELF"	  : DashUISetElfExecution(Item.Value); break;
-		case "SUBMENU": DashUISetNewSubMenu(Item.Value); break;
-		case "CONTEXT": DashUISetNewContextMenu(Item.Value); break;
-		case "CODE"	  : DashUISetSpecialExit(Item.Value); break;
-		case "DIALOG" : DashUISetDialog(Item.Value); break;
-	}
+    switch (Item.Type) {
+        case "ELF": DashUISetElfExecution(Item.Value); return;
+        case "SUBMENU": DashUISetNewSubMenu(Item.Value); return;
+        case "CONTEXT": DashUISetNewContextMenu(Item.Value); return;
+        case "CODE": DashUISetSpecialExit(Item.Value); return;
+        case "DIALOG": DashUISetDialog(Item.Value); return;
+    }
+
+    let script = false;
+    const mainItem = DashUI.ItemCollection.Current[DashUI.Items.Current];
+    for (let key in mainItem) {
+        let obj = mainItem[key];
+        if (obj && obj.Type === "OptionValue" && 'Code' in obj) {
+            if ('Condition' in obj) {
+                if (eval(obj.Condition)) {
+                    script = obj.Code;
+                }
+            }
+            else { script = obj.Code; }
+        }
+    }
+
+    if (script && typeof script === "function") { script(); }
 }
 function DashUIStateHandler() {
 	// Only handle State changes after animations are finished.
@@ -2274,30 +2290,36 @@ function DrawUIContext() {
 //////////////////////////////////////////////////////////////////////////
 
 function GetOptionContext() {
+    const subObj = DashUI.SubMenu;
 	const mainItem = DashUI.ItemCollection.Current[DashUI.Items.Current];
-	const item = (DashUI.SubMenu.Level > -1) ? DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current] : mainItem;
+    const item = (subObj.Level > -1) ? subObj.ItemCollection[subObj.Level].Items[subObj.Items.Current] : mainItem;
 	if (!item) { return false; }
-	if (item && ('Option' in item)) { return item.Option; }
-	else if (mainItem && ('OptionContext' in mainItem)) {
-		if ('Filter' in mainItem.OptionContext) {
-			switch (mainItem.OptionContext.Filter) {
-				case "File": if (!('Type' in item) || item.Type !== "SUBMENU") { return mainItem.OptionContext; } break;
-				case "SubDeviceOnly":
-					if (('FullPath' in item) && item.FullPath.substring(0,3) !== "hdd")	{
-						return mainItem.OptionContext;
-					}
-					break;
-				case "Custom":
-					if ('Condition' in mainItem.OptionContext) {
-						if (eval(mainItem.OptionContext.Condition)) {
-							return mainItem.OptionContext;
-						}
-					}
-					break;
-			}
-		}
-		else { return mainItem.OptionContext; }
-	}
+    if (item && ('Option' in item)) { return item.Option; }
+    else if (mainItem) {
+        for (let key in mainItem) {
+            let obj = mainItem[key];
+            if (obj && obj.Type === "OptionContext") {
+                if ('Filter' in obj) {
+                    switch (obj.Filter) {
+                        case "File":   if (!('Type' in item) || item.Type !== "SUBMENU") { return obj; } break;
+                        case "SubDeviceOnly":
+                            if (('FullPath' in item) && item.FullPath.substring(0, 3) !== "hdd") {
+                                return obj;
+                            }
+                            break;
+                        case "Custom":
+                            if ('Condition' in obj) {
+                                if (eval(obj.Condition)) {
+                                    return obj;
+                                }
+                            }
+                            break;
+                    }
+                }
+                else { return obj; }
+            }
+        }
+    }
 
 	return false;
 }

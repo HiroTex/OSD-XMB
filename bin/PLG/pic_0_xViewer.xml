@@ -9,7 +9,67 @@
     <String str="Visualizador de imagens" />
   </Name>
   <Options Type="Explorer" ExtensionFilter="png, jpg, bmp" DeviceFilter="Memory Card" />
-  <Context Name="OptionContext" Filter="File">
+  <Script Name="PhotoViewer" Type="OptionValue" Condition="extensionMatches(DashUI.SelectedItem.Name, [ 'png', 'jpg', 'bmp' ])">
+    <Code>
+      <![CDATA[
+        function()	{
+          let prevState = DashUI.State.Current;
+          DashUI.State.Current = 9;
+          DashUI.State.Next = 9;
+          DashUI.State.Previous = 9;
+          DashUI.AnimationQueue.push(() => {
+            DashUI.Overlay.Alpha += 16;
+            if (DashUI.Overlay.Alpha >= 128) { return true; }
+            return false;
+          });
+          
+          let Photo = new Image(DashUI.SelectedItem.FullPath);
+          Photo.optimize();
+          Photo.filter = LINEAR;
+          
+          let iw = Photo.width;
+          let ih = Photo.height;
+
+          // ratios
+          let scaleW = ScrCanvas.width / iw;
+          let scaleH = ScrCanvas.height / ih;
+
+          // pick the smaller ratio to fit completely
+          let scale = (scaleW < scaleH) ? scaleW : scaleH;
+
+          Photo.width  = Math.floor(iw * scale);
+          Photo.height = Math.floor(ih * scale);
+          
+          let offsetX = Math.floor((ScrCanvas.width - Photo.width) / 2);
+          let offsetY = Math.floor((ScrCanvas.height - Photo.height) / 2);
+          
+          UICONST.LayersFg.push(() => {
+            Photo.color = Color.setA(Photo.color, DashUI.Overlay.Alpha);
+            Photo.draw(offsetX, offsetY);
+          });
+          
+			    let ViewerIval = os.setInterval(() => {
+            if (pad.justPressed(PadSettings.CancelButton)) {
+              DashUI.AnimationQueue.push(() => {
+                DashUI.Overlay.Alpha -= 16;
+                if (DashUI.Overlay.Alpha <= 0) { 
+                  DashUI.State.Current = prevState;
+                  DashUI.State.Next = prevState;
+                  DashUI.State.Previous = prevState;
+                  Photo.free();
+                  UICONST.LayersFg.pop();
+                  return true; 
+                }
+                return false;
+              });
+              os.clearInterval(ViewerIval);
+            }
+          }, 0);
+		    }
+      ]]>
+    </Code>
+  </Script>
+  <Context Name="FileContext" Type="OptionContext" Filter="File">
 	  <Component Name="{SETASBG}" Icon="-1" />
     <Confirm>
       <![CDATA[

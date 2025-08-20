@@ -243,14 +243,22 @@ function xmlParseElfTag(element) {
     return Value;
 }
 function xmlParseCodeTag(element) {
+    const scriptObj = {};
     const codeTag = element.children.find(child => child.tagName === "Code");
     if (codeTag) {
-        if ("filepath" in codeTag.attributes) { return codeTag.attributes.filepath; }
-        else if ("cdata" in codeTag) { return std.evalScript(`(${codeTag.cdata})`); }
+        if ("filepath" in codeTag.attributes) { scriptObj.filepath = codeTag.attributes.filepath; }
+        else if ("cdata" in codeTag) { scriptObj.Code = std.evalScript(`(${codeTag.cdata})`); }
+    }
+
+    const att = Object.getOwnPropertyNames(element.attributes);
+    for (let i = 0; i < att.length; i++) {
+        const name = att[i];
+        if (name in scriptObj) { continue; }
+        else { scriptObj[name] = element.attributes[name]; }
     }
 
     // No code tag found, return empty function
-    return `()`;
+    return scriptObj;
 }
 function xmlParseDialogTag(element) {
     if (!element.tagName.includes("Dialog")) {
@@ -428,8 +436,8 @@ function xmlParseNamedChildrens(source, element) {
 		if (!(source.children[i].attributes.Name in element)) {
 			switch(tagName)	{
 				case "Context": element[source.children[i].attributes.Name] = xmlParseContext(source.children[i]); break;
-				case "Elf": 	element[source.children[i].attributes.Name] = xmlParseElfTag(source.children[i]); break;
-				case "Code":	element[source.children[i].attributes.Name] = xmlParseCodeTag(source.children[i]); break;
+				case "Executable": 	element[source.children[i].attributes.Name] = xmlParseElfTag(source.children[i]); break;
+				case "Script":	element[source.children[i].attributes.Name] = xmlParseCodeTag(source.children[i]); break;
 				case "Dialog":	element[source.children[i].attributes.Name] = xmlParseDialogTag(source.children[i]); break;
 			}
 		}
