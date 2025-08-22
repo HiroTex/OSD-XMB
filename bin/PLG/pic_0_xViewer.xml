@@ -85,4 +85,22 @@
       ]]>
     </Confirm>
   </Context>
+  <Context Name="AlbumContext" Type="OptionContext" Filter="SubDeviceOnly">
+    <Component Name="{INFO}" Icon="-1">
+      <Confirm>
+        <![CDATA[
+        function(index, item) {
+					DashUISetDialog(item.Dialog);
+				}
+      ]]>
+      </Confirm>
+      <Dialog Icon="-1" Title="" BG="false" Type="INFO" ElementIcon="true" BackBtn="true" >
+        <Info>
+          <Item Name="Album" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Name}" Selectable="false" />
+          <Item Name="{PHOTOS}" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].FileCount}" Selectable="false" />
+          <Item Name="{SIZE}" Value="0 bytes" Selectable="false" />
+        </Info>
+      </Dialog>
+    </Component>
+  </Context>
 </App>

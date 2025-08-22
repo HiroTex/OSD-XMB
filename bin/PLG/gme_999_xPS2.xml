@@ -25,13 +25,16 @@
 
 				obj.Description = obj.GameID + " \u{B7} " + obj.Data.dev.toUpperCase();
 				obj.Data.id = obj.GameID;
+        
+        if (obj.GameID) {
+					const ico		 = findICO(obj.GameID);
+					const bgFile = findBG(obj.GameID);
+					const pic2	 = findArt(obj.GameID, "pic2.png");
 
-				const ico = (obj.GameID !== "") ? findICO(obj.GameID) : "";
-				if (ico !== "") { obj.CustomIcon = ico; }
-				const bgFile = (obj.GameID !== "") ? findBG(obj.GameID) : "";
-				if (bgFile !== "") { obj.CustomBG = bgFile; }
-				const pic2 = (obj.GameID !== "") ? findArt(obj.GameID, "pic2.png") : "";
-				if (pic2 !== "") { obj.PIC2 = pic2; }
+					if (ico)	  { obj.CustomIcon = ico; }
+					if (bgFile) { obj.CustomBG = bgFile; }
+					if (pic2)		{ obj.PIC2 = pic2; }
+        }
       }
 
 			function ScanGames(path, device, media) {

@@ -40,13 +40,16 @@
         }
 
 				game.Description = game.GameID + " \u{B7} " + game.Data.fdev;
-
-				const ico = (game.GameID !== "") ? findICO(game.GameID) : "";
-				if (ico !== "") { game.CustomIcon = ico; }
-				const bgFile = (game.GameID !== "") ? findBG(game.GameID) : "";
-				if (bgFile !== "") { game.CustomBG = bgFile; }
-
-				generateVMC(game);
+				if (game.GameID) { 
+					const ico		 = findICO(game.GameID);
+					const bgFile = findBG(game.GameID);
+					const pic2	 = findArt(game.GameID, "pic2.png");
+          
+					if (ico)	  { game.CustomIcon = ico; }
+					if (bgFile) { game.CustomBG = bgFile; }
+					if (pic2)		{ game.PIC2 = pic2; }
+					generateVMC(game);
+        }
       }
 
 			function ScanGames(path, dev) {

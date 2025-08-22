@@ -159,6 +159,20 @@ function exploreDir(params) {
             Device: getDeviceName(params.dir)
         });
         Object.defineProperty(collection[collection.length - 1], "Value", { get: getter });
+        Object.defineProperty(collection[collection.length - 1], "FileCount", {
+            get() {
+                delete this.FileCount;
+                let count = 0;
+                let files = System.listDir(this.FullPath).filter(item => !item.dir);;
+                for (let i = 0; i < files.length; i++) {
+                    if (!fileFilters || extensionMatches(files[i].name, fileFilters)) { count++; }
+                }
+                this.FileCount = count;
+                return count;
+            },
+            enumerable: true,
+            configurable: true
+        });
 	}
 
     collection.sort((a, b) => {
