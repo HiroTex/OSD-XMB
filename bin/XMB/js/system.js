@@ -155,7 +155,8 @@ function exploreDir(params) {
             Description: "",
             Icon: 18,
             Type: "SUBMENU",
-            FullPath: `${params.dir}${item.name}/`
+            FullPath: `${params.dir}${item.name}/`,
+            Device: getDeviceName(params.dir)
         });
         Object.defineProperty(collection[collection.length - 1], "Value", { get: getter });
 	}
@@ -187,6 +188,7 @@ function getFileAsItem(params) {
         Description: formatFileSize(params.size),
         Icon: "FILE",
         FullPath: params.path,
+        Device: getDeviceName(params.path)
     }
 
     switch (getFileExtension(params.path).toLowerCase()) {
@@ -207,6 +209,23 @@ function getFileAsItem(params) {
     if (('fileoptions' in params) && params.fileoptions) { item.Option = params.fileoptions; }
 
     return item;
+}
+function getDeviceName(path) {
+    const root = getRootName(path);
+    let name = root;
+    if (root.includes("mass")) {
+        name = System.getBDMInfo(`${root}:`).name;
+        switch (name) {
+            case "sdc": name = "mx4sio"; break;
+            case "sd": name = "ilink"; break;
+            case "udp": name = "udpbd"; break;
+        }
+    }
+    else if (root.includes("pfs")) {
+        name = "hdd";
+    }
+
+    return name.toUpperCase();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -281,7 +300,7 @@ function formatFileSize(size) {
   }
 
   // Round to nearest whole number or one decimal place if needed
-  const rounded = size < 10 && index > 0 ? size.toFixed(1) : Math.fround(size);
+  const rounded = index > 2 ? Number(size.toFixed(1)) : ~~(size);
 
   return `${rounded} ${suffixes[index]}`;
 }

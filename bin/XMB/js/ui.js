@@ -901,8 +901,7 @@ function DrawProgressBar(Pos, progress, label = "") {
 function DrawUIPIC2() {
     const obj = DashUI.PIC2;
     if ((DashUI.State.Next > 2) || (DashUI.State.Current < 1)) { obj.A = 0; obj.Fade.Progress = 0.0f; return; }
-    const mainItem = DashUI.ItemCollection.Current[DashUI.Items.Current];
-    const item = (DashUI.SubMenu.Level > -1) ? DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current] : mainItem;
+    const item = GetHighlightedElement();
     if (!item || !('PIC2' in item)) { obj.A = 0; obj.Fade.Progress = 0.0f; return; }
     item.PIC2 = resolveFilePath(item.PIC2);
     let time = getTimerSec(DashUI.ItemBG.Timer);
@@ -933,6 +932,10 @@ function DashUISetElfExecution(Data) {
 function UpdateIconSpinning() {
     DashUI.LoadSpinning = DashUI.LoadSpinning + 0.05f;
     if (DashUI.LoadSpinning == 6.05f) { DashUI.LoadSpinning = 0.05f; }
+}
+function GetHighlightedElement() {
+    const mainItem = DashUI.ItemCollection.Current[DashUI.Items.Current];
+    return (DashUI.SubMenu.Level > -1) ? DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current] : mainItem;
 }
 function UIAnimationCommonFade_Start(element, work, isIn) {
 	if ((element.Display && isIn === true) || (!element.Display && isIn === false)) {
@@ -2349,7 +2352,7 @@ function DrawUIOptionBox() {
 
     const elementBox = DashElements.OptionBox;
     const elementIco = DashElements.OptionIco;
-    elementBox.width = 25 + FontObj.Font.getTextSize(optxt.Text[0]).width;
+    elementBox.width = 30 + FontObj.Font.getTextSize(optxt.Text[0]).width;
     elementBox.color = Color.setA(elementBox.color, alpha);
     elementIco.color = Color.setA(elementIco.color, alpha);
     elementBox.draw(UICONST.OptionBox.XBOX, UICONST.OptionBox.YBOX);
@@ -2534,18 +2537,35 @@ function DrawUIDialogParentalScreen(data, baseA) {
     arrowElement.angle = 0.0f;
 }
 function DrawUIDialogInfoScreen(data, baseA) {
-	if (!('Processed' in data)) {
-		data.Info = data.Info.filter(item => item.Value !== "");
-		data.Processed = true;
-	}
+    if (!('Processed' in data)) {
+        data.Info = data.Info.filter(item => item.Value !== "");
+        data.Processed = true;
+    }
 
-	if (DashUI.AnimationQueue.length < 1) { SetPadEvents_Information(); }
+    if (DashUI.AnimationQueue.length < 1) { SetPadEvents_Information(); }
 
-	const items = data.Info;
-	const baseX = (ScrCanvas.width >> 1);
-    const nameY = UICONST.DialogInfo.NameY - (8 * (items.length - 1));
+    const items = data.Info;
     const nameTxt = [];
     const valTxt = [];
+    let nameY = UICONST.DialogInfo.NameY - (8 * (items.length - 1));
+
+    if (data.ElementIcon === "true") {
+        nameY += (5 * (items.length - 1));
+        const Icon = {};
+        const info = GetHighlightedElement();
+
+        if ('CustomIcon' in info) { Icon.CustomIcon = info.CustomIcon; }
+        if (typeof info.Icon === "string") { info.Icon = FindDashIcon(info.Icon); }
+
+        Icon.ID = info.Icon;
+        Icon.Alpha = baseA;
+        Icon.Width = UICONST.IcoSelSize + UICONST.IcoUnselMod;
+        Icon.Height = UICONST.IcoSelSize + UICONST.IcoUnselMod;
+        Icon.X = UICONST.DialogInfo.DescX - (Icon.Width >> 1);
+        Icon.Y = UICONST.Category.IconY;
+        
+        DrawDashIcon(Icon);
+    }
 
     for (let i = 0; i < items.length; i++) {
         nameTxt.push(getLocalText(items[i].Name) + ":");

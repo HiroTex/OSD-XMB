@@ -56,7 +56,7 @@
 		return Items;
     ]]>
   </Options>
-  <Context Name="OptionContext" Filter="SubDeviceOnly">
+  <Context Name="FileContext" Type="OptionContext" Filter="SubDeviceOnly">
 		<Component Name="{DELETE}" Icon="-1">
 			<Dialog Icon="-1" Title="" BG="false" Type="CONFIRMATION" BackBtn="true" ConfirmBtn="true">
 				<Text>

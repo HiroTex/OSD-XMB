@@ -9,8 +9,13 @@
     <String str="Explorador de arquivos" />
   </Name>
   <Options Type="Explorer"/>
-  <Context Name="OptionContext" Filter="SubDeviceOnly">
+  <Context Name="FileContext" Type="OptionContext" Filter="SubDeviceOnly">
 		<Component Name="{DELETE}" Icon="-1">
+			<Confirm>
+				<![CDATA[
+					function(index, item) { DashUISetDialog(item.Dialog); }
+				]]>
+			</Confirm>
 			<Dialog Icon="-1" Title="" BG="false" Type="CONFIRMATION" BackBtn="true" ConfirmBtn="true">
 				<Text>
 					<String str="Do you want to delete the selected item?" />
@@ -40,10 +45,21 @@
 				<Event On="Confirm" Type="Transition" To="DeleteItemDialogTask" Condition="DashUI.Dialog.Data[DashUI.Dialog.Level].Selected === 0" Exit="true"/>
 			</Dialog>
 		</Component>
-    <Confirm>
-      <![CDATA[
-        function(index, item) { DashUISetDialog(item.Dialog); }
+    <Component Name="{INFO}" Icon="-1">
+      <Confirm>
+        <![CDATA[
+        function(index, item) {
+					DashUISetDialog(item.Dialog);
+				}
       ]]>
-    </Confirm>
+      </Confirm>
+      <Dialog Icon="-1" Title="" BG="false" Type="INFO" ElementIcon="true" BackBtn="true" >
+        <Info>
+          <Item Name="{TITLE}" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Name}" Selectable="false" />
+          <Item Name="{DEVICE}" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Device}" Selectable="false" />
+          <Item Name="{SIZE}" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Description || '0 bytes'}" Selectable="false" />
+        </Info>
+      </Dialog>
+    </Component>
   </Context>
 </App>
