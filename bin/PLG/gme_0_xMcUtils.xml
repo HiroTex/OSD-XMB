@@ -88,7 +88,6 @@
 								const srcPath = item.FullPath;
                 const destMC = (srcPath.startsWith("mc0")) ? 1 : 0;
                 const destMCInfo = System.getMCInfo(destMC);
-                console.log(destMCInfo.type);
                 const freeSpace = destMCInfo.freemem * 1024;
                 const srcFiles = System.listDir(srcPath).filter(item => !item.dir);
                 let totalSize = 0;
@@ -101,6 +100,9 @@
                   return;
                 }
                 
+                DashUI.Dialog.Data[DashUI.Dialog.Level].Y = -25;
+                DashUI.Dialog.Data[DashUI.Dialog.Level].Align = "HCENTER";
+                DashUI.Dialog.Data[DashUI.Dialog.Level].Text = `${item.Name}\n${formatFileSize(totalSize)}`;
                 const destPath = `mc${destMC}:/${getPathWithoutRoot(srcPath)}/`;
                 os.mkdir(destPath);
 
@@ -124,7 +126,7 @@
                 UICONST.LayersFg.push(() => {
                   if (DashUI.PbarAlpha < 1) { PbarAFade.Progress = 0.1f; DashUI.AnimationQueue.push(() => UIAnimationCommon_Work(PbarAFade, 0.2f)); }
 									DashUI.PbarAlpha = ~~(128 * PbarAFade.Progress);
-                  DrawProgressBar({X: 0, Y: 0}, ~~((totalCopied / totalSize) * 100), copyText);
+                  DrawProgressBar({X: 0, Y: 35}, ~~((totalCopied / totalSize) * 100), copyText);
                 });
 
 								const CopIval = os.setInterval(() => {
