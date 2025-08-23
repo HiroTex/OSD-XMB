@@ -127,6 +127,24 @@
     "Default",
     "Default"
   ],
+  "COPY": [
+    "Copy",
+    "Copier",
+    "Copiar",
+    "Kopieren",
+    "Copia",
+    "Kopiëren",
+    "Copiar"
+  ],
+  "COPYING": [
+    "Copying",
+    "Copying",
+    "Copiando",
+    "Copying",
+    "Copying.",
+    "Copying",
+    "Copying"
+  ],
   "INFO": [
     "Information",
     "Information",
@@ -280,6 +298,15 @@
       "ELF file not found.",
       "ELF file not found.",
       "ELF file not found."
+    ],
+    "NOT_ENOUGH_SPACE": [
+      "Destination folder does not have enough space.",
+      "Destination folder does not have enough space.",
+      "El directorio de destino no tiene espacio suficiente.",
+      "Destination folder does not have enough space.",
+      "Destination folder does not have enough space.",
+      "Destination folder does not have enough space.",
+      "Destination folder does not have enough space."
     ]
   }
 }

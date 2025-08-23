@@ -8,6 +8,19 @@
     <String str="Bestandsverkenner" />
     <String str="Explorador de arquivos" />
   </Name>
+  <Init>
+    <![CDATA[
+			function SetMCdescriptions(SubMenu) {
+				for (let j = 0; j < SubMenu.Items.length; j++)	{
+          if (!SubMenu.Items[j].Name.includes("Memory Card ")) { continue; }
+          let mcSlot = SubMenu.Items[j].Name === "Memory Card 1" ? 0 : 1;
+					let mcInfo = System.getMCInfo(mcSlot);
+					let used = 8000 - mcInfo.freemem;
+					SubMenu.Items[j].Description = `${used} / 8000 Kb`;
+				}
+			}
+    ]]>
+  </Init>
   <Options Type="Explorer"/>
   <Context Name="FileContext" Type="OptionContext" Filter="SubDeviceOnly">
 		<Component Name="{DELETE}" Icon="-1">
@@ -31,10 +44,7 @@
 						<![CDATA[
 							function() {
 								const collection = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items;
-								const item = collection[DashUI.SubMenu.Items.Current];
-								const path = item.FullPath;
-								(path.endsWith('/')) ? System.removeDirectory(path) : os.remove(path);
-								collection.splice(DashUI.SubMenu.Items.Current, 1);
+                deleteItem(collection, DashUI.SubMenu.Items.Current);
 								if (collection.length < 1) { DashUI.SubMenu.Items.Current = -1; }
 								else if (DashUI.SubMenu.Items.Current >= collection.length) { DashUI.SubMenu.Items.Current = collection.length - 1; }
 								UIAnimationDialogFade_Start(false);

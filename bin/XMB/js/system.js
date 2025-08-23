@@ -241,6 +241,19 @@ function getDeviceName(path) {
 
     return name.toUpperCase();
 }
+function deleteItem(collection, id) {
+    const item = collection[id];
+    const path = item.FullPath;
+    if (path.endsWith("/")) {
+        const directory = os.readdir(path)[0];
+        while (directory.length > 0) {
+            os.remove(`${path}${directory.shift()}`);
+        }
+        System.removeDirectory(path);
+    }
+    else { os.remove(path); }
+    collection.splice(id, 1);
+}
 
 //////////////////////////////////////////////////////////////////////////
 ///*				   			   Paths							  *///
@@ -767,8 +780,8 @@ function parseIconSysTitle(path, name) {
     if (file < 0) { return RET; }
 
     const code = "PS2D";
-    const match = true;
     const magic = new Uint8Array(4);
+    let match = true;
     os.seek(file, 0, std.SEEK_SET);
     os.read(file, magic.buffer, 0, 4);
 

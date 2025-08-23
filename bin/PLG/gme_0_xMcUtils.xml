@@ -41,14 +41,15 @@
 
 		for (let j = 0; j < 2; j++)	{
 			if (os.readdir(`mc${j.toString()}:/`)[1] > -1) {
-				let mcInfo = System.getMCInfo(j);
-				let used = 8000 - mcInfo.freemem;
 				Items.push({
 					Name: `Memory Card ${(j + 1).toString()}`,
-					Description: `${used} / 8000 Kb`,
 					Icon: 16 + j,
-					Type: "SUBMENU",
-					Value: ReadMCDir(j)
+					Type: "SUBMENU"
+				});
+
+				Object.defineProperty(Items[Items.length - 1], "Value", {
+					get() {	return ReadMCDir(j); },
+					enumerable: true
 				});
 			}
 		}
@@ -56,7 +57,116 @@
 		return Items;
     ]]>
   </Options>
+  <Init>
+    <![CDATA[
+			function SetDescriptions(SubMenu) {
+				for (let j = 0; j < 2; j++)	{
+					let mcInfo = System.getMCInfo(j);
+					let used = 8000 - mcInfo.freemem;
+					SubMenu.Items[j].Description = `${used} / 8000 Kb`;
+				}
+			}
+    ]]>
+  </Init>
   <Context Name="FileContext" Type="OptionContext" Filter="SubDeviceOnly">
+    <Component Name="{COPY}" Icon="-1">
+      <Dialog Icon="-1" Title="" BG="false" Type="CONFIRMATION" BackBtn="true" ConfirmBtn="true">
+        <Text>
+          <String str="Do you want to copy the selected item?" />
+          <String str="Do you want to copy the selected item?" />
+          <String str="¿Seguro que desea copiar el objeto seleccionado?" />
+          <String str="Do you want to copy the selected item?" />
+          <String str="Do you want to copy the selected item?" />
+          <String str="Do you want to copy the selected item?" />
+          <String str="Do you want to copy the selected item?" />
+        </Text>
+        <Dialog Name="CopyItemDialogTask" Icon="-1" Title="" BG="false" Type="TEXT" ElementIcon="true" Text="">
+          <Task>
+            <![CDATA[
+							function() {
+								const item = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current];
+								const srcPath = item.FullPath;
+                const destMC = (srcPath.startsWith("mc0")) ? 1 : 0;
+                const destMCInfo = System.getMCInfo(destMC);
+                console.log(destMCInfo.type);
+                const freeSpace = destMCInfo.freemem * 1024;
+                const srcFiles = System.listDir(srcPath).filter(item => !item.dir);
+                let totalSize = 0;
+                for (let i = 0; i < srcFiles.length; i++) { totalSize += srcFiles[i].size; }
+                
+                if (totalSize > freeSpace) { 
+									DashUI.Dialog.Data[DashUI.Dialog.Level].ElementIcon = "false";
+									DashUI.Dialog.Data[DashUI.Dialog.Level].BACK_BTN = true;
+                  DashUI.Dialog.Data[DashUI.Dialog.Level].Text = getLocalText(XMBLANG.ERROR.NOT_ENOUGH_SPACE);
+                  return;
+                }
+                
+                const destPath = `mc${destMC}:/${getPathWithoutRoot(srcPath)}/`;
+                os.mkdir(destPath);
+
+								let srcFile = srcFiles.shift();
+								const BLOCK_SIZE = 64 * 1024;
+								const buffer = new ArrayBuffer(BLOCK_SIZE);
+
+                let fdSrc = os.open(`${srcPath}${srcFile.name}`, os.O_RDONLY);
+								let fdDst = os.open(`${destPath}${srcFile.name}`, os.O_WRONLY | os.O_CREAT | os.O_TRUNC);
+
+								if (fdSrc < 0 || fdDst < 0) {
+									throw new Error("Error opening source or destination file");
+                }
+
+								let fileSize = srcFile.size;
+								let copied = 0;
+                let totalCopied = 0;
+                
+								const copyText = `${getLocalText(XMBLANG.COPYING)}, ${getLocalText(XMBLANG.WAIT)}`;
+                const PbarAFade = createFade();
+                UICONST.LayersFg.push(() => {
+                  if (DashUI.PbarAlpha < 1) { PbarAFade.Progress = 0.1f; DashUI.AnimationQueue.push(() => UIAnimationCommon_Work(PbarAFade, 0.2f)); }
+									DashUI.PbarAlpha = ~~(128 * PbarAFade.Progress);
+                  DrawProgressBar({X: 0, Y: 0}, ~~((totalCopied / totalSize) * 100), copyText);
+                });
+
+								const CopIval = os.setInterval(() => {
+										const toRead = Math.min(BLOCK_SIZE, fileSize - copied);
+										if (toRead <= 0) {
+                      if (srcFiles.length > 0) {
+												os.close(fdSrc);
+												os.close(fdDst);
+                        srcFile = srcFiles.shift();
+                        fileSize = srcFile.size;
+												fdSrc = os.open(`${srcPath}${srcFile.name}`, os.O_RDONLY);
+                        fdDst = os.open(`${destPath}${srcFile.name}`, os.O_WRONLY | os.O_CREAT | os.O_TRUNC);
+												copied = 0;
+                      }
+                      else {
+												UICONST.LayersFg.pop();
+												os.close(fdSrc);
+												os.close(fdDst);
+												os.clearInterval(CopIval);
+												UIAnimationDialogFade_Start(false);
+												return;
+                      }
+                    }
+
+										const bytesRead = os.read(fdSrc, buffer, 0, toRead);
+										let written = 0;
+										while (written < bytesRead) {
+											const bw = os.write(fdDst, buffer, written, bytesRead - written);
+											if (bw < 0) throw new Error("Error writing File");
+											written += bw;
+										}
+
+										copied += bytesRead;
+                    totalCopied += bytesRead;
+                }, 0);
+							}
+						]]>
+          </Task>
+        </Dialog>
+        <Event On="Confirm" Type="Transition" To="CopyItemDialogTask" Condition="DashUI.Dialog.Data[DashUI.Dialog.Level].Selected === 0" Exit="true"/>
+      </Dialog>
+    </Component>
 		<Component Name="{DELETE}" Icon="-1">
 			<Dialog Icon="-1" Title="" BG="false" Type="CONFIRMATION" BackBtn="true" ConfirmBtn="true">
 				<Text>
@@ -73,10 +183,7 @@
 						<![CDATA[
 							function() {
 								const collection = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items;
-								const item = collection[DashUI.SubMenu.Items.Current];
-								const path = item.FullPath;
-								(path.endsWith('/')) ? System.removeDirectory(path) : os.remove(path);
-								collection.splice(DashUI.SubMenu.Items.Current, 1);
+                deleteItem(collection, DashUI.SubMenu.Items.Current);
 								if (collection.length < 1) { DashUI.SubMenu.Items.Current = -1; }
 								else if (DashUI.SubMenu.Items.Current >= collection.length) { DashUI.SubMenu.Items.Current = collection.length - 1; }
 								UIAnimationDialogFade_Start(false);

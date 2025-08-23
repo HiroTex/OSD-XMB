@@ -554,6 +554,11 @@ function parseXmlPlugin(parsedData) {
                     }
                 }
                 else { plugin.Value = xmlParseSubMenu(parsedData); }
+                const initTag = parsedData.children.find(child => child.tagName === "Init");
+                if (plugin.Value && initTag && "cdata" in initTag) {
+                    plugin.Value.Init = std.evalScript(`(${initTag.cdata})`);
+                }
+
                 break;
             case "CONTEXT": plugin.Value = xmlParseContext(parsedData); break;
             case "ELF": plugin.Value = xmlParseElfTag(parsedData); break;

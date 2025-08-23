@@ -1516,7 +1516,12 @@ function DashUISetNewSubMenu(SubMenu) {
 }
 function DashUIBackFromSubMenu() {
 	PlayCursorSfx();
-	UIAnimateSubMenuItemsFade_Start(false);
+    UIAnimateSubMenuItemsFade_Start(false);
+    const prevLevel = DashUI.SubMenu.Level - 1;
+    if (prevLevel < 0) { return; }
+
+    const SubMenu = DashUI.SubMenu.ItemCollection[prevLevel];
+    if ('Init' in SubMenu) { SubMenu.Init(SubMenu); }
 }
 function UIAnimateSubMenuItemsFade_Start(isIn) {
 	DashUIResetBg();
@@ -2551,20 +2556,6 @@ function DrawUIDialogInfoScreen(data, baseA) {
 
     if (data.ElementIcon === "true") {
         nameY += (5 * (items.length - 1));
-        const Icon = {};
-        const info = GetHighlightedElement();
-
-        if ('CustomIcon' in info) { Icon.CustomIcon = info.CustomIcon; }
-        if (typeof info.Icon === "string") { info.Icon = FindDashIcon(info.Icon); }
-
-        Icon.ID = info.Icon;
-        Icon.Alpha = baseA;
-        Icon.Width = UICONST.IcoSelSize + UICONST.IcoUnselMod;
-        Icon.Height = UICONST.IcoSelSize + UICONST.IcoUnselMod;
-        Icon.X = UICONST.DialogInfo.DescX - (Icon.Width >> 1);
-        Icon.Y = UICONST.Category.IconY;
-        
-        DrawDashIcon(Icon);
     }
 
     for (let i = 0; i < items.length; i++) {
@@ -2690,7 +2681,11 @@ function DrawUITextDialog(data, a) {
 		Alignment: "CENTER",
         Position: { X: 0, Y: 0 },
         Alpha: a
-	};
+    };
+
+    if (data.ElementIcon === "true") {
+        TXT.Position.Y += 20;
+    }
 
 	if ('Align' in data) { TXT.Alignment = data.Align; }
 	if ('X' 	in data) { TXT.Position.X = data.X; }
@@ -2779,7 +2774,24 @@ function DrawUIDialog() {
 		case "INFO":            DrawUIDialogInfoScreen(data, contentAlpha); break;
 		case "PARENTAL_SET":
 		case "PARENTAL_CHECK":  DrawUIDialogParentalScreen(data, contentAlpha); break;
-	}
+    }
+
+    if (data.ElementIcon === "true") {
+        const Icon = {};
+        const info = GetHighlightedElement();
+
+        if ('CustomIcon' in info) { Icon.CustomIcon = info.CustomIcon; }
+        if (typeof info.Icon === "string") { info.Icon = FindDashIcon(info.Icon); }
+
+        Icon.ID = info.Icon;
+        Icon.Alpha = baseA;
+        Icon.Width = UICONST.IcoSelSize + UICONST.IcoUnselMod;
+        Icon.Height = UICONST.IcoSelSize + UICONST.IcoUnselMod;
+        Icon.X = UICONST.DialogInfo.DescX - (Icon.Width >> 1);
+        Icon.Y = UICONST.Category.IconY;
+
+        DrawDashIcon(Icon);
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////
