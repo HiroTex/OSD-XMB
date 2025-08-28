@@ -12,11 +12,13 @@
     <![CDATA[
 			function SetMCdescriptions(SubMenu) {
 				for (let j = 0; j < SubMenu.Items.length; j++)	{
-          if (!SubMenu.Items[j].Name.includes("Memory Card ")) { continue; }
+					MainMutex.unlock();
+          if (!SubMenu.Items[j].Name.includes("Memory Card ")) { MainMutex.lock(); continue; }
           let mcSlot = SubMenu.Items[j].Name === "Memory Card 1" ? 0 : 1;
 					let mcInfo = System.getMCInfo(mcSlot);
 					let used = 8000 - mcInfo.freemem;
 					SubMenu.Items[j].Description = `${used} / 8000 Kb`;
+					MainMutex.lock();
 				}
 			}
     ]]>

@@ -13,7 +13,8 @@
 		function ReadMCDir(slot) {
 			// Initialize an empty array to hold the items
 			const directories = [];
-			const dir = System.listDir(`mc${slot.toString()}:/`);
+      const root = `mc${slot.toString()}:/`;
+			const dir = System.listDir(root);
 
 			// Loop through dir and collect directories into the desired structure
 			for (let i = 0; i < dir.length; i++) {
@@ -23,7 +24,7 @@
 						Name: parseIconSysTitle(`mc${slot.toString()}:/`, item.name),
 						Description: "",
 						Icon: 14,
-						FullPath: `mc${slot.toString()}:/${item.name}/`
+						FullPath: `${root}${item.name}/`
 					});
 				}
 			}
@@ -34,7 +35,7 @@
 				return nameA < nameB ? -1 : nameA > nameB ? 1 : 0;
 			});
 
-			return { Items: directories, Default: 0 };
+			return directories;
 		}
 
 		const Items = [];
@@ -48,7 +49,13 @@
 				});
 
 				Object.defineProperty(Items[Items.length - 1], "Value", {
-					get() {	return ReadMCDir(j); },
+					get() {	
+						return {
+							Items: [],
+							Default: 0,
+              Init: (SubMenu) => { SubMenu.Items = ReadMCDir(j); } 
+            };
+          },
 					enumerable: true
 				});
 			}
@@ -61,9 +68,11 @@
     <![CDATA[
 			function SetDescriptions(SubMenu) {
 				for (let j = 0; j < 2; j++)	{
+					MainMutex.unlock();
 					let mcInfo = System.getMCInfo(j);
 					let used = 8000 - mcInfo.freemem;
 					SubMenu.Items[j].Description = `${used} / 8000 Kb`;
+					MainMutex.lock();
 				}
 			}
     ]]>
@@ -80,10 +89,12 @@
           <String str="Do you want to copy the selected item?" />
           <String str="Do you want to copy the selected item?" />
         </Text>
-        <Dialog Name="CopyItemDialogTask" Icon="-1" Title="" BG="false" Type="TEXT" ElementIcon="true" Text="">
+        <Dialog Name="CopyItemDialogTask" Icon="-1" Title="" BG="false" Type="TEXT" Text="">
           <Task>
             <![CDATA[
 							function() {
+                
+                UIAnimationDialogContentFade_Start(true);
 								const item = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current];
 								const srcPath = item.FullPath;
                 const destMC = (srcPath.startsWith("mc0")) ? 1 : 0;
@@ -94,12 +105,12 @@
                 for (let i = 0; i < srcFiles.length; i++) { totalSize += srcFiles[i].size; }
                 
                 if (totalSize > freeSpace) { 
-									DashUI.Dialog.Data[DashUI.Dialog.Level].ElementIcon = "false";
 									DashUI.Dialog.Data[DashUI.Dialog.Level].BACK_BTN = true;
                   DashUI.Dialog.Data[DashUI.Dialog.Level].Text = getLocalText(XMBLANG.ERROR.NOT_ENOUGH_SPACE);
                   return;
                 }
                 
+                DashUI.Dialog.Data[DashUI.Dialog.Level].ElementIcon = "true";
                 DashUI.Dialog.Data[DashUI.Dialog.Level].Y = -25;
                 DashUI.Dialog.Data[DashUI.Dialog.Level].Align = "HCENTER";
                 DashUI.Dialog.Data[DashUI.Dialog.Level].Text = `${item.Name}\n${formatFileSize(totalSize)}`;
@@ -122,14 +133,16 @@
                 let totalCopied = 0;
                 
 								const copyText = `${getLocalText(XMBLANG.COPYING)}, ${getLocalText(XMBLANG.WAIT)}`;
-                const PbarAFade = createFade();
+								DashUI.PbarAlpha = 0;
                 UICONST.LayersFg.push(() => {
-                  if (DashUI.PbarAlpha < 1) { PbarAFade.Progress = 0.1f; DashUI.AnimationQueue.push(() => UIAnimationCommon_Work(PbarAFade, 0.2f)); }
-									DashUI.PbarAlpha = ~~(128 * PbarAFade.Progress);
+									const cfad = DashUI.Dialog.ContentFade;
+									const cfadProgress = (cfad.Running) ? getFadeProgress(cfad) : (cfad.In ? 1 : 0);
+									DashUI.PbarAlpha = ~~(128 * cfadProgress);
                   DrawProgressBar({X: 0, Y: 35}, ~~((totalCopied / totalSize) * 100), copyText);
                 });
 
 								const CopIval = os.setInterval(() => {
+										if (DashUI.PbarAlpha < 120) { return; }
 										const toRead = Math.min(BLOCK_SIZE, fileSize - copied);
 										if (toRead <= 0) {
                       if (srcFiles.length > 0) {

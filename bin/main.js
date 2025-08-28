@@ -82,17 +82,18 @@ globalThis.PATHS = {
 
 const jsList = [
 	`sce`,		// Kernel Functions.
-	`cdvd`,		// CDVD Functions.
+    `cdvd`,		// CDVD Functions.
+    `lang`,		// Language and Localization Strings.
 	`xml`,		// XML Parser.
 	`cfg`,		// Custom User Configurations.
     `system`,	// Main Constants and Generic Utilities.
+    `thread`,   // Threads Handler.
     `date`,     // Date and Time Utilities.
 	`audio`,	// Sound Handler.
 	`pads`,		// Pad Action Manager.
 	`bg`,		// Background Graphics.
 	`wave`,		// Background Wave Object.
 	`font`, 	// FONT Rendering System.
-	`lang`,		// Language and Localization Strings.
 	`ui`		// Main XMB User Interface Module.
 ];
 
@@ -103,20 +104,26 @@ jsList.forEach((js) => { std.loadScript(`${PATHS.XMB}js/${js}.js`); });
 //////////////////////////////////////////////////////////////////////////
 
 function main() {
+
     // Update Global Variables.
     getLocalTime();
 
-	// Execute Handlers
+    MainMutex.lock();
+
+	// Display UI
 	BgHandler();
-	UIHandler();
+    UIHandler();
+    DbgHandler();
+
+    MainMutex.unlock();
+
+    // IOP Work
     PadsHandler();
     SoundHandler();
 
 	// Threaded Operations
     ImageCache.Process();
-
-	// Show Debug Information at bottom.
-    PrintDebugInformation();
+    Tasks.Process();
 }
 
 Screen.setParam(Screen.DEPTH_TEST_ENABLE, false);

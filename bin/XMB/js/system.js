@@ -25,57 +25,50 @@ function mountHDDPartition(partName) {
 
 	return "pfs1";
 }
-function getDevicesAsItems(params = {}) {
-	const Items = [];
-	const devices = System.devices();
-	const fileFilters = ('fileFilters' in params) ? params.fileFilters : false;
-	const fileoptions = ('fileoptions' in params) ? params.fileoptions : false;
+function getAvailableDevices() {
+    const Elements = [];
+    const devices = System.devices();
 
-	Items.push({
-		Name: XMBLANG.WORK_DIR_NAME,
-		Description: "",
-		Icon: 18,
-		Type: "SUBMENU"
-	});
+    Elements.push({
+        Name: XMBLANG.WORK_DIR_NAME,
+        Description: "",
+        Icon: 18,
+        Type: "SUBMENU",
+        Root: CWD
+    });
 
-	Object.defineProperty(Items[0], "Value", {
-		get() {	return exploreDir({ dir:CWD, fileFilters: fileFilters, fileoptions: fileoptions }); },
-		enumerable: true,
-		configurable: true,
-	});
+    for (let i = 0; i < devices.length; i++) {
+        let dev = devices[i];
 
-	for (let i = 0; i < devices.length; i++) {
-		let dev = devices[i];
-
-		let count = 0;
-		let basepath = "";
-		let nameList = [];
-		let descList = [];
+        let count = 0;
+        let basepath = "";
+        let nameList = [];
+        let descList = [];
         let iconList = [];
 
-		switch(dev.name) {
-			case "mc":
-				count = 2;
-				basepath = "mc";
-				for (let j = 0; j < count; j++)	{
-					nameList.push(`Memory Card ${(j + 1).toString()}`);
-					iconList.push(16 + j);
+        switch (dev.name) {
+            case "mc":
+                count = 0;
+                basepath = "mc";
+                for (let j = 0; j < 2; j++) {
+                    nameList.push(`Memory Card ${(j + 1).toString()}`);
+                    iconList.push(16 + j);
 
-					let mcInfo = System.getMCInfo(j);
-					if (mcInfo) {
-						let used = 8000 - mcInfo.freemem;
-						descList.push(`${used} / 8000 Kb`);
-					}
-					else { descList.push(""); }
-				}
-				break;
-			case "mass":
-				count = 10;
-				basepath = "mass";
+                    let mcInfo = System.getMCInfo(j);
+                    if (mcInfo) {
+                        let used = 8000 - mcInfo.freemem;
+                        descList.push(`${used} / 8000 Kb`);
+                        count++;
+                    }
+                }
+                break;
+            case "mass":
+                count = 10;
+                basepath = "mass";
                 for (let j = 0; j < count; j++) {
                     const info = System.getBDMInfo(`mass${j.toString()}:`);
                     if (!info) { count = j; break; }
-					nameList.push(XMBLANG.MASS_DIR_NAME);
+                    nameList.push(XMBLANG.MASS_DIR_NAME);
                     iconList.push(21);
                     let bdmName = info.name;
                     switch (info.name) {
@@ -84,43 +77,54 @@ function getDevicesAsItems(params = {}) {
                         case "udp": bdmName = "udpbd"; break;
                     }
                     descList.push(`${bdmName.toUpperCase()} ${(info.index + 1).toString()}`);
-				}
-				break;
-			case "hdd":
-				count = 1;
-				basepath = "hdd";
-				nameList.push(XMBLANG.HDD_DIR_NAME);
-				descList.push("");
-				iconList.push(29);
-				break;
-			case "mmce":
-				count = 2;
-				basepath = "mmce";
-				for (let j = 0; j < count; j++)	{
-					nameList.push("MMCE " + (j + 1).toString());
-					descList.push(XMBLANG.MMCE_DESC);
-					iconList.push(21);
-				}
-				break;
-		}
+                }
+                break;
+            case "hdd":
+                count = 1;
+                basepath = "hdd";
+                nameList.push(XMBLANG.HDD_DIR_NAME);
+                descList.push("");
+                iconList.push(29);
+                break;
+            case "mmce":
+                count = 2;
+                basepath = "mmce";
+                for (let j = 0; j < count; j++) {
+                    nameList.push("MMCE " + (j + 1).toString());
+                    descList.push(XMBLANG.MMCE_DESC);
+                    iconList.push(21);
+                }
+                break;
+        }
 
-		for (let j = 0; j < count; j++)	{
-			const root = `${basepath}${j.toString()}:`;
-			if (os.readdir(root)[0].length > 0) {
-				Items.push({
-					Name: nameList[j],
-					Description: descList[j],
-					Icon: iconList[j],
-					Type: "SUBMENU"
-				});
+        for (let j = 0; j < count; j++) {
+            const root = `${basepath}${j.toString()}:`;
+            if (os.readdir(root)[0].length > 0) {
+                Elements.push({
+                    Name: nameList[j],
+                    Description: descList[j],
+                    Icon: iconList[j],
+                    Type: "SUBMENU",
+                    Root: root
+                });
+            }
+        }
+    }
 
-				Object.defineProperty(Items[Items.length - 1], "Value", {
-					get() {	return exploreDir({ dir: root, fileFilters: fileFilters, fileoptions: fileoptions }); },
-					enumerable: true,
-					configurable: true,
-				});
-			}
-		}
+    return Elements;
+}
+function getDevicesAsItems(params = {}) {
+	const Items = [];
+	const fileFilters = ('fileFilters' in params) ? params.fileFilters : false;
+	const fileoptions = ('fileoptions' in params) ? params.fileoptions : false;
+
+    for (let i = 0; i < gDevices.length; i++) {
+        Items.push(gDevices[i]);
+        Object.defineProperty(Items[Items.length - 1], "Value", {
+            get() { return exploreDir({ dir: this.Root, fileFilters: fileFilters, fileoptions: fileoptions }); },
+            enumerable: true,
+            configurable: true,
+        });
 	}
 	return Items;
 }
@@ -277,10 +281,17 @@ function getPathWithoutRoot(path) {
     return path.slice(colonIndex + 2); // Skip ":/" to get the remaining path
 }
 
-/*	Parses a filepath to get its filename	*/
+/*	Parses a filepath to get its filename or folder name	*/
 function getFileName(path) {
+    // Strip drive letters like C:\ or prefixes like X:...
     const colonIndex = path.indexOf(":");
-    if (colonIndex !== -1) { path = path.slice(colonIndex + 1); }
+    if (colonIndex !== -1) path = path.slice(colonIndex + 1);
+
+    // Remove trailing slash if more than one (normalize double slashes)
+    while (path.length > 1 && path.endsWith("/")) {
+        path = path.slice(0, -1);
+    }
+
     const lastSlashIndex = path.lastIndexOf('/');
     return lastSlashIndex === -1 ? path : path.substring(lastSlashIndex + 1);
 }
@@ -596,7 +607,7 @@ function getPOPSCheat(params) {
 */
 function setPOPSCheat(params) {
 	let cheats = params.cheats;
-	let game = ('game' in params) ? params.game : "";
+	let game = ('game' in params) ? `${params.game}/` : "";
 	let device = ('device' in params) ? params.device : "mass";
     let path = "";
 
@@ -767,35 +778,44 @@ function ExecuteELF() {
 ///*				   			 ICON.SYS							  *///
 //////////////////////////////////////////////////////////////////////////
 
+const IconSysMap81 = {
+    0x40: ' ', 0x46: ':', 0x5E: '/',
+    0x69: '(', 0x6A: ')',
+    0x6D: '[', 0x6E: ']',
+    0x6F: '{', 0x70: '}',
+    0x7C: '-'
+};
+
 function parseIconSysTitle(path, name) {
-    let RET = name;
+    let ret = name;
     const syspath = `${path}${name}`;
     const files = os.readdir(syspath)[0];
     let fileExist = files.includes("icon.sys");
+    if (!fileExist) { return ret; }
 
-    if (!fileExist) { return RET; }
+    let file = false;
+    try {
+        file = os.open(`${syspath}/icon.sys`, os.O_RDONLY);
+        if (file < 0) { throw new Error(`Could not open ${syspath}/icon.sys.`); }
 
-    const file = os.open(`${syspath}/icon.sys`, os.O_RDONLY);
+        const magic = new Uint8Array(4);
+        let match = true;
+        os.seek(file, 0, std.SEEK_SET);
+        os.read(file, magic.buffer, 0, 4);
 
-    if (file < 0) { return RET; }
-
-    const code = "PS2D";
-    const magic = new Uint8Array(4);
-    let match = true;
-    os.seek(file, 0, std.SEEK_SET);
-    os.read(file, magic.buffer, 0, 4);
-
-    if (magic.length === code.length) {
-        for (let i = 0; i < code.length; i++) {
-            if (magic[i] !== code.charCodeAt(i)) {
-                match = false;
-                break;
-            }
+        // check magic
+        if (
+            magic[0] !== 0x50 || // 'P'
+            magic[1] !== 0x53 || // 'S'
+            magic[2] !== 0x32 || // '2'
+            magic[3] !== 0x44    // 'D'
+        ) {
+            throw new Error(`${syspath}/icon.sys is not a valid icon.sys file.`);
         }
-    }
-    else { match = false; }
 
-    if (match) {
+
+        if (!match) { throw new Error(`${syspath}/icon.sys is not a valid icon.sys file.`); }
+
         const linebreak = new Uint8Array(2);
         os.seek(file, 6, std.SEEK_SET);
         os.read(file, linebreak.buffer, 0, 2);
@@ -803,61 +823,59 @@ function parseIconSysTitle(path, name) {
         const title = new Uint8Array(68);
         os.seek(file, 192, std.SEEK_SET);
         os.read(file, title.buffer, 0, 68);
-        RET = IconSysDecodeTitle(title);
-        if (/^[\?]*$/.test(RET)) { RET = name; }
-		else { RET = RET.slice(0, linepos) + " " + RET.slice(linepos); }
+
+        let decoded = IconSysDecodeTitle(title);// check if title is only question marks
+        if (decoded.replace(/\?/g, '').length === 0) {
+            ret = name;
+        } else {
+            ret = decoded.slice(0, linepos) + " " + decoded.slice(linepos);
+        }
+
+    } catch (e) {
+        xlog(e);
+    } finally {
+        if (file) { os.close(file); }
     }
 
-    os.close(file);
-    return RET;
+    return ret;
 }
 
 // This will retrieve a UTF-8 string from the icon.sys S-JIS encoded Title
 function IconSysDecodeTitle(strIn) {
-    let strOut = '';
+    const out = [];
 
     for (let i = 0; i < 68; i += 2) {
-        const t1 = strIn[i];   // each S-JIS character consists of two bytes
+        const t1 = strIn[i];
         const t2 = strIn[i + 1];
 
         if (t1 === 0x00) {
-            if (t2 === 0x00) {
-                break;
-            } else {
-                strOut += '?';
-            }
-        } else if (t1 === 0x81) {
-            switch (t2) {
-                case 0x40: strOut += ' '; break;
-                case 0x46: strOut += ':'; break;
-                case 0x5E: strOut += '/'; break;
-                case 0x69: strOut += '('; break;
-                case 0x6A: strOut += ')'; break;
-                case 0x6D: strOut += '['; break;
-                case 0x6E: strOut += ']'; break;
-                case 0x6F: strOut += '{'; break;
-                case 0x70: strOut += '}'; break;
-                case 0x7C: strOut += '-'; break;
-                default: strOut += '?'; break;
-            }
-        } else if (t1 === 0x82) {
-            if (t2 >= 0x4F && t2 <= 0x7A) {
-                // digits (0-9), capital letters (A-Z)
-                strOut += String.fromCharCode(t2 - 31);
-            } else if (t2 >= 0x81 && t2 <= 0x9B) {
-                // lowercase letters (a-z)
-                strOut += String.fromCharCode(t2 - 32);
-            } else if (t2 === 0x3F) {
-                strOut += ' ';
-            } else {
-                strOut += '?';
-            }
-        } else {
-            strOut += '?';
+            if (t2 === 0x00) break;
+            out.push('?');
+            continue;
         }
+
+        if (t1 === 0x81) {
+            out.push(IconSysMap81[t2] || '?');
+            continue;
+        }
+
+        if (t1 === 0x82) {
+            if (t2 >= 0x4F && t2 <= 0x7A) {
+                out.push(String.fromCharCode(t2 - 31));
+            } else if (t2 >= 0x81 && t2 <= 0x9B) {
+                out.push(String.fromCharCode(t2 - 32));
+            } else if (t2 === 0x3F) {
+                out.push(' ');
+            } else {
+                out.push('?');
+            }
+            continue;
+        }
+
+        out.push('?');
     }
 
-    return strOut;
+    return out.join('');
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -1042,7 +1060,7 @@ function interpolateColorObj(color1, color2, t) {
 ///*				   			   DEBUG							  *///
 //////////////////////////////////////////////////////////////////////////
 
-function PrintDebugInformation() {
+function DbgHandler() {
 	if (!gDebug) { return; }
 
     const DebugInfo = [];
@@ -1081,10 +1099,10 @@ function xlogProcess() {
 //////////////////////////////////////////////////////////////////////////
 
 let gExit 		= {};
-let gThreads 	= false;
 let gDebug      = false;
 let gDbgTxt     = [];
 let gArt     	= getArtPaths();
+let gDevices    = getAvailableDevices();
 let ScrCanvas 	= Screen.getMode();
 const ee_info   = System.getCPUInfo();
 

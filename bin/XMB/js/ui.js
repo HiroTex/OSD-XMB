@@ -86,7 +86,7 @@ function BootSequenceHandler() {
 			break;
 		case 2: // Show Boot Logo
 			UIAnimateBootLogo_Work(128);
-			if (DashUI.BootFrame > StateDuration) { DashUI.BootState++; DashUI.BootFrame = 0; }
+            if (DashUI.BootFrame > StateDuration && (DashUI.LoadedPlugins)) { DashUI.BootState++; DashUI.BootFrame = 0; }
 			break;
 		case 3: // Fade Out Boot Logo
 			UIAnimateBootLogo_Work(128 - DashUI.BootFrame);
@@ -107,7 +107,7 @@ function BootSequenceHandler() {
             if (DashUI.BootFrame > StateDuration) { DashUI.BootState++; DashUI.BootFrame = 0; }
 			break;
 		case 5: // Show Epilepsy Warning Message
-            if ((DashUI.BootFrame > StateDuration) && (DashUI.LoadedPlugins)) { DashUI.BootState++; DashUI.BootFrame = 0; }
+            if (DashUI.BootFrame > StateDuration) { DashUI.BootState++; DashUI.BootFrame = 0; }
 			break;
 		case 6: // Fade Out Epilepsy Warning Message
 			DashUI.Overlay.Alpha--;
@@ -288,28 +288,6 @@ const ImageCache = (() => {
     function findInCache(path) {
         return cache.find(entry => entry.Path === path);
     }
-
-    function enqueue(path) {
-        // Avoid duplicate queue entries
-        if (queue.find(entry => entry.Path === path)) return;
-
-        // If queue is full, remove oldest
-        if (queue.length >= MAX_CACHE_SIZE) {
-            const removed = queue.shift();
-            // Also try removing from cache if not used
-            const index = cache.findIndex(c => c.Path === removed.Path);
-            if (index !== -1) {
-                const obj = cache[index];
-                if (obj.Image && obj.Image.ready()) {
-                    obj.Image.free();
-                }
-                cache.splice(index, 1);
-            }
-        }
-
-        queue.push({ Path: path });
-    }
-
     function evictIfNeeded() {
         if (cache.length >= MAX_CACHE_SIZE) {
             const removed = cache.shift();
@@ -318,11 +296,18 @@ const ImageCache = (() => {
             }
         }
     }
-
+    function enqueue(path) {
+        if (queue.includes(path)) return;
+        if (!findInCache(path)) {
+            evictIfNeeded();
+            cache.push({ Path: path, Image: false });
+        }
+        queue.push(path);
+    }
 	function loadImages(itemsToLoad) {
 		try {
 			for (let i = 0; i < itemsToLoad.length; i++) {
-				const { Path } = itemsToLoad[i];
+				const Path = itemsToLoad[i];
 				if (!std.exists(Path)) { continue; }
 				const image = new Image(Path);
 				image.optimize();
@@ -341,40 +326,18 @@ const ImageCache = (() => {
 	}
 
     return {
-        Get: function(path) {
+        Get(path) {
             const entry = findInCache(path);
-            if (entry && entry.Image) {
-                return entry.Image;
-            }
-
-            if (!entry) {
-                evictIfNeeded();
-                const newEntry = { Path: path, Image: false };
-                cache.push(newEntry);
-                enqueue(path);
-            }
-
+            if (entry && entry.Image) return entry.Image;
+            enqueue(path);
             return false;
         },
-
         Process: function() {
             if (isLoading || queue.length === 0) return;
 			const itemsToLoad = queue.splice(0, queue.length); // Shallow copy
 			isLoading = true;
-			if (!gThreads) { loadImages(itemsToLoad); }
-			else { Threads.new(() => loadImages(itemsToLoad)).start(); }
+            loadImages(itemsToLoad);
         },
-
-        Clear: function() {
-            // Optional utility to fully clear the cache and free memory
-            for (const entry of cache) {
-                if (entry.Image && entry.Image.ready()) {
-                    entry.Image.free();
-                }
-            }
-            cache.length = 0;
-            queue.length = 0;
-        }
     };
 })();
 
@@ -667,17 +630,10 @@ function DashPluginsInit() {
 
         xlog(`DashPluginsInit(): Loaded Plugin: ${plugins[i].name}`);
     }
-
-    DashPluginsProcess();
 }
 function DashPluginsProcess() {
-    const plgIval = os.setInterval(() => {
-        if (DashPluginData.length < 1) {
-            DashUI.LoadedPlugins = true;
-            os.clearInterval(plgIval);
-            return;
-        }
-
+    while (DashPluginData.length > 0) {
+        MainMutex.unlock();
         const plg = DashPluginData.shift();
         let Plugin = false;
         xlog(`DashPluginsProcess(): Processing Plugin: ${plg.Name}.`);
@@ -691,11 +647,14 @@ function DashPluginsProcess() {
             xlog(`DashPluginsProcess(): Plugin ${plg.Name} Succesfully processed.`);
             AddNewPlugin(Plugin);
         }
-    }, 0);
+        MainMutex.lock();
+    }
+
+    DashUI.LoadedPlugins = true;
 }
 function DashBackgroundLoad() {
-    if (gThreads) { Threads.new(DashPluginsInit).start(); }
-    else { DashPluginsInit(); }
+    DashPluginsInit();
+    Tasks.Push(DashPluginsProcess);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -1503,25 +1462,58 @@ function DrawUICategoryItems_Work(items, current, x) {
 ///*				   			 Sub Menu							  *///
 //////////////////////////////////////////////////////////////////////////
 
-function DashUISetNewSubMenu(SubMenu) {
-    if ('Init' in SubMenu) { SubMenu.Init(SubMenu); }
-    PlayCursorSfx();
+function DashUIEnterSubMenu(SubMenu) {
     const obj = DashUI.SubMenu;
     obj.Items.Current = SubMenu.Default;
     obj.Items.Next = SubMenu.Default;
     obj.Level++;
     obj.ItemCollection[obj.Level] = SubMenu;
     DashUI.State.Next = 2;
-	UIAnimateSubMenuItemsFade_Start(true);
+    UIAnimateSubMenuItemsFade_Start(true);
+}
+function DashUISetNewSubMenu(SubMenu) {
+    PlayCursorSfx();
+    if (!('Init' in SubMenu)) {
+        DashUIEnterSubMenu(SubMenu);
+        return;
+    }
+
+    SubMenu.Processing = true;
+    DashUI.AnimationQueue.push(() => {
+        if (!SubMenu.Processing) {
+            DashUIEnterSubMenu(SubMenu);
+            return true;
+        }
+        return false;
+    });
+
+    Tasks.Push(() => {
+        SubMenu.Init(SubMenu);
+        delete SubMenu.Processing;
+    });
 }
 function DashUIBackFromSubMenu() {
-	PlayCursorSfx();
-    UIAnimateSubMenuItemsFade_Start(false);
+    PlayCursorSfx();
     const prevLevel = DashUI.SubMenu.Level - 1;
-    if (prevLevel < 0) { return; }
+    if ((prevLevel < 0) || (!('Init' in DashUI.SubMenu.ItemCollection[prevLevel]))) {
+        UIAnimateSubMenuItemsFade_Start(false);
+        return;
+    }
 
     const SubMenu = DashUI.SubMenu.ItemCollection[prevLevel];
-    if ('Init' in SubMenu) { SubMenu.Init(SubMenu); }
+    SubMenu.Processing = true;
+    DashUI.AnimationQueue.push(() => {
+        if (!SubMenu.Processing) {
+            UIAnimateSubMenuItemsFade_Start(false);
+            return true;
+        }
+        return false;
+    });
+
+    Tasks.Push(() => {
+        SubMenu.Init(SubMenu);
+        delete SubMenu.Processing;
+    });
 }
 function UIAnimateSubMenuItemsFade_Start(isIn) {
 	DashUIResetBg();
@@ -1864,8 +1856,6 @@ function DrawUISubMenu() {
         TxtPrint(Name);
         return;
     }
-
-    const ContextItems = [];
 
 	for (let i = 0; i < items.length; i++) {
 		const diff = i - current;
@@ -2693,9 +2683,8 @@ function DrawUITextDialog(data, a) {
 
 	TxtPrint(TXT);
 
-	if ((DashUI.AnimationQueue.length < 1) && ('Fun' in data)) {
-		if (gThreads) { Threads.new(data.Fun).start(); }
-		else { data.Fun(); }
+    if ((DashUI.AnimationQueue.length < 1) && ('Fun' in data)) {
+        Tasks.Push(data.Fun);
 		delete data.Fun;
 	}
 }
@@ -2776,15 +2765,22 @@ function DrawUIDialog() {
 		case "PARENTAL_CHECK":  DrawUIDialogParentalScreen(data, contentAlpha); break;
     }
 
-    if (data.ElementIcon === "true") {
+    if ('ElementIcon' in data) {
         const Icon = {};
-        const info = GetHighlightedElement();
 
-        if ('CustomIcon' in info) { Icon.CustomIcon = info.CustomIcon; }
-        if (typeof info.Icon === "string") { info.Icon = FindDashIcon(info.Icon); }
+        if (data.ElementIcon === "true") {
+            const info = GetHighlightedElement();
+            if ('CustomIcon' in info) { Icon.CustomIcon = info.CustomIcon; }
+            if (typeof info.Icon === "string") { info.Icon = FindDashIcon(info.Icon); }
+            Icon.ID = info.Icon;
+        }
+        else {
+            const i = parseInt(data.ElementIcon);
+            if (isNaN(i)) { Icon.ID = FindDashIcon(data.ElementIcon); }
+            else { Icon.ID = i; }
+        }
 
-        Icon.ID = info.Icon;
-        Icon.Alpha = baseA;
+        Icon.Alpha = contentAlpha;
         Icon.Width = UICONST.IcoSelSize + UICONST.IcoUnselMod;
         Icon.Height = UICONST.IcoSelSize + UICONST.IcoUnselMod;
         Icon.X = UICONST.DialogInfo.DescX - (Icon.Width >> 1);

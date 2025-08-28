@@ -88,11 +88,13 @@
 			      DashElements.ItemFocus = false;
 
 			      for (let i = 0; i < DashIcons.length; i++) {
+            	MainMutex.unlock();
 				      const path = `${PATHS.Theme}${UserConfig.Theme}/icons/${DashIconsInfo[i].path}`;
 				      const icn = std.exists(path) ? new Image(path) : new Image(`${PATHS.Theme}Original/icons/${DashIconsInfo[i].path}`);
 				      icn.optimize();
 				      icn.filter = LINEAR;
 				      DashIcons[i] = icn;
+            	MainMutex.lock();
 			      }
 
 			      let thmival = os.setInterval(() => {

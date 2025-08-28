@@ -51,7 +51,7 @@
 
           Object.defineProperty(items[items.length - 1], "Icon", {
 						get() {
-              getGameID(this);
+              Tasks.Push(() => getGameID(this));
               delete this.Icon;
               this.Icon = "DISC_PS2";
               return this.Icon;
@@ -112,6 +112,50 @@
 			return gameList;
     ]]>
   </Options>
+  <Init>
+    <![CDATA[
+			function SetIcons(SubMenu) {
+        const selected = SubMenu.Default;
+				const start		 = selected - 6;
+				const end			 = SubMenu.Items.length
+    		const NeutrinoCFG = CfgMan.Get("neutrino.cfg");
+				for (let i = start; i < end; i++) {
+					MainMutex.unlock();
+					if (i < 0) { MainMutex.lock(); continue; }
+          if (i > selected + 6) { MainMutex.lock(); break; }
+          const obj = SubMenu.Items[i];
+					if (obj.Name in NeutrinoCFG) {
+						obj.GameID = NeutrinoCFG[obj.Name];
+					}
+					else {
+						const gameID = getISOgameID(`${obj.Data.path}${obj.Data.fname}`, obj.Data.size);
+						obj.GameID = gameID.success ? gameID.code : "";
+						if (obj.GameID !== "") {
+							NeutrinoCFG[obj.Name] = obj.GameID;
+						}
+					}
+
+					delete obj.Icon;
+          obj.Icon = "DISC_PS2";
+					obj.Description = obj.GameID + " \u{B7} " + obj.Data.dev.toUpperCase();
+					obj.Data.id = obj.GameID;
+        
+					if (obj.GameID) {
+						const ico		 = findICO(obj.GameID);
+						const bgFile = findBG(obj.GameID);
+						const pic2	 = findArt(obj.GameID, "pic2.png");
+
+						if (ico)	  { obj.CustomIcon = ico; }
+						if (bgFile) { obj.CustomBG = bgFile; }
+						if (pic2)		{ obj.PIC2 = pic2; }
+					}
+          MainMutex.lock();
+				}
+				CfgMan.Push("neutrino.cfg", NeutrinoCFG);
+				delete SubMenu.Init;
+			}
+    ]]>
+  </Init>
   <Default>
     <![CDATA[
 			let val = 0;
@@ -234,61 +278,66 @@
 									UIAnimationDialogFade_Start(false);
 									return;
 								}
-
-								DashUI.Dialog.Data[DashUI.Dialog.Level].Y = -60;
+                
+                UIAnimationDialogContentFade_Start(true);
+								
+                DashUI.Dialog.Data[DashUI.Dialog.Level].ElementIcon = "GAME_MCTOOLS";
 								let mcTxt = `${getLocalText(XMBLANG.COPY_VMC_MSG)} ${vmcCount}/${vmcLength}`;
-
-								const src = `${PATHS.VMC}blank.vmc`;
-								const BLOCK_SIZE = 64 * 1024;
-								const buffer = new ArrayBuffer(BLOCK_SIZE);
-
-                let fdSrc = os.open(src, os.O_RDONLY);
-								let fdDst = os.open(vmcs.shift(), os.O_WRONLY | os.O_CREAT | os.O_TRUNC);
-
-								if (fdSrc < 0 || fdDst < 0) {
-									throw new Error("Error opening VMC source or destination file");
-                }
-
 								const totalSize = 8 * 1024 * 1024;
 								let copied = 0;
-                const PbarAFade = createFade();
+                DashUI.PbarAlpha = 0;
                 UICONST.LayersFg.push(() => {
-                  if (DashUI.PbarAlpha < 1) { PbarAFade.Progress = 0.1f; DashUI.AnimationQueue.push(() => UIAnimationCommon_Work(PbarAFade, 0.2f)); }
-									DashUI.PbarAlpha = ~~(128 * PbarAFade.Progress);
-                  DrawProgressBar({X: 0, Y: 0}, ~~((copied / totalSize) * 100), mcTxt);
+									const cfad = DashUI.Dialog.ContentFade;
+									const cfadProgress = (cfad.Running) ? getFadeProgress(cfad) : (cfad.In ? 1 : 0);
+									DashUI.PbarAlpha = ~~(128 * cfadProgress);
+                  DrawProgressBar({X: 0, Y: 50}, ~~((copied / totalSize) * 100), mcTxt);
                 });
+                
+                Tasks.Push(() => {
+									const BLOCK_SIZE = 64 * 1024;
+									const buffer = new ArrayBuffer(BLOCK_SIZE);
+                  let fdSrc = false;
+                  let fdDst = false;
+                  
+                  try {
+										while (vmcs.length > 0) {
+											fdSrc = os.open(`${PATHS.VMC}blank.vmc`, os.O_RDONLY);
+											fdDst = os.open(vmcs.shift(), os.O_WRONLY | os.O_CREAT | os.O_TRUNC);
 
-								const CopIval = os.setInterval(() => {
-										const toRead = Math.min(BLOCK_SIZE, totalSize - copied);
-										if (toRead <= 0) {
-                      if (vmcs.length > 0) {
-												vmcCount++;
-												mcTxt = `${getLocalText(XMBLANG.COPY_VMC_MSG)} ${vmcCount}/${vmcLength}`;
-                        os.seek(fdSrc, 0, std.SEEK_SET);
-												os.close(fdDst);
-                        fdDst = os.open(vmcs.shift(), os.O_WRONLY | os.O_CREAT | os.O_TRUNC);
-												copied = 0;
-                      }
-                      else {
-												UICONST.LayersFg.pop();
-												os.close(fdSrc);
-												os.close(fdDst);
-												os.clearInterval(CopIval);
-												UIAnimationDialogFade_Start(false);
-												return;
-                      }
-                    }
+											if (fdSrc < 0 || fdDst < 0) {
+												throw new Error("Error opening VMC source or destination file");
+											}
+                      
+											copied = 0;
+											let toRead = Math.min(BLOCK_SIZE, totalSize - copied);
+											while(toRead > 0) {
+												MainMutex.unlock();
+												const bytesRead = os.read(fdSrc, buffer, 0, toRead);
+												let written = 0;
+												while (written < bytesRead) {
+													const bw = os.write(fdDst, buffer, written, bytesRead - written);
+													if (bw < 0) throw new Error("Error writing VMC");
+													written += bw;
+												}
 
-										const bytesRead = os.read(fdSrc, buffer, 0, toRead);
-										let written = 0;
-										while (written < bytesRead) {
-											const bw = os.write(fdDst, buffer, written, bytesRead - written);
-											if (bw < 0) throw new Error("Error writing VMC");
-											written += bw;
+												copied += bytesRead;
+                        toRead = Math.min(BLOCK_SIZE, totalSize - copied);
+												MainMutex.lock();
+											}
+											vmcCount++;
+											mcTxt = `${getLocalText(XMBLANG.COPY_VMC_MSG)} ${vmcCount}/${vmcLength}`;
+											os.close(fdSrc);
+											os.close(fdDst);
 										}
-
-										copied += bytesRead;
-                }, 0);
+                  } catch (e) {
+										xlog(e);
+                  } finally { 
+										if (fdSrc) { os.close(fdSrc); }
+                    if (fdDst) { os.close(fdDst); }
+										UICONST.LayersFg.pop();
+										UIAnimationDialogFade_Start(false);
+                  }
+                });
 							}
 						]]>
           </Task>

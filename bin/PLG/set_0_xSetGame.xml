@@ -17,6 +17,49 @@
     <String str="Pas de instellingen voor games aan." />
     <String str="Ajuste as configurações dos jogos." />
   </Description>
+  <Init>
+    <![CDATA[
+			function SetDefaults(SubMenu) {
+        const cheats = [];
+        cheats.push("480p");
+        cheats.push("SMOOTH");
+        cheats.push("NOIGR", "IGR0", "IGR1", "IGR2", "IGR3", "IGR4", "IGR5");
+        cheats.push("HDTVFIX");
+        cheats.push("WIDESCREEN", "ULTRA_WIDESCREEN", "EYEFINITY");
+        cheats.push("SCANLINES");
+		    const dev = (os.readdir("mass:/")[0].includes("POPS")) ? "mass" : "hdd";
+		    const statuses = getPOPSCheat({ cheats: cheats, device: dev});
+				for (let j = 0; j < 6; j++)	{
+          let item = SubMenu.Items[j + 3];
+          let defval = 0;
+          switch(j) {
+            case 0: 
+            case 1: defval = Number(statuses[j]); break;
+            case 2: 
+              defval = (statuses[2]) ? 7 : 0;
+              defval = (statuses[3]) ? 1 : defval;
+              defval = (statuses[4]) ? 2 : defval;
+              defval = (statuses[5]) ? 3 : defval;
+              defval = (statuses[6]) ? 4 : defval;
+              defval = (statuses[7]) ? 5 : defval;
+              defval = (statuses[8]) ? 6 : defval;
+              break;
+            case 3: defval = Number(statuses[9]); break;
+            case 4: 
+              defval = (statuses[10]) ? 1 : 0;
+              defval = (statuses[11]) ? 2 : defval;
+              defval = (statuses[12]) ? 3 : defval;
+              break;
+            case 5: defval = Number(statuses[13]); break;
+          }
+          
+          item.Value.Default = defval;
+				}
+        
+        delete SubMenu.Init;
+			}
+    ]]>
+  </Init>
   <Option Type="CONTEXT" Icon="15" Default="{Number(NeutrinoConfig.PS2LOGO)}">
     <Name>
       <String str="PS2 Logo" />
@@ -125,12 +168,6 @@
     </Name>
     <Component Name="{NO}" Icon="-1" />
     <Component Name="{YES}" Icon="-1" />
-    <Default>
-      <![CDATA[
-		    const dev = (os.readdir("mass:/")[0].includes("POPS")) ? "mass" : "hdd";
-		    return Number(getPOPSCheat({ cheats: ["480p"], device: dev})[0]);
-      ]]>
-    </Default>
     <Confirm>
       <![CDATA[
         function(index, item) {
@@ -153,12 +190,6 @@
     </Name>
     <Component Name="{NO}" Icon="-1" />
     <Component Name="{YES}" Icon="-1" />
-    <Default>
-      <![CDATA[
-		    const dev = (os.readdir("mass:/")[0].includes("POPS")) ? "mass" : "hdd";
-		    return Number(getPOPSCheat({ cheats: ["SMOOTH"], device: dev})[0]);
-      ]]>
-    </Default>
     <Confirm>
       <![CDATA[
         function(index, item) {
@@ -227,22 +258,6 @@
       </Name>
     </Component>
     <Component Name="{NO}" Icon="-1" />
-    <Default>
-      <![CDATA[
-        const cheats = ["NOIGR", "IGR0", "IGR1", "IGR2", "IGR3", "IGR4", "IGR5"];
-		const dev = (os.readdir("mass:/")[0].includes("POPS")) ? "mass" : "hdd";
-        const statuses = getPOPSCheat({ cheats: cheats, device: dev });
-
-        let defval = (statuses[0]) ? 7 : 0;
-        defval = (statuses[1]) ? 1 : defval;
-        defval = (statuses[2]) ? 2 : defval;
-        defval = (statuses[3]) ? 3 : defval;
-        defval = (statuses[4]) ? 4 : defval;
-        defval = (statuses[5]) ? 5 : defval;
-        defval = (statuses[6]) ? 6 : defval;
-        return defval;
-      ]]>
-    </Default>
     <Confirm>
       <![CDATA[
         function(index, item) {
@@ -263,12 +278,6 @@
   <Option Type="CONTEXT" Icon="15" Name="PS - HD TV Fix">
     <Component Name="{NO}" Icon="-1" />
     <Component Name="{YES}" Icon="-1" />
-    <Default>
-      <![CDATA[
-		    const dev = (os.readdir("mass:/")[0].includes("POPS")) ? "mass" : "hdd";
-		    return Number(getPOPSCheat({ cheats: ["HDTVFIX"], device: dev})[0]);
-      ]]>
-    </Default>
     <Confirm>
       <![CDATA[
         function(index, item) {
@@ -293,17 +302,6 @@
     <Component Name="16:9" Icon="-1" />
     <Component Name="Ultra" Icon="-1" />
     <Component Name="x3" Icon="-1" />
-    <Default>
-      <![CDATA[
-        const cheats = ["WIDESCREEN", "ULTRA_WIDESCREEN", "EYEFINITY"];
-		    const dev = (os.readdir("mass:/")[0].includes("POPS")) ? "mass" : "hdd";
-        const statuses = getPOPSCheat({ cheats: cheats, device: dev });
-        let defval = (statuses[0]) ? 1 : 0;
-        defval = (statuses[1]) ? 2 : defval;
-        defval = (statuses[2]) ? 3 : defval;
-        return defval;
-      ]]>
-    </Default>
     <Confirm>
       <![CDATA[
         function(index, item) {
@@ -320,12 +318,6 @@
   <Option Type="CONTEXT" Icon="15" Name="PS - Scanlines">
     <Component Name="{NO}" Icon="-1" />
     <Component Name="{YES}" Icon="-1" />
-    <Default>
-      <![CDATA[
-		    const dev = (os.readdir("mass:/")[0].includes("POPS")) ? "mass" : "hdd";
-		    return Number(getPOPSCheat({ cheats: ["SCANLINES"], device: dev})[0]);
-      ]]>
-    </Default>
     <Confirm>
       <![CDATA[
         function(index, item) {

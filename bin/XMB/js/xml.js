@@ -307,29 +307,17 @@ function xmlParseDialogTag(element) {
 								}
 							}
 
-							if (gThreads) {
-								const thread = Threads.new(() => {
-									UIAnimationDialogContentFade_Start(false);
-									while (DashUI.Dialog.ContentFade.Running) { /*Wait*/ }
-									const prevData = DashUI.Dialog.Data[DashUI.Dialog.Level];
-									DashUI.Dialog.Data.push({ ...prevData[child.attributes.To] });
-									DashUI.Dialog.Level++;
-									UIAnimationDialogContentFade_Start(true);
-								}); thread.start();
-							}
-                            else {
-                                UIAnimationDialogContentFade_Start(false);
-                                DashUI.AnimationQueue.push(() => {
-                                    if (!DashUI.Dialog.ContentFade.Running) {
-                                        const prevData = DashUI.Dialog.Data[DashUI.Dialog.Level];
-                                        DashUI.Dialog.Data.push({ ...prevData[child.attributes.To] });
-                                        DashUI.Dialog.Level++;
-                                        UIAnimationDialogContentFade_Start(true);
-                                        return true;
-                                    }
-                                    return false;
-                                });
-							}
+                            UIAnimationDialogContentFade_Start(false);
+                            DashUI.AnimationQueue.push(() => {
+                                if (!DashUI.Dialog.ContentFade.Running) {
+                                    const prevData = DashUI.Dialog.Data[DashUI.Dialog.Level];
+                                    DashUI.Dialog.Data.push({ ...prevData[child.attributes.To] });
+                                    DashUI.Dialog.Level++;
+                                    UIAnimationDialogContentFade_Start(true);
+                                    return true;
+                                }
+                                return false;
+                            });
 						}
 						break;
 				}

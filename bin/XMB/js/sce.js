@@ -282,5 +282,5 @@ function GetOsdConfig(param) {
 //////////////////////////////////////////////////////////////////////////
 
 CollectRomVerInfo();
-//CollectOsdParams();
+CollectOsdParams();
 console.log("INIT LIB: SCE COMPLETE");
