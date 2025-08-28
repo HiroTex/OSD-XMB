@@ -30,6 +30,7 @@ jobs:
 
     - name: Prepare folder structure
       run: |
+        mkdir -p release/OSDXMB
         cp -r bin/APPS release/OSDXMB/
         cp -r bin/ART release/OSDXMB/
         cp -r bin/CFG release/OSDXMB/
