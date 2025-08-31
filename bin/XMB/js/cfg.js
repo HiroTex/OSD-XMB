@@ -10,7 +10,7 @@
 
 const UserConfig = {
     HDD: System.devices().some(dev => dev.name === "hdd"),
-    Disctray: true,
+    Disctray: false,
 	Language: GetOsdConfig("Language") - 1,
     ConfirmBtn: 0,
     Warning: 1,
