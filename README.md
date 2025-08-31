@@ -127,7 +127,7 @@ ata_bd = false
 <details>
 <summary>The UI keeps moving to the left</summary>
 
-- If you are using an 8bitdo adapter, disconnect it and plug a PS2 Joystick.
+- If you are using an 8BitDo adapter, switch to digital mode by using the button combo L1 + R1 + Select + DPad Up. Digital mode is indicated by the LED on the adapter turning white.
 </details>
 
 ## Credits and Special Thanks
