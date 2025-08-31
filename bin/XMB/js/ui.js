@@ -393,7 +393,8 @@ function DashElementsInit() {
     }
 }
 function DashUIConstantsInit() {
-
+    UICONST.LayersBg = [];
+    UICONST.LayersFg = [];
     UICONST.StextLine = 17;
     UICONST.IcoSelSize = 72;
     UICONST.IcoUnselSize = 48;
@@ -472,8 +473,6 @@ function DashUICustomizationInit() {
     UICONST.Category.IconUnselectedColor = { R: 128, G: 128, B: 128 };
     UICONST.Context.Tint = false;
     UICONST.DialogInfo.LineCol = Color.new(196, 196, 196, 128);
-    UICONST.LayersBg = [];
-    UICONST.LayersFg = [];
 }
 function DashUInit() {
     // Constant Objects
@@ -633,7 +632,6 @@ function DashPluginsInit() {
 }
 function DashPluginsProcess() {
     while (DashPluginData.length > 0) {
-        MainMutex.unlock();
         const plg = DashPluginData.shift();
         let Plugin = false;
         xlog(`DashPluginsProcess(): Processing Plugin: ${plg.Name}.`);
@@ -647,18 +645,17 @@ function DashPluginsProcess() {
             xlog(`DashPluginsProcess(): Plugin ${plg.Name} Succesfully processed.`);
             AddNewPlugin(Plugin);
         }
-        MainMutex.lock();
     }
 
     DashUI.LoadedPlugins = true;
 }
 function DashBackgroundLoad() {
     DashPluginsInit();
-    Tasks.Push(DashPluginsProcess);
+    DashPluginsProcess();
 }
 
 //////////////////////////////////////////////////////////////////////////
-///*				   			 Boot Logo							  *///
+///*				   			Boot Logo							  *///
 //////////////////////////////////////////////////////////////////////////
 
 function UIAnimateBootLogo_Work(Alpha) {
@@ -670,7 +667,7 @@ function UIAnimateBootLogo_Work(Alpha) {
 }
 
 //////////////////////////////////////////////////////////////////////////
-///*				   			   Clock							  *///
+///*				   			  Clock							      *///
 //////////////////////////////////////////////////////////////////////////
 
 function UIClockText(a) {
@@ -715,14 +712,25 @@ function DrawUIClock() {
     box.color = col;
     box.draw(x + 29, y);
 
-    ico.color = col;
-    ico.draw(UICONST.ClockIcoX, y + 7);
+    if (Tasks.isRunning) {
+        DrawDashLoadIcon({
+            Width: 48,
+            Height: 48,
+            X: UICONST.ClockIcoX - 16,
+            Y: y - 8,
+            Alpha: a
+        });
+    }
+    else {
+        ico.color = col;
+        ico.draw(UICONST.ClockIcoX, y + 7);
+    }
 
 	UIClockText(a);
 }
 
 //////////////////////////////////////////////////////////////////////////
-///*				   			     BG 							  *///
+///*				   			   BG 							      *///
 //////////////////////////////////////////////////////////////////////////
 
 function DashUIResetBg() {
@@ -756,7 +764,37 @@ function DrawUIObjectBg() {
 }
 
 //////////////////////////////////////////////////////////////////////////
-///*				   			   Generic							  *///
+///*				   			 Layers							      *///
+//////////////////////////////////////////////////////////////////////////
+function DrawLayersBg() {
+    for (let i = 0; i < UICONST.LayersBg.length; i++) {
+        if (typeof UICONST.LayersBg[i] === "function") {
+            UICONST.LayersBg[i]();
+        }
+    }
+}
+function DrawLayersFg() {
+    for (let i = 0; i < UICONST.LayersFg.length; i++) {
+        if (typeof UICONST.LayersFg[i] === "function") {
+            UICONST.LayersFg[i]();
+        }
+    }
+}
+function PushThemeBgLayer(fn) {
+    fn.__Id = "THM"; // tag the function
+    UICONST.LayersBg.push(fn);
+}
+function PushThemeFgLayer(fn) {
+    fn.__Id = "THM"; // tag the function
+    UICONST.LayersFg.push(fn);
+}
+function CleanThemeLayers() {
+    UICONST.LayersBg = UICONST.LayersBg.filter(fn => fn.__Id !== "THM");
+    UICONST.LayersFg = UICONST.LayersFg.filter(fn => fn.__Id !== "THM");
+}
+
+//////////////////////////////////////////////////////////////////////////
+///*				   			 Generic							  *///
 //////////////////////////////////////////////////////////////////////////
 
 function DrawDashLoadIcon(Properties) {
@@ -777,15 +815,15 @@ function DrawDashIcon(Properties) {
 
     if (('CustomIcon' in Properties) && (typeof Properties.CustomIcon === "string")) {
         Properties.CustomIcon = resolveFilePath(Properties.CustomIcon);
-		const customImg = ImageCache.Get(Properties.CustomIcon);
-		Ready = customImg && customImg.ready();
-		if (Ready) { Image = customImg; }
-	}
-	else {
-		if ((Properties.ID < 0)) { return; }
-		Ready = DashIcons[Properties.ID] && DashIcons[Properties.ID].ready();
-		if (Ready) { Image = DashIcons[Properties.ID]; }
-	}
+        const customImg = ImageCache.Get(Properties.CustomIcon);
+        Ready = customImg && customImg.ready();
+        if (Ready) { Image = customImg; }
+    }
+    else if (Properties.ID >= 0) {
+        Ready = DashIcons[Properties.ID] && DashIcons[Properties.ID].ready();
+        if (Ready) { Image = DashIcons[Properties.ID]; }
+    }
+    else if (Properties.ID !== -2) { return; } // Processing to see if Custom Icon is available
 
 	if (Ready) {
         if ('Tint' in Properties) { Image.color = Color.new(Properties.Tint.R, Properties.Tint.G, Properties.Tint.B, Properties.Alpha); }
@@ -796,20 +834,6 @@ function DrawDashIcon(Properties) {
 		Image.draw(Properties.X, Properties.Y);
 	}
 	else { DrawDashLoadIcon(Properties); }
-}
-function DrawLayersBg() {
-    for (let i = 0; i < UICONST.LayersBg.length; i++) {
-        if (typeof UICONST.LayersBg[i] === "function") {
-            UICONST.LayersBg[i]();
-        }
-    }
-}
-function DrawLayersFg() {
-    for (let i = 0; i < UICONST.LayersFg.length; i++) {
-        if (typeof UICONST.LayersFg[i] === "function") {
-            UICONST.LayersFg[i]();
-        }
-    }
 }
 function DrawProgressBar(Pos, progress, label = "") {
     const bar = DashElements.Pbar;
@@ -1480,11 +1504,10 @@ function DashUISetNewSubMenu(SubMenu) {
 
     SubMenu.Processing = true;
     DashUI.AnimationQueue.push(() => {
-        if (!SubMenu.Processing) {
-            DashUIEnterSubMenu(SubMenu);
-            return true;
-        }
-        return false;
+        if (!Tasks.isRunning && SubMenu.Processing) { OpenDialogErrorMsg("An Error has occurred"); return true; }
+        else if (SubMenu.Processing) { return false; }
+        DashUIEnterSubMenu(SubMenu);
+        return true;
     });
 
     Tasks.Push(() => {

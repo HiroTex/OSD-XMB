@@ -1,8 +1,6 @@
 <App Name="Playstation" Icon="FOLDER" Category="5" Type="SUBMENU" Description="$`${this.Value.Items.length} ${XMBLANG.TITLES[UserConfig.Language]}`">
   <Options HideEmpty="true">
     <![CDATA[
-    	const PopsCFG = CfgMan.Get("pops.cfg");
-
 			function generateVMC(game) {
 				const vmcgrps = CfgMan.Get("PS1VMCGRP.cfg");
 				if (game.GameID === "") { return; }
@@ -20,37 +18,11 @@
 			}
 
 			function SaveLastPlayed() {
+    		const PopsCFG = CfgMan.Get("pops.cfg");
 				PopsCFG["last"] = DashUI.SelectedItem.Name;
 				CfgMan.Set("pops.cfg", PopsCFG);
 				generateVMC(DashUI.SelectedItem);
 			}
-
-      function getGameID(game) {
-        if (game.Name in PopsCFG) {
-					game.GameID = PopsCFG[game.Name];
-				}
-        else {
-					let path = game.Data.path;
-					if (game.Data.dev === "hdd") { path = mountHDDPartition("__.POPS") + ":/"; }
-					const gameID = getVCDGameID(`${path}${game.Data.fname}`, game.Data.size);
-					game.GameID = gameID.success ? gameID.code : "";
-          if (game.GameID !== "") {
-          	PopsCFG[game.Name] = game.GameID;
-            CfgMan.Push("pops.cfg", PopsCFG);
-          }
-        }
-
-				game.Description = game.GameID + " \u{B7} " + game.Data.fdev;
-				if (game.GameID) { 
-					const ico		 = findICO(game.GameID);
-					const bgFile = findBG(game.GameID);
-					const pic2	 = findArt(game.GameID, "pic2.png");
-          
-					if (ico)	  { game.CustomIcon = ico; }
-					if (bgFile) { game.CustomBG = bgFile; }
-					if (pic2)		{ game.PIC2 = pic2; }
-        }
-      }
 
 			function ScanGames(path, dev) {
 				const items = [];
@@ -59,16 +31,16 @@
           if (gameDir[j].dir || getFileExtension(gameDir[j].name).toLowerCase() !== "vcd") { continue; }
 					items.push({
 						Name: getGameName(gameDir[j].name),
+            Description: "",
 						Type: "ELF",
 						Data: { path: path, fname: gameDir[j].name, size: gameDir[j].size, fsize: formatFileSize(gameDir[j].size), dev: dev, fdev: (dev === "mass") ? "USB" : dev.toUpperCase() }
 					});
 
 					Object.defineProperty(items[items.length - 1], "Icon", {
 						get() {
-              delete this.Icon;
-              this.Icon = "DISC_PS1";
-              Tasks.Push(() => getGameID(this));
-              return this.Icon;
+						  delete this.Icon;
+              this.Icon = -2;
+              Tasks.Push(() => getPS1GameID(this));
             },
 						enumerable: true,
             configurable: true
@@ -118,46 +90,21 @@
     <![CDATA[
 			function SetIcons(SubMenu) {
         const selected = SubMenu.Default;
-				const start		 = selected - 6;
+				const start		 = selected - 5;
 				const end			 = SubMenu.Items.length
-    		const PopsCFG = CfgMan.Get("pops.cfg");
+        
 				for (let i = start; i < end; i++) {
-          MainMutex.unlock();
+					MainMutex.unlock();
+          
 					if (i < 0) { MainMutex.lock(); continue; }
-          if (i > selected + 6) { MainMutex.lock(); break; }
-          
+          if (i > selected + 5) { MainMutex.lock(); break; }
 					const game = SubMenu.Items[i];
-					if (game.Name in PopsCFG) {
-						game.GameID = PopsCFG[game.Name];
-					}
-					else {
-						let path = game.Data.path;
-						if (game.Data.dev === "hdd") { path = mountHDDPartition("__.POPS") + ":/"; }
-						const gameID = getVCDGameID(`${path}${game.Data.fname}`, game.Data.size);
-						game.GameID = gameID.success ? gameID.code : "";
-						if (game.GameID !== "") {
-          		PopsCFG[game.Name] = game.GameID;
-						}
-					}
-
-          delete game.Icon;
-          game.Icon = "DISC_PS1";
-					game.Description = game.GameID + " \u{B7} " + game.Data.fdev;
-            
-					if (game.GameID) { 
-						const ico		 = findICO(game.GameID);
-						const bgFile = findBG(game.GameID);
-						const pic2	 = findArt(game.GameID, "pic2.png");
+					delete game.Icon;
+          getPS1GameID(game);
           
-						if (ico)	  { game.CustomIcon = ico; }
-						if (bgFile) { game.CustomBG = bgFile; }
-						if (pic2)		{ game.PIC2 = pic2; }
-					}
-          
-          MainMutex.lock();
+          MainMutex.lock(); 
 				}
         
-				CfgMan.Push("pops.cfg", PopsCFG);
 				delete SubMenu.Init;
 			}
     ]]>

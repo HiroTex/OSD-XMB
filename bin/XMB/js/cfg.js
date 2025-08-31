@@ -141,14 +141,13 @@ const CfgMan = {
     Get: function(path) {
         // Check if an item with the same path already exists in the queue list
         const existingItem = this.queue.find(item => item.path === path);
-
         if (existingItem) { return existingItem.config; }
-
         const fullPath = `${this.configPath}${path}`;
-
         const hasfile = std.exists(fullPath);
         if (!hasfile) { return {}; } // Return Empty Table if not found
-		return ReadCFG(fullPath);
+        const newItem = ReadCFG(fullPath);
+        this.queue.push({ path: path, config: newItem });
+        return newItem;
     },
 
     Set: function(path, config) {

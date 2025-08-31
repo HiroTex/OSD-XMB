@@ -163,6 +163,15 @@
     "Verwijderen",
     "Eliminar"
   ],
+  "UNKNOWN": [
+    "Unknown",
+    "Inconnu",
+    "Desconocido",
+    "Unbekannt",
+    "Sconosciuto",
+    "Onbekend",
+    "Desconhecido"
+  ],
   "MSG_SUBMENU_EMPTY": [
     "There are no elements.",
     "Il n'y a pas d'éléments.",

@@ -1,8 +1,6 @@
 <App Name="Playstation 2" Icon="FOLDER" Category="5" Type="SUBMENU" Description="$`${this.Value.Items.length} ${XMBLANG.TITLES[UserConfig.Language]}`">
   <Options HideEmpty="true">
-    <![CDATA[
-			const NeutrinoCFG = CfgMan.Get("neutrino.cfg");
-
+    <![CDATA[      
 			function SaveLastPlayed() {
         const ncfg = CfgMan.Get("neutrino.cfg");
 				ncfg["last"] = DashUI.SelectedItem.Name;
@@ -10,57 +8,31 @@
 				setHistoryEntry(DashUI.SelectedItem.GameID.toUpperCase());
 			}
 
-      function getGameID(obj) {
-        if (obj.Name in NeutrinoCFG) {
-					obj.GameID = NeutrinoCFG[obj.Name];
-        }
-        else {
-					const gameID = getISOgameID(`${obj.Data.path}${obj.Data.fname}`, obj.Data.size);
-					obj.GameID = gameID.success ? gameID.code : "";
-          if (obj.GameID !== "") {
-						NeutrinoCFG[obj.Name] = obj.GameID;
-						CfgMan.Push("neutrino.cfg", NeutrinoCFG);
-          }
-        }
-
-				obj.Description = obj.GameID + " \u{B7} " + obj.Data.dev.toUpperCase();
-				obj.Data.id = obj.GameID;
-        
-        if (obj.GameID) {
-					const ico		 = findICO(obj.GameID);
-					const bgFile = findBG(obj.GameID);
-					const pic2	 = findArt(obj.GameID, "pic2.png");
-
-					if (ico)	  { obj.CustomIcon = ico; }
-					if (bgFile) { obj.CustomBG = bgFile; }
-					if (pic2)		{ obj.PIC2 = pic2; }
-        }
-      }
-
 			function ScanGames(path, device, media) {
 				const items = [];
 				let gameDir = System.listDir(path);
 				for (let j = 0; j < gameDir.length; j++) {
 					if (gameDir[j].dir || (getFileExtension(gameDir[j].name).toLowerCase() !== "iso")) { continue; }
-
 					items.push({
 						Name: getGameName(gameDir[j].name),
+            Description: "",
 						Type: "ELF",
+            GameID: "",
 						Data: { path: path, fname: gameDir[j].name, size: gameDir[j].size, fsize: formatFileSize(gameDir[j].size), dev: device, mt: media }
 					});
-
-          Object.defineProperty(items[items.length - 1], "Icon", {
-						get() {
-              Tasks.Push(() => getGameID(this));
-              delete this.Icon;
-              this.Icon = "DISC_PS2";
-              return this.Icon;
-            },
-						enumerable: true,
-            configurable: true
+					
+          const thisObj = items[items.length - 1];
+          Object.defineProperty(thisObj, "Icon", {
+							get() {
+								delete this.Icon;
+                this.Icon = -2;
+                Tasks.Push(() => getPS2GameID(this));
+							},
+							enumerable: true,
+							configurable: true
 					});
 
-					Object.defineProperty(items[items.length - 1], "Value", {
+					Object.defineProperty(thisObj, "Value", {
 						get() {	return { Path: `${PATHS.Neutrino}neutrino.elf`, Args: getISOgameArgs(this.Data), Code: SaveLastPlayed }; },
 						enumerable: true
 					});
@@ -90,7 +62,6 @@
 							case "sd" : dev = "ilink"; 		break;
 							case "udp": dev = "udpbd"; 		break;
 						}
-						console.log(`BDM device ${bdmInfo.index} type: ${dev}`);
 					}
 					else if (b.root === "hdd") { gameList = gameList.concat(ScanGames(path, dev, "")); break; }
 
@@ -114,44 +85,23 @@
   </Options>
   <Init>
     <![CDATA[
-			function SetIcons(SubMenu) {
+			function SetPS2Icons(SubMenu) {
         const selected = SubMenu.Default;
-				const start		 = selected - 6;
+				const start		 = selected - 5;
 				const end			 = SubMenu.Items.length
-    		const NeutrinoCFG = CfgMan.Get("neutrino.cfg");
+        
 				for (let i = start; i < end; i++) {
 					MainMutex.unlock();
+          
 					if (i < 0) { MainMutex.lock(); continue; }
-          if (i > selected + 6) { MainMutex.lock(); break; }
-          const obj = SubMenu.Items[i];
-					if (obj.Name in NeutrinoCFG) {
-						obj.GameID = NeutrinoCFG[obj.Name];
-					}
-					else {
-						const gameID = getISOgameID(`${obj.Data.path}${obj.Data.fname}`, obj.Data.size);
-						obj.GameID = gameID.success ? gameID.code : "";
-						if (obj.GameID !== "") {
-							NeutrinoCFG[obj.Name] = obj.GameID;
-						}
-					}
-
-					delete obj.Icon;
-          obj.Icon = "DISC_PS2";
-					obj.Description = obj.GameID + " \u{B7} " + obj.Data.dev.toUpperCase();
-					obj.Data.id = obj.GameID;
-        
-					if (obj.GameID) {
-						const ico		 = findICO(obj.GameID);
-						const bgFile = findBG(obj.GameID);
-						const pic2	 = findArt(obj.GameID, "pic2.png");
-
-						if (ico)	  { obj.CustomIcon = ico; }
-						if (bgFile) { obj.CustomBG = bgFile; }
-						if (pic2)		{ obj.PIC2 = pic2; }
-					}
-          MainMutex.lock();
+          if (i > selected + 5) { MainMutex.lock(); break; }
+					const game = SubMenu.Items[i];
+					delete game.Icon;
+          getPS2GameID(game);
+          
+          MainMutex.lock(); 
 				}
-				CfgMan.Push("neutrino.cfg", NeutrinoCFG);
+        
 				delete SubMenu.Init;
 			}
     ]]>

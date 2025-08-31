@@ -119,7 +119,7 @@ function getDevicesAsItems(params = {}) {
 	const fileoptions = ('fileoptions' in params) ? params.fileoptions : false;
 
     for (let i = 0; i < gDevices.length; i++) {
-        Items.push(gDevices[i]);
+        Items.push({ ...gDevices[i] });
         Object.defineProperty(Items[Items.length - 1], "Value", {
             get() { return exploreDir({ dir: this.Root, fileFilters: fileFilters, fileoptions: fileoptions }); },
             enumerable: true,
@@ -420,63 +420,81 @@ function getGameCodeFromOldFormatName(path) {
 }
 function getISOgameID(isoPath, isoSize) {
 
-	const RET = { success: false, code: "ERR" };
-	const sectorSize = 2048; // Standard ISO sector size
-	// Check if the Game ID is in the file name
-	const nameID = getGameCodeFromOldFormatName(isoPath);
-	if (nameID !== "") { RET.success = true; RET.code = nameID; return RET; }
+    // Check if the Game ID is in the file name
+	let ID = getGameCodeFromOldFormatName(isoPath);
+    if (ID) return ID;
 
-	// Open the file in read mode
-	let file = false;
+    const sectorSize = 2048; // Standard ISO sector size
+    const PVD_OFFSET = 0x8000;
+    const file = std.open(isoPath, "r");
+    if (!file) { console.log(`Could not open file: ${isoPath}`); return ID; }
 
-	try {
+    // Seek to the Primary Volume Descriptor (sector 16 in ISO 9660)
+    file.seek(PVD_OFFSET, std.SEEK_SET);
+    const pvd = file.readAsString(sectorSize);
 
-		file = std.open(isoPath, "r");
-		if (!file) { throw new Error(`Could not open file: ${isoPath}`); }
+    // Check for "CD001" magic string in PVD
+    if (!pvd || pvd.substring(1, 6) !== "CD001") {
+        console.log(`${getGameName(isoPath)} Primary Volume Descriptor (CD001) not found.`);
+        file.close();
+        return ID;
+    }
 
-		// Seek to the Primary Volume Descriptor (sector 16 in ISO 9660)
-		file.seek(16 * sectorSize, std.SEEK_SET);
-		const pvd = file.readAsString(sectorSize);
+    // Extract the root directory offset and size
+    file.seek(PVD_OFFSET + 158, std.SEEK_SET);
+    const rootDirOffset = sectorSize * (file.getByte() | (file.getByte() << 8) | (file.getByte() << 16) | (file.getByte() << 24));
 
-		// Check for "CD001" magic string in PVD
-		if (!pvd || pvd.substring(1, 6) !== "CD001") { throw new Error(`${getGameName(isoPath)} Primary Volume Descriptor (CD001) not found.`); }
+    file.seek(4, std.SEEK_CUR);
+    const rootDirSize = (file.getByte() | (file.getByte() << 8) | (file.getByte() << 16) | (file.getByte() << 24));
 
-		// Extract the root directory offset and size
-		file.seek((16 * sectorSize) + 158, std.SEEK_SET);
-		const rootDirOffset = sectorSize * (file.getByte() | (file.getByte() << 8) | (file.getByte() << 16) | (file.getByte() << 24));
+    // Read the root directory
+    if ((rootDirOffset > isoSize) || (rootDirSize > sectorSize)) {
+        console.log(`${getGameName(isoPath)} ISO Read Error: Invalid Root Data.`);
+        file.close();
+        return ID;
+    }
 
-		file.seek(4, std.SEEK_CUR);
-		const rootDirSize = (file.getByte() | (file.getByte() << 8) | (file.getByte() << 16) | (file.getByte() << 24));
+    file.seek(rootDirOffset, std.SEEK_SET);
+    const rootDir = file.readAsString(rootDirSize);
+    file.close();
 
-		// Read the root directory
-		if ((rootDirOffset > isoSize) || (rootDirSize > sectorSize)) { throw new Error(`${getGameName(isoPath)} ISO Read Error: Invalid Root Data.`); }
+    if ((!rootDir) || (rootDir.length === 0)) {
+        console.log(`${getGameName(isoPath)} Root directory not found or is empty`);
+        return ID;
+    }
 
-		file.seek(rootDirOffset, std.SEEK_SET);
-		const rootDir = file.readAsString(rootDirSize);
+    // Match file name pattern
+    const match = rootDir.match(/[A-Z]{4}[-_][0-9]{3}\.[0-9]{2}/);
+    if (match) { ID = match[0]; }
 
-		if ((!rootDir) || (rootDir.length === 0)) { throw new Error(`${getGameName(isoPath)} Root directory not found or is empty`); }
+    return ID;
+}
+function getPS2GameID(game) {
+    const NeutrinoCFG = CfgMan.Get("neutrino.cfg");
+    if (game.Name in NeutrinoCFG) { game.GameID = NeutrinoCFG[game.Name]; }
+    else {
+        const gamePath = `${game.Data.path}${game.Data.fname}`;
+        game.GameID = getISOgameID(gamePath, game.Data.size);
+        if (game.GameID) {
+            NeutrinoCFG[game.Name] = game.GameID;
+            CfgMan.Push("neutrino.cfg", NeutrinoCFG);
+        }
+    }
 
-		// Match file name pattern
-		const match = rootDir.match(/[A-Z]{4}[-_][0-9]{3}\.[0-9]{2}/);
-		if (match) {
-			RET.success = true;
-			RET.code = match[0];
-		}
-	} catch(e) {
-        xlog(e);
-	} finally {
-        if (file) file.close();
-	}
+    game.Data.id = game.GameID;
+    game.Description = " \u{B7} " + game.Data.dev.toUpperCase();
+    game.Description = (game.GameID) ? game.GameID + game.Description : getLocalText(XMBLANG.UNKNOWN) + game.Description;
+    getGameArt(game);
 
-    return RET;
+    game.Icon = "DISC_PS2";
 }
 function getISOgameArgs(info) {
     let args = [];
     args.push(`-cwd=${PATHS.Neutrino}`);
     args.push(`-bsd=${info.dev}`);
 
-    switch (info.dev) {
-        case "ata":
+    switch (info.path.substring(0, 3)) {
+        case "hdd":
             args.push(`-bsdfs=hdl`);
             args.push(`-dvd=hdl:${info.fname.slice(0, -4)}`); // Remove .iso extension
             break;
@@ -510,10 +528,10 @@ function getISOgameArgs(info) {
 //////////////////////////////////////////////////////////////////////////
 
 function getVCDGameID(path, size) {
-    const RET = { success: false, code: "ERR" };
 
-    // Open the file in read mode
+    let id = false;
     let file = false;
+
 	try {
 		if (size <= 0x10d900) { throw new Error(`File is too small: ${path}`); }
 
@@ -528,7 +546,7 @@ function getVCDGameID(path, size) {
         // Match the pattern
         const match = buffer.match(/[A-Z]{4}[-_][0-9]{3}\.[0-9]{2}/);
 
-        if (match) { RET.success = true; RET.code = match[0]; }
+        if (match) { id = match[0]; }
 
 	} catch (e) {
 		xlog(e);
@@ -536,7 +554,26 @@ function getVCDGameID(path, size) {
 		if (file) { file.close(); }
 	}
 
-	return RET;
+    return id;
+}
+function getPS1GameID(game) {
+    const PopsCFG = CfgMan.Get("pops.cfg");
+    if (game.Name in PopsCFG) { game.GameID = PopsCFG[game.Name]; }
+    else {
+        let path = game.Data.path;
+        if (game.Data.dev === "hdd") { path = mountHDDPartition("__.POPS") + ":/"; }
+        path = `${path}${game.Data.fname}`;
+        game.GameID = getVCDGameID(path, game.Data.size);
+        if (game.GameID) {
+            PopsCFG[game.Name] = game.GameID;
+            CfgMan.Push("pops.cfg", PopsCFG);
+        }
+    }
+
+    game.Description = " \u{B7} " + game.Data.fdev;
+    game.Description = (game.GameID) ? game.GameID + game.Description : getLocalText(XMBLANG.UNKNOWN) + game.Description;
+    getGameArt(game);
+    game.Icon = "DISC_PS1";
 }
 
 /*	Info:
@@ -694,7 +731,7 @@ function getPOPSElfPath(data) {
 ///*				   			    ART								  *///
 //////////////////////////////////////////////////////////////////////////
 
-/* Get Available Art Paths */
+/*  Get Available Art Paths  */
 function getArtPaths() {
     const IDs = System.listDir(PATHS.Art);
     if (IDs.length === 0) { return []; }
@@ -726,6 +763,19 @@ function findICO(baseFilename) { return findArt(baseFilename, "icon0.png"); }
 /*	Searchs for a matching BG file in the ART folder for a specified string	*/
 /*	Returns empty string if not found.											*/
 function findBG(baseFilename) { return findArt(baseFilename, "pic1.png"); }
+
+function getGameArt(game) {
+
+    if (!game.GameID || game.GameID === getLocalText(XMBLANG.UNKNOWN)) { return; }
+    const id     = game.GameID;
+    const ico    = findICO(id);
+    const bgFile = findBG(id);
+    const pic2   = findArt(id, "pic2.png");
+
+    if (ico)    { game.CustomIcon = ico;  }
+    if (bgFile) { game.CustomBG = bgFile; }
+    if (pic2)   { game.PIC2 = pic2;       }
+}
 
 //////////////////////////////////////////////////////////////////////////
 ///*				   		   Plugin System						  *///

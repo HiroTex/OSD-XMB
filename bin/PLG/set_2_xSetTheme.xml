@@ -81,7 +81,9 @@
 		      CfgMan.Push("main.cfg", config);
 
 		      const _bg = function() {
+				    DashUICustomizationInit();
 			      DisableCustomBgImg();
+            CleanThemeLayers();
 			      UserConfig.BgColor = 0;
 			      BgElements.BgColor.Next = UserConfig.BgColor;
 			      BgElements.BgColor.Progress = 0.0f;
@@ -99,7 +101,6 @@
 
 			      let thmival = os.setInterval(() => {
 				      FontInit();
-				      DashUICustomizationInit();
               const thm = `${PATHS.Theme}${UserConfig.Theme}/thm.js`;
 				      if (std.exists(thm)) { std.loadScript(thm); }
 				      os.clearInterval(thmival);

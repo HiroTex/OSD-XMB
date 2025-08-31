@@ -230,19 +230,18 @@ function DisableCustomBgImg() {
 	BgElements.BgImage.Alpha = 128;
 	BgElements.BgImage.Progress = 1.0f;
 
-	// Animation to make it disappear.
-	let ival = os.setInterval(() => {
-		BgElements.BgImage.Alpha = ~~(128 * BgElements.BgImage.Progress);
-		BgElements.BgImage.Progress -= 0.1f;
+    // Animation to make it disappear.
+    DashUI.AnimationQueue.push(() => {
+        const obj = BgElements.BgImage;
+        obj.Alpha = ~~(128 * obj.Progress);
+        obj.Progress -= 0.1f;
+        if (obj.Progress > 0.0) { return false; }
 
-		if (BgElements.BgImage.Progress <= 0.0)
-		{
-			BgElements.BgImage.Progress = 0.0f;
-			BgElements.BgImage.Alpha = 0;
-			UserConfig.DisplayBg = false;
-			os.clearInterval(ival);
-		}
-	}, 0);
+        obj.Progress = 0.0f;
+        obj.Alpha = 0;
+        UserConfig.DisplayBg = false;
+        return true;
+    })
 }
 
 //////////////////////////////////////////////////////////////////////////

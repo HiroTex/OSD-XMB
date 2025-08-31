@@ -18,15 +18,16 @@
 
 			// Loop through dir and collect directories into the desired structure
 			for (let i = 0; i < dir.length; i++) {
+				MainMutex.unlock();
 				const item = dir[i];
-				if ((item.dir) && (item.name !== ".") && (item.name !== "..")) {
-					directories.push({
-						Name: parseIconSysTitle(`mc${slot.toString()}:/`, item.name),
-						Description: "",
-						Icon: 14,
-						FullPath: `${root}${item.name}/`
-					});
-				}
+				if ((!item.dir) || (item.name === ".") || (item.name === "..")) { MainMutex.lock(); continue; }
+				directories.push({
+					Name: parseIconSysTitle(`mc${slot.toString()}:/`, item.name),
+					Description: "",
+					Icon: 14,
+					FullPath: `${root}${item.name}/`
+				});
+				MainMutex.lock();
 			}
 
 			directories.sort((a, b) => {
