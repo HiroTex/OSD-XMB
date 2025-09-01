@@ -965,80 +965,71 @@ function getMcHistoryFilePath() {
 	return path;
 }
 function getMcHistory() {
-	let file = false;
-	let data = [];
+    let data = [];
+    const historyPath = getMcHistoryFilePath();
+    if (historyPath === "") {
+        console.log(`ERROR: Could not find history file`);
+        return data;
+    }
 
-	try {
-		const historyPath = getMcHistoryFilePath();
-		if (historyPath === "") { throw new Error(`ERROR: Could not find history file`); }
+    const file = os.open(`mc0:/${getSystemDataPath()}/history`, os.O_RDONLY);
+    if (file < 0) {
+        console.log(`ERROR: Could not open history file`);
+        return data;
+    }
 
-		file = os.open(`mc0:/${getSystemDataPath()}/history`, os.O_RDONLY);
-		if (file < 0) { throw new Error(`ERROR: Could not open history file`); }
+    const entrySize = 0x16;
+    const buffer = new Uint8Array(entrySize);
 
-		const entrySize = 0x16;
-		const buffer = new Uint8Array(entrySize);
+    while (os.read(file, buffer.buffer, 0, entrySize) === entrySize) {
+        const name = String.fromCharCode(...buffer.subarray(0, 0x10)).replace(/\x00+$/, '');
+        const playCount = buffer[0x10];
+        const bitmask = buffer[0x11];
+        const bitshift = buffer[0x12];
+        const dosDate = (buffer[0x14] | (buffer[0x15] << 8)); // Little-endian
 
-		while (os.read(file, buffer.buffer, 0, entrySize) === entrySize)
-		{
-			const name = String.fromCharCode(...buffer.subarray(0, 0x10)).replace(/\x00+$/, '');
-			const playCount = buffer[0x10];
-			const bitmask = buffer[0x11];
-			const bitshift = buffer[0x12];
-			const dosDate = (buffer[0x14] | (buffer[0x15] << 8)); // Little-endian
+        data.push({ name, playCount, bitmask, bitshift, dosDate });
+    }
 
-			data.push({ name, playCount, bitmask, bitshift, dosDate });
-		}
-
-	} catch (e) {
-		xlog(e);
-	} finally {
-		if (file) { os.close(file); }
-	}
+    os.close(file);
 
 	return data;
 }
 function setMcHistory(entries) {
-	let result = false;
-	let file = false;
-	try {
-		const path = getSystemDataPath();
-		let historyPath = getMcHistoryFilePath();
-		let flags = os.O_RDWR;
-		if (historyPath === "") { // file must be created
-			// Make memory card path on slot 1
-			os.mkdir(`mc0:/${path}`);
-			historyPath = `mc0:/${path}/history`;
-			flags = flags | os.O_CREAT;
-		}
+    const path = getSystemDataPath();
+    let historyPath = getMcHistoryFilePath();
+    let flags = os.O_RDWR;
+    if (historyPath === "") { // file must be created
+        // Make memory card path on slot 1
+        os.mkdir(`mc0:/${path}`);
+        historyPath = `mc0:/${path}/history`;
+        flags = flags | os.O_CREAT;
+    }
+    const file = os.open(historyPath, flags);
+    if (file < 0) {
+        console.log(`ERROR: Could not open history file on ${historyPath}`);
+        return false;
+    }
 
-		file = os.open(historyPath, flags);
-		if (file < 0) { throw new Error(`ERROR: Could not create history file on ${historyPath}`); }
+    const entrySize = 0x16;
+    const buffer = new Uint8Array(entrySize);
+    for (const obj of entries) {
+        buffer.fill(0);
+        for (let i = 0; i < obj.name.length; i++) {
+            buffer[i] = obj.name.charCodeAt(i);
+        }
+        buffer[0x10] = obj.playCount;
+        buffer[0x11] = obj.bitmask;
+        buffer[0x12] = obj.bitshift;
+        buffer[0x13] = 0x00; // Padding zero
+        buffer[0x14] = obj.dosDate & 0xFF;
+        buffer[0x15] = (obj.dosDate >> 8) & 0xFF;
 
-		const entrySize = 0x16;
-		const buffer = new Uint8Array(entrySize);
+        os.write(file, buffer.buffer, 0, entrySize);
+    }
 
-		for (const obj of entries) {
-			buffer.fill(0);
-			for (let i = 0; i < obj.name.length; i++) {
-				buffer[i] = obj.name.charCodeAt(i);
-			}
-			buffer[0x10] = obj.playCount;
-			buffer[0x11] = obj.bitmask;
-			buffer[0x12] = obj.bitshift;
-			buffer[0x13] = 0x00; // Padding zero
-			buffer[0x14] = obj.dosDate & 0xFF;
-			buffer[0x15] = (obj.dosDate >> 8) & 0xFF;
-
-			os.write(file, buffer.buffer, 0, entrySize);
-		}
-		result = true;
-	} catch (e) {
-		xlog(e);
-	} finally {
-		if (file) { os.close(file); }
-	}
-
-    return result;
+    os.close(file);
+    return true;
 }
 function setHistoryEntry(name) {
     const objects 	  = getMcHistory();
