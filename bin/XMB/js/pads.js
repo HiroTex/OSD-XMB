@@ -12,7 +12,7 @@ PadSettings.Mode = 0;
 PadSettings.Port = 0;
 
 const pad = Pads.get(PadSettings.Port);
-function checkStates(BUTTON) { return (pad.justPressed(BUTTON) || pad.pressed(BUTTON)); }
+function checkStates(BUTTON) { return ((pad.btns & BUTTON) && !(pad.old_btns & BUTTON)); }
 function PadsHandler() {
 
 	PadSettings.ConfirmButton = (UserConfig.ConfirmBtn === 0) ? Pads.CROSS : Pads.CIRCLE;
