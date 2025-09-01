@@ -10,8 +10,8 @@ dashboard by Howling Wolf & Chelsea.
 
 - Plugin System where you can make your own plugins to show items on the dashboard, either on JSON format or more customized with the XML format.
 
-- **Launch PS2 games from USB Drive, MX4SIO or MMCE**:
-    - The App will automatically list all ISO format games that are on your "DVD/" or "CD/" folders at the root of your device (or inside a subfolder "PS2"), on the "Playstation 2" Plugin folder on the "Game" Category. 
+- **Launch PS2 games from USB Drive, exFat HDD, MX4SIO or MMCE**:
+    - The App will automatically populate a "Playstation 2" folder on the "Game" Category with all ISO format games that are on your "DVD/" or "CD/" folders at the root of your device (or inside a subfolder "PS2").
 	- You can customize your preferred settings for your games if you open the "Option" menu while highlighting the game and select "Settings" (Remember to use	the confirmation button to save changes).
 	- The "Show Logo", "Show Debug Colors", and "GSM" settings can be set globally for all games on the "Game Settings" Plugin at the "Settings" Category.
 
@@ -19,7 +19,15 @@ dashboard by Howling Wolf & Chelsea.
     - Games installed with HD Loader will be automatically listed on the "Playstation 2" folder. 
     - You can set their Game IDs manually on the "neutrino.cfg" file, or by following the naming pattern "PP.Game-ID..GameName".
 
-    
+
+> [!IMPORTANT]  
+> MX4SIO and MMCE are not compatible with each other, so you can only enable one of them.  
+Read [MX4SIO is not available](#troubleshooting).
+
+> [!IMPORTANT]  
+> APA HDD and exFat HDD are not compatible with each other, so you can only enable one of them.  
+Read [The App is not reading exfat HDD](#troubleshooting).
+
 > [!IMPORTANT]  
 > Make sure to have the necessary files on the `POPS` folder.  
 Read [PS1 POPS Games are not being scanned](#troubleshooting).
@@ -32,7 +40,7 @@ Read [PS1 POPS Games are not being scanned](#troubleshooting).
 	- More global options (Cheats) are set on the "Game Settings" Plugin in the	"Settings" Category.
     
 > [!WARNING]  
-> If your PS2 has an uncompatible modchip, the next feature must be disabled or else it will crash after the boot sequence.  
+> The next feature is disabled by default, if you enable it and the app crashes after the boot sequence, your PS2 has an uncompatible modchip and you must disable the feature manually.  
 Read [The App freezes exactly after the Boot sequence](#troubleshooting).
 
 - **Launch PS1 and PS2 games from Discs**:
@@ -40,6 +48,7 @@ Read [The App freezes exactly after the Boot sequence](#troubleshooting).
   	in the disctray	and highlight it automatically if you're idle on the "Game" category.
 	- You can add "(Game-ID).cfg" files on the "CFG" folder with the Item "Title=Game Name"
 	to display Customized Game Titles for this Item.
+    - To enable this feature, go into "System Settings" and enable "Disc Tray Reading".
 
 - **Execute ELFs**:
     - You can execute custom ELFs by the use of Plugins, or using the File Explorer. The File Explorer will launch any ELF without arguments, but you can make custom plugins to launch Elfs with custom arguments.
@@ -62,9 +71,9 @@ Read [The App freezes exactly after the Boot sequence](#troubleshooting).
     -	`OSDXMB.ELF`
     - 	`main.js`
     - 	`athena.ini`
--	Then you can place the rest of the Assets (Folders CFG,ART,XMB,etc) on a directory called "OSDXMB" on your preferred device.
--	The following devices are currently supported and will be scanned to look for the App's assets:
-  	- 	mass?:/OSDXMB/ (USB and/or MX4SIO)
+-	Then you can place the rest of the Assets (Folders CFG,ART,XMB,etc) on a directory called "OSDXMB" on your preferred device.  
+  - The following devices are currently supported and will be scanned to look for the App's assets:
+  	- 	mass?:/OSDXMB/ (any "mass" device, like USB, MX4SIO or exFat HDD)
    	- 	mmce?:/OSDXMB/
     - 	hdd:__common:/OSDXMB/
     - 	Path where OSDXMB.ELF was launched from.
@@ -105,9 +114,6 @@ mx4sio_bd = false
 <details>
 <summary>The App is not reading exfat HDD</summary>
 
-> [!WARNING]  
-> This is an untested feature.
-
 - In order to enable exfat HDD support, PFS must be disabled.  
 To do this, open the `athena.ini` file as a text file, and swap `true` and `false` on the lines:
 ```
@@ -127,7 +133,7 @@ ata_bd = false
 <details>
 <summary>The UI keeps moving to the left</summary>
 
-- If you are using an 8bitdo adapter, disconnect it and plug a PS2 Joystick.
+- If you are using an 8bitdo adapter, switch to digital mode by using the button combo `L1 + R1 + Select + DPad Up`. Digital mode is indicated by the LED on the adapter turning white.
 </details>
 
 ## Credits and Special Thanks
