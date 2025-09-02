@@ -10,10 +10,15 @@ dashboard by Howling Wolf & Chelsea.
 
 - Plugin System where you can make your own plugins to show items on the dashboard, either on JSON format or more customized with the XML format.
 
-- **Launch PS2 games from USB Drive, exFat HDD, MX4SIO or MMCE**:
+- **Launch PS2 ISO games from several devices**:
     - The App will automatically populate a "Playstation 2" folder on the "Game" Category with all ISO format games that are on your "DVD/" or "CD/" folders at the root of your device (or inside a subfolder "PS2").
+    - Supported devices are:
+        - USB Drive (FAT32 and exFAT).
+        - MX4SIO or MMCE.
+        - Internal APA HDD or exFAT HDD (using [PSBBN's setup](https://github.com/CosmicScale/PSBBN-Definitive-English-Patch)).
+        - UDPBD (follow [these instructions](https://github.com/HiroTex/OSD-XMB/discussions/60#discussioncomment-14269195)).
 	- You can customize your preferred settings for your games if you open the "Option" menu while highlighting the game and select "Settings" (Remember to use	the confirmation button to save changes).
-	- The "Show Logo", "Show Debug Colors", and "GSM" settings can be set globally for all games on the "Game Settings" Plugin at the "Settings" Category.
+	- The "Show Logo", "Show Debug Colors", and "GSM" settings can be set globally for all games on the "Game Settings" Plugin at the "Settings" Category..
 
 - **Launch PS2 games in HDL Format**:
     - Games installed with HD Loader will be automatically listed on the "Playstation 2" folder. 
