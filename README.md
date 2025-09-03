@@ -83,6 +83,10 @@ Read [The App freezes exactly after the Boot sequence](#troubleshooting).
     - 	hdd:__common:/OSDXMB/
     - 	Path where OSDXMB.ELF was launched from.
 
+
+> [!IMPORTANT]  
+> Do not place the "XMB" folder that contains the launcher (ELF, main.js and ini) at the root of your devices (USB, MMCE, MX4SIO, etc). Only place the folder as is on a Memory Card, or place those assets inside the OSDXMB directory if you wish. If you want to have the XMB assets at the root of your device, change the folder name to something else.
+
 ## Troubleshooting
 These are common expected issues, please follow the instructions below to fix them:
 
