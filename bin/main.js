@@ -2,7 +2,7 @@
 ///*				   		Initialize Modules						  *///
 //////////////////////////////////////////////////////////////////////////
 
-os.sleep(1000); // Wait for modules to load.
+os.sleep(2000); // Wait for modules to load.
 
 function InitCWD() {
 
@@ -88,6 +88,7 @@ const jsList = [
 	`cfg`,		// Custom User Configurations.
     `system`,	// Main Constants and Generic Utilities.
     `thread`,   // Threads Handler.
+    `net`,      // Network Handler.
     `date`,     // Date and Time Utilities.
 	`audio`,	// Sound Handler.
 	`pads`,		// Pad Action Manager.

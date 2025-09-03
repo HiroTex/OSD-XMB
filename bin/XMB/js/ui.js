@@ -906,10 +906,10 @@ function DashUISetSpecialExit(type) {
 }
 function DashUISetElfExecution(Data) {
 	gExit = {};
-    gExit.Elf = { Path: Data.Path };
-	if ('Args' in Data) 	 { gExit.Elf.Args = Data.Args; }
-	if ('RebootIOP' in Data) { gExit.Elf.RebootIOP = Data.RebootIOP === "true"; }
-	if ('Code' in Data)		 { gExit.Elf.Code = Data.Code; }
+    gExit.Elf           = { Path: Data.Path };
+    gExit.Elf.Args      = ('Args' in Data) ? Data.Args : [];
+    gExit.Elf.RebootIOP = ('RebootIOP' in Data) ? (Data.RebootIOP === "true") : false;
+	if ('Code' in Data)	{ gExit.Elf.Code = Data.Code; }
 	DashUI.State.Next = 5;
 }
 function UpdateIconSpinning() {

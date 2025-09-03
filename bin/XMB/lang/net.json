@@ -2,21 +2,21 @@
   "NETSET1": {
     "NAME": [
       "Settings and Connection Status List",
-      "Liste des paramètres et de l'état de la connexion",
+      "Settings and Connection Status List",
       "Ajustes y lista de estado de conexión",
-      "Liste der Einstellungen und des Verbindungsstatus",
-      "Elenco delle impostazioni e dello stato di connessione",
-      "Instellingen en verbindingsstatus",
-      "Lista de Definições e Estado das Ligações"
+      "Settings and Connection Status List",
+      "Settings and Connection Status List",
+      "Settings and Connection Status List",
+      "Settings and Connection Status List"
     ],
     "DESC": [
       "View current network settings.",
-      "Pour afficher les paramètres réseau actuels.",
+      "View current network settings.",
       "Puede visualizar los ajustes de red actuales.",
-      "Sie können die aktuellen Netzwerk-Einstellungen.",
-      "È possibile visualizzare le impostazioni di rete correnti.",
-      "De huidige netwerkinstellingen en de status van de internetverbinding weergeven.",
-      "Visualize as definições de rede e o estado das ligações actuais."
+      "View current network settings.",
+      "View current network settings.",
+      "View current network settings.",
+      "View current network settings."
     ]
   },
   "NETSET2": {
@@ -30,13 +30,13 @@
       "Ligação à Internet"
     ],
     "DESC": [
-      "Enable or disable the system's connection to the Internet.",
-      "Pour activer ou désactiver connexion du système à Internet.",
-      "Puede activar o desactivar la conexión del sistema a Internet.",
-      "Sie können die Verbindung des Systems zum Internet aktivieren oder deaktivieren.",
-      "È possibile abilitare o disabilitare la connessione a Internet del sistema.",
-      "De internetverbinding van het systeem in- of uitschakelen.",
-      "Active ou desactive a ligação do sistema à Internet."
+      "Set the system's connection to the Internet.",
+      "Set the system's connection to the Internet.",
+      "Conectar el sistema a Internet.",
+      "Set the system's connection to the Internet.",
+      "Set the system's connection to the Internet.",
+      "Set the system's connection to the Internet.",
+      "Set the system's connection to the Internet."
     ]
   },
   "NET": {

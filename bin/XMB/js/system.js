@@ -572,7 +572,7 @@ function getPS1GameID(game) {
 
     game.Description = " \u{B7} " + game.Data.fdev;
     game.Description = (game.GameID) ? game.GameID + game.Description : getLocalText(XMBLANG.UNKNOWN) + game.Description;
-    getGameArt(game);
+    getGameArt(game, "PS1");
     game.Icon = "DISC_PS1";
 }
 
@@ -738,9 +738,8 @@ function getArtPaths() {
     return IDs.map(id => (id.dir && id.name !== "." && id.name !== "..") ? id.name : "").filter(name => name !== "");
 }
 
-function findArt(baseFilename, type) {
+function findArt(baseFilename, namePattern) {
     if (!baseFilename || !gArt.includes(baseFilename)) { return ""; }
-    const namePattern = type;
     const artPath = `${PATHS.Art}/${baseFilename}/`;
     const files = os.readdir(artPath)[0];
 
@@ -764,10 +763,46 @@ function findICO(baseFilename) { return findArt(baseFilename, "icon0.png"); }
 /*	Returns empty string if not found.											*/
 function findBG(baseFilename) { return findArt(baseFilename, "pic1.png"); }
 
-function getGameArt(game) {
+function tryDownloadGameArt(gameID, dir) {
+    if (!gNetArt.includes(gameID)) { return; }
+
+    let req = new Request();
+    let baseUrl = `https://raw.githubusercontent.com/HiroTex/OSD-XMB-ARTDB/refs/heads/main/${dir}/`;
+    let gameDir = `${PATHS.Art}${gameID}`;
+
+    try {
+        os.mkdir(gameDir);
+        req.download(`${baseUrl}${gameID}/ICON0.PNG`, `${gameDir}/ICON0.PNG`);
+        req.download(`${baseUrl}${gameID}/PIC1.PNG`, `${gameDir}/PIC1.PNG`);
+        req.download(`${baseUrl}${gameID}/PIC2.PNG`, `${gameDir}/PIC2.PNG`);
+    } catch (e) {
+        console.log(e);
+    } finally {
+        const dirList = System.listDir(gameDir);
+        for (let i = 0; i < dir.length; i++) {
+            const item = dirList[i];
+            if (item.size < 32) { os.remove(`${gameDir}/${item.name}`); }
+        }
+
+        if (os.readdir(gameDir)[0].length === 0) { System.removeDirectory(gameDir); }
+        else { gArt.push(gameID); }
+    }
+}
+
+function getGameArt(game, dir = "PS2") {
 
     if (!game.GameID || game.GameID === getLocalText(XMBLANG.UNKNOWN)) { return; }
-    const id     = game.GameID;
+
+    const id = game.GameID;
+
+    if (!gArt.includes(id)) {
+        if (UserConfig.Network === 1) {
+            tryDownloadGameArt(id, dir);
+            if (!gArt.includes(id)) { return; }
+        }
+        else { return; }
+    }
+
     const ico    = findICO(id);
     const bgFile = findBG(id);
     const pic2   = findArt(id, "pic2.png");
@@ -815,12 +850,10 @@ function ExecuteSpecial() {
 	}
 }
 function ExecuteELF() {
-	if (!('Args' in gExit.Elf)) 		{ gExit.Elf.Args = [] }
-	if (!('RebootIOP' in gExit.Elf)) 	{ gExit.Elf.RebootIOP = false }
-	if ('Code' in gExit.Elf) { gExit.Elf.Code(); }
+	if ('Code' in gExit.Elf)  { gExit.Elf.Code(); }
 	if (gExit.Elf.Path.substring(0, 3) !== "pfs") { umountHDD(); }
 
-	xlog( `Executing Elf: ${gExit.Elf.Path}\n With Args: [ ${gExit.Elf.Args} ]`);
+	console.log( `Executing Elf: ${gExit.Elf.Path}\n With Args: [ ${gExit.Elf.Args} ]`);
 	System.loadELF(gExit.Elf.Path, gExit.Elf.Args, gExit.Elf.RebootIOP);
 }
 

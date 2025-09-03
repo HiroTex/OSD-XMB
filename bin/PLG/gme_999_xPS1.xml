@@ -92,19 +92,19 @@
         const selected = SubMenu.Default;
 				const start		 = selected - 5;
 				const end			 = SubMenu.Items.length
-        
+
 				for (let i = start; i < end; i++) {
 					MainMutex.unlock();
-          
+
 					if (i < 0) { MainMutex.lock(); continue; }
           if (i > selected + 5) { MainMutex.lock(); break; }
 					const game = SubMenu.Items[i];
 					delete game.Icon;
           getPS1GameID(game);
-          
-          MainMutex.lock(); 
+
+          MainMutex.lock();
 				}
-        
+
 				delete SubMenu.Init;
 			}
     ]]>

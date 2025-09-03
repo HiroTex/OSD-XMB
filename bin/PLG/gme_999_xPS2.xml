@@ -1,6 +1,6 @@
 <App Name="Playstation 2" Icon="FOLDER" Category="5" Type="SUBMENU" Description="$`${this.Value.Items.length} ${XMBLANG.TITLES[UserConfig.Language]}`">
   <Options HideEmpty="true">
-    <![CDATA[      
+    <![CDATA[
 			function SaveLastPlayed() {
         const ncfg = CfgMan.Get("neutrino.cfg");
 				ncfg["last"] = DashUI.SelectedItem.Name;
@@ -20,7 +20,7 @@
             GameID: "",
 						Data: { path: path, fname: gameDir[j].name, size: gameDir[j].size, fsize: formatFileSize(gameDir[j].size), dev: device, mt: media }
 					});
-					
+
           const thisObj = items[items.length - 1];
           Object.defineProperty(thisObj, "Icon", {
 							get() {
@@ -89,19 +89,19 @@
         const selected = SubMenu.Default;
 				const start		 = selected - 5;
 				const end			 = SubMenu.Items.length
-        
+
 				for (let i = start; i < end; i++) {
 					MainMutex.unlock();
-          
+
 					if (i < 0) { MainMutex.lock(); continue; }
           if (i > selected + 5) { MainMutex.lock(); break; }
 					const game = SubMenu.Items[i];
 					delete game.Icon;
           getPS2GameID(game);
-          
-          MainMutex.lock(); 
+
+          MainMutex.lock();
 				}
-        
+
 				delete SubMenu.Init;
 			}
     ]]>
@@ -228,9 +228,9 @@
 									UIAnimationDialogFade_Start(false);
 									return;
 								}
-                
+
                 UIAnimationDialogContentFade_Start(true);
-								
+
                 DashUI.Dialog.Data[DashUI.Dialog.Level].ElementIcon = "GAME_MCTOOLS";
 								let mcTxt = `${getLocalText(XMBLANG.COPY_VMC_MSG)} ${vmcCount}/${vmcLength}`;
 								const totalSize = 8 * 1024 * 1024;
@@ -242,13 +242,13 @@
 									DashUI.PbarAlpha = ~~(128 * cfadProgress);
                   DrawProgressBar({X: 0, Y: 50}, ~~((copied / totalSize) * 100), mcTxt);
                 });
-                
+
                 Tasks.Push(() => {
 									const BLOCK_SIZE = 64 * 1024;
 									const buffer = new ArrayBuffer(BLOCK_SIZE);
                   let fdSrc = false;
                   let fdDst = false;
-                  
+
                   try {
 										while (vmcs.length > 0) {
 											fdSrc = os.open(`${PATHS.VMC}blank.vmc`, os.O_RDONLY);
@@ -257,7 +257,7 @@
 											if (fdSrc < 0 || fdDst < 0) {
 												throw new Error("Error opening VMC source or destination file");
 											}
-                      
+
 											copied = 0;
 											let toRead = Math.min(BLOCK_SIZE, totalSize - copied);
 											while(toRead > 0) {
@@ -281,7 +281,7 @@
 										}
                   } catch (e) {
 										xlog(e);
-                  } finally { 
+                  } finally {
 										if (fdSrc) { os.close(fdSrc); }
                     if (fdDst) { os.close(fdDst); }
 										UICONST.LayersFg.pop();

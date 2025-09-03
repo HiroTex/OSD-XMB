@@ -22,7 +22,8 @@ const UserConfig = {
 	Waves: true,
 	DateFormat: 0,
 	HourFormat: 0,
-	Timezone: 0,
+    Timezone: 0,
+    Network: 0,
 	ParentalSet: 0,
 	ParentalCode: [0, 0, 0, 0]
 };
@@ -64,7 +65,7 @@ function ReadUserSettings() {
 
 	const config = CfgMan.Get("main.cfg");
 	if (config.length < 1) { return; }
-    
+
     if ('cdvd'	     in config) { UserConfig.Disctray     = (config["cdvd"] === "true");    }
 	if ('lang'		 in config) { UserConfig.Language 	  = parseInt(config["lang"]); 		}
 	if ('btnType'	 in config) { UserConfig.ConfirmBtn   = parseInt(config["btnType"]); 	}
@@ -79,6 +80,7 @@ function ReadUserSettings() {
 	if ('BgColor'	 in config) { UserConfig.BgColor	  = parseInt(config["BgColor"]); 	}
 	if ('waves'		 in config) { UserConfig.Waves		  = (config["waves"] === "true"); 	}
 	if ('Theme'		 in config) { UserConfig.Theme		  = config["Theme"];				}
+	if ('network'	 in config) { UserConfig.Network	  = config["network"];				}
 
 	if (!os.readdir(PATHS.Theme)[0].includes(UserConfig.Theme)) { UserConfig.Theme = "Original"; }
 
