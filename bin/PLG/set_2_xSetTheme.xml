@@ -80,48 +80,47 @@
 		      config["Theme"] = UserConfig.Theme;
 		      CfgMan.Push("main.cfg", config);
 
-		      const _bg = function() {
-				    DashUICustomizationInit();
-			      DisableCustomBgImg();
-            CleanThemeLayers();
-			      UserConfig.BgColor = 0;
-			      BgElements.BgColor.Next = UserConfig.BgColor;
-			      BgElements.BgColor.Progress = 0.0f;
-			      DashElements.ItemFocus = false;
-
-			      for (let i = 0; i < DashIcons.length; i++) {
-            	MainMutex.unlock();
-				      const path = `${PATHS.Theme}${UserConfig.Theme}/icons/${DashIconsInfo[i].path}`;
-				      const icn = std.exists(path) ? new Image(path) : new Image(`${PATHS.Theme}Original/icons/${DashIconsInfo[i].path}`);
-				      icn.optimize();
-				      icn.filter = LINEAR;
-				      DashIcons[i] = icn;
-            	MainMutex.lock();
-			      }
-
-			      let thmival = os.setInterval(() => {
-				      FontInit();
-              const thm = `${PATHS.Theme}${UserConfig.Theme}/thm.js`;
-				      if (std.exists(thm)) { std.loadScript(thm); }
-				      os.clearInterval(thmival);
-			      }, 0);
-
-			      UIAnimationDialogFade_Start(false);
-		      }
-
-		      const dialog = {
-			      Icon: 9,
-			      Title: DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Name,
-			      BG: false,
-			      Type: "TEXT",
-			      Text: XMBLANG.WAIT,
-			      Fun: _bg,
-		      };
-
-		      DashUISetDialog(dialog);
+		      DashUISetDialog(DashUI.Context.ItemCollection[DashUI.Context.Level].Dialog);
         }
       ]]>
     </Confirm>
+    <Dialog Icon="9" Title="" BG="false" Type="TEXT" Text="{WAIT}" >
+      <Task>
+        <![CDATA[
+						function() {
+              DashUI.Dialog.Data[DashUI.Dialog.Level].Title = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Name;
+
+              DashCustomizableElementsInit();
+              DashUICustomizationInit();
+			        DisableCustomBgImg();
+              CleanThemeLayers();
+			        UserConfig.BgColor = 0;
+			        BgElements.BgColor.Next = UserConfig.BgColor;
+			        BgElements.BgColor.Progress = 0.0f;
+			        DashElements.ItemFocus = false;
+
+			        for (let i = 0; i < DashIcons.length; i++) {
+				        const path = `${PATHS.Theme}${UserConfig.Theme}/icons/${DashIconsInfo[i].path}`;
+            	  MainMutex.unlock();
+				        const icn = std.exists(path) ? new Image(path) : new Image(`${PATHS.Theme}Original/icons/${DashIconsInfo[i].path}`);
+            	  MainMutex.lock();
+				        icn.optimize();
+				        icn.filter = LINEAR;
+				        DashIcons[i] = icn;
+			        }
+
+			        let thmival = os.setInterval(() => {
+				        FontInit();
+                const thm = `${PATHS.Theme}${UserConfig.Theme}/thm.js`;
+				        if (std.exists(thm)) { std.loadScript(thm); }
+				        os.clearInterval(thmival);
+			        }, 0);
+
+			        UIAnimationDialogFade_Start(false);
+						}
+					]]>
+      </Task>
+    </Dialog>
   </Option>
   <Option Type="CONTEXT" Icon="SET_CFG">
     <Name>

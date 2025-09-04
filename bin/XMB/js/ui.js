@@ -345,43 +345,66 @@ const ImageCache = (() => {
 ///*				   		  Initialization						  *///
 //////////////////////////////////////////////////////////////////////////
 
+function DashCustomizableElementsInit() {
+    const elements = [
+        "dash_logo.png",
+        "dash_load.png",
+        "dash_submenu.png",
+        "dash_pbar.png",
+        "dash_clock.png",
+        "dash_clock_outline.png"
+    ];
+
+    const objects = [
+        "BootLogo",
+        "LoadIco",
+        "Arrow",
+        "Pbar",
+        "ClockIco",
+        "ClockOutline"
+    ]
+
+    for (let i = 0; i < elements.length; i++) {
+        let path = `${PATHS.XMB}dash/${elements[i]}`;
+        let customPath = `${PATHS.Theme}${UserConfig.Theme}/dash/${elements[i]}`;
+
+        if (std.exists(customPath)) {
+            path = customPath;
+        }
+
+        DashElements[objects[i]] = new Image(path);
+        DashElements[objects[i]].optimize();
+        DashElements[objects[i]].filter = LINEAR;
+    }
+
+    DashElements.ClockOutline.height = DashElements.ClockOutline.height >> 1;
+}
 function DashElementsInit() {
-	DashElements.ClockIco = new Image(`${PATHS.XMB}dash/dash_clock.png`);
-	DashElements.ClockIco.startx = 1;
-	DashElements.ClockIco.starty = 1;
 
-	DashElements.ClockOutline = new Image(`${PATHS.XMB}dash/dash_clock_outline.png`);
-	DashElements.ClockOutline.height = ~~(DashElements.ClockOutline.height / 2);
+    DashCustomizableElementsInit();
 
+    // Context
 	DashElements.Context = new Image(`${PATHS.XMB}dash/dash_context.png`);
 	DashElements.Context.width = 275;
 	DashElements.Context.startx = 4;
 	DashElements.Context.starty = 2;
-
 	DashElements.CtxIco = new Image(`${PATHS.XMB}color/ctx.png`);
 	DashElements.CtxIco.width = 26;
-	DashElements.CtxIco.height = 26;
+    DashElements.CtxIco.height = 26;
 
-	DashElements.LoadIco = new Image(`${PATHS.XMB}dash/dash_load.png`);
-
-	DashElements.BootLogo = new Image(`${PATHS.XMB}dash/dash_logo.png`);
-
+    // Option Box
 	DashElements.OptionBox = new Image(`${PATHS.XMB}dash/dash_option_box.png`);
 	DashElements.OptionBox.height = 79;
-
 	DashElements.OptionIco = new Image(`${PATHS.XMB}dash/triangle.png`);
 	DashElements.OptionIco.width = 14;
 	DashElements.OptionIco.height = 14;
-
-    DashElements.Arrow = new Image(`${PATHS.XMB}dash/dash_submenu.png`);
-
-    DashElements.Pbar = new Image(`${PATHS.XMB}dash/dash_pbar.png`);
 
 	Object.values(DashElements).forEach((dashElem) => {
 		dashElem.optimize();
 		dashElem.filter = LINEAR;
 	});
 
+    DashElements.ClockIco.filter = NEAREST;
     DashElements.ItemFocus = false;
 
     while (DashIconsInfo.length > DashIcons.length) {
@@ -701,16 +724,18 @@ function DrawUIClock() {
     const x   = UICONST.ClockX;
 
     // Draw Start of Clock Outline
-    box.width = 32;
+    box.width = 8;
     box.startx = 2;
+    box.endx = 20;
     box.color = col;
     box.draw(x, y);
 
     // Draw End of Clock Outline
     box.width = 196;
     box.startx = 34;
+    box.endx = 60;
     box.color = col;
-    box.draw(x + 29, y);
+    box.draw(x + 8, y);
 
     if (Tasks.isRunning) {
         DrawDashLoadIcon({
