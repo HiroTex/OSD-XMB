@@ -42,9 +42,7 @@
       <![CDATA[
         function(index, item) {
             UserConfig.DateFormat = index;
-            let config = CfgMan.Get("main.cfg");
-            config["dateFormat"] = index.toString();
-            CfgMan.Push("main.cfg", config);
+            CfgMan.PropertySet("main.cfg", "dateFormat", index.toString());
         }
       ]]>
     </Confirm>
@@ -94,9 +92,7 @@
       <![CDATA[
         function(index, item) {
             UserConfig.HourFormat = index;
-            let config = CfgMan.Get("main.cfg");
-            config["hourFormat"] = index.toString();
-            CfgMan.Push("main.cfg", config);
+            CfgMan.PropertySet("main.cfg", "hourFormat", index.toString());
         }
       ]]>
     </Confirm>

@@ -1,4 +1,4 @@
-<App Icon="SET_GAME" Category="1" Type="SUBMENU">
+<App Type="SUBMENU" Category="1" Icon="SET_GAME">
   <Name>
     <String str="Game Settings" />
     <String str="Paramètres de jeu" />
@@ -33,9 +33,9 @@
           let item = SubMenu.Items[j + 3];
           let defval = 0;
           switch(j) {
-            case 0: 
+            case 0:
             case 1: defval = Number(statuses[j]); break;
-            case 2: 
+            case 2:
               defval = (statuses[2]) ? 7 : 0;
               defval = (statuses[3]) ? 1 : defval;
               defval = (statuses[4]) ? 2 : defval;
@@ -45,30 +45,30 @@
               defval = (statuses[8]) ? 6 : defval;
               break;
             case 3: defval = Number(statuses[9]); break;
-            case 4: 
+            case 4:
               defval = (statuses[10]) ? 1 : 0;
               defval = (statuses[11]) ? 2 : defval;
               defval = (statuses[12]) ? 3 : defval;
               break;
             case 5: defval = Number(statuses[13]); break;
           }
-          
+
           item.Value.Default = defval;
 				}
-        
+
         delete SubMenu.Init;
 			}
     ]]>
   </Init>
   <Option Type="CONTEXT" Icon="15" Default="{Number(NeutrinoConfig.PS2LOGO)}">
     <Name>
-      <String str="PS2 Logo" />
-      <String str="PS2 Logo" />
-      <String str="Logo de PS2" />
-      <String str="PS2 Logo" />
-      <String str="Logo PS2" />
-      <String str="PS2 Logo" />
-      <String str="PS2 Logo" />
+      <String str="PS2 - Display Logo" />
+      <String str="PS2 - Display Logo" />
+      <String str="PS2 - Mostrar Logo" />
+      <String str="PS2 - Display Logo" />
+      <String str="PS2 - Display Logo" />
+      <String str="PS2 - Display Logo" />
+      <String str="PS2 - Display Logo" />
     </Name>
     <Description>
       <String str="Show the PS2 logo." />
@@ -85,9 +85,7 @@
       <![CDATA[
         function(index, item) {
           NeutrinoConfig.PS2LOGO = (index == 1);
-          let config = CfgMan.Get("neutrino.cfg");
-          config["logo"] = NeutrinoConfig.PS2LOGO.toString();
-          CfgMan.Push("neutrino.cfg", config);
+          CfgMan.PropertySet("neutrino.cfg", "logo", NeutrinoConfig.PS2LOGO.toString());
         }
       ]]>
     </Confirm>
@@ -117,9 +115,7 @@
       <![CDATA[
         function(index, item) {
           NeutrinoConfig.DBC = (index == 1);
-          let config = CfgMan.Get("neutrino.cfg");
-          config["dbc"] = NeutrinoConfig.DBC.toString();
-          CfgMan.Push("neutrino.cfg", config);
+          CfgMan.PropertySet("neutrino.cfg", "dbc", NeutrinoConfig.DBC.toString());
         }
       ]]>
     </Confirm>
@@ -149,9 +145,7 @@
       <![CDATA[
         function(index, item) {
           NeutrinoConfig.GSM = (index == 1);
-          let config = CfgMan.Get("neutrino.cfg");
-          config["gsm"] = NeutrinoConfig.GSM.toString();
-          CfgMan.Push("neutrino.cfg", config);
+          CfgMan.PropertySet("neutrino.cfg", "gsm", NeutrinoConfig.GSM.toString());
         }
       ]]>
     </Confirm>

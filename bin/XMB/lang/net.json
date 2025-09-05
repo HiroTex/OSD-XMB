@@ -1,4 +1,24 @@
 {
+  "NETSET0": {
+    "NAME": [
+      "Network Settings",
+      "Paramètres Réseau",
+      "Ajustes de Red",
+      "Netzwerkeinstellungen",
+      "Impostazioni di Rete",
+      "Netwerkinstellingen",
+      "Definições de Rede"
+    ],
+    "DESC": [
+      "Configure the system's network settings.",
+      "Configurez les paramètres réseau du système.",
+      "Configurar los ajustes de red del sistema.",
+      "Konfigurieren Sie die Netzwerkeinstellungen des Systems.",
+      "Configura le impostazioni di rete del sistema.",
+      "Configureer de netwerkinstellingen van het systeem.",
+      "Configure as definições de rede do sistema."
+    ]
+  },
   "NETSET1": {
     "NAME": [
       "Settings and Connection Status List",

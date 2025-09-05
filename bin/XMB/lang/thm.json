@@ -1,4 +1,113 @@
 {
+  "THMSET0": {
+    "NAME": [
+      "Theme Settings",
+      "Paramètres de thème",
+      "Ajustes de Tema",
+      "Design-Einstellungen",
+      "Impostazioni del tema",
+      "Thema-instellingen",
+      "Configurações de tema"
+    ],
+    "DESC": [
+      "Adjust settings related to appearance.",
+      "Réglez les paramètres liés à l'apparence.",
+      "Ajusta la apariencia de la pantalla XMB.",
+      "Einstellungen für das Erscheinungsbild des XMB-Bildschirms anpassen.",
+      "Regola le impostazioni relative all'aspetto.",
+      "Pas instellingen aan die verband houden met het uiterlijk van het XMB-scherm.",
+      "Ajuste as configurações relacionadas à aparência."
+    ]
+  },
+  "THMSET1": {
+    "NAME": [
+      "Theme",
+      "Thème",
+      "Tema",
+      "Thema",
+      "Tema",
+      "Thema",
+      "Tema"
+    ],
+    "DESC": [
+      "Sets the interface style.",
+      "Définir le style de l'interface.",
+      "Establecer el estilo de la interfaz.",
+      "Den Schnittstellenstil festlegen.",
+      "Seleziona lo stile dell'interfaccia.",
+      "Stel de interface-stijl in.",
+      "Definir o estilo da interface."
+    ]
+  },
+  "THMSET2": {
+    "NAME": [
+      "Color",
+      "Couleur",
+      "Color",
+      "Farbe",
+      "Colore",
+      "Kleur",
+      "Cor"
+    ],
+    "DESC": [
+      "Sets the background color.",
+      "Définir la couleur de fond.",
+      "Establecer el color de fondo.",
+      "Hintergrundfarbe festlegen.",
+      "Seleziona il colore dello sfondo.",
+      "Stel de achtergrondkleur in.",
+      "Definir a cor de fundo."
+    ]
+  },
+  "THMSET3": {
+    "NAME": [
+      "Background",
+      "Arrière-plan",
+      "Fondo",
+      "Hintergrundbild",
+      "Sfondo",
+      "Achtergrond",
+      "Fundo"
+    ],
+    "DESC": [
+      "Set the interface background.",
+      "Définir l'arrière-plan de l'interface.",
+      "Establecer el fondo de la interfaz.",
+      "Den Hintergrund der Schnittstelle festlegen.",
+      "Seleziona lo sfondo dell'interfaccia.",
+      "Stel de achtergrond van de interface in.",
+      "Definir o fundo da interface."
+    ]
+  },
+  "THMSET4": {
+    "NAME": [
+      "Waves",
+      "Vagues",
+      "Ondas",
+      "Wellen",
+      "Onde",
+      "Golven",
+      "Ondas"
+    ],
+    "DESC": [
+      "Set the wave effect.",
+      "Définir l'effet de vague.",
+      "Establecer el efecto de ondas.",
+      "Den Welleneffekt festlegen.",
+      "Seleziona l'effetto onde.",
+      "Stel het golf-effect in.",
+      "Definir o efeito de ondas."
+    ]
+  },
+  "ORIGINAL": [
+    "Original",
+    "Original",
+    "Original",
+    "Original",
+    "Originale",
+    "Origineel",
+    "Original"
+  ],
   "NOWPP_MSG": [
     "There is no wallpaper set. \nGo to [Photo], open an image, and then select [Set as Wallpaper] from the control panel to save the image.",
     "Aucun fond d'écran défini. \nAllez dans [Photo], ouvrez une image, et sélectionnez [Définir comme fond d'écran].",

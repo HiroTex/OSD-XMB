@@ -1,0 +1,167 @@
+{
+  "SETSYS0": {
+    "NAME": [
+      "System settings",
+      "Paramètres système",
+      "Ajustes de Sistema",
+      "System-Einstellungen",
+      "Impostazioni del sistema",
+      "Systeeminstellingen",
+      "Definições de Sistema"
+    ],
+    "DESC": [
+      "Adjusts settings for this PS2 system.",
+      "Réglez les paramètres de ce système PS2.",
+      "Ajusta la configuración de este sistema PS2.",
+      "Einstellungen für dieses PS2-System anpassen.",
+      "Regola le impostazioni di questo sistema PS2.",
+      "Pas de instellingen van dit PS2-systeem aan.",
+      "Ajuste as configurações deste sistema PS2."
+    ]
+  },
+  "SETSYS1": {
+    "NAME": [
+      "Language",
+      "Langue",
+      "Idioma",
+      "Sprache",
+      "Lingua",
+      "Taal",
+      "Idioma"
+    ],
+    "DESC": [
+      "Set the system Language.",
+      "Définir la langue du système.",
+      "Establecer el idioma del sistema.",
+      "Systemsprache festlegen.",
+      "Seleziona la lingua del sistema.",
+      "Stel de systeemtaal in.",
+      "Definir o idioma do sistema."
+    ]
+  },
+  "SETSYS2": {
+    "NAME": [
+      "Confirmation Button",
+      "Bouton de confirmation",
+      "Botón de confirmación",
+      "Bestätigungstaste",
+      "Pulsante di conferma",
+      "Bevestigingsknop",
+      "Botão de Confirmação"
+    ],
+    "DESC": [
+      "Sets the confirmation button type.",
+      "Définit le type de bouton de confirmation.",
+      "Establece el tipo de botón de confirmación.",
+      "Legt den Typ der Bestätigungstaste.",
+      "Imposta il tipo di pulsante di conferma.",
+      "Stelt het type bevestigingsknop.",
+      "Define o tipo de botão de confirmação."
+    ]
+  },
+  "SETSYS3": {
+    "NAME": [
+      "Warning Message",
+      "Message d'avertissement",
+      "Mensaje de Advertencia",
+      "Warning Message",
+      "Warning Message",
+      "Warning Message",
+      "Warning Message"
+    ],
+    "DESC": [
+      "Show the Epilepsy Warning message.",
+      "Afficher le message d'avertissement sur l'épilepsie.",
+      "Muestra la advertencia de epilepsia inicial.",
+      "Show the Epilepsy Warning message.",
+      "Show the Epilepsy Warning message.",
+      "Show the Epilepsy Warning message.",
+      "Show the Epilepsy Warning message."
+    ]
+  },
+  "SETSYS4": {
+    "NAME": [
+      "Disc Tray Reading",
+      "Lecture du plateau de disque",
+      "Lectura de Bandeja de Disco",
+      "Disc Tray Reading",
+      "Disc Tray Reading",
+      "Disc Tray Reading",
+      "Disc Tray Reading"
+    ],
+    "DESC": [
+      "Enable physical disc reading.",
+      "Activer la lecture des disques physiques.",
+      "Habilitar la lectura de discos físicos.",
+      "Enable physical disc reading.",
+      "Enable physical disc reading.",
+      "Enable physical disc reading.",
+      "Enable physical disc reading."
+    ]
+  },
+  "SETSYS5": [
+    "System Information",
+    "Informations système",
+    "Información del Sistema",
+    "Systeminformationen",
+    "Informazioni sul sistema",
+    "Systeeminformatie",
+    "Informação do Sistema"
+  ],
+  "SYSINFO": {
+    "MODEL": [
+      "Model",
+      "Modèle",
+      "Modelo",
+      "Modell",
+      "Modello",
+      "Model",
+      "Modelo"
+    ],
+    "BROWSER": [
+      "Browser",
+      "Navigateur",
+      "Navegador",
+      "Browser",
+      "Browser",
+      "Browser",
+      "Browser"
+    ],
+    "CD_PLAYER": [
+      "CD Player",
+      "Lecteur CD",
+      "Reproductor de CD",
+      "CD-Player",
+      "Lettore CD",
+      "CD-speler",
+      "Leitor de CD"
+    ],
+    "DVD_PLAYER": [
+      "DVD Player",
+      "Lecteur DVD",
+      "Reproductor de DVD",
+      "DVD-Player",
+      "Lettore DVD",
+      "DVD-speler",
+      "Leitor de DVD"
+    ],
+    "CONSOLE_TYPE": [
+      "Console Type",
+      "Type de console",
+      "Tipo de Consola",
+      "Konsolentyp",
+      "Tipo di Console",
+      "Type Console",
+      "Tipo de Console"
+    ],
+    "BUILD_DATE": [
+      "Build Date",
+      "Date de fabrication",
+      "Fecha de Fabricación",
+      "Build-Datum",
+      "Data di Costruzione",
+      "Bouwdatum",
+      "Data de Construção"
+    ]
+  }
+}

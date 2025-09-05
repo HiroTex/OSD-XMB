@@ -1,4 +1,4 @@
-<App Name="Apps" Icon="FOLDER" Category="5" Type="SUBMENU">
+<App Type="SUBMENU" Category="5" Icon="FOLDER" Name="Apps">
   <Options HideEmpty="true">
     <![CDATA[
 			function parseAppTitleCfg(path) {
@@ -68,14 +68,8 @@
   </Options>
   <Context Name="AppContext" Type="OptionContext">
     <Component Name="{INFO}" Icon="-1">
-      <Confirm>
-        <![CDATA[
-        function(index, item) {
-					DashUISetDialog(item.Dialog);
-				}
-      ]]>
-      </Confirm>
-      <Dialog Icon="-1" Title="" BG="false" Type="INFO" ElementIcon="true" BackBtn="true" >
+      <Confirm Event="OPEN_DIALOG" Dialog="item.Dialog" />
+      <Dialog Type="INFO" BG="false" BackBtn="true" ElementIcon="true" >
         <Info>
           <Item Name="{TITLE}" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Data['Title']}" Selectable="false" />
           <Item Name="Version" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Data['Version']}" Selectable="false" />

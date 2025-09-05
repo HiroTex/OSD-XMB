@@ -183,6 +183,12 @@ const CfgMan = {
         }
     },
 
+    PropertySet: function (path, key, value) {
+        const item = this.Get(path);
+        item[key] = value;
+        this.Push(path, item);
+    },
+
     Process: function() {
         while (this.queue.length > 0) {
             const { path, config } = this.queue.shift(); // Remove and get the first item in the queue

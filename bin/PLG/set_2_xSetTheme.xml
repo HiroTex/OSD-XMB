@@ -1,41 +1,5 @@
-<App Icon="SET_THEME" Category="1" Type="SUBMENU">
-  <Name>
-    <String str="Theme Settings" />
-    <String str="Paramètres de thème" />
-    <String str="Ajustes de Tema" />
-    <String str="Design-Einstellungen" />
-    <String str="Impostazioni del tema" />
-    <String str="Thema-instellingen" />
-    <String str="Configurações de tema" />
-  </Name>
-  <Description>
-    <String str="Adjust settings related to appearance." />
-    <String str="Réglez les paramètres liés à l'apparence." />
-    <String str="Ajusta la apariencia de la pantalla XMB." />
-    <String str="Einstellungen für das Erscheinungsbild des XMB-Bildschirms anpassen." />
-    <String str="Regola le impostazioni relative all'aspetto." />
-    <String str="Pas instellingen aan die verband houden met het uiterlijk van het XMB-scherm." />
-    <String str="Ajuste as configurações relacionadas à aparência." />
-  </Description>
-  <Option Type="CONTEXT" Icon="SET_CFG">
-    <Name>
-      <String str="Theme" />
-      <String str="Thème" />
-      <String str="Tema" />
-      <String str="Thema" />
-      <String str="Tema" />
-      <String str="Thema" />
-      <String str="Tema" />
-    </Name>
-    <Description>
-      <String str="Sets the interface style." />
-      <String str="Définir le style de l'interface." />
-      <String str="Establecer el estilo de la interfaz." />
-      <String str="Den Schnittstellenstil festlegen." />
-      <String str="Seleziona lo stile dell'interfaccia." />
-      <String str="Stel de interface-stijl in." />
-      <String str="Definir o estilo da interface." />
-    </Description>
+<App Type="SUBMENU" Category="1" Icon="SET_THEME" Name="{THMSET0.NAME}" Description="{THMSET0.DESC}">
+  <Option Type="CONTEXT" Icon="SET_CFG" Name="{THMSET1.NAME}" Description="{THMSET1.DESC}">
 	  <Default>
       <![CDATA[
 		    const Items = [];
@@ -74,22 +38,16 @@
       <![CDATA[
         function(index, item) {
           if (item.Name === UserConfig.Theme) { return; }
-
 		      UserConfig.Theme = item.Name;
-		      let config = CfgMan.Get("main.cfg");
-		      config["Theme"] = UserConfig.Theme;
-		      CfgMan.Push("main.cfg", config);
-
+          CfgMan.PropertySet("main.cfg", "Theme", UserConfig.Theme);
 		      DashUISetDialog(DashUI.Context.ItemCollection[DashUI.Context.Level].Dialog);
         }
       ]]>
     </Confirm>
-    <Dialog Icon="9" Title="" BG="false" Type="TEXT" Text="{WAIT}" >
+    <Dialog Icon="9" Title="{THMSET1.NAME}" BG="false" Type="TEXT" Text="{WAIT}" >
       <Task>
         <![CDATA[
 						function() {
-              DashUI.Dialog.Data[DashUI.Dialog.Level].Title = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Name;
-
               DashCustomizableElementsInit();
               DashUICustomizationInit();
 			        DisableCustomBgImg();
@@ -122,36 +80,8 @@
       </Task>
     </Dialog>
   </Option>
-  <Option Type="CONTEXT" Icon="SET_CFG">
-    <Name>
-      <String str="Color" />
-      <String str="Couleur" />
-      <String str="Color" />
-      <String str="Farbe" />
-      <String str="Colore" />
-      <String str="Kleur" />
-      <String str="Cor" />
-    </Name>
-    <Description>
-      <String str="Sets the background color." />
-      <String str="Définir la couleur de fond." />
-      <String str="Establecer el color de fondo." />
-      <String str="Hintergrundfarbe festlegen." />
-      <String str="Seleziona il colore dello sfondo." />
-      <String str="Stel de achtergrondkleur in." />
-      <String str="Definir a cor de fundo." />
-    </Description>
-    <Component Icon="-1">
-      <Name>
-        <String str="Original" />
-        <String str="Original" />
-        <String str="Original" />
-        <String str="Original" />
-        <String str="Originale" />
-        <String str="Origineel" />
-        <String str="Original" />
-      </Name>
-    </Component>
+  <Option Type="CONTEXT" Icon="SET_CFG" Name="{THMSET2.NAME}" Description="{THMSET2.DESC}">
+    <Component Name="{ORIGINAL}" />
     <Component Icon="{cwd}XMB/color/ico1.png" />
     <Component Icon="{cwd}XMB/color/ico2.png" />
     <Component Icon="{cwd}XMB/color/ico3.png" />
@@ -190,9 +120,7 @@
 			    }
 			    BgElements.BgColor.Previous = index;
 			    UserConfig.BgColor = index;
-          let config = CfgMan.Get("main.cfg");
-          config["BgColor"] = index.toString();
-          CfgMan.Push("main.cfg", config);
+          CfgMan.PropertySet("main.cfg", "BgColor", UserConfig.BgColor.toString());
         }
       ]]>
     </Confirm>
@@ -208,36 +136,8 @@
       ]]>
     </Cancel>
   </Option>
-  <Option Type="CONTEXT" Icon="SET_CFG">
-    <Name>
-      <String str="Background" />
-      <String str="Arrière-plan" />
-      <String str="Fondo" />
-      <String str="Hintergrundbild" />
-      <String str="Sfondo" />
-      <String str="Achtergrond" />
-      <String str="Fundo" />
-    </Name>
-    <Description>
-      <String str="Set the interface background." />
-      <String str="Définir l'arrière-plan de l'interface." />
-      <String str="Establecer el fondo de la interfaz." />
-      <String str="Den Hintergrund der Schnittstelle festlegen." />
-      <String str="Seleziona lo sfondo dell'interfaccia." />
-      <String str="Stel de achtergrond van de interface in." />
-      <String str="Definir o fundo da interface." />
-    </Description>
-    <Component Icon="-1">
-      <Name>
-        <String str="Original" />
-        <String str="Original" />
-        <String str="Original" />
-        <String str="Original" />
-        <String str="Originale" />
-        <String str="Origineel" />
-        <String str="Original" />
-      </Name>
-    </Component>
+  <Option Type="CONTEXT" Icon="SET_CFG" Name="{THMSET3.NAME}" Description="{THMSET3.DESC}">
+    <Component Name="{ORIGINAL}"/>
     <Component Name="{WALLPAPER}" Icon="-1"/>
     <Default Variable="UserConfig.DisplayBg" />
     <Dialog Icon="9" Title="{WALLPAPER}" BG="true" Type="TEXT" Text="{NOWPP_MSG}" BackBtn="true"/>
@@ -250,32 +150,12 @@
               return false;
           }
           else if ((index == 1) && (UserConfig.CustomBgImg)) { SetNewCustomBgImg(UserConfig.CustomBgImg); }
-          let config = CfgMan.Get("main.cfg");
-          config["displayBg"] = UserConfig.DisplayBg.toString();
-          CfgMan.Push("main.cfg", config);
+          CfgMan.PropertySet("main.cfg", "displayBg", UserConfig.DisplayBg.toString());
         }
       ]]>
     </Confirm>
   </Option>
-  <Option Type="CONTEXT" Icon="SET_CFG">
-    <Name>
-      <String str="Waves" />
-      <String str="Waves" />
-      <String str="Ondas" />
-      <String str="Waves" />
-      <String str="Waves" />
-      <String str="Waves" />
-      <String str="Waves" />
-    </Name>
-    <Description>
-      <String str="Set the Background Waves On or Off." />
-      <String str="Set the Background Waves On or Off." />
-      <String str="Habilita o Deshabilita las ondas de fondo." />
-      <String str="Set the Background Waves On or Off." />
-      <String str="Set the Background Waves On or Off." />
-      <String str="Set the Background Waves On or Off." />
-      <String str="Set the Background Waves On or Off." />
-    </Description>
+  <Option Type="CONTEXT" Icon="SET_CFG" Name="{THMSET4.NAME}" Description="{THMSET4.DESC}">
     <Component Name="{NO}" Icon="-1" />
     <Component Name="{YES}" Icon="-1" />
     <Default Variable="UserConfig.Waves" />
@@ -283,9 +163,7 @@
       <![CDATA[
         function(index, item) {
           UserConfig.Waves = (index == 1);
-          let config = CfgMan.Get("main.cfg");
-          config["waves"] = UserConfig.Waves.toString();
-          CfgMan.Push("main.cfg", config);
+          CfgMan.PropertySet("main.cfg", "waves", UserConfig.Waves.toString());
         }
       ]]>
     </Confirm>

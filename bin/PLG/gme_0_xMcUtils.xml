@@ -1,4 +1,4 @@
-<App Icon="GAME_MCTOOLS" Category="5" Type="SUBMENU">
+<App Type="SUBMENU" Category="5" Icon="GAME_MCTOOLS">
   <Name>
     <String str="Memory Card Utility" />
     <String str="Utilitaire de Memory Card" />
@@ -50,11 +50,11 @@
 				});
 
 				Object.defineProperty(Items[Items.length - 1], "Value", {
-					get() {	
+					get() {
 						return {
 							Items: [],
 							Default: 0,
-              Init: (SubMenu) => { SubMenu.Items = ReadMCDir(j); } 
+              Init: (SubMenu) => { SubMenu.Items = ReadMCDir(j); }
             };
           },
 					enumerable: true
@@ -71,9 +71,9 @@
 				for (let j = 0; j < 2; j++)	{
 					MainMutex.unlock();
 					let mcInfo = System.getMCInfo(j);
+					MainMutex.lock();
 					let used = 8000 - mcInfo.freemem;
 					SubMenu.Items[j].Description = `${used} / 8000 Kb`;
-					MainMutex.lock();
 				}
 			}
     ]]>
@@ -94,7 +94,7 @@
           <Task>
             <![CDATA[
 							function() {
-                
+
                 UIAnimationDialogContentFade_Start(true);
 								const item = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current];
 								const srcPath = item.FullPath;
@@ -104,13 +104,13 @@
                 const srcFiles = System.listDir(srcPath).filter(item => !item.dir);
                 let totalSize = 0;
                 for (let i = 0; i < srcFiles.length; i++) { totalSize += srcFiles[i].size; }
-                
-                if (totalSize > freeSpace) { 
+
+                if (totalSize > freeSpace) {
 									DashUI.Dialog.Data[DashUI.Dialog.Level].BACK_BTN = true;
                   DashUI.Dialog.Data[DashUI.Dialog.Level].Text = getLocalText(XMBLANG.ERROR.NOT_ENOUGH_SPACE);
                   return;
                 }
-                
+
                 DashUI.Dialog.Data[DashUI.Dialog.Level].ElementIcon = "true";
                 DashUI.Dialog.Data[DashUI.Dialog.Level].Y = -25;
                 DashUI.Dialog.Data[DashUI.Dialog.Level].Align = "HCENTER";
@@ -132,7 +132,7 @@
 								let fileSize = srcFile.size;
 								let copied = 0;
                 let totalCopied = 0;
-                
+
 								const copyText = `${getLocalText(XMBLANG.COPYING)}, ${getLocalText(XMBLANG.WAIT)}`;
 								DashUI.PbarAlpha = 0;
                 UICONST.LayersFg.push(() => {
@@ -210,10 +210,6 @@
 					<Event On="Confirm" Type="Transition" To="DeleteItemDialogTask" Condition="DashUI.Dialog.Data[DashUI.Dialog.Level].Selected === 0" Exit="true"/>
 			</Dialog>
 		</Component>
-    <Confirm>
-      <![CDATA[
-        function(index, item) { DashUISetDialog(item.Dialog); }
-      ]]>
-    </Confirm>
+    <Confirm Event="OPEN_DIALOG" Dialog="item.Dialog"/>
   </Context>
 </App>

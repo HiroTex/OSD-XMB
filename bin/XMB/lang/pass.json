@@ -1,4 +1,24 @@
 {
+  "SETPARENTAL": {
+    "NAME": [
+      "Security Settings",
+      "Paramètres sécurité",
+      "Ajustes de Seguridad",
+      "Sicherheits-Einstellungen",
+      "Impostazioni di sicurezza",
+      "Beveiligingsinstellingen",
+      "Definições de Segurança"
+    ],
+    "DESC": [
+      "Adjusts parental control settings.",
+      "Réglez les paramètres de contrôle parental.",
+      "Ajusta la configuración de control parental.",
+      "Einstellungen für die Kindersicherung anpassen.",
+      "Regola le impostazioni di controllo parentale.",
+      "Pas de instellingen voor ouderlijk toezicht aan.",
+      "Ajuste as configurações de controle parental."
+    ]
+  },
   "PASS_CHANGE": [
     "Change Password",
     "Changer le mot de passe",

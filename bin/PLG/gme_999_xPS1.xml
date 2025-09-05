@@ -1,4 +1,4 @@
-<App Name="Playstation" Icon="FOLDER" Category="5" Type="SUBMENU" Description="$`${this.Value.Items.length} ${XMBLANG.TITLES[UserConfig.Language]}`">
+<App Type="SUBMENU" Category="5" Icon="FOLDER" Name="Playstation" Description="$`${this.Value.Items.length} ${XMBLANG.TITLES[UserConfig.Language]}`">
   <Options HideEmpty="true">
     <![CDATA[
 			function generateVMC(game) {
@@ -183,7 +183,7 @@
 				}
       ]]>
       </Confirm>
-			<Dialog Icon="-1" Title="" BG="false" Type="INFO" BackBtn="true" ConfirmBtn="true" >
+      <Dialog Type="INFO" BG="false" BackBtn="true" ConfirmBtn="true" >
 				<Info>
 					<Item Name="{POPS_OPTIONS.0}" Selectable="true">
 						<Value>
@@ -245,7 +245,7 @@
 						</Value>
 					</Item>
 				</Info>
-				<Dialog Name="SaveSettingsDialog" Icon="-1" Title="" BG="false" Type="TEXT" Text="{WAIT}" Align="HCENTER">
+				<Dialog Name="SaveSettingsDialog" Type="TEXT" BG="false" Text="{WAIT}" Align="HCENTER">
 					<Task>
 						<![CDATA[
 							function() {
@@ -283,14 +283,8 @@
 			</Dialog>
 		</Component>
     <Component Name="{INFO}" Icon="-1">
-      <Confirm>
-        <![CDATA[
-        function(index, item) {
-					DashUISetDialog(item.Dialog);
-				}
-      ]]>
-      </Confirm>
-      <Dialog Icon="-1" Title="" BG="false" Type="INFO" ElementIcon="true" BackBtn="true" >
+      <Confirm Event="OPEN_DIALOG" Dialog="item.Dialog" />
+      <Dialog Type="INFO" BG="false" BackBtn="true" ElementIcon="true">
         <Info>
           <Item Name="{TITLE}" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Name}" Selectable="false" />
           <Item Name="{DEVICE}" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Data.fdev}" Selectable="false" />

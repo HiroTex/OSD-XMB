@@ -1,24 +1,6 @@
-<App Icon="SET_NET" Category="1" Type="SUBMENU">
-  <Name>
-    <String str="Network Settings" />
-    <String str="Paramètres réseau" />
-    <String str="Ajustes de Red" />
-    <String str="Netzwerk-Einstellungen" />
-    <String str="Impostazioni di rete" />
-    <String str="Netwerkinstellingen" />
-    <String str="Definições de Rede" />
-  </Name>
-  <Description>
-    <String str="Adjusts settings for the internet connection." />
-    <String str="Adjusts settings for the internet connection." />
-    <String str="Ajusta la configuración de la conexión a Internet." />
-    <String str="Adjusts settings for the internet connection." />
-    <String str="Adjusts settings for the internet connection." />
-    <String str="Adjusts settings for the internet connection." />
-    <String str="Adjusts settings for the internet connection." />
-  </Description>
-  <Option Name="{NETSET1.NAME}" Description="{NETSET1.DESC}" Type="DIALOG" Icon="15">
-    <Dialog Title="{NETSET1.NAME}" Icon="28" BG="false" Type="INFO" BackBtn="true">
+<App Type="SUBMENU" Category="1" Icon="SET_NET" Name="{NETSET0.NAME}" Description="{NETSET0.DESC}">
+  <Option Type="DIALOG" Icon="15" Name="{NETSET1.NAME}" Description="{NETSET1.DESC}">
+    <Dialog Type="INFO" BG="false" Icon="28" Title="{NETSET1.NAME}" BackBtn="true">
       <Info>
         <Item Value="{getLocalText((UserConfig.Network) ? XMBLANG.ENABLED : XMBLANG.DISABLED)}" Selectable="false">
           <Name>
@@ -38,60 +20,42 @@
       </Info>
     </Dialog>
   </Option>
-  <Option Name="{NETSET2.NAME}" Description="{NETSET2.DESC}" Type="CONTEXT" Icon="15" Default="{UserConfig.Network}">
+  <Option Type="CONTEXT" Icon="15" Name="{NETSET2.NAME}" Description="{NETSET2.DESC}">
     <Component Name="{NO}">
-      <Dialog Icon="-1" Title="" BG="false" Type="TEXT" Text="{PLEASE_RESTART}">
+      <Dialog Type="TEXT" BG="false" Text="{PLEASE_RESTART}">
         <Task>
           <![CDATA[
 						function() {
 					    let config = CfgMan.Get("main.cfg");
 					    config["network"] = UserConfig.Network.toString();
 					    CfgMan.Push("main.cfg", config);
-              DashUI.SelectedItem.Value.Default = UserConfig.Network;
 						}
 					]]>
         </Task>
       </Dialog>
     </Component>
     <Component Name="{YES}">
-      <Dialog Icon="-1" Title="" BG="false" Type="TEXT" Text="{NET.INIT_MSG}" >
+      <Dialog Type="TEXT" BG="false" Text="{NET.INIT_MSG}" >
         <Task>
           <![CDATA[
 						function() {
               MainMutex.unlock();
               UserConfig.Network = Number(NetInit());
-              MainMutex.lock();
 					    let config = CfgMan.Get("main.cfg");
 					    config["network"] = UserConfig.Network.toString();
 					    CfgMan.Push("main.cfg", config);
-
-              if (UserConfig.Network === 0) {
-                UIAnimationDialogContentFade_Start(false);
-                DashUI.AnimationQueue.push(() => {
-                    if (!DashUI.Dialog.ContentFade.Running) {
-                        DashUI.Dialog.Data[DashUI.Dialog.Level].BACK_BTN = true;
-                        DashUI.Dialog.Data[DashUI.Dialog.Level].Text = getLocalText(XMBLANG.NET.ERR_1);
-                        UIAnimationDialogContentFade_Start(true);
-                        return true;
-                    }
-                    return false;
-                });
-
-                return;
-              }
-
+              const message = (UserConfig.Network === 0) ? getLocalText(XMBLANG.NET.ERR_1) : getLocalText(XMBLANG.NET.INIT_COMPLETE_MSG);
               UIAnimationDialogContentFade_Start(false);
               DashUI.AnimationQueue.push(() => {
                   if (!DashUI.Dialog.ContentFade.Running) {
                       DashUI.Dialog.Data[DashUI.Dialog.Level].BACK_BTN = true;
-                      DashUI.Dialog.Data[DashUI.Dialog.Level].Text = getLocalText(XMBLANG.NET.INIT_COMPLETE_MSG);
+                      DashUI.Dialog.Data[DashUI.Dialog.Level].Text = message
                       UIAnimationDialogContentFade_Start(true);
                       return true;
                   }
                   return false;
               });
-
-              DashUI.SelectedItem.Value.Default = UserConfig.Network;
+              MainMutex.lock();
 						}
 					]]>
         </Task>
@@ -106,5 +70,6 @@
 				}
 			]]>
 		</Confirm>
+    <Default Variable="UserConfig.Network" />
   </Option>
 </App>

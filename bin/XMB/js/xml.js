@@ -261,6 +261,7 @@ function xmlParseCodeTag(element) {
     return scriptObj;
 }
 function xmlParseDialogTag(element) {
+    console.log("xmlParseDialogTag(): Parsing Dialog...");
     if (!element.tagName.includes("Dialog")) {
         const codeTag = element.children.find(child => child.tagName === "Dialog");
         if (codeTag) { return xmlParseDialogTag(codeTag); }
@@ -270,10 +271,10 @@ function xmlParseDialogTag(element) {
 
     const msgInfo = {};
     msgInfo.Title = xmlGetLocalizedString(element, "Title");
-    msgInfo.Icon = xmlParseIcon(element.attributes.Icon);
     msgInfo.BG = (element.attributes.BG === "true");
     msgInfo.Type = element.attributes.Type;
-	msgInfo.Text = xmlGetLocalizedString(element, "Text");
+    msgInfo.Text = xmlGetLocalizedString(element, "Text");
+    if ('Icon' in element.attributes) msgInfo.Icon = xmlParseIcon(element.attributes.Icon);
 
     // Iterate over all attributes and add them as properties of the component object
     for (const [name, value] of Object.entries(element.attributes)) {
@@ -329,6 +330,8 @@ function xmlParseDialogTag(element) {
         if ("cdata" in child) { msgInfo[child.tagName] = std.evalScript(`(${child.cdata})`); }
 	}
 
+    console.log("xmlParseDialogTag(): Parsing Dialog Type.");
+
     switch (msgInfo.Type) {
         case "TEXT":
             const taskTag = element.children.find(child => child.tagName === "Task");
@@ -369,11 +372,15 @@ function xmlParseDialogTag(element) {
             break;
     }
 
+    console.log("xmlParseDialogTag(): Parsing Named Childrens.");
+
 	xmlParseNamedChildrens(element, msgInfo);
 
+    console.log("xmlParseDialogTag(): Parse Dialog Finished.");
     return msgInfo;
 }
 function xmlParseContext(element) {
+    console.log("xmlParseContext(): Parsing Context...");
     contextObj = {};
     contextObj.Items = [];
 	xmlDefineDefaultProperty(contextObj, element);
@@ -387,17 +394,24 @@ function xmlParseContext(element) {
             if ('Icon' in child.attributes) { component.Icon = xmlParseIcon(child.attributes.Icon); }
 
             // Iterate over all attributes and add them as properties of the component object
+            console.log("xmlParseContext(): Parsing Component Attributes");
             for (const [name, value] of Object.entries(child.attributes)) {
                 // Skip attributes that are already included
                 if (!(name in component)) { component[name] = value; }
             }
 
-			for (let j = 0; j < child.children.length; j++) {
-				const option = child.children[j];
-				if (option.tagName === "Dialog") { component[option.tagName] = xmlParseDialogTag(option); }
-                if ("cdata" in option) { component[option.tagName] = std.evalScript(`(${option.cdata})`); }
-			}
+            if (child.children && child.children.length > 0) {
+                console.log("xmlParseContext(): Parsing Component Childrens");
 
+                for (let j = 0; j < child.children.length; j++) {
+                    const option = child.children[j];
+                    if (option.tagName === "Dialog") { component[option.tagName] = xmlParseDialogTag(option); }
+                    else if ("cdata" in option) { component[option.tagName] = std.evalScript(`(${option.cdata})`); }
+                    else if ('attributes' in option) { component[option.tagName] = option.attributes; }
+                }
+            }
+
+            console.log("xmlParseContext(): Parsed Component");
             contextObj.Items.push(component);
         }
 		else if (child.tagName === "Components") {
@@ -408,12 +422,14 @@ function xmlParseContext(element) {
         else if ("cdata" in child) { contextObj[child.tagName] = std.evalScript(`(${child.cdata})`); }
 	}
 
+    console.log("xmlParseContext(): Parsing Extra Attributes");
 	const att = Object.getOwnPropertyNames(element.attributes);
 	for (let i = 0; i < att.length; i++) {
 		const name = att[i];
 		if (name in contextObj) { continue; }
 		else { contextObj[name] = element.attributes[name]; }
-	}
+    }
+    console.log("xmlParseContext(): Parsing Context Finished");
     return contextObj;
 }
 function xmlParseNamedChildrens(source, element) {
@@ -546,7 +562,7 @@ function parseXmlPlugin(parsedData) {
                 if (plugin.Value && initTag && "cdata" in initTag) {
                     plugin.Value.Init = std.evalScript(`(${initTag.cdata})`);
                 }
-
+                console.log("parseXmlPlugin(): SUBMENU Parse Finished.")
                 break;
             case "CONTEXT": plugin.Value = xmlParseContext(parsedData); break;
             case "ELF": plugin.Value = xmlParseElfTag(parsedData); break;
@@ -554,7 +570,9 @@ function parseXmlPlugin(parsedData) {
             case "DIALOG": plugin.Value = xmlParseDialogTag(parsedData); break;
         }
 
+        console.log("parseXmlPlugin(): Parsing TOP Named Childrens.")
         xmlParseNamedChildrens(parsedData, plugin);
+        console.log("parseXmlPlugin(): Plugin Parse Finished.")
         return plugin;
     } catch (e) {
         xlog(`parseXmlPlugin(): Error parsing XML: ${e.message}`);

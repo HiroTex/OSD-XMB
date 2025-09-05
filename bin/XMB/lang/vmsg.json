@@ -1,4 +1,24 @@
 {
+  "DISPLAYSET0": {
+    "NAME": [
+      "Display Settings",
+      "Paramètres affichage",
+      "Ajustes de Pantalla",
+      "Anzeige-Einstellungen",
+      "Impostazioni di visualizzazione",
+      "Beeldscherminstellingen",
+      "Definições de Apresentação"
+    ],
+    "DESC": [
+      "Adjusts settings for video output.",
+      "Réglez les paramètres de sortie vidéo.",
+      "Ajusta la configuración de salida de vídeo.",
+      "Einstellungen für die Videoausgabe anpassen.",
+      "Regola le impostazioni dell'uscita video.",
+      "Pas de instellingen voor video-uitvoer aan.",
+      "Ajuste as configurações de saída de vídeo."
+    ]
+  },
   "DISPLAYSET1": {
     "NAME": [
       "Video Output Mode",

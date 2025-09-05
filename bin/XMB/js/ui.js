@@ -2148,6 +2148,25 @@ function UIAnimationContextMenuItemsMove_Work() {
     DashUI.Context.Items.Current = DashUI.Context.Items.Next;
 	return true;
 }
+function DashUIExecuteConfirmFunction(obj) {
+    const dashObj = DashUI.Context;
+    const current = dashObj.Items.Current;
+    const context = dashObj.ItemCollection[dashObj.Level];
+    const item = context.Items[current];
+
+    if (typeof obj.Confirm !== "function") {
+        if (!("Event" in obj.Confirm)) { return true; }
+        switch (obj.Confirm.Event) {
+            case "OPEN_DIALOG": DashUISetDialog(eval(obj.Confirm.Dialog));
+        }
+    }
+    else {
+        const result = obj.Confirm(current, item);
+        if ((result !== undefined) && (result === false)) { return false; }
+    }
+
+    return true;
+}
 function DashUISelectContextItem() {
 	const current = DashUI.Context.Items.Current;
 	const context = DashUI.Context.ItemCollection[DashUI.Context.Level];
@@ -2156,14 +2175,8 @@ function DashUISelectContextItem() {
     PlayCursorSfx();
     UIAnimateContextMenuItemsFade_Start(false);
 
-	if ('Confirm' in item) {
-		const result = item.Confirm(current, item);
-		if ((result !== undefined) && (result === false)) { return; }
-	}
-	if ('Confirm' in context) {
-		const result = context.Confirm(current, item);
-		if ((result !== undefined) && (result === false)) { return; }
-    }
+    if      ('Confirm' in item)    { if (!DashUIExecuteConfirmFunction(item))    { return; } }
+    else if ('Confirm' in context) { if (!DashUIExecuteConfirmFunction(context)) { return; } }
 
 	context.Default = current;
 }
@@ -2783,7 +2796,7 @@ function DrawUIDialog() {
 
 	if (("BACK_BTN" in data) && (data.BACK_BTN)) {
         const Back = {
-			Text: `${(UserConfig.ConfirmBtn === 0) ? "O" : "X"}  ${XMBLANG.BACK[0]}`,
+            Text: `${(UserConfig.ConfirmBtn === 0) ? "O" : "X"}  ${getLocalText(XMBLANG.BACK)}`,
 			Alignment: "CENTER",
             Position: { X: 65, Y: 178 },
             Alpha: baseA
@@ -2794,7 +2807,7 @@ function DrawUIDialog() {
 
     if (("ENTER_BTN" in data) && (data.ENTER_BTN)) {
         const Enter = {
-			Text: `${(UserConfig.ConfirmBtn === 0) ? "X" : "O"}  ${XMBLANG.ENTER[0]}`,
+            Text: `${(UserConfig.ConfirmBtn === 0) ? "X" : "O"}  ${getLocalText(XMBLANG.ENTER)}`,
 			Alignment: "CENTER",
             Position: { X: -70, Y: 178 },
             Alpha: baseA
