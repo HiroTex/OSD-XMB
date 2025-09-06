@@ -125,6 +125,12 @@ function main() {
 	// Threaded Operations
     ImageCache.Process();
     Tasks.Process();
+
+    if (gExit.To) {
+        Screen.clear();
+        Screen.flip();
+        std.reload(gExit.To);
+    }
 }
 
 Screen.setParam(Screen.DEPTH_TEST_ENABLE, false);

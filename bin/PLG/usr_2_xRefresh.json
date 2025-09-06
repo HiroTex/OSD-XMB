@@ -11,9 +11,6 @@
   "Description": "",
   "Icon": "RELOAD",
   "Category": 0,
-  "Type": "ELF",
-  "Value": {
-    "Path": "{bootpath}/OSDXMB.ELF",
-    "Args": [ "main.js" ]
-  }
+  "Type": "CODE",
+  "Value": 1
 }

@@ -846,7 +846,8 @@ function ExecuteItem(Item) {
 }
 function ExecuteSpecial() {
 	switch(gExit.Type) {
-		case 0: System.exitToBrowser(); break;
+        case 0: System.exitToBrowser(); break;
+        case 1: gExit.To = "main.js"; break;
 	}
 }
 function ExecuteELF() {
