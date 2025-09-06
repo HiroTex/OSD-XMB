@@ -36,8 +36,8 @@
       <String str="Set the order of display." />
       <String str="Define a ordem de apresentação." />
     </Description>
-    <Component Name="DD-MM" Icon="-1"/>
-    <Component Name="MM-DD" Icon="-1"/>
+    <Component Name="DD-MM"/>
+    <Component Name="MM-DD"/>
     <Confirm>
       <![CDATA[
         function(index, item) {
@@ -66,7 +66,7 @@
       <String str="De tijdweergave op een 12- of 24-uursklok instellen." />
       <String str="Define a apresentação da hora em relógio de 12 ou de 24 horas." />
     </Description>
-    <Component Icon="-1">
+    <Component>
       <Name>
         <String str="12-Hour" />
         <String str="12 heures" />
@@ -77,7 +77,7 @@
         <String str="12 horas" />
       </Name>
     </Component>
-    <Component Icon="-1">
+    <Component>
       <Name>
         <String str="24-Hour" />
         <String str="24 heures" />
@@ -107,83 +107,83 @@
       <String str="Tijdzone" />
       <String str="Fuso Horário" />
     </Name>
-    <Component Name="Default" Icon="-1" Value="0"/>
-    <Component Name="GMT-11:00 - Midway Islands" Icon="-1" Value="-11"/>
-    <Component Name="GMT-08:00 - Pacific (Can)" Icon="-1" Value="-8"/>
-    <Component Name="GMT-08:00 - Tijuana" Icon="-1" Value="-8"/>
-    <Component Name="GMT-07:00 - Mount. (Can)" Icon="-1" Value="-7"/>
-    <Component Name="GMT-07:00 - Chihuahua" Icon="-1" Value="-7"/>
-    <Component Name="GMT-06:00 - Central (Can)" Icon="-1" Value="-6"/>
-    <Component Name="GMT-06:00 - Easter Island" Icon="-1" Value="-6"/>
-    <Component Name="GMT-06:00 - Mexico City" Icon="-1" Value="-6"/>
-    <Component Name="GMT-05:00 - East. (Can)" Icon="-1" Value="-5"/>
-    <Component Name="GMT-04:00 - Atlan. (Can)" Icon="-1" Value="-4"/>
-    <Component Name="GMT-04:00 - Santiago" Icon="-1" Value="-4"/>
-    <Component Name="GMT-03:30 - Newfoundland" Icon="-1" Value="-3.5"/>
-    <Component Name="GMT-03:00 - NW Greenland" Icon="-1" Value="-3"/>
-    <Component Name="GMT-03:00 - SW Greenland" Icon="-1" Value="-3"/>
-    <Component Name="GMT-03:00 - Buenos Aires" Icon="-1" Value="-3"/>
-    <Component Name="GMT-02:00 - E Greenland" Icon="-1" Value="-2"/>
-    <Component Name="GMT-01:00 - Praia" Icon="-1" Value="-1"/>
-    <Component Name="GMT-01:00 - Tijuana" Icon="-1" Value="-1"/>
-    <Component Name="GMT+00:00 - Reykjavik" Icon="-1" Value="0"/>
-    <Component Name="GMT+00:00 - Dublin" Icon="-1" Value="0"/>
-    <Component Name="GMT+00:00 - Casablanca" Icon="-1" Value="0"/>
-    <Component Name="GMT+01:00 - Tirana" Icon="-1" Value="1"/>
-    <Component Name="GMT+01:00 - Algiers" Icon="-1" Value="1"/>
-    <Component Name="GMT+01:00 - Andorra la Vella" Icon="-1" Value="1"/>
-    <Component Name="GMT+01:00 - Vienna" Icon="-1" Value="1"/>
-    <Component Name="GMT+01:00 - Brussels" Icon="-1" Value="1"/>
-    <Component Name="GMT+01:00 - Sarajevo" Icon="-1" Value="1"/>
-    <Component Name="GMT+01:00 - Zagreb" Icon="-1" Value="1"/>
-    <Component Name="GMT+01:00 - Prague" Icon="-1" Value="1"/>
-    <Component Name="GMT+01:00 - Copenhagen" Icon="-1" Value="1"/>
-    <Component Name="GMT+01:00 - Berlin" Icon="-1" Value="1"/>
-    <Component Name="GMT+01:00 - Gibraltar" Icon="-1" Value="1"/>
-    <Component Name="GMT+01:00 - Budapest" Icon="-1" Value="1"/>
-    <Component Name="GMT+01:00 - Paris" Icon="-1" Value="1"/>
-    <Component Name="GMT+01:00 - Rome" Icon="-1" Value="1"/>
-    <Component Name="GMT+01:00 - Vaduz" Icon="-1" Value="1"/>
-    <Component Name="GMT+01:00 - Monaco" Icon="-1" Value="1"/>
-    <Component Name="GMT+01:00 - Amsterdam" Icon="-1" Value="1"/>
-    <Component Name="GMT+01:00 - Luxembourg" Icon="-1" Value="1"/>
-    <Component Name="GMT+01:00 - Skopje" Icon="-1" Value="1"/>
-    <Component Name="GMT+01:00 - Valletta" Icon="-1" Value="1"/>
-    <Component Name="GMT+02:00 - Sofia" Icon="-1" Value="2"/>
-    <Component Name="GMT+02:00 - Nicosia" Icon="-1" Value="2"/>
-    <Component Name="GMT+02:00 - Cairo" Icon="-1" Value="2"/>
-    <Component Name="GMT+02:00 - Tallinn" Icon="-1" Value="2"/>
-    <Component Name="GMT+02:00 - Helsinki" Icon="-1" Value="2"/>
-    <Component Name="GMT+02:00 - Jerusalem" Icon="-1" Value="2"/>
-    <Component Name="GMT+02:00 - Amman" Icon="-1" Value="2"/>
-    <Component Name="GMT+02:00 - Riga" Icon="-1" Value="2"/>
-    <Component Name="GMT+02:00 - Beirut" Icon="-1" Value="2"/>
-    <Component Name="GMT+02:00 - Vilnius" Icon="-1" Value="2"/>
-    <Component Name="GMT+02:00 - Windhoek" Icon="-1" Value="2"/>
-    <Component Name="GMT+03:00 - Manama" Icon="-1" Value="3"/>
-    <Component Name="GMT+03:00 - Minsk" Icon="-1" Value="3"/>
-    <Component Name="GMT+03:00 - Baghdad" Icon="-1" Value="3"/>
-    <Component Name="GMT+03:00 - Kuwait City" Icon="-1" Value="3"/>
-    <Component Name="GMT+03:30 - Tehran" Icon="-1" Value="3.5"/>
-    <Component Name="GMT+04:00 - Yerevan" Icon="-1" Value="4"/>
-    <Component Name="GMT+04:00 - Baku" Icon="-1" Value="4"/>
-    <Component Name="GMT+04:00 - Tbilisi" Icon="-1" Value="4"/>
-    <Component Name="GMT+04:30 - Kabul" Icon="-1" Value="4.5"/>
-    <Component Name="GMT+05:00 - W Kazakhstan" Icon="-1" Value="5"/>
-    <Component Name="GMT+05:30 - Calcutta" Icon="-1" Value="5.5"/>
-    <Component Name="GMT+05:45 - Kathmandu" Icon="-1" Value="5.75"/>
-    <Component Name="GMT+06:00 - Dhaka" Icon="-1" Value="6"/>
-    <Component Name="GMT+06:00 - C Kazakhstan" Icon="-1" Value="6"/>
-    <Component Name="GMT+06:00 - Bishkek" Icon="-1" Value="6"/>
-    <Component Name="GMT+07:00 - E Kazakhstan" Icon="-1" Value="7"/>
-    <Component Name="GMT+08:00 - Perth" Icon="-1" Value="8"/>
-    <Component Name="GMT+08:00 - Beijing" Icon="-1" Value="8"/>
-    <Component Name="GMT+09:00 - Tokyo" Icon="-1" Value="9"/>
-    <Component Name="GMT+10:00 - Sydney" Icon="-1" Value="10"/>
-    <Component Name="GMT+10:30 - Lord Howe I." Icon="-1" Value="10.5"/>
-    <Component Name="GMT+11:00 - New Caledonia" Icon="-1" Value="11"/>
-    <Component Name="GMT+12:00 - Suva" Icon="-1" Value="12"/>
-    <Component Name="GMT+13:00 - Wellington" Icon="-1" Value="13"/>
+    <Component Name="{DEFAULT}" Value="0"/>
+    <Component Name="GMT-11:00 - Midway Islands" Value="-11"/>
+    <Component Name="GMT-08:00 - Pacific (Can)" Value="-8"/>
+    <Component Name="GMT-08:00 - Tijuana" Value="-8"/>
+    <Component Name="GMT-07:00 - Mount. (Can)" Value="-7"/>
+    <Component Name="GMT-07:00 - Chihuahua" Value="-7"/>
+    <Component Name="GMT-06:00 - Central (Can)" Value="-6"/>
+    <Component Name="GMT-06:00 - Easter Island" Value="-6"/>
+    <Component Name="GMT-06:00 - Mexico City" Value="-6"/>
+    <Component Name="GMT-05:00 - East. (Can)" Value="-5"/>
+    <Component Name="GMT-04:00 - Atlan. (Can)" Value="-4"/>
+    <Component Name="GMT-04:00 - Santiago" Value="-4"/>
+    <Component Name="GMT-03:30 - Newfoundland" Value="-3.5"/>
+    <Component Name="GMT-03:00 - NW Greenland" Value="-3"/>
+    <Component Name="GMT-03:00 - SW Greenland" Value="-3"/>
+    <Component Name="GMT-03:00 - Buenos Aires" Value="-3"/>
+    <Component Name="GMT-02:00 - E Greenland" Value="-2"/>
+    <Component Name="GMT-01:00 - Praia" Value="-1"/>
+    <Component Name="GMT-01:00 - Tijuana" Value="-1"/>
+    <Component Name="GMT+00:00 - Reykjavik" Value="0"/>
+    <Component Name="GMT+00:00 - Dublin" Value="0"/>
+    <Component Name="GMT+00:00 - Casablanca" Value="0"/>
+    <Component Name="GMT+01:00 - Tirana" Value="1"/>
+    <Component Name="GMT+01:00 - Algiers" Value="1"/>
+    <Component Name="GMT+01:00 - Andorra la Vella" Value="1"/>
+    <Component Name="GMT+01:00 - Vienna" Value="1"/>
+    <Component Name="GMT+01:00 - Brussels" Value="1"/>
+    <Component Name="GMT+01:00 - Sarajevo" Value="1"/>
+    <Component Name="GMT+01:00 - Zagreb" Value="1"/>
+    <Component Name="GMT+01:00 - Prague" Value="1"/>
+    <Component Name="GMT+01:00 - Copenhagen" Value="1"/>
+    <Component Name="GMT+01:00 - Berlin" Value="1"/>
+    <Component Name="GMT+01:00 - Gibraltar" Value="1"/>
+    <Component Name="GMT+01:00 - Budapest" Value="1"/>
+    <Component Name="GMT+01:00 - Paris" Value="1"/>
+    <Component Name="GMT+01:00 - Rome" Value="1"/>
+    <Component Name="GMT+01:00 - Vaduz" Value="1"/>
+    <Component Name="GMT+01:00 - Monaco" Value="1"/>
+    <Component Name="GMT+01:00 - Amsterdam" Value="1"/>
+    <Component Name="GMT+01:00 - Luxembourg" Value="1"/>
+    <Component Name="GMT+01:00 - Skopje" Value="1"/>
+    <Component Name="GMT+01:00 - Valletta" Value="1"/>
+    <Component Name="GMT+02:00 - Sofia" Value="2"/>
+    <Component Name="GMT+02:00 - Nicosia" Value="2"/>
+    <Component Name="GMT+02:00 - Cairo" Value="2"/>
+    <Component Name="GMT+02:00 - Tallinn" Value="2"/>
+    <Component Name="GMT+02:00 - Helsinki" Value="2"/>
+    <Component Name="GMT+02:00 - Jerusalem" Value="2"/>
+    <Component Name="GMT+02:00 - Amman" Value="2"/>
+    <Component Name="GMT+02:00 - Riga" Value="2"/>
+    <Component Name="GMT+02:00 - Beirut" Value="2"/>
+    <Component Name="GMT+02:00 - Vilnius" Value="2"/>
+    <Component Name="GMT+02:00 - Windhoek" Value="2"/>
+    <Component Name="GMT+03:00 - Manama" Value="3"/>
+    <Component Name="GMT+03:00 - Minsk" Value="3"/>
+    <Component Name="GMT+03:00 - Baghdad" Value="3"/>
+    <Component Name="GMT+03:00 - Kuwait City" Value="3"/>
+    <Component Name="GMT+03:30 - Tehran" Value="3.5"/>
+    <Component Name="GMT+04:00 - Yerevan" Value="4"/>
+    <Component Name="GMT+04:00 - Baku" Value="4"/>
+    <Component Name="GMT+04:00 - Tbilisi" Value="4"/>
+    <Component Name="GMT+04:30 - Kabul" Value="4.5"/>
+    <Component Name="GMT+05:00 - W Kazakhstan" Value="5"/>
+    <Component Name="GMT+05:30 - Calcutta" Value="5.5"/>
+    <Component Name="GMT+05:45 - Kathmandu" Value="5.75"/>
+    <Component Name="GMT+06:00 - Dhaka" Value="6"/>
+    <Component Name="GMT+06:00 - C Kazakhstan" Value="6"/>
+    <Component Name="GMT+06:00 - Bishkek" Value="6"/>
+    <Component Name="GMT+07:00 - E Kazakhstan" Value="7"/>
+    <Component Name="GMT+08:00 - Perth" Value="8"/>
+    <Component Name="GMT+08:00 - Beijing" Value="8"/>
+    <Component Name="GMT+09:00 - Tokyo" Value="9"/>
+    <Component Name="GMT+10:00 - Sydney" Value="10"/>
+    <Component Name="GMT+10:30 - Lord Howe I." Value="10.5"/>
+    <Component Name="GMT+11:00 - New Caledonia" Value="11"/>
+    <Component Name="GMT+12:00 - Suva" Value="12"/>
+    <Component Name="GMT+13:00 - Wellington" Value="13"/>
     <Confirm>
       <![CDATA[
         function(index, item) {
