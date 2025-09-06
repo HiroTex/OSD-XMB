@@ -204,20 +204,10 @@
       <String str="PS - In-Game Reset Mode" />
       <String str="PS - In-Game Reset Mode" />
     </Name>
-    <Component Icon="-1">
-      <Name>
-        <String str="Default" />
-        <String str="Default" />
-        <String str="Por Defecto" />
-        <String str="Default" />
-        <String str="Default" />
-        <String str="Default" />
-        <String str="Default" />
-      </Name>
-    </Component>
-    <Component Name="1: [L1 + L2 + R1 + R2 + X + D]" Icon="-1" />
-    <Component Name="2: [SELECT + START]" Icon="-1" />
-    <Component Name="3: [L1 + L2 + R1 + R2 + SELECT + START]" Icon="-1" />
+    <Component Name="{DEFAULT}"/>
+    <Component Name="1: [L1 + L2 + R1 + R2 + X + D]" />
+    <Component Name="2: [SELECT + START]" />
+    <Component Name="3: [L1 + L2 + R1 + R2 + SELECT + START]" />
     <Component Icon="-1">
       <Name>
         <String str="Without Menu (Mode 1)" />

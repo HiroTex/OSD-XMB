@@ -405,6 +405,7 @@ function xmlParseContext(element) {
 
                 for (let j = 0; j < child.children.length; j++) {
                     const option = child.children[j];
+                    if (option.tagName in component) { continue; }
                     if (option.tagName === "Dialog") { component[option.tagName] = xmlParseDialogTag(option); }
                     else if ("cdata" in option) { component[option.tagName] = std.evalScript(`(${option.cdata})`); }
                     else if ('attributes' in option) { component[option.tagName] = option.attributes; }
