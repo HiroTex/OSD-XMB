@@ -64,19 +64,19 @@
       "Warning Message",
       "Message d'avertissement",
       "Mensaje de Advertencia",
-      "Warning Message",
-      "Warning Message",
-      "Warning Message",
-      "Warning Message"
+      "Warnmeldung",
+      "Messaggio di Avvertenza",
+      "Waarschuwingsbericht",
+      "Mensagem de Aviso"
     ],
     "DESC": [
       "Show the Epilepsy Warning message.",
       "Afficher le message d'avertissement sur l'épilepsie.",
       "Muestra la advertencia de epilepsia inicial.",
-      "Show the Epilepsy Warning message.",
-      "Show the Epilepsy Warning message.",
-      "Show the Epilepsy Warning message.",
-      "Show the Epilepsy Warning message."
+      "Zeigt die Epilepsie-Warnmeldung an.",
+      "Mostra il messaggio di avviso di epilessia.",
+      "Toon het epilepsie-waarschuwingsbericht.",
+      "Mostrar a mensagem de aviso de epilepsia."
     ]
   },
   "SETSYS4": {
@@ -84,19 +84,19 @@
       "Disc Tray Reading",
       "Lecture du plateau de disque",
       "Lectura de Bandeja de Disco",
-      "Disc Tray Reading",
-      "Disc Tray Reading",
-      "Disc Tray Reading",
-      "Disc Tray Reading"
+      "Laufwerksschacht-Lesung",
+      "Lettura del Vassoio del Disco",
+      "Lezen van de Disc Tray",
+      "Leitura da Bandeja de Disco"
     ],
     "DESC": [
       "Enable physical disc reading.",
       "Activer la lecture des disques physiques.",
       "Habilitar la lectura de discos físicos.",
-      "Enable physical disc reading.",
-      "Enable physical disc reading.",
-      "Enable physical disc reading.",
-      "Enable physical disc reading."
+      "Physisches Lesen von Discs aktivieren.",
+      "Abilita la lettura dei dischi fisici.",
+      "Fysiek schijf lezen inschakelen.",
+      "Ativar a leitura de discos físicos."
     ]
   },
   "SETSYS5": [
@@ -125,7 +125,7 @@
       "Browser",
       "Browser",
       "Browser",
-      "Browser"
+      "Navegador"
     ],
     "CD_PLAYER": [
       "CD Player",
