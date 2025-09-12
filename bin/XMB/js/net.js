@@ -35,7 +35,7 @@ function NetInit() {
         NetInfo.GATEWAY = conf.gateway;
         NetInfo.DNS = conf.dns;
 
-        Tasks.Push(NetArtInit);
+        NetArtInit();
     } catch (e) {
         console.log(e.message);
         return false;
@@ -52,14 +52,19 @@ function NetDeinit() {
 }
 function NetArtInit() {
     let tmpath = `${PATHS.XMB}/temp`;
+    let src = "https://raw.githubusercontent.com/HiroTex/OSD-XMB-ARTDB/main/manifest.txt";
+    let r = new Request();
     try {
-        let r = new Request();
-        r.download("https://raw.githubusercontent.com/HiroTex/OSD-XMB-ARTDB/main/manifest.txt", tmpath);
+        const ret = r.get(src);
+        if (ret.status_code !== 0) { throw new Error("Art Manifest Get Failed"); }
+        r.download(src, tmpath);
         gNetArt = std.loadFile(tmpath).split('\n').filter(line => line !== "");
         os.remove(tmpath);
     } catch (e) {
-        console.log(e);
+        console.log(e.message);
+    } finally {
+        r = null;
     }
 }
 
-if (UserConfig.Network !== 0) { UserConfig.Network = Number(NetInit()); }
+if (UserConfig.Network !== 0) { Tasks.Push(() => { UserConfig.Network = Number(NetInit()); }); }

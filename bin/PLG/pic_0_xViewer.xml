@@ -74,7 +74,7 @@
     <Confirm>
       <![CDATA[
         function(index, item)	{
-			    const path = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].FullPath;
+			    const path = DashUI.SubMenu.HighlightedItem.FullPath;
 			    SetNewCustomBgImg(path);
 
 		      let config = CfgMan.Get("main.cfg");
@@ -90,8 +90,8 @@
       <Confirm Event="OPEN_DIALOG" Dialog="item.Dialog"/>
       <Dialog Type="INFO" BG="false" BackBtn="true" ElementIcon="true">
         <Info>
-          <Item Name="Album" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Name}" Selectable="false" />
-          <Item Name="{PHOTOS}" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].FileCount}" Selectable="false" />
+          <Item Name="Album" Value="{DashUI.SubMenu.HighlightedItem.Name}" Selectable="false" />
+          <Item Name="{PHOTOS}" Value="{DashUI.SubMenu.HighlightedItem.FileCount}" Selectable="false" />
           <Item Name="{SIZE}" Value="0 bytes" Selectable="false" />
         </Info>
       </Dialog>

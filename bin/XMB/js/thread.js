@@ -6,9 +6,9 @@
 //////////////////////////////////////////////////////////////////////////
 
 const MainMutex = new Mutex();
-
 const Tasks = (() => {
     const queue = [];
+    let thread = false;
     let isRunning = false;
 
     return {
@@ -20,19 +20,21 @@ const Tasks = (() => {
                 } catch (e) {
                     xlog(e);
                 } finally {
-                    isRunning = false;
                     MainMutex.unlock();
+                    isRunning = false;
                 }
             });
         },
 
         Process: function () {
-            if (isRunning || queue.length === 0) return;
+            if (isRunning || (queue.length === 0)) return;
             isRunning = true;
             const fun = queue.shift();
-            Threads.new(fun).start();
+            thread = Threads.new(fun);
+            thread.start();
         },
 
-        get isRunning() { return isRunning; }
+        get isRunning() { return isRunning; },
+        get length() { return queue.length; }
     };
 })();

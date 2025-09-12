@@ -469,12 +469,15 @@ function getISOgameID(isoPath, isoSize) {
 
     return ID;
 }
-function getPS2GameID(game) {
+function getPS2GameID(game, mutex = false) {
     const NeutrinoCFG = CfgMan.Get("neutrino.cfg");
     if (game.Name in NeutrinoCFG) { game.GameID = NeutrinoCFG[game.Name]; }
     else {
+        if (mutex) MainMutex.unlock();
         const gamePath = `${game.Data.path}${game.Data.fname}`;
-        game.GameID = getISOgameID(gamePath, game.Data.size);
+        const result = getISOgameID(gamePath, game.Data.size);
+        if (mutex) MainMutex.lock();
+        game.GameID = result;
         if (game.GameID) {
             NeutrinoCFG[game.Name] = game.GameID;
             CfgMan.Push("neutrino.cfg", NeutrinoCFG);
@@ -484,9 +487,7 @@ function getPS2GameID(game) {
     game.Data.id = game.GameID;
     game.Description = " \u{B7} " + game.Data.dev.toUpperCase();
     game.Description = (game.GameID) ? game.GameID + game.Description : getLocalText(XMBLANG.UNKNOWN) + game.Description;
-    getGameArt(game);
-
-    game.Icon = "DISC_PS2";
+    game.Icon = (getGameArt(game)) ? "DISC_PS2" : -2;
 }
 function getISOgameArgs(info) {
     let args = [];
@@ -556,14 +557,17 @@ function getVCDGameID(path, size) {
 
     return id;
 }
-function getPS1GameID(game) {
+function getPS1GameID(game, mutex = false) {
     const PopsCFG = CfgMan.Get("pops.cfg");
     if (game.Name in PopsCFG) { game.GameID = PopsCFG[game.Name]; }
     else {
+        if (mutex) MainMutex.unlock();
         let path = game.Data.path;
         if (game.Data.dev === "hdd") { path = mountHDDPartition("__.POPS") + ":/"; }
         path = `${path}${game.Data.fname}`;
-        game.GameID = getVCDGameID(path, game.Data.size);
+        const result = getVCDGameID(path, game.Data.size);
+        if (mutex) MainMutex.lock();
+        game.GameID = result;
         if (game.GameID) {
             PopsCFG[game.Name] = game.GameID;
             CfgMan.Push("pops.cfg", PopsCFG);
@@ -572,8 +576,7 @@ function getPS1GameID(game) {
 
     game.Description = " \u{B7} " + game.Data.fdev;
     game.Description = (game.GameID) ? game.GameID + game.Description : getLocalText(XMBLANG.UNKNOWN) + game.Description;
-    getGameArt(game, "PS1");
-    game.Icon = "DISC_PS1";
+    game.Icon = (getGameArt(game, "PS1")) ? "DISC_PS1" : -2;
 }
 
 /*	Info:
@@ -764,20 +767,32 @@ function findICO(baseFilename) { return findArt(baseFilename, "icon0.png"); }
 function findBG(baseFilename) { return findArt(baseFilename, "pic1.png"); }
 
 function tryDownloadGameArt(gameID, dir) {
-    if (!gNetArt.includes(gameID)) { return; }
+    const requests = [];
+    const baseUrl = `https://raw.githubusercontent.com/HiroTex/OSD-XMB-ARTDB/refs/heads/main/${dir}/`;
+    const gameDir = `${PATHS.Art}${gameID}`;
+    const paths = [
+        "ICON0.PNG",
+        "PIC1.PNG",
+        "PIC2.PNG"
+    ];
 
-    let req = new Request();
-    let baseUrl = `https://raw.githubusercontent.com/HiroTex/OSD-XMB-ARTDB/refs/heads/main/${dir}/`;
-    let gameDir = `${PATHS.Art}${gameID}`;
+    if (std.exists(gameDir)) { return true; }
+    os.mkdir(gameDir);
+    for (let i = 0; i < paths.length; i++) {
+        let path = paths[i];
+        if (std.exists(`${gameDir}/${path}`)) { continue; }
+        requests.push(() => {
+            let req = new Request();
+            MainMutex.unlock();
+            req.download(`${baseUrl}${gameID}/${path}`, `${gameDir}/${path}`);
+            MainMutex.lock();
+            req = null;
+        });
+    }
 
-    try {
-        os.mkdir(gameDir);
-        req.download(`${baseUrl}${gameID}/ICON0.PNG`, `${gameDir}/ICON0.PNG`);
-        req.download(`${baseUrl}${gameID}/PIC1.PNG`, `${gameDir}/PIC1.PNG`);
-        req.download(`${baseUrl}${gameID}/PIC2.PNG`, `${gameDir}/PIC2.PNG`);
-    } catch (e) {
-        console.log(e);
-    } finally {
+    if (requests.length === 0) { return false; }
+    requests.forEach((task) => { Tasks.Push(task); });
+    Tasks.Push(() => {
         const dirList = System.listDir(gameDir);
         for (let i = 0; i < dir.length; i++) {
             const item = dirList[i];
@@ -786,30 +801,35 @@ function tryDownloadGameArt(gameID, dir) {
 
         if (os.readdir(gameDir)[0].length === 0) { System.removeDirectory(gameDir); }
         else { gArt.push(gameID); }
-    }
+    });
+
+    return true;
 }
 
 function getGameArt(game, dir = "PS2") {
 
-    if (!game.GameID || game.GameID === getLocalText(XMBLANG.UNKNOWN)) { return; }
+    if (!game.GameID || game.GameID === getLocalText(XMBLANG.UNKNOWN)) { return true; }
 
     const id = game.GameID;
 
     if (!gArt.includes(id)) {
-        if (UserConfig.Network === 1) {
-            tryDownloadGameArt(id, dir);
-            if (!gArt.includes(id)) { return; }
+        if ((UserConfig.Network !== 1) || !gNetArt.includes(id)) { return true; }
+        if (tryDownloadGameArt(id, dir)) {
+            Tasks.Push(() => getGameArt(game, dir));
+            return false;
         }
-        else { return; }
+        return true;
     }
 
-    const ico    = findICO(id);
-    const bgFile = findBG(id);
+    const ico0   = findICO(id);
+    const pic1   = findBG(id);
     const pic2   = findArt(id, "pic2.png");
 
-    if (ico)    { game.CustomIcon = ico;  }
-    if (bgFile) { game.CustomBG = bgFile; }
-    if (pic2)   { game.PIC2 = pic2;       }
+    if (ico0)   { game.CustomIcon = ico0; }
+    if (pic1)   { game.CustomBG   = pic1; }
+    if (pic2)   { game.PIC2       = pic2; }
+
+    return true;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -821,7 +841,7 @@ function validatePlugin(plg) {
     (("Name" in plg) && (typeof plg.Name === "string") || (Array.isArray(plg.Name))) &&
     (("Icon" in plg) && ((typeof plg.Icon === "number") || (typeof plg.Icon === "string"))) &&
     (("Category" in plg) && (typeof plg.Category === "number")) &&
-    (("Type" in plg) && (["ELF", "CODE", "SUBMENU"].includes(plg.Type)))
+    (("Type" in plg) && (["ELF", "CODE", "SUBMENU", "DIALOG"].includes(plg.Type)))
   );
 }
 function AddNewPlugin(Plugin) {
@@ -851,8 +871,9 @@ function ExecuteSpecial() {
 	}
 }
 function ExecuteELF() {
-	if ('Code' in gExit.Elf)  { gExit.Elf.Code(); }
-	if (gExit.Elf.Path.substring(0, 3) !== "pfs") { umountHDD(); }
+    if ('Code' in gExit.Elf) { gExit.Elf.Code(); }
+    if (gExit.Elf.Path.substring(0, 3) !== "pfs") { umountHDD(); }
+    NetDeinit();
 
 	console.log( `Executing Elf: ${gExit.Elf.Path}\n With Args: [ ${gExit.Elf.Args} ]`);
 	System.loadELF(gExit.Elf.Path, gExit.Elf.Args, gExit.Elf.RebootIOP);
@@ -1174,7 +1195,7 @@ function xlogProcess() {
 //////////////////////////////////////////////////////////////////////////
 
 let gExit 		= {};
-let gDebug      = false;
+let gDebug      = true;
 let gDbgTxt     = [];
 let gArt     	= getArtPaths();
 let gDevices    = getAvailableDevices();

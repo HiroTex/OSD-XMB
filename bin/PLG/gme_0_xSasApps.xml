@@ -66,19 +66,19 @@
 			return options;
     ]]>
   </Options>
-  <Context Name="AppContext" Type="OptionContext">
+  <Context Name="AppContext" Type="OptionContext" Filter="File">
     <Component Name="{INFO}" Icon="-1">
       <Confirm Event="OPEN_DIALOG" Dialog="item.Dialog" />
       <Dialog Type="INFO" BG="false" BackBtn="true" ElementIcon="true" >
         <Info>
-          <Item Name="{TITLE}" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Data['Title']}" Selectable="false" />
-          <Item Name="Version" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Data['Version']}" Selectable="false" />
-          <Item Name="Release" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Data['Release']}" Selectable="false" />
-          <Item Name="Developer" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Data['Developer']}" Selectable="false" />
-          <Item Name="Genre" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Data['Genre']}" Selectable="false" />
-          <Item Name="Video Mode" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Data['VmodeText']}" Selectable="false" />
-          <Item Name="Aspect Ratio Mode" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Data['AspectText']}" Selectable="false" />
-          <Item Name="{DEVICE}" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Data['DeviceText']}" Selectable="false" />
+          <Item Name="{TITLE}" Value="{DashUI.SubMenu.HighlightedItem.Data['Title']}" Selectable="false" />
+          <Item Name="Version" Value="{DashUI.SubMenu.HighlightedItem.Data['Version']}" Selectable="false" />
+          <Item Name="Release" Value="{DashUI.SubMenu.HighlightedItem.Data['Release']}" Selectable="false" />
+          <Item Name="Developer" Value="{DashUI.SubMenu.HighlightedItem.Data['Developer']}" Selectable="false" />
+          <Item Name="Genre" Value="{DashUI.SubMenu.HighlightedItem.Data['Genre']}" Selectable="false" />
+          <Item Name="Video Mode" Value="{DashUI.SubMenu.HighlightedItem.Data['VmodeText']}" Selectable="false" />
+          <Item Name="Aspect Ratio Mode" Value="{DashUI.SubMenu.HighlightedItem.Data['AspectText']}" Selectable="false" />
+          <Item Name="{DEVICE}" Value="{DashUI.SubMenu.HighlightedItem.Data['DeviceText']}" Selectable="false" />
         </Info>
       </Dialog>
     </Component>

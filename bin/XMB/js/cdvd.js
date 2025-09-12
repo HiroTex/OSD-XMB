@@ -165,7 +165,7 @@ const DiscTray = (() => {
 		if (disc !== oldDisc) { processed = false; }
 		if (('Function' in Type[disc]) && !processed) {
 			processed = true;
-			Threads.new(() => { item = Type[disc].Function(); }).start();
+            Tasks.Push(() => { item = Type[disc].Function(); });
         }
 	}
 

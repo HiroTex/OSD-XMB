@@ -1,0 +1,50 @@
+<App Type="DIALOG" Category="6" Icon="NET_PACKAGE" Name="{NET_ART.TITLE}">
+  <Dialog Type="TEXT" BG="false" Icon="NET_PACKAGE" Title="{NET_ART.TITLE}">
+    <Task>
+      <![CDATA[
+				function() {
+          let next = (UserConfig.Network !== 1) ? "Disconnected" : "ProcessGameList";
+          const prevData = DashUI.Dialog.Data[DashUI.Dialog.Level];
+          DashUI.Dialog.Data.push({ ...prevData[next] });
+          DashUI.Dialog.Level++;
+          UIAnimationDialogContentFade_Start(true);
+				}
+			]]>
+    </Task>
+    <Dialog Name="ProcessGameList" Type="TEXT" BG="false" Icon="NET_PACKAGE" Title="{NET_ART.TITLE}" Text="{NET_ART.CHECK}">
+      <Task>
+        <![CDATA[
+				  function() {
+            const prevData = DashUI.Dialog.Data[0];
+            const names = [ "Playstation", "Playstation 2" ];
+            const dirs = [ "PS1", "PS2" ];
+            let any = false;
+          
+            for (let j = 0; j < names.length; j++) {
+              const folder = DashCatItems[5].Items.find(item => item.Name === names[j]);
+              if (!folder) { continue; }
+              const items = folder.Value.Items;
+              for (let i = 0; i < items.length; i++) {
+                const element = items[i];
+                const notFound = getGameArt(element, dirs[j]);
+                if (!any && !notFound) { any = true; }
+              }
+            }
+          
+            if (!any) { DashUIDialogTransition(prevData["NotFound"]); return; }
+              
+            DashUI.Dialog.Data[DashUI.Dialog.Level].Text = getLocalText(XMBLANG.NET_ART.DOWNLOADING);
+            DashUI.AnimationQueue.push(() => {
+                if ((Tasks.length > 0) || Tasks.isRunning) { return false; }
+                DashUIDialogTransition(prevData["Finished"]);
+                return true;
+            });
+				  }
+			  ]]>
+      </Task>
+    </Dialog>
+    <Dialog Name="Disconnected" Type="TEXT" BG="false" Icon="NET_PACKAGE" Title="{NET_ART.TITLE}" BackBtn="true" Text="{NET.ERR_2}"/>
+    <Dialog Name="NotFound" Type="TEXT" BG="false" Icon="NET_PACKAGE" Title="{NET_ART.TITLE}" BackBtn="true" Text="{NET_ART.UNAVAILABLE}"/>
+    <Dialog Name="Finished" Type="TEXT" BG="false" Icon="NET_PACKAGE" Title="{NET_ART.TITLE}" BackBtn="true" Text="{NET_ART.SUCCESS}"/>
+  </Dialog>
+</App>

@@ -116,17 +116,18 @@ function main() {
     UIHandler();
     DbgHandler();
 
-    MainMutex.unlock();
-
     // IOP Work
     PadsHandler();
     SoundHandler();
+
+    MainMutex.unlock();
 
 	// Threaded Operations
     ImageCache.Process();
     Tasks.Process();
 
     if (gExit.To) {
+        NetDeinit();
         Screen.clear();
         Screen.flip();
         std.reload(gExit.To);

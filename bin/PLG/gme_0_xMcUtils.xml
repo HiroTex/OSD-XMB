@@ -96,7 +96,7 @@
 							function() {
 
                 UIAnimationDialogContentFade_Start(true);
-								const item = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current];
+								const item = DashUI.SubMenu.HighlightedItem;
 								const srcPath = item.FullPath;
                 const destMC = (srcPath.startsWith("mc0")) ? 1 : 0;
                 const destMCInfo = System.getMCInfo(destMC);
@@ -207,7 +207,7 @@
 						]]>
 					</Task>
 				</Dialog>
-					<Event On="Confirm" Type="Transition" To="DeleteItemDialogTask" Condition="DashUI.Dialog.Data[DashUI.Dialog.Level].Selected === 0" Exit="true"/>
+				<Event On="Confirm" Type="Transition" To="DeleteItemDialogTask" Condition="DashUI.Dialog.Data[DashUI.Dialog.Level].Selected === 0" Exit="true"/>
 			</Dialog>
 		</Component>
     <Confirm Event="OPEN_DIALOG" Dialog="item.Dialog"/>

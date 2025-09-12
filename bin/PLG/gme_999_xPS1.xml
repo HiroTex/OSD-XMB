@@ -40,7 +40,7 @@
 						get() {
 						  delete this.Icon;
               this.Icon = -2;
-              Tasks.Push(() => getPS1GameID(this));
+              Tasks.Push(() => getPS1GameID(this, true));
             },
 						enumerable: true,
             configurable: true
@@ -121,12 +121,12 @@
 		]]>
   </Default>
   <Context Name="GameContext" Type="OptionContext" Filter="Custom" Condition="item.GameID">
-		<Component Name="{CATEGORY.SETTINGS}" Icon="-1">
+		<Component Name="{CATEGORY.SETTINGS}">
       <Confirm>
         <![CDATA[
         function(index, item) {
 					const items = item.Dialog.Info;
-          const game = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current]
+          const game = DashUI.SubMenu.HighlightedItem;
 					const title = game.Name;
 					let dev = game.Data.dev;
 
@@ -271,7 +271,7 @@
 								cheats.push({ code: "NOVMC0", 						enabled: (info[7].Selected === 1)});
 								cheats.push({ code: "NOVMC1", 						enabled: (info[7].Selected === 2)});
 
-								const item = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current];
+								const item = DashUI.SubMenu.HighlightedItem;
 
 								setPOPSCheat({ cheats: cheats, game: item.Name, device: item.Data.dev });
                 UIAnimationDialogFade_Start(false);
@@ -282,13 +282,13 @@
 				<Event On="Confirm" Type="Transition" To="SaveSettingsDialog"/>
 			</Dialog>
 		</Component>
-    <Component Name="{INFO}" Icon="-1">
+    <Component Name="{INFO}">
       <Confirm Event="OPEN_DIALOG" Dialog="item.Dialog" />
       <Dialog Type="INFO" BG="false" BackBtn="true" ElementIcon="true">
         <Info>
-          <Item Name="{TITLE}" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Name}" Selectable="false" />
-          <Item Name="{DEVICE}" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Data.fdev}" Selectable="false" />
-          <Item Name="{SIZE}" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Data.fsize}" Selectable="false" />
+          <Item Name="{TITLE}" Value="{DashUI.SubMenu.HighlightedItem.Name}" Selectable="false" />
+          <Item Name="{DEVICE}" Value="{DashUI.SubMenu.HighlightedItem.Data.fdev}" Selectable="false" />
+          <Item Name="{SIZE}" Value="{DashUI.SubMenu.HighlightedItem.Data.fsize}" Selectable="false" />
         </Info>
       </Dialog>
     </Component>

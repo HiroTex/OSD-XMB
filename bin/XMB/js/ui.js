@@ -307,11 +307,11 @@ const ImageCache = (() => {
 	function loadImages(itemsToLoad) {
 		try {
 			for (let i = 0; i < itemsToLoad.length; i++) {
-				const Path = itemsToLoad[i];
-				if (!std.exists(Path)) { continue; }
+                const Path = itemsToLoad[i];
+                if (!std.exists(Path)) { continue; }
 				const image = new Image(Path);
 				image.optimize();
-				image.filter = LINEAR;
+                image.filter = LINEAR;
 
 				// Update cache entry with loaded image
 				const cached = findInCache(Path);
@@ -512,113 +512,116 @@ function DashUInit() {
 
     // Common Parameters
     DashUI.LoadedPlugins = false;
-	DashUI.LoadSpinning = 0.0f;
-	DashUI.BootWarningAlpha = 0;
-	DashUI.State = {
-		Current: 0,
-		Previous: 0,
-		Next: 0
-	};
-	DashUI.ExitState = 0;
-	DashUI.BootState = 0;
-	DashUI.BootFrame = 0;
+    DashUI.LoadSpinning = 0.0f;
+    DashUI.BootWarningAlpha = 0;
+    DashUI.State = {
+        Current: 0,
+        Previous: 0,
+        Next: 0
+    };
+    DashUI.ExitState = 0;
+    DashUI.BootState = 0;
+    DashUI.BootFrame = 0;
     DashUI.OverlayState = 0;
     DashUI.PbarAlpha = 0;
-	DashUI.AnimationQueue = [];
+    DashUI.AnimationQueue = [];
 
-	// Overlay Object
-	DashUI.Overlay = {};
-	DashUI.Overlay.Alpha = 128;
-	DashUI.Overlay.Color = { R: 0, G: 0, B: 0 }
+    // Overlay Object
+    DashUI.Overlay = {
+        Alpha: 128,
+        Color: { R: 0, G: 0, B: 0 }
+    };
 
-	// Init Clock Object
-	DashUI.Clock = {};
-	DashUI.Clock.Display = false;
-	DashUI.Clock.Fade = createFade();
+    // Init Clock Object
+    DashUI.Clock = {
+        Display: false,
+        Fade: createFade()
+    };
 
-	// Init Item Backgroud Object
+    // Init Item Backgroud Object
     DashUI.ItemBG = {};
 
     // PIC2 Item
-    DashUI.PIC2 = {};
-    DashUI.PIC2.Display = false;
-    DashUI.PIC2.Fade = createFade();
-    DashUI.PIC2.A = 0;
+    DashUI.PIC2 = {
+        Display: false,
+        Fade: createFade(),
+        A: 0
+    };
 
-	// Init Categories Object
-	DashUI.Category = {};
-	DashUI.Category.Display = false;
-	DashUI.Category.Next = 5;
-	DashUI.Category.Current = 5;
-	DashUI.Category.Animation = {};
-	DashUI.Category.Animation.Running = false;
-	DashUI.Category.Animation.Progress = 0.0f;
-	DashUI.Category.Fade = createFade();
+    // Init Categories Object
+    DashUI.Category = {
+        Display: false,
+        Next: 5,
+        Current: 5,
+        Fade: createFade(),
+        Animation: { Running: false, Progress: 0.0f }
+    };
 
-	// Init Items Object
-	DashUI.ItemCollection = {};
-	DashUI.ItemCollection.Current = DashCatItems[DashUI.Category.Current].Items;
-	DashUI.ItemCollection.Next = DashCatItems[DashUI.Category.Next].Items;
-	DashUI.ItemCollection.Swipe = {
-		Dir: 0,
-		Progress: 0.0f,
-		Running: false
-	};
+    // Init Items Object
+    DashUI.ItemCollection = {
+        Current: DashCatItems[DashUI.Category.Current].Items,
+        Next: DashCatItems[DashUI.Category.Next].Items
+    };
+    DashUI.ItemCollection.Swipe = {
+        Dir: 0,
+        Progress: 0.0f,
+        Running: false
+    };
 
-	DashUI.Items = {};
-	DashUI.Items.Display = false;
-	DashUI.Items.Current = 0;
-	DashUI.Items.Next = 0;
-	DashUI.Items.Animation = {};
-	DashUI.Items.Animation.Running = false;
-	DashUI.Items.Animation.Progress = 0.0f;
-	DashUI.Items.Fade = createFade();
+    DashUI.Items = {
+        Display: false,
+        Current: 0,
+        Next: 0,
+        Fade: createFade(),
+        Animation: { Running: false, Progress: 0.0f }
+    };
 
-	// Init Sub Menu Object
-    DashUI.SubMenu = {};
-    DashUI.SubMenu.Fade = createFade();
-	DashUI.SubMenu.Display = false;
-	DashUI.SubMenu.Level = -1;
-	DashUI.SubMenu.ItemCollection = [];
-	DashUI.SubMenu.Items = {};
-	DashUI.SubMenu.Items.Current = 0;
-	DashUI.SubMenu.Items.Next = 0;
-	DashUI.SubMenu.Animation = {};
-	DashUI.SubMenu.Animation.Running = false;
-	DashUI.SubMenu.Animation.Progress = 0.0f;
-	DashUI.SubMenu.Animation.Fade = createFade();
-	DashUI.SubMenu.PrevAnimation = {};
-	DashUI.SubMenu.PrevAnimation.Fade = createFade();
+    // Init Sub Menu Object
+    DashUI.SubMenu = {
+        Display: false,
+        Level: -1,
+        ItemCollection: [],
+        Items: { Current: 0, Next: 0 },
+        PrevAnimation: { Fade: createFade() },
+        Fade: createFade(),
+        Animation: {
+            Running: false,
+            Progress: 0.0f,
+            Fade: createFade()
+        }
+    };
+
+    Object.defineProperty(DashUI.SubMenu, "HighlightedItem", {
+        get() {
+            if (DashUI.SubMenu.Level < 0) { return {}; }
+            const items = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items;
+            if (items.length < this.Items.Current) { return {}; }
+            return items[this.Items.Current];
+        }
+    })
 
 	// Init Context Object
-	DashUI.Context = {};
-	DashUI.Context.Display = false;
-	DashUI.Context.Level = -1;
-	DashUI.Context.PreviewA = 0;
-	DashUI.Context.ItemCollection = [];
-	DashUI.Context.Items = {};
-	DashUI.Context.Items.Current = 0;
-	DashUI.Context.Items.Next = 0;
-	DashUI.Context.Items.UpperLimit = 0;
-	DashUI.Context.Items.LowerLimit = 0;
-	DashUI.Context.Animation = {};
-	DashUI.Context.Animation.Running = false;
-	DashUI.Context.Animation.Progress = 0.0f;
-    DashUI.Context.Fade = createFade();
+    DashUI.Context = {
+        Display: false,
+        Level: -1,
+        PreviewA: 0,
+        ItemCollection: [],
+        Items: { Current: 0, Next: 0, UpperLimit: 0, LowerLimit: 0 },
+        Animation: { Running: false, Progress: 0.0f },
+        Fade: createFade()
+    };
 
-	DashUI.OptionBox = {};
-	DashUI.OptionBox.Progress = 0.0f;
+	DashUI.OptionBox = { Progress: 0.0f };
 
 	// Init Dialog Object
-	DashUI.Dialog = {};
-	DashUI.Dialog.Display = false;
-	DashUI.Dialog.Level = -1;
-	DashUI.Dialog.Data = [];
-	DashUI.Dialog.Animation = {};
-	DashUI.Dialog.Animation.Running = false;
-	DashUI.Dialog.Animation.Progress = 0.0f;
-	DashUI.Dialog.Fade = createFade();
-	DashUI.Dialog.ContentFade = createFade();
+    DashUI.Dialog = {
+        Display: false,
+        Level: -1,
+        Data: [],
+        Fade: createFade(),
+        ContentFade: createFade(),
+        Animation: { Running: false, Progress: 0.0f }
+    };
 }
 function DashCatInit() {
 	for (let i = 0; i < CATNAME.length; i++) { DashCatItems.push({ Items: [], Default: 0 }); }
@@ -1522,22 +1525,18 @@ function DashUIEnterSubMenu(SubMenu) {
 }
 function DashUISetNewSubMenu(SubMenu) {
     PlayCursorSfx();
-    if (!('Init' in SubMenu)) {
+    let initFun = SubMenu.Init;
+    if (!initFun) {
         DashUIEnterSubMenu(SubMenu);
         return;
     }
 
-    SubMenu.Processing = true;
+    Tasks.Push(() => initFun(SubMenu));
+
     DashUI.AnimationQueue.push(() => {
-        if (!Tasks.isRunning && SubMenu.Processing) { OpenDialogErrorMsg("An Error has occurred"); return true; }
-        else if (SubMenu.Processing) { return false; }
+        if (Tasks.queue > 0 || Tasks.isRunning) { return false; }
         DashUIEnterSubMenu(SubMenu);
         return true;
-    });
-
-    Tasks.Push(() => {
-        SubMenu.Init(SubMenu);
-        delete SubMenu.Processing;
     });
 }
 function DashUIBackFromSubMenu() {
@@ -2431,6 +2430,16 @@ function DashUISetDialog(Dialog) {
 	DashUI.Overlay.Alpha = 0;
 	UIAnimationDialogFade_Start(true);
 }
+function DashUIDialogTransition(ToDialog) {
+    UIAnimationDialogContentFade_Start(false);
+    DashUI.AnimationQueue.push(() => {
+        if (!DashUI.Dialog.ContentFade.Running) { return false; }
+        DashUI.Dialog.Data.push({ ...ToDialog });
+        DashUI.Dialog.Level++;
+        UIAnimationDialogContentFade_Start(true);
+        return true;
+    });
+}
 function OpenDialogErrorMsg(Message) {
 	const dialog = {
         Icon: -1,
@@ -2746,7 +2755,7 @@ function DrawUITextDialog(data, a) {
 
     if ((DashUI.AnimationQueue.length < 1) && ('Fun' in data)) {
         Tasks.Push(data.Fun);
-		delete data.Fun;
+        delete data.Fun;
 	}
 }
 function DrawUIDialog() {

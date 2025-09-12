@@ -26,7 +26,7 @@
 							get() {
 								delete this.Icon;
                 this.Icon = -2;
-                Tasks.Push(() => getPS2GameID(this));
+                Tasks.Push(() => getPS2GameID(this, true));
 							},
 							enumerable: true,
 							configurable: true
@@ -123,7 +123,7 @@
         <![CDATA[
         function(index, item) {
 					const items = item.Dialog.Info;
-					const config = CfgMan.Get(`${DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].GameID.toUpperCase()}.cfg`);
+					const config = CfgMan.Get(`${DashUI.SubMenu.HighlightedItem.GameID.toUpperCase()}.cfg`);
           items[0].Selected = ('VMC0' in config) ? 1 : 0;
 					items[1].Selected = ('VMC1' in config) ? 1 : 0;
 					if ("gc" in config)	{
@@ -189,7 +189,7 @@
           <Task>
             <![CDATA[
 							function() {
-								const gameID = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].GameID.toUpperCase();
+								const gameID = DashUI.SubMenu.HighlightedItem.GameID.toUpperCase();
 								const config = CfgMan.Get(`${gameID}.cfg`);
 								const vmcgroups = CfgMan.Get("PS2VMCGRP.cfg");
 								let vmcgameid = gameID;
@@ -299,10 +299,10 @@
       <Confirm Event="OPEN_DIALOG" Dialog="item.Dialog"/>
       <Dialog Type="INFO" BG="false" BackBtn="true" ElementIcon="true">
         <Info>
-          <Item Name="{TITLE}" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Name}" Selectable="false" />
-          <Item Name="{DEVICE}" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Data.dev.toUpperCase()}" Selectable="false" />
-          <Item Name="{SIZE}" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Data.fsize}" Selectable="false" />
-          <Item Name="{MEDIA}" Value="{DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items[DashUI.SubMenu.Items.Current].Data.mt.toUpperCase()}" Selectable="false" />
+          <Item Name="{TITLE}" Value="{DashUI.SubMenu.HighlightedItem.Name}" Selectable="false" />
+          <Item Name="{DEVICE}" Value="{DashUI.SubMenu.HighlightedItem.Data.dev.toUpperCase()}" Selectable="false" />
+          <Item Name="{SIZE}" Value="{DashUI.SubMenu.HighlightedItem.Data.fsize}" Selectable="false" />
+          <Item Name="{MEDIA}" Value="{DashUI.SubMenu.HighlightedItem.Data.mt.toUpperCase()}" Selectable="false" />
         </Info>
       </Dialog>
     </Component>

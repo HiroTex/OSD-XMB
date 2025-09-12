@@ -29,5 +29,6 @@
   { "id": "27", "path": "ic_x_tool.png", "name": "TOOL" },
   { "id": "28", "path": "ic_set_net.png", "name": "SET_NET" },
   { "id": "29", "path": "ic_x_mass.png", "name": "MASS" },
-  { "id": "30", "path": "ic_x_osd.png", "name": "OSD" }
+  { "id": "30", "path": "ic_x_osd.png", "name": "OSD" },
+  { "id": "31", "path": "ic_net_package.png", "name": "NET_PACKAGE" }
 ]

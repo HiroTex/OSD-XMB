@@ -86,6 +86,62 @@
       "Impossibile inizializzare la rete.\nControlla la tua connessione e riavvia la console.",
       "Kan netwerk niet initialiseren.\nControleer uw verbinding en start de console opnieuw op.",
       "Não foi possível inicializar a Rede.\nVerifique a sua ligação e reinicie a consola."
+    ],
+    "ERR_2": [
+      "Your console is not connected to the Network.",
+      "Votre console n'est pas connectée au réseau.",
+      "Su consola no está conectada a la red.",
+      "Ihre Konsole ist nicht mit dem Netzwerk verbunden.",
+      "La tua console non è connessa alla rete.",
+      "Uw console is niet verbonden met het netwerk.",
+      "A sua consola não está ligada à Rede."
+    ]
+  },
+  "NET_ART": {
+    "TITLE": [
+      "Update Game Resources",
+      "Update Game Resources",
+      "Actualizar Recursos de Juegos",
+      "Update Game Resources",
+      "Update Game Resources",
+      "Update Game Resources",
+      "Update Game Resources"
+    ],
+    "CHECK": [
+      "Checking available games, please wait...",
+      "Vérification des jeux disponibles, veuillez patienter...",
+      "Comprobando juegos disponibles, por favor espere...",
+      "Überprüfung verfügbarer Spiele, bitte warten...",
+      "Controllo dei giochi disponibili, attendere prego...",
+      "Beschikbare spellen aan het controleren, even geduld a.u.b...",
+      "A verificar jogos disponíveis, por favor aguarde..."
+    ],
+    "DOWNLOADING": [
+      "Downloading available resources, please wait...",
+      "Téléchargement des ressources disponibles, veuillez patienter...",
+      "Descargando recursos disponibles, por favor espere...",
+      "Herunterladen verfügbarer Ressourcen, bitte warten...",
+      "Download delle risorse disponibili, attendere prego...",
+      "Beschikbare bronnen aan het downloaden, even geduld a.u.b...",
+      "A transferir recursos disponíveis, por favor aguarde..."
+    ],
+    "UNAVAILABLE": [
+      "There are no new available resources for your games.",
+      "Il n'y a pas de nouvelles ressources de jeu disponibles pour vos jeux.",
+      "No hay nuevos recursos disponibles para sus juegos.",
+      "Es sind keine neuen Spielressourcen für Ihre Spiele verfügbar.",
+      "There are no new available resources for your games.",
+      "There are no new available resources for your games.",
+      "There are no new available resources for your games."
+    ],
+    "SUCCESS": [
+      "Game Resources updated successfully.",
+      "Game Resources updated successfully.",
+      "Recursos de Juegos actualizados correctamente.",
+      "Game Resources updated successfully.",
+      "Game Resources updated successfully.",
+      "Game Resources updated successfully.",
+      "Game Resources updated successfully."
     ]
   }
 }

@@ -69,8 +69,18 @@ function xmlFindNextElementBlock(str) {
         if (nextClose === -1) return null;
 
         if (nextOpen !== -1 && nextOpen < nextClose) {
-            depth++;
-            searchPos = nextOpen + tagName.length + 1;
+            const nextOpenEnd = str.indexOf(">", nextOpen);
+            if (nextOpenEnd === -1) return null;
+
+            // check if this inner <tag> is actually self-closing
+            if (str.charCodeAt(nextOpenEnd - 1) === 47) {
+                // self-closing — just skip, do not increment depth
+                searchPos = nextOpenEnd + 1;
+            } else {
+                // real nested open — increase depth
+                depth++;
+                searchPos = nextOpenEnd + 1;
+            }
         } else {
             depth--;
             searchPos = nextClose + tagName.length + 3;
@@ -266,6 +276,7 @@ function xmlParseDialogTag(element) {
         const codeTag = element.children.find(child => child.tagName === "Dialog");
         if (codeTag) { return xmlParseDialogTag(codeTag); }
         // No Dialog tag found, return empty object
+        console.log("xmlParseDialogTag(): Default Dialog Tag not found.")
         return {};
     }
 
@@ -306,19 +317,16 @@ function xmlParseDialogTag(element) {
 									if (child.attributes.Exit) { UIAnimationDialogFade_Start(false); }
 									return;
 								}
-							}
+                            }
 
-                            UIAnimationDialogContentFade_Start(false);
-                            DashUI.AnimationQueue.push(() => {
-                                if (!DashUI.Dialog.ContentFade.Running) {
-                                    const prevData = DashUI.Dialog.Data[DashUI.Dialog.Level];
-                                    DashUI.Dialog.Data.push({ ...prevData[child.attributes.To] });
-                                    DashUI.Dialog.Level++;
-                                    UIAnimationDialogContentFade_Start(true);
-                                    return true;
-                                }
-                                return false;
-                            });
+                            let level = DashUI.Dialog.Level;
+
+                            if ('From' in child.attributes) {
+                                level = parseInt(child.attributes.From);
+                            }
+
+                            const prevData = DashUI.Dialog.Data[level];
+                            DashUIDialogTransition(prevData[child.attributes.To]);
 						}
 						break;
 				}
