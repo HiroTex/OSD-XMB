@@ -593,12 +593,12 @@ function DashUInit() {
 
     Object.defineProperty(DashUI.SubMenu, "HighlightedItem", {
         get() {
-            if (DashUI.SubMenu.Level < 0) { return {}; }
-            const items = DashUI.SubMenu.ItemCollection[DashUI.SubMenu.Level].Items;
+            if (this.Level < 0) { return {}; }
+            const items = this.ItemCollection[this.Level].Items;
             if (items.length < this.Items.Current) { return {}; }
             return items[this.Items.Current];
         }
-    })
+    });
 
 	// Init Context Object
     DashUI.Context = {
@@ -610,6 +610,13 @@ function DashUInit() {
         Animation: { Running: false, Progress: 0.0f },
         Fade: createFade()
     };
+
+    Object.defineProperty(DashUI.Context, "Active", {
+        get() {
+            if (this.Level < 0) { return []; }
+            return this.ItemCollection[this.Level];
+        }
+    })
 
 	DashUI.OptionBox = { Progress: 0.0f };
 

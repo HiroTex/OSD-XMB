@@ -6,6 +6,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 const NetInfo = {
+    Initialized: false,
     IP: "-",
     NETMASK: "-",
     GATEWAY: "-",
@@ -15,20 +16,21 @@ const NetInfo = {
 let gNetArt = [];
 
 function NetInit() {
-
     try {
         IOP.loadModule("SMAP");
-        const netCfg = CfgMan.Get("network.cfg");
 
+        const netCfg = CfgMan.Get("network.cfg");
         const ip = netCfg["IP"];
         const mask = netCfg["NETMASK"];
         const gw = netCfg["GATEWAY"];
         const dns = netCfg["DNS"];
+
         if (!ip || !mask || !gw || !dns) { Network.init(); } // Use DHCP if config is incomplete.
         else { Network.init(ip, mask, gw, dns); }
+        NetInfo.Initialized = true;
 
         const conf = Network.getConfig();
-        if (!conf) { console.log("Failed to initialize Network."); return false; }
+        if (!conf) { throw new Error("Couldn't get Network Configuration."); }
 
         NetInfo.IP = conf.ip;
         NetInfo.NETMASK = conf.netmask;
@@ -37,7 +39,7 @@ function NetInit() {
 
         NetArtInit();
     } catch (e) {
-        console.log(e.message);
+        console.log(e);
         return false;
     }
 
@@ -55,16 +57,14 @@ function NetArtInit() {
     let src = "https://raw.githubusercontent.com/HiroTex/OSD-XMB-ARTDB/main/manifest.txt";
     let r = new Request();
     try {
-        const ret = r.get(src);
-        if (ret.status_code !== 0) { throw new Error("Art Manifest Get Failed"); }
         r.download(src, tmpath);
         gNetArt = std.loadFile(tmpath).split('\n').filter(line => line !== "");
-        os.remove(tmpath);
     } catch (e) {
-        console.log(e.message);
+        console.log(e);
     } finally {
-        r = null;
+        if (r) r = null;
+        if (std.exists(tmpath)) os.remove(tmpath);
     }
 }
 
-if (UserConfig.Network !== 0) { Tasks.Push(() => { UserConfig.Network = Number(NetInit()); }); }
+if (UserConfig.Network !== 0) { Tasks.Push(() => UserConfig.Network = Number(NetInit())); }

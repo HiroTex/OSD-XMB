@@ -60,7 +60,9 @@
 				function(index, item) {
           if (index === UserConfig.Network) return;
           UserConfig.Network = index;
-          DashUISetDialog(item.Dialog);
+          let dialog = item.Dialog;
+          if ((index === 1) && (NetInfo.Initialized)) { dialog = DashUI.Context.Active.Items[0].Dialog; }
+          DashUISetDialog(dialog);
 				}
 			]]>
 		</Confirm>

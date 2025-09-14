@@ -2,7 +2,7 @@
 ///*				   		Initialize Modules						  *///
 //////////////////////////////////////////////////////////////////////////
 
-os.sleep(2000); // Wait for modules to load.
+os.sleep(1000); // Wait for modules to load.
 
 function InitCWD() {
 

@@ -1195,7 +1195,7 @@ function xlogProcess() {
 //////////////////////////////////////////////////////////////////////////
 
 let gExit 		= {};
-let gDebug      = true;
+let gDebug      = false;
 let gDbgTxt     = [];
 let gArt     	= getArtPaths();
 let gDevices    = getAvailableDevices();

@@ -8,7 +8,6 @@
 const MainMutex = new Mutex();
 const Tasks = (() => {
     const queue = [];
-    let thread = false;
     let isRunning = false;
 
     return {
@@ -30,8 +29,7 @@ const Tasks = (() => {
             if (isRunning || (queue.length === 0)) return;
             isRunning = true;
             const fun = queue.shift();
-            thread = Threads.new(fun);
-            thread.start();
+            Threads.new(fun).start();
         },
 
         get isRunning() { return isRunning; },
