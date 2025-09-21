@@ -70,6 +70,12 @@ Read [The App freezes exactly after the Boot sequence](#troubleshooting).
         - `Air Paint`, resembling one of the PS3's default Themes.
         - `PSX`, based on the appearance of the XMB Dashboard of the DESR PSX Console.
   	  
+- **Network Connection**:
+    - OSD-XMB can connect to the Internet by using the "Network Settings" on the "Settings" category.
+    - While you are connected to the net, OSD-XMB can fetch Game Artwork from [this database](https://github.com/HiroTex/OSD-XMB-ARTDB).
+    - To automatically download game artwork, do not open the "Playstation" and/or "Playstation 2" game folders before initializing the Network. After you have initialized the Network, you can navigate your games and the App will automatically start downloading available artwork from the Database. If you have already opened the game folders then you have to manually update the game artwork through the "Update Game Resources" item on the "Network" category.
+    - To manually download Game Artwork by using the "Update Game Resources" item on the "Network" category, your games must be already identified (their Game-ID must be displayed below the game's Name).
+
 ## Instructions
 
 -	It is suggested, but not necessary, to place these files inside a folder on a Memory Card and launch it from there, since the App can be set to auto-boot using FMCB:

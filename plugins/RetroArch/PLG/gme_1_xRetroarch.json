@@ -5,7 +5,11 @@
   "Category": 5,
   "Type": "ELF",
   "Value": {
-    "Path": "{cwd}/APPS/retroarch/raboot.elf",
+    "Path": { 
+		"mass?:RETROARCH/raboot.elf",
+		"mass?:APPS/RETROARCH/raboot.elf",
+		"{cwd}/APPS/retroarch/raboot.elf"
+	},
     "Args": []
   },
   "CustomIcon": "{cwd}/APPS/retroarch/ico.png",
