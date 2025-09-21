@@ -873,10 +873,35 @@ function ExecuteSpecial() {
 function ExecuteELF() {
     if ('Code' in gExit.Elf) { gExit.Elf.Code(); }
     if (gExit.Elf.Path.substring(0, 3) !== "pfs") { umountHDD(); }
-    NetDeinit();
-
+    iopResNet(gExit.Elf.Path);
 	console.log( `Executing Elf: ${gExit.Elf.Path}\n With Args: [ ${gExit.Elf.Args} ]`);
 	System.loadELF(gExit.Elf.Path, gExit.Elf.Args, gExit.Elf.RebootIOP);
+}
+function ResetIOP(path) {
+    let dev = getDeviceName(path);
+    IOP.reset();
+    switch (dev) {
+        case "CDFS":
+        case "CDFS0": IOP.loadModule("cdfs"); break;
+        case "ATA": IOP.loadModule("ata_bd"); break;
+        case "MX4SIO": IOP.loadModule("mx4sio_bd"); break;
+        case "USB": IOP.loadModule("usbmass_bd"); break;
+        case "UDPBD": IOP.loadModule("smap_udpbd"); break;
+        case "HDD": IOP.loadModule("ps2fs"); break;
+        case "MC":
+        case "MC0":
+        case "MC1": IOP.loadModule("mcman"); break;
+        case "MMCE":
+        case "MMCE0":
+        case "MMCE1": IOP.loadModule("mmceman"); break;
+    }
+
+    os.sleep(1000);
+}
+function iopResNet(path) {
+    if (NetInfo.IP === "-") { return; }
+    NetDeinit();
+    ResetIOP(path);
 }
 
 //////////////////////////////////////////////////////////////////////////

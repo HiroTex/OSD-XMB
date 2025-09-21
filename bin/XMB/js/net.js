@@ -46,7 +46,6 @@ function NetInit() {
     return true;
 }
 function NetDeinit() {
-    if (NetInfo.IP !== "-") { Network.deinit(); }
     NetInfo.IP = "-";
     NetInfo.NETMASK = "-";
     NetInfo.GATEWAY = "-";
@@ -67,4 +66,4 @@ function NetArtInit() {
     }
 }
 
-if (UserConfig.Network !== 0) { Tasks.Push(() => UserConfig.Network = Number(NetInit())); }
+if (UserConfig.Network === 1) { Tasks.Push(() => UserConfig.Network = Number(NetInit())); }

@@ -80,7 +80,7 @@ function ReadUserSettings() {
 	if ('BgColor'	 in config) { UserConfig.BgColor	  = parseInt(config["BgColor"]); 	}
 	if ('waves'		 in config) { UserConfig.Waves		  = (config["waves"] === "true"); 	}
 	if ('Theme'		 in config) { UserConfig.Theme		  = config["Theme"];				}
-	if ('network'	 in config) { UserConfig.Network	  = config["network"];				}
+	if ('network'	 in config) { UserConfig.Network	  = parseInt(config["network"]);	}
 
 	if (!os.readdir(PATHS.Theme)[0].includes(UserConfig.Theme)) { UserConfig.Theme = "Original"; }
 

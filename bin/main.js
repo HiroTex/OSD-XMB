@@ -127,7 +127,7 @@ function main() {
     Tasks.Process();
 
     if (gExit.To) {
-        NetDeinit();
+        iopResNet(System.boot_path);
         Screen.clear();
         Screen.flip();
         std.reload(gExit.To);
