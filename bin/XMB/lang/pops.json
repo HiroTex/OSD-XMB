@@ -7,7 +7,8 @@
 			"Compatibility Mode",
 			"Compatibility Mode",
 			"Compatibility Mode",
-			"Compatibility Mode"
+			"Compatibility Mode",
+			"호환성 모드"			
 		],
 		"1": [
 			"Code Cache Addon",
@@ -16,7 +17,8 @@
 			"Code Cache Addon",
 			"Code Cache Addon",
 			"Code Cache Addon",
-			"Code Cache Addon"
+			"Code Cache Addon",
+			"코드 캐시 애드온"
 		],
 		"2": [
 			"Sub CD Status",
@@ -25,7 +27,8 @@
 			"Sub CD Status",
 			"Sub CD Status",
 			"Sub CD Status",
-			"Sub CD Status"
+			"Sub CD Status",
+			"하위 CD 상태"
 		],
 		"3": [
 			"Fake Lybcript",
@@ -34,7 +37,8 @@
 			"Fake Lybcript",
 			"Fake Lybcript",
 			"Fake Lybcript",
-			"Fake Lybcript"
+			"Fake Lybcript",
+            "위조 Lybcript"
 		],
 		"4": [
 			"PAL Patcher",
@@ -43,7 +47,8 @@
 			"PAL Patcher",
 			"PAL Patcher",
 			"PAL Patcher",
-			"PAL Patcher"
+			"PAL Patcher",
+			"PAL 패처"			
 		],
 		"5": [
 			"Sound Mode",
@@ -52,7 +57,8 @@
 			"Sound Mode",
 			"Sound Mode",
 			"Sound Mode",
-			"Sound Mode"
+			"Sound Mode",
+			"사운드 모드"
 		],
 		"6": [
 			"DPAD to Left Stick",
@@ -61,7 +67,8 @@
 			"DPAD to Left Stick",
 			"DPAD to Left Stick",
 			"DPAD to Left Stick",
-			"DPAD to Left Stick"
+			"DPAD to Left Stick",
+			"십자 패드를 왼쪽 스틱으로"
 		],
 		"7": [
 			"Virtual Memory Cards",
@@ -70,7 +77,8 @@
 			"Virtual Memory Cards",
 			"Virtual Memory Cards",
 			"Virtual Memory Cards",
-			"Virtual Memory Cards"
+			"Virtual Memory Cards",
+			"가상 메모리 카드"
 		]
 	},
 	"POPS_SETTINGS": {
@@ -81,7 +89,8 @@
 			"Forced",
 			"Forced",
 			"Forced",
-			"Forced"
+			"Forced",
+			"강제"
 		],
 		"SOUND_1": [
 			"Mute CDDA",
@@ -90,7 +99,8 @@
 			"Mute CDDA",
 			"Mute CDDA",
 			"Mute CDDA",
-			"Mute CDDA"
+			"Mute CDDA",
+			"CDDA 음소거"
 		],
 		"SOUND_2": [
 			"Unmute CDDA",
@@ -99,7 +109,8 @@
 			"Unmute CDDA",
 			"Unmute CDDA",
 			"Unmute CDDA",
-			"Unmute CDDA"
+			"Unmute CDDA",
+			"CDDA 음소거 해제"
 		],
 		"SOUND_3": [
 			"Mute VAB",
@@ -108,7 +119,8 @@
 			"Mute VAB",
 			"Mute VAB",
 			"Mute VAB",
-			"Mute VAB"
+			"Mute VAB",
+			"VAB 음소거"
 		],
 		"DPAD2STICK_1": [
 			"Force Digital Mode",
@@ -117,7 +129,8 @@
 			"Force Digital Mode",
 			"Force Digital Mode",
 			"Force Digital Mode",
-			"Force Digital Mode"
+			"Force Digital Mode",
+			"강제 디지털 모드"
 		],
 		"DPAD2STICK_2": [
 			"Force Analog Mode",
@@ -126,7 +139,8 @@
 			"Force Analog Mode",
 			"Force Analog Mode",
 			"Force Analog Mode",
-			"Force Analog Mode"
+			"Force Analog Mode",
+			"강제 아날로그 모드"
 		],
 		"NOVMC_1": [
 			"Slot 2 Only",
@@ -135,7 +149,8 @@
 			"Slot 2 Only",
 			"Slot 2 Only",
 			"Slot 2 Only",
-			"Slot 2 Only"
+			"Slot 2 Only",
+			"슬롯 2 전용"
 		],
 		"NOVMC_2": [
 			"Slot 1 Only",
@@ -144,7 +159,8 @@
 			"Slot 1 Only",
 			"Slot 1 Only",
 			"Slot 1 Only",
-			"Slot 1 Only"
+			"Slot 1 Only",
+			"슬롯 1 전용"
 		]
 	}
 }
