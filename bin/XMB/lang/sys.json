@@ -7,7 +7,8 @@
       "System-Einstellungen",
       "Impostazioni del sistema",
       "Systeeminstellingen",
-      "Definições de Sistema"
+      "Definições de Sistema",
+      "시스템 설정"
     ],
     "DESC": [
       "Adjusts settings for this PS2 system.",
@@ -16,7 +17,8 @@
       "Einstellungen für dieses PS2-System anpassen.",
       "Regola le impostazioni di questo sistema PS2.",
       "Pas de instellingen van dit PS2-systeem aan.",
-      "Ajuste as configurações deste sistema PS2."
+      "Ajuste as configurações deste sistema PS2.",
+      "PS2 시스템의 설정을 조정합니다."
     ]
   },
   "SETSYS1": {
@@ -27,7 +29,8 @@
       "Sprache",
       "Lingua",
       "Taal",
-      "Idioma"
+      "Idioma",
+      "언어"
     ],
     "DESC": [
       "Set the system Language.",
@@ -36,7 +39,8 @@
       "Systemsprache festlegen.",
       "Seleziona la lingua del sistema.",
       "Stel de systeemtaal in.",
-      "Definir o idioma do sistema."
+      "Definir o idioma do sistema.",
+      "시스템 언어를 설정합니다."
     ]
   },
   "SETSYS2": {
@@ -47,7 +51,8 @@
       "Bestätigungstaste",
       "Pulsante di conferma",
       "Bevestigingsknop",
-      "Botão de Confirmação"
+      "Botão de Confirmação",
+      "확인 버튼"
     ],
     "DESC": [
       "Sets the confirmation button type.",
@@ -56,7 +61,8 @@
       "Legt den Typ der Bestätigungstaste.",
       "Imposta il tipo di pulsante di conferma.",
       "Stelt het type bevestigingsknop.",
-      "Define o tipo de botão de confirmação."
+      "Define o tipo de botão de confirmação.",
+      "확인 버튼 유형을 설정합니다."
     ]
   },
   "SETSYS3": {
@@ -67,7 +73,8 @@
       "Warnmeldung",
       "Messaggio di Avvertenza",
       "Waarschuwingsbericht",
-      "Mensagem de Aviso"
+      "Mensagem de Aviso",
+      "경고 메시지"
     ],
     "DESC": [
       "Show the Epilepsy Warning message.",
@@ -76,7 +83,8 @@
       "Zeigt die Epilepsie-Warnmeldung an.",
       "Mostra il messaggio di avviso di epilessia.",
       "Toon het epilepsie-waarschuwingsbericht.",
-      "Mostrar a mensagem de aviso de epilepsia."
+      "Mostrar a mensagem de aviso de epilepsia.",
+      "뇌전증 경고 메시지를 표시합니다."
     ]
   },
   "SETSYS4": {
@@ -87,7 +95,8 @@
       "Laufwerksschacht-Lesung",
       "Lettura del Vassoio del Disco",
       "Lezen van de Disc Tray",
-      "Leitura da Bandeja de Disco"
+      "Leitura da Bandeja de Disco",
+      "디스크 트레이 읽기"
     ],
     "DESC": [
       "Enable physical disc reading.",
@@ -96,7 +105,8 @@
       "Physisches Lesen von Discs aktivieren.",
       "Abilita la lettura dei dischi fisici.",
       "Fysiek schijf lezen inschakelen.",
-      "Ativar a leitura de discos físicos."
+      "Ativar a leitura de discos físicos.",
+      "물리적 디스크 읽기를 활성화합니다."
     ]
   },
   "SETSYS5": [
@@ -106,7 +116,8 @@
     "Systeminformationen",
     "Informazioni sul sistema",
     "Systeeminformatie",
-    "Informação do Sistema"
+    "Informação do Sistema",
+    "시스템 정보"
   ],
   "SYSINFO": {
     "MODEL": [
@@ -116,7 +127,8 @@
       "Modell",
       "Modello",
       "Model",
-      "Modelo"
+      "Modelo",
+      "모델"
     ],
     "BROWSER": [
       "Browser",
@@ -125,7 +137,8 @@
       "Browser",
       "Browser",
       "Browser",
-      "Navegador"
+      "Navegador",
+      "찾아보기"
     ],
     "CD_PLAYER": [
       "CD Player",
@@ -134,7 +147,8 @@
       "CD-Player",
       "Lettore CD",
       "CD-speler",
-      "Leitor de CD"
+      "Leitor de CD",
+      "CD 플레이어"
     ],
     "DVD_PLAYER": [
       "DVD Player",
@@ -143,7 +157,8 @@
       "DVD-Player",
       "Lettore DVD",
       "DVD-speler",
-      "Leitor de DVD"
+      "Leitor de DVD",
+      "DVD 플레이어"
     ],
     "CONSOLE_TYPE": [
       "Console Type",
@@ -152,7 +167,8 @@
       "Konsolentyp",
       "Tipo di Console",
       "Type Console",
-      "Tipo de Console"
+      "Tipo de Console",
+      "콘솔 유형"
     ],
     "BUILD_DATE": [
       "Build Date",
@@ -161,7 +177,8 @@
       "Build-Datum",
       "Data di Costruzione",
       "Bouwdatum",
-      "Data de Construção"
+      "Data de Construção",
+      "빌드 날짜"
     ]
   }
 }
