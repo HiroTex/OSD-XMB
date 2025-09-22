@@ -7,7 +7,8 @@
       "Design-Einstellungen",
       "Impostazioni del tema",
       "Thema-instellingen",
-      "Configurações de tema"
+      "Configurações de tema",
+      "테마 설정"
     ],
     "DESC": [
       "Adjust settings related to appearance.",
@@ -16,7 +17,8 @@
       "Einstellungen für das Erscheinungsbild des XMB-Bildschirms anpassen.",
       "Regola le impostazioni relative all'aspetto.",
       "Pas instellingen aan die verband houden met het uiterlijk van het XMB-scherm.",
-      "Ajuste as configurações relacionadas à aparência."
+      "Ajuste as configurações relacionadas à aparência.",
+      "외형과 관련된 설정을 조정합니다."
     ]
   },
   "THMSET1": {
@@ -27,7 +29,8 @@
       "Thema",
       "Tema",
       "Thema",
-      "Tema"
+      "Tema",
+      "테마"
     ],
     "DESC": [
       "Sets the interface style.",
@@ -36,7 +39,8 @@
       "Den Schnittstellenstil festlegen.",
       "Seleziona lo stile dell'interfaccia.",
       "Stel de interface-stijl in.",
-      "Definir o estilo da interface."
+      "Definir o estilo da interface.",
+      "인터페이스 스타일을 설정합니다."
     ]
   },
   "THMSET2": {
@@ -47,7 +51,8 @@
       "Farbe",
       "Colore",
       "Kleur",
-      "Cor"
+      "Cor",
+      "색상"
     ],
     "DESC": [
       "Sets the background color.",
@@ -56,7 +61,8 @@
       "Hintergrundfarbe festlegen.",
       "Seleziona il colore dello sfondo.",
       "Stel de achtergrondkleur in.",
-      "Definir a cor de fundo."
+      "Definir a cor de fundo.",
+      "배경색을 설정합니다."
     ]
   },
   "THMSET3": {
@@ -67,7 +73,8 @@
       "Hintergrundbild",
       "Sfondo",
       "Achtergrond",
-      "Fundo"
+      "Fundo",
+      "배경"
     ],
     "DESC": [
       "Set the interface background.",
@@ -76,7 +83,8 @@
       "Den Hintergrund der Schnittstelle festlegen.",
       "Seleziona lo sfondo dell'interfaccia.",
       "Stel de achtergrond van de interface in.",
-      "Definir o fundo da interface."
+      "Definir o fundo da interface.",
+      "인터페이스 배경을 설정합니다."
     ]
   },
   "THMSET4": {
@@ -87,7 +95,8 @@
       "Wellen",
       "Onde",
       "Golven",
-      "Ondas"
+      "Ondas",
+      "웨이브"
     ],
     "DESC": [
       "Set the wave effect.",
@@ -96,7 +105,8 @@
       "Den Welleneffekt festlegen.",
       "Seleziona l'effetto onde.",
       "Stel het golf-effect in.",
-      "Definir o efeito de ondas."
+      "Definir o efeito de ondas.",
+      "웨이브 효과를 설정합니다."
     ]
   },
   "ORIGINAL": [
@@ -106,7 +116,8 @@
     "Original",
     "Originale",
     "Origineel",
-    "Original"
+    "Original",
+    "오리지널"
   ],
   "NOWPP_MSG": [
     "There is no wallpaper set. \nGo to [Photo], open an image, and then select [Set as Wallpaper] from the control panel to save the image.",
@@ -115,7 +126,8 @@
     "Kein Hintergrundbild gesetzt. \nNavigiere zu [Foto], öffne ein Bild und wähle [Als Hintergrundbild festlegen].",
     "Nessuno sfondo impostato. \nVai in [Foto], apri un'immagine e seleziona [Imposta come sfondo].",
     "Geen achtergrond ingesteld. \nGa naar [Foto], open een afbeelding en kies [Instellen als achtergrond].",
-    "Nenhum papel de parede definido. \nVá para [Foto], abra uma imagem e escolha [Definir como papel de parede]."
+    "Nenhum papel de parede definido. \nVá para [Foto], abra uma imagem e escolha [Definir como papel de parede].",
+    "배경화면이 설정되어 있지 않습니다. \n[사진]으로 이동하여 이미지를 연 다음, 제어판에서 [배경화면으로 설정]을 선택하여 이미지를 저장하세요."
   ],
   "SETASBG": [
     "Set as Wallpaper",
@@ -124,7 +136,8 @@
     "Als Hintergrundbild festlegen",
     "Imposta come sfondo",
     "Instellen als achtergrond",
-    "Definir como papel de parede"
+    "Definir como papel de parede",
+    "월페이퍼로 설정"
   ],
   "WALLPAPER": [
     "Wallpaper",
@@ -133,6 +146,7 @@
     "Hintergrundbild",
     "Sfondo personalizzato",
     "Achtergrondafbeelding",
-    "Fundo personalizado"
+    "Fundo personalizado",
+    "월페이퍼"
   ]
 }
