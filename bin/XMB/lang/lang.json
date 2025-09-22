@@ -7,7 +7,8 @@
       "Benutzer",
       "Utente",
       "Gebruiker",
-      "Usuário"
+      "Usuário",
+      "사용자"
     ],
     "SETTINGS": [
       "Settings",
@@ -16,7 +17,8 @@
       "Optionen",
       "Opzioni",
       "Opties",
-      "Opções"
+      "Opções",
+      "설정"
     ],
     "PHOTO": [
       "Photo",
@@ -25,7 +27,8 @@
       "Foto",
       "Foto",
       "Foto",
-      "Fotografia"
+      "Fotografia",
+      "사진"
     ],
     "MUSIC": [
       "Music",
@@ -34,7 +37,8 @@
       "Musik",
       "Musica",
       "Muziek",
-      "Música"
+      "Música",
+      "음악"
     ],
     "VIDEO": [
       "Video",
@@ -43,7 +47,8 @@
       "Video",
       "Video",
       "Video",
-      "Video"
+      "Video",
+      "동영상"
     ],
     "GAME": [
       "Game",
@@ -52,7 +57,8 @@
       "Spiel",
       "Giochi",
       "Spel",
-      "Jogo"
+      "Jogo",
+      "게임"
     ],
     "NETWORK": [
       "Network",
@@ -61,7 +67,8 @@
       "Netzwerk",
       "Rete",
       "Netwerk",
-      "Rede"
+      "Rede",
+      "네트워크"
     ]
   },
   "BOOT_WARNING": [
@@ -71,7 +78,8 @@
     "FOTOSENSITIVE EPILEPSIE\nWENN SIE EINE VORGESCHICHTE MIT EPILEPSIE ODER KRAMPFANFÄLLEN HABEN, KONSULTIEREN SIE VOR DER VERWENDUNG EINEN ARZT. BESTIMMTE MUSTER KÖNNEN ANFÄLLE AUSLÖSEN, AUCH OHNE FRÜHERE VORGESCHICHTE. LESEN SIE VOR DER VERWENDUNG DIE BEDIENUNGSANLEITUNG SORGFÄLTIG DURCH.",
     "EPILESSIA FOTOSENSIBILE\nSE SI SOFFRE DI CRISI EPILETTICHE O DI DISTURBI ASSOCIATI, CONSULTARE UN MEDICO PRIMA DELL'USO. ALCUNI EFFETTI POSSONO CAUSARE CRISI EPILETTICHE ANCHE IN ASSENZA DI EPISODI PREGRESSI. PRIMA DI UTILIZZARE IL PRODOTTO, LEGGERE ATTENTAMENTE IL MANUALE DI ISTRUZIONI.",
     "FOTOSENSITIEVE EPILEPSIE\nALS U EEN GESCHIEDENIS HEEFT VAN EPILEPSIE OF AANVALLEN, RAADPLEEG DAN EEN ARTS VOORDAT U HET PRODUCT GEBRUIKT. BEPAALDE PATRONEN KUNNEN AANVALLEN VEROORZAKEN ZONDER EERDERE VOORGESCHIEDENIS. LEES VOORDAT U DIT PRODUCT GEBRUIKT ZORGVULDIG DE HANDLEIDING.",
-    "EPILEPSIA FOTOSSENSÍVEL\nSE VOCÊ TEM HISTÓRICO DE EPILEPSIA OU CONVULSÕES, CONSULTE UM MÉDICO ANTES DE USAR. CERTOS PADRÕES PODEM DESENCADEAR CONVULSÕES SEM HISTÓRICO PRÉVIO. ANTES DE USAR ESTE PRODUTO, LEIA ATENTAMENTE O MANUAL DE INSTRUÇÕES."
+    "EPILEPSIA FOTOSSENSÍVEL\nSE VOCÊ TEM HISTÓRICO DE EPILEPSIA OU CONVULSÕES, CONSULTE UM MÉDICO ANTES DE USAR. CERTOS PADRÕES PODEM DESENCADEAR CONVULSÕES SEM HISTÓRICO PRÉVIO. ANTES DE USAR ESTE PRODUTO, LEIA ATENTAMENTE O MANUAL DE INSTRUÇÕES.",
+    "광과민성 뇌전증\n뇌전증이나 발작 병력이 있는 경우, 사용 전에 의사와 상담하세요.\n특정 패턴은 이전 병력이 없더라도 발작을 유발할 수 있습니다. 이 제품을 사용하기 전에 사용 설명서를 주의 깊게 읽으세요."
   ],
   "WAIT": [
     "Please wait...",
@@ -80,7 +88,8 @@
     "Bitte warten...",
     "Attendere prego...",
     "Even geduld...",
-    "Aguarde..."
+    "Aguarde...",
+    "잠시만 기다려주세요..."
   ],
   "YES": [
     "Yes",
@@ -89,7 +98,8 @@
     "Ja",
     "Sì",
     "Ja",
-    "Sim"
+    "Sim",
+    "예"
   ],
   "NO": [
     "No",
@@ -98,7 +108,8 @@
     "Nein",
     "No",
     "Nee",
-    "Não"
+    "Não",
+    "아니오"
   ],
   "ENABLED": [
     "Enabled",
@@ -107,7 +118,8 @@
     "Aktiviert",
     "Abilitato",
     "Ingeschakeld",
-    "Ativado"
+    "Ativado",
+    "활성화"
   ],
   "DISABLED": [
     "Disabled",
@@ -116,7 +128,8 @@
     "Deaktiviert",
     "Disabilitato",
     "Uitgeschakeld",
-    "Desativado"
+    "Desativado",
+    "비활성화"
   ],
   "DEFAULT": [
     "Default",
@@ -125,7 +138,8 @@
     "Default",
     "Default",
     "Default",
-    "Default"
+    "Default",
+    "기본"
   ],
   "COPY": [
     "Copy",
@@ -134,7 +148,8 @@
     "Kopieren",
     "Copia",
     "Kopiëren",
-    "Copiar"
+    "Copiar",
+    "복사"
   ],
   "COPYING": [
     "Copying",
@@ -143,7 +158,8 @@
     "Copying",
     "Copying.",
     "Copying",
-    "Copying"
+    "Copying",
+    "복사 중"
   ],
   "INFO": [
     "Information",
@@ -152,7 +168,8 @@
     "Information",
     "Informazioni",
     "Informatie",
-    "Informação"
+    "Informação",
+    "정보"
   ],
   "DELETE": [
     "Delete",
@@ -161,7 +178,8 @@
     "Löschen",
     "Elimina",
     "Verwijderen",
-    "Eliminar"
+    "Eliminar",
+    "삭제"
   ],
   "UNKNOWN": [
     "Unknown",
@@ -170,7 +188,8 @@
     "Unbekannt",
     "Sconosciuto",
     "Onbekend",
-    "Desconhecido"
+    "Desconhecido",
+    "알 수 없음"
   ],
   "MSG_SUBMENU_EMPTY": [
     "There are no elements.",
@@ -179,7 +198,8 @@
     "Es gibt keine Elemente.",
     "Non ci sono elementi.",
     "Er zijn geen elementen.",
-    "Não há elementos."
+    "Não há elementos.",
+    "요소가 없습니다."
   ],
   "PLEASE_RESTART": [
     "Please restart the system for the changes to take effect.",
@@ -188,7 +208,8 @@
     "Please restart the system for the changes to take effect.",
     "Please restart the system for the changes to take effect.",
     "Please restart the system for the changes to take effect.",
-    "Please restart the system for the changes to take effect."
+    "Please restart the system for the changes to take effect.",
+    "변경 사항을 적용하려면 시스템을 다시 시작하세요."
   ],
   "BACK": [
     "Back",
@@ -197,7 +218,8 @@
     "Zurück",
     "Indietro",
     "Terug",
-    "Voltar"
+    "Voltar",
+    "뒤로"
   ],
   "ENTER": [
     "Enter",
@@ -206,7 +228,8 @@
     "Akzeptieren",
     "Accetta",
     "Accepteren",
-    "Aceitar"
+    "Aceitar",
+    "수락"
   ],
   "TITLE": [
     "Title",
@@ -215,7 +238,8 @@
     "Titel",
     "Titoli",
     "Titel",
-    "Titulo"
+    "Titulo",
+    "타이틀"
   ],
   "TITLES": [
     "Titles",
@@ -224,7 +248,8 @@
     "Titel",
     "Titoli",
     "Titels",
-    "Títulos"
+    "Títulos",
+    "타이틀"
   ],
   "OPTIONS": [
     "Options",
@@ -233,7 +258,8 @@
     "Options",
     "Opzioni",
     "Options",
-    "Options"
+    "Options",
+    "옵션"
   ],
   "WORK_DIR_NAME": [
     "Main Directory",
@@ -242,7 +268,8 @@
     "Hauptverzeichnis",
     "Directory principale",
     "Hoofdmap",
-    "Diretório principal"
+    "Diretório principal",
+    "메인 디렉터리"
   ],
   "MASS_DIR_NAME": [
     "Mass Storage Device",
@@ -251,7 +278,8 @@
     "Massenspeichergeräten",
     "Dispositivi di Archiviazione",
     "Apparaten voor massaopslag",
-    "Dispositivo de armazenamento"
+    "Dispositivo de armazenamento",
+    "대용량 저장 장치"
   ],
   "HDD_DIR_NAME": [
     "Internal Hard Disk Drive",
@@ -260,7 +288,8 @@
     "Interne Festplatte",
     "Disco Rigido Interno",
     "Internal Hard Disk Drive",
-    "Disco Rígido Interno"
+    "Disco Rígido Interno",
+    "내장 하드디스크 드라이브"
   ],
   "MMCE_DESC": [
     "Multi-Purpose Memory Card Emulation",
@@ -269,7 +298,8 @@
     "Multi-Purpose Memory Card Emulation",
     "Multi-Purpose Memory Card Emulation",
     "Multi-Purpose Memory Card Emulation",
-    "Multi-Purpose Memory Card Emulation"
+    "Multi-Purpose Memory Card Emulation",
+    "다목적 메모리 카드 에뮬레이션"
   ],
   "DEVICE": [
     "Device",
@@ -278,7 +308,8 @@
     "Device",
     "Device",
     "Device",
-    "Device"
+    "Device",
+    "장치"
   ],
   "SIZE": [
     "Size",
@@ -287,7 +318,8 @@
     "Size",
     "Size",
     "Size",
-    "Size"
+    "Size",
+    "크기"
   ],
   "MEDIA": [
     "Media",
@@ -296,7 +328,8 @@
     "Media",
     "Media",
     "Media",
-    "Media"
+    "Media",
+    "미디어"
   ],
   "ERROR": {
     "ELF_NOT_FOUND": [
@@ -306,7 +339,8 @@
       "ELF file not found.",
       "ELF file not found.",
       "ELF file not found.",
-      "ELF file not found."
+      "ELF file not found.",
+      "ELF 파일을 찾을 수 없습니다."
     ],
     "NOT_ENOUGH_SPACE": [
       "Destination folder does not have enough space.",
@@ -315,7 +349,8 @@
       "Destination folder does not have enough space.",
       "Destination folder does not have enough space.",
       "Destination folder does not have enough space.",
-      "Destination folder does not have enough space."
+      "Destination folder does not have enough space.",
+      "대상 폴더에 충분한 공간이 없습니다."
     ]
   }
 }
