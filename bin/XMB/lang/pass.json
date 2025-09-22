@@ -7,7 +7,8 @@
       "Sicherheits-Einstellungen",
       "Impostazioni di sicurezza",
       "Beveiligingsinstellingen",
-      "Definições de Segurança"
+      "Definições de Segurança",
+      "보안 설정"
     ],
     "DESC": [
       "Adjusts parental control settings.",
@@ -16,7 +17,8 @@
       "Einstellungen für die Kindersicherung anpassen.",
       "Regola le impostazioni di controllo parentale.",
       "Pas de instellingen voor ouderlijk toezicht aan.",
-      "Ajuste as configurações de controle parental."
+      "Ajuste as configurações de controle parental.",
+      "자녀 보호 설정을 조정합니다."
     ]
   },
   "PASS_CHANGE": [
@@ -26,7 +28,8 @@
     "Passwort ändern",
     "Modifica la password",
     "Wachtwoord wijzigen",
-    "Mudar a palavra-passe"
+    "Mudar a palavra-passe",
+    "비밀번호 변경"
   ],
   "PARENTAL_CONTROL": [
     "Parental Control",
@@ -35,7 +38,8 @@
     "Kindersicherung",
     "Filtro contenuti",
     "Ouderlijk toezicht",
-    "Controlo parental"
+    "Controlo parental",
+    "자녀 보호 기능"
   ],
   "PASS_NEW_MSG": [
     "Enter your new password",
@@ -44,7 +48,8 @@
     "Enter your new password",
     "Enter your new password",
     "Enter your new password",
-    "Enter your new password"
+    "Enter your new password",
+    "새로운 비밀번호 입력"
   ],
   "PASS_CUR_MSG": [
     "Enter your four-digir password",
@@ -53,6 +58,7 @@
     "Enter your four-digir password",
     "Enter your four-digir password",
     "Enter your four-digir password",
-    "Enter your four-digir password"
+    "Enter your four-digir password",
+    "4자리 비밀번호 입력"
   ]
 }
