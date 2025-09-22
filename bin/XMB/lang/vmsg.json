@@ -7,7 +7,8 @@
       "Anzeige-Einstellungen",
       "Impostazioni di visualizzazione",
       "Beeldscherminstellingen",
-      "Definições de Apresentação"
+      "Definições de Apresentação",
+      "디스플레이 설정"
     ],
     "DESC": [
       "Adjusts settings for video output.",
@@ -16,7 +17,8 @@
       "Einstellungen für die Videoausgabe anpassen.",
       "Regola le impostazioni dell'uscita video.",
       "Pas de instellingen voor video-uitvoer aan.",
-      "Ajuste as configurações de saída de vídeo."
+      "Ajuste as configurações de saída de vídeo.",
+      "동영상 출력에 대한 설정을 조정합니다."
     ]
   },
   "DISPLAYSET1": {
@@ -27,7 +29,8 @@
       "Anzeigemodus",
       "Impostazioni video",
       "Instellingen video-uitvoer",
-      "Definições de Saída de Vídeo"
+      "Definições de Saída de Vídeo",
+      "동영상 출력 모드"
     ],
     "DESC": [
       "Set the video output display mode.",
@@ -36,7 +39,8 @@
       "Setze den Anzeigemodus.",
       "Seleziona la modalità dell'uscita video.",
       "Stel de video-uitvoermodus in.",
-      "Definir o modo de exibição de saída de vídeo."
+      "Definir o modo de exibição de saída de vídeo.",
+      "동영상 출력 디스플레이 모드를 설정합니다."
     ]
   },
   "DISPLAYSET2": {
@@ -47,7 +51,8 @@
       "Typ des TV",
       "Tipo di TV",
       "TV-type",
-      "Tipo de TV"
+      "Tipo de TV",
+      "TV 유형"
     ],
     "DESC": [
       "Select the type of TV in use.",
@@ -56,7 +61,8 @@
       "Wähle den Typ des genutzten TV.",
       "Seleziona il tipo di TV utilizzata.",
       "Selecteer het type TV dat wordt gebruikt.",
-      "Seleccione o tipo de TV utilizada."
+      "Seleccione o tipo de TV utilizada.",
+      "사용 중인 TV 유형을 선택하세요."
     ]
   },
   "SECONDS": [
@@ -66,7 +72,8 @@
     "sekunden",
     "secondi",
     "seconds",
-    "seconds"
+    "seconds",
+    "초"
   ],
   "REMTIME": [
     "Remaining time",
@@ -75,7 +82,8 @@
     "Verbleibende Zeit",
     "Tempo rimanente",
     "Resterende tijd",
-    "Tempo restante"
+    "Tempo restante",
+    "남은 시간"
   ],
   "VMODE_MSG": [
     "Can you read this screen?\nSelect [Yes] if you can.\nIf you do not press any buttons, the system will automatically go back to the previous setting.",
@@ -84,6 +92,7 @@
     "Kannst Du das hier lesen?\nWähle [Ja], wenn dem so ist.\nWenn du keine Tasten drückst, wechselt das System automatisch zur vorherigen Einstellung.",
     "Questo testo è visibile?\nSeleziona [Si] per mantenere l'impostazione altrimenti il sistema tornerà automaticamente all'impostazione precedente.",
     "Kun je dit scherm lezen?\nSelecteer [Ja] als je dat kunt.\nAls je geen knoppen indrukt, gaat het systeem automatisch terug naar de vorige instelling.",
-    "Você consegue ler esta tela?\nSelecione [Sim] se puder.\nSe você não pressionar nenhum botão, o sistema voltará automaticamente à configuração anterior."
+    "Você consegue ler esta tela?\nSelecione [Sim] se puder.\nSe você não pressionar nenhum botão, o sistema voltará automaticamente à configuração anterior.",
+    "이 화면을 읽을 수 있나요?\n가능하다면 [예]를 선택하세요.\n아무 버튼도 누르지 않으면, 시스템이 자동으로 이전 설정으로 돌아갑니다."
   ]
 }
