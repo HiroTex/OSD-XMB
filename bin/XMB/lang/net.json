@@ -7,7 +7,8 @@
       "Netzwerkeinstellungen",
       "Impostazioni di Rete",
       "Netwerkinstellingen",
-      "Definições de Rede"
+      "Definições de Rede",
+      "네트워크 설정"
     ],
     "DESC": [
       "Configure the system's network settings.",
@@ -16,7 +17,8 @@
       "Konfigurieren Sie die Netzwerkeinstellungen des Systems.",
       "Configura le impostazioni di rete del sistema.",
       "Configureer de netwerkinstellingen van het systeem.",
-      "Configure as definições de rede do sistema."
+      "Configure as definições de rede do sistema.",
+      "시스템의 네트워크 설정을 구성합니다."
     ]
   },
   "NETSET1": {
@@ -27,7 +29,8 @@
       "Settings and Connection Status List",
       "Settings and Connection Status List",
       "Settings and Connection Status List",
-      "Settings and Connection Status List"
+      "Settings and Connection Status List",
+      "설정 및 연결 상태 목록"
     ],
     "DESC": [
       "View current network settings.",
@@ -36,7 +39,8 @@
       "View current network settings.",
       "View current network settings.",
       "View current network settings.",
-      "View current network settings."
+      "View current network settings.",
+      "현재 네트워크 설정을 봅니다."
     ]
   },
   "NETSET2": {
@@ -47,7 +51,8 @@
       "Internetverbindung",
       "Connessione Internet",
       "Internetverbinding",
-      "Ligação à Internet"
+      "Ligação à Internet",
+      "인터넷 연결"
     ],
     "DESC": [
       "Set the system's connection to the Internet.",
@@ -56,7 +61,8 @@
       "Set the system's connection to the Internet.",
       "Set the system's connection to the Internet.",
       "Set the system's connection to the Internet.",
-      "Set the system's connection to the Internet."
+      "Set the system's connection to the Internet.",
+      "시스템의 인터넷 연결을 설정하세요."
     ]
   },
   "NET": {
@@ -67,7 +73,8 @@
       "Versuch der Verbindung, bitte warten...",
       "Tentativo di connessione, attendere prego...",
       "Bezig met verbinden, even geduld a.u.b...",
-      "A tentar conectar, por favor aguarde..."
+      "A tentar conectar, por favor aguarde...",
+      연결을 시도 중, 잠시만 기다려 주세요..."
     ],
     "INIT_COMPLETE_MSG": [
       "Connection successful.",
@@ -76,7 +83,8 @@
       "Verbindung erfolgreich.",
       "Connessione riuscita.",
       "Verbinding geslaagd.",
-      "Conexão bem-sucedida."
+      "Conexão bem-sucedida.",
+      "연결 성공했습니다."
     ],
     "ERR_1": [
       "Could not initialize Network.\nPlease check your connection and restart the console.",
@@ -85,7 +93,8 @@
       "Netzwerk konnte nicht initialisiert werden.\nBitte überprüfen Sie Ihre Verbindung und starten Sie die Konsole neu.",
       "Impossibile inizializzare la rete.\nControlla la tua connessione e riavvia la console.",
       "Kan netwerk niet initialiseren.\nControleer uw verbinding en start de console opnieuw op.",
-      "Não foi possível inicializar a Rede.\nVerifique a sua ligação e reinicie a consola."
+      "Não foi possível inicializar a Rede.\nVerifique a sua ligação e reinicie a consola.",
+      "네트워크를 초기화할 수 없습니다.\n연결을 확인하고 콘솔을 다시 시작하세요."
     ],
     "ERR_2": [
       "Your console is not connected to the Network.",
@@ -94,7 +103,8 @@
       "Ihre Konsole ist nicht mit dem Netzwerk verbunden.",
       "La tua console non è connessa alla rete.",
       "Uw console is niet verbonden met het netwerk.",
-      "A sua consola não está ligada à Rede."
+      "A sua consola não está ligada à Rede.",
+      "콘솔이 네트워크에 연결되지 않았습니다."
     ]
   },
   "NET_ART": {
@@ -105,7 +115,8 @@
       "Update Game Resources",
       "Update Game Resources",
       "Update Game Resources",
-      "Update Game Resources"
+      "Update Game Resources",
+      "게임 리소스 업데이트"
     ],
     "CHECK": [
       "Checking available games, please wait...",
@@ -114,7 +125,8 @@
       "Überprüfung verfügbarer Spiele, bitte warten...",
       "Controllo dei giochi disponibili, attendere prego...",
       "Beschikbare spellen aan het controleren, even geduld a.u.b...",
-      "A verificar jogos disponíveis, por favor aguarde..."
+      "A verificar jogos disponíveis, por favor aguarde...",
+      "사용 가능한 게임을 확인 중, 잠시만 기다려 주세요..."
     ],
     "DOWNLOADING": [
       "Downloading available resources, please wait...",
@@ -123,7 +135,8 @@
       "Herunterladen verfügbarer Ressourcen, bitte warten...",
       "Download delle risorse disponibili, attendere prego...",
       "Beschikbare bronnen aan het downloaden, even geduld a.u.b...",
-      "A transferir recursos disponíveis, por favor aguarde..."
+      "A transferir recursos disponíveis, por favor aguarde...",
+      "사용 가능한 리소스를 다운로드 중. 잠시만 기다려 주세요..."
     ],
     "UNAVAILABLE": [
       "There are no new available resources for your games.",
@@ -132,7 +145,8 @@
       "Es sind keine neuen Spielressourcen für Ihre Spiele verfügbar.",
       "There are no new available resources for your games.",
       "There are no new available resources for your games.",
-      "There are no new available resources for your games."
+      "There are no new available resources for your games.",
+      "게임에 사용할 수 있는 새로운 리소스가 없습니다."
     ],
     "SUCCESS": [
       "Game Resources updated successfully.",
@@ -141,7 +155,8 @@
       "Game Resources updated successfully.",
       "Game Resources updated successfully.",
       "Game Resources updated successfully.",
-      "Game Resources updated successfully."
+      "Game Resources updated successfully.",
+      "게임 리소스가 성공적으로 업데이트되었습니다."
     ]
   }
 }
