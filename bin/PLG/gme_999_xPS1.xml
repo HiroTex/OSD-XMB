@@ -53,37 +53,61 @@
 				}
 				return items;
 			}
-
-			const devices = System.devices();
-			let gameList = [];
-
-			if (devices.some(dev => dev.name === "mass")) {
-				const massDir = os.readdir("mass:/")[0];
-				if (massDir && massDir.includes("POPS")) {
-					const dirFiles = os.readdir("mass:/POPS/")[0];
-
-					// Check if files are present
-					if (dirFiles.includes("POPS_IOX.PAK") && dirFiles.includes("POPSTARTER.ELF")) {
-						gameList = gameList.concat(ScanGames("mass:/POPS/", "mass"));
-					}
-				}
-			}
-
-			if (devices.some(dev => dev.name === "hdd")) {
-				const hddDir = os.readdir("hdd0:")[0];
-				if (hddDir && hddDir.includes("__common") && hddDir.includes("__.POPS")) {
-					const commpart = mountHDDPartition("__common");
-					const dirFiles = os.readdir(`${commpart}:/POPS/`)[0];
-					const filesPresent = (dirFiles.includes("POPS.ELF") && dirFiles.includes("IOPRP252.IMG") && dirFiles.includes("POPSTARTER.ELF"));
-					if (filesPresent) {
-						gameList = gameList.concat(ScanGames(`${mountHDDPartition("__.POPS")}:/`, "hdd"));
-					}
-				}
-			}
-
-			if (gameList.length > 1) { gameList.sort((a, b) => a.Name.localeCompare(b.Name)); }
-
-			return gameList;
+      
+      function populateVCDGames() {
+				let gameList = [];
+        const devices = System.devices();
+        
+        for (let i = 0; i < devices.length; i++) {
+					let dev = devices[i];
+          switch (dev.name) {
+						case "mass": 
+							for (let j = 0; j < 10; j++) {
+                const dir = `mass${j.toString()}:`;
+                const info = System.getBDMInfo(dir);
+                if (!info) break;
+                
+                let bdmName = info.name;
+                if (bdmName !== "usb" && bdmName !== "sdc") continue;
+                
+                const massDir = os.readdir(dir)[0];
+                if (!massDir || !massDir.includes("POPS")) continue;
+                
+                const dirFiles = os.readdir(`${dir}/POPS/`)[0];
+                if (dirFiles.length < 1 || !dirFiles.includes("POPS_IOX.PAK") || !dirFiles.includes("POPSTARTER.ELF")) continue;
+                
+                // Check extra required IRX files for MX4SIO support.
+                if (bdmName === "sdc" && (!std.exists("mc0:/POPSTARTER/usbd.irx") || !std.exists("mc0:/POPSTARTER/usbhdfsd.irx"))) continue;
+                
+                gameList = gameList.concat(ScanGames(`${dir}/POPS/`, "mass"));
+              }
+            	break;
+            case "hdd":
+							const hddDir = os.readdir("hdd0:")[0];
+              if (!hddDir || !hddDir.includes("__common") || !hddDir.includes("__.POPS")) break;
+              
+              const commpart = mountHDDPartition("__common");
+							const dirFiles = os.readdir(`${commpart}:/POPS/`)[0];
+							const filesPresent = (dirFiles.includes("POPS.ELF") && dirFiles.includes("IOPRP252.IMG") && dirFiles.includes("POPSTARTER.ELF"));
+              if (!filesPresent) break;
+							gameList = gameList.concat(ScanGames(`${mountHDDPartition("__.POPS")}:/`, "hdd"));
+              break;
+            case "mmce":
+							const mmceDir = os.readdir("mmce0:")[0];
+              if (!std.exists("mc0:/POPSTARTER/usbd.irx") || !std.exists("mc0:/POPSTARTER/usbhdfsd.irx")) break;
+              if (!mmceDir || !mmceDir.includes("POPS")) break;
+              const mmceFiles = os.readdir("mmce0:/POPS/")[0];
+              if (mmceFiles.length < 1 || !mmceFiles.includes("POPS_IOX.PAK") || !mmceFiles.includes("POPSTARTER.ELF")) break;
+              gameList = gameList.concat(ScanGames("mmce0:/POPS/", "mass"));
+              break;
+          }
+        }
+        
+				if (gameList.length > 1) { gameList.sort((a, b) => a.Name.localeCompare(b.Name)); }
+        return gameList;
+      }
+      
+			return populateVCDGames();
     ]]>
   </Options>
   <Init>

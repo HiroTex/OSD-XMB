@@ -717,7 +717,7 @@ function setPOPSCheat(params) {
 
 function getPOPSElfPath(data) {
     const prefix = (data.dev === "mass") ? "XX." : "";
-    let path = "mass:/POPS/";
+    let path = data.path;
     if (data.dev === "hdd") {
         const part = mountHDDPartition("__common");
         path = `${part}:/POPS/`;
