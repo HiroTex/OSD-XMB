@@ -780,7 +780,7 @@ function findICO(baseFilename) { return findArt(baseFilename, "icon0.png"); }
 function findBG(baseFilename) { return findArt(baseFilename, "pic1.png"); }
 
 function findPIC2(baseFilename) {
-    let a = findArt(baseFilename, `pic2_${UserConfig.Language}.png`);
+    let a = findArt(baseFilename, `pic2_0${UserConfig.Language + 1}.png`);
     if (a === "") { return findArt(baseFilename, "pic2.png"); }
     return a;
 }
@@ -793,13 +793,13 @@ function tryDownloadGameArt(gameID, dir) {
         "ICON0.PNG",
         "PIC1.PNG",
         "PIC2.PNG",
-        "PIC2_0.PNG",
-        "PIC2_1.PNG",
-        "PIC2_2.PNG",
-        "PIC2_3.PNG",
-        "PIC2_4.PNG",
-        "PIC2_5.PNG",
-        "PIC2_6.PNG"
+        "PIC2_01.PNG",
+        "PIC2_02.PNG",
+        "PIC2_03.PNG",
+        "PIC2_04.PNG",
+        "PIC2_05.PNG",
+        "PIC2_06.PNG",
+        "PIC2_07.PNG"
     ];
 
     if (std.exists(gameDir)) { return true; }
