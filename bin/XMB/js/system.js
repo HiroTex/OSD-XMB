@@ -792,7 +792,14 @@ function tryDownloadGameArt(gameID, dir) {
     const paths = [
         "ICON0.PNG",
         "PIC1.PNG",
-        "PIC2.PNG"
+        "PIC2.PNG",
+        "PIC2_0.PNG",
+        "PIC2_1.PNG",
+        "PIC2_2.PNG",
+        "PIC2_3.PNG",
+        "PIC2_4.PNG",
+        "PIC2_5.PNG",
+        "PIC2_6.PNG"
     ];
 
     if (std.exists(gameDir)) { return true; }
@@ -813,9 +820,9 @@ function tryDownloadGameArt(gameID, dir) {
     requests.forEach((task) => { Tasks.Push(task); });
     Tasks.Push(() => {
         const dirList = System.listDir(gameDir);
-        for (let i = 0; i < dir.length; i++) {
+        for (let i = 0; i < dirList.length; i++) {
             const item = dirList[i];
-            if (item.size < 32) { os.remove(`${gameDir}/${item.name}`); }
+            if (item.size < 1024) { os.remove(`${gameDir}/${item.name}`); }
         }
 
         if (os.readdir(gameDir)[0].length === 0) { System.removeDirectory(gameDir); }
@@ -842,7 +849,7 @@ function getGameArt(game, dir = "PS2") {
 
     const ico0   = findICO(id);
     const pic1   = findBG(id);
-    const pic2   = findArt(id, "pic2.png");
+    const pic2   = findPIC2(id);
 
     if (ico0)   { game.CustomIcon = ico0; }
     if (pic1)   { game.CustomBG   = pic1; }
