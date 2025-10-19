@@ -343,23 +343,13 @@ function formatFileSize(size) {
   return `${rounded} ${suffixes[index]}`;
 }
 
-// Helper: safely resolve "Paths.THM" or "UserConfig.Theme"
-const resolveGlobalVar = (path) => {
-    try {
-        return path.split('.').reduce((acc, key) => acc?.[key], globalThis) ?? '';
-    } catch {
-        return '';
-    }
-};
-
 function resolveFilePath(filePath) {
     filePath = filePath.replace("{cwd}", CWD);
     filePath = filePath.replace("{bootpath}", System.boot_path);
     filePath = filePath.replace("//", "/");
 
     // Replace all {...} expressions with resolved values
-    filePath = filePath.replace(/\{([^{}]+)\}/g, (_, expr) => resolveGlobalVar(expr.trim()));
-
+    filePath = filePath.replace(/\{([^{}]+)\}/g, (_, expr) => eval(expr.trim()));
     if (!filePath.includes('?')) return filePath; // Literal path, return as is
 
     const prefixes = {

@@ -842,14 +842,19 @@ function DrawDashLoadIcon(Properties) {
 	DashElements.LoadIco.angle = DashUI.LoadSpinning;
 	DashElements.LoadIco.draw(Properties.X, Properties.Y);
 }
+function IsCustomIcon(Properties) {
+    if (!('CustomIcon' in Properties) || typeof Properties.CustomIcon !== "string") { return false; }
+    Properties.CustomIcon = resolveFilePath(Properties.CustomIcon);
+    return std.exists(Properties.CustomIcon);
+}
 function DrawDashIcon(Properties) {
 	let Image = false;
-	let Ready = false;
+    let Ready = false;
+    let Custom = IsCustomIcon(Properties);
 	Properties.Alpha = alphaCap(Properties.Alpha);
 	if (Properties.Alpha < 1) { return; }
 
-    if (('CustomIcon' in Properties) && (typeof Properties.CustomIcon === "string")) {
-        Properties.CustomIcon = resolveFilePath(Properties.CustomIcon);
+    if (Custom) {
         const customImg = ImageCache.Get(Properties.CustomIcon);
         Ready = customImg && customImg.ready();
         if (Ready) { Image = customImg; }
