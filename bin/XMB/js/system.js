@@ -779,6 +779,12 @@ function findICO(baseFilename) { return findArt(baseFilename, "icon0.png"); }
 /*	Returns empty string if not found.											*/
 function findBG(baseFilename) { return findArt(baseFilename, "pic1.png"); }
 
+function findPIC2(baseFilename) {
+    let a = findArt(baseFilename, `pic2_${UserConfig.Language}.png`);
+    if (a === "") { return findArt(baseFilename, "pic2.png"); }
+    return a;
+}
+
 function tryDownloadGameArt(gameID, dir) {
     const requests = [];
     const baseUrl = `https://raw.githubusercontent.com/HiroTex/OSD-XMB-ARTDB/refs/heads/main/${dir}/`;
