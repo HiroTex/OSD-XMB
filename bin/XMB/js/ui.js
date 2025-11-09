@@ -2325,8 +2325,10 @@ function DrawUIContext() {
         selText = "..." + selText.substring(start, start + 20);
     }
 
+    const selIcoXMod = items[current].Icon && (items[current].Icon !== -1);
+
     const SelName = {
-        Text: selico ? [`     ${selText}`] : [selText],
+        Text: selIcoXMod ? [`     ${selText}`] : [selText],
         Position: { X: baseX, Y: baseY + selYmod },
         Alpha: baseA,
         Color: { R: UICONST.TextSelectedColor.R, G: UICONST.TextSelectedColor.G, B: UICONST.TextSelectedColor.B },
