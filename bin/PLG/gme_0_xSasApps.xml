@@ -12,8 +12,8 @@
 				let ELFPath = "";
 
 				// Get Title
-				if ('Title' in data) { AppName = data['Title'];	}
-				else if ('title' in data) {	AppName = data['title']; }
+				if ('title' in data) { AppName = data['title'];	}
+				else if ('Title' in data) {	AppName = data['Title']; }
 
 				// Get ELF Path
 				if ('boot' in data) { ELFPath = `${path}${data['boot']}`; }
